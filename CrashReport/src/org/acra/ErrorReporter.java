@@ -11,6 +11,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,10 +62,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     public ErrorReporter() {
     }
-    public void setFormUri( Uri formUri) {
-    	mFormUri = formUri;
+
+    public void setFormUri(Uri formUri) {
+        mFormUri = formUri;
     }
-    
+
     public void addCustomData(String Key, String Value) {
         mCustomParameters.put(Key, Value);
     }
@@ -82,7 +85,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public static ErrorReporter getInstance() {
         if (mInstanceSingleton == null)
             mInstanceSingleton = new ErrorReporter();
-        return mInstanceSingleton;    
+        return mInstanceSingleton;
     }
 
     public void init(Context context) {
@@ -177,7 +180,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         mCrashProperties.put(STACK_TRACE_KEY, result.toString());
         printWriter.close();
 
-       
         try {
             sendCrashReport(mContext, mCrashProperties);
         } catch (Exception anyException) {
@@ -186,7 +188,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         // Let the official exception handler do it's job
-        // TODO: display a developer-defined message 
+        // TODO: display a developer-defined message
         mDfltExceptionHandler.uncaughtException(t, e);
     }
 
@@ -195,17 +197,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @param context
      * @param errorContent
-     * @throws IOException 
-     * @throws UnsupportedEncodingException 
+     * @throws IOException
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException 
+     * @throws KeyManagementException 
      */
-    private void sendCrashReport(Context context, Properties errorContent) throws UnsupportedEncodingException, IOException {
-            errorContent.put("pageNumber", "0");
-            errorContent.put("backupCache", "");
-            errorContent.put("submit", "Envoyer");
+    private void sendCrashReport(Context context, Properties errorContent)
+            throws UnsupportedEncodingException, IOException, KeyManagementException, NoSuchAlgorithmException {
+        errorContent.put("pageNumber", "0");
+        errorContent.put("backupCache", "");
+        errorContent.put("submit", "Envoyer");
 
-            URL reportUrl = new URL(mFormUri.toString());
-            Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-            HttpUtils.doPost(errorContent, reportUrl.openConnection());
+        URL reportUrl = new URL(mFormUri.toString());
+        Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
+        HttpUtils.doPost(errorContent, reportUrl);
     }
 
     private void saveCrashReportFile() {
