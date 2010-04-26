@@ -16,6 +16,7 @@
 
 package org.acra;
 
+import android.app.Activity;
 import android.app.Application;
 import android.net.Uri;
 
@@ -30,6 +31,19 @@ import android.net.Uri;
  * If you prefer sending crash reports to your own script on your own server,
  * you can override {@link #getFormUri()} and return any Url string to your
  * sever script (like : "http://www.myserver.com/myscript.php").
+ * </p>
+ * <p>
+ * If some crash reports could not be sent (due to technical issues like loss of
+ * network connection), their data is stored in the application private
+ * filesystem and sent on the next <strong>Application</strong> start. This
+ * means that the reports might be sent quite some time after the crash, because
+ * a crash causes the Activity to be destroyed but not the Application.
+ * </p>
+ * <p>
+ * If you would like to receive reports as soon as possible, you may want to
+ * call {@link ErrorReporter#checkAndSendReports(android.content.Context)} on
+ * {@link ErrorReporter#getInstance()} in your main {@link Activity} onCreate()
+ * method.
  * </p>
  */
 public abstract class CrashReportingApplication extends Application {
@@ -50,12 +64,17 @@ public abstract class CrashReportingApplication extends Application {
     }
 
     /**
-     * <p>Override this method to send the crash reports to your own server script.
-     * Your script will have to get HTTP POST request parameters named as described
-     * in {@link ErrorReporter} source code (*_KEY fields values).</p>
-     * <p>If you override this method with your own url, your implementation of
-     * the abstract {@link #getFormId()} can be empy as it will not be called
-     * by any other method or object.</p>
+     * <p>
+     * Override this method to send the crash reports to your own server script.
+     * Your script will have to get HTTP POST request parameters named as
+     * described in {@link ErrorReporter} source code (*_KEY fields values).
+     * </p>
+     * <p>
+     * If you override this method with your own url, your implementation of the
+     * abstract {@link #getFormId()} can be empy as it will not be called by any
+     * other method or object.
+     * </p>
+     * 
      * @return A String containing the Url of your custom server script.
      */
     public Uri getFormUri() {
