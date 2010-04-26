@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2010 Emmanuel Astier & Kevin Gaudin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra;
 
 import java.io.BufferedReader;
@@ -12,7 +27,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Iterator;
-import java.util.Properties;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
@@ -24,20 +39,34 @@ import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import android.util.Log;
 
-public class HttpUtils {
+/**
+ * Helper class to send POST data over HTTP/HTTPS.
+ */
+class HttpUtils {
     private static final String LOG_TAG = CrashReportingApplication.LOG_TAG;
 
     private static final TrustManager[] TRUST_MANAGER = { new NaiveTrustManager() };
 
     private static final AllowAllHostnameVerifier HOSTNAME_VERIFIER = new AllowAllHostnameVerifier();
 
-    public static void doPost(Properties parameters, URL url)
-            throws UnsupportedEncodingException, IOException, KeyManagementException, NoSuchAlgorithmException {
+    /**
+     * Send an HTTP(s) request with POST parameters.
+     * 
+     * @param parameters
+     * @param url
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     * @throws KeyManagementException
+     * @throws NoSuchAlgorithmException
+     */
+    static void doPost(Map<?, ?> parameters, URL url)
+            throws UnsupportedEncodingException, IOException,
+            KeyManagementException, NoSuchAlgorithmException {
         URLConnection cnx = getConnection(url);
-        
+
         // Construct data
         StringBuilder dataBfr = new StringBuilder();
-        Iterator<Object> iKeys = parameters.keySet().iterator();
+        Iterator<?> iKeys = parameters.keySet().iterator();
         while (iKeys.hasNext()) {
             if (dataBfr.length() != 0) {
                 dataBfr.append('&');
@@ -63,7 +92,18 @@ public class HttpUtils {
         rd.close();
     }
 
-    public static URLConnection getConnection(URL url) throws IOException,
+    /**
+     * Open an URL connection. If HTTPS, accepts any certificate even if not
+     * valid, and connects to any host name.
+     * 
+     * @param url
+     *            The destination URL, HTTP or HTTPS.
+     * @return The URLConnection.
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
+    private static URLConnection getConnection(URL url) throws IOException,
             NoSuchAlgorithmException, KeyManagementException {
         URLConnection conn = url.openConnection();
         if (conn instanceof HttpsURLConnection) {
@@ -74,8 +114,7 @@ public class HttpUtils {
             ((HttpsURLConnection) conn).setSSLSocketFactory(socketFactory);
 
             // Allow all hostnames
-            ((HttpsURLConnection) conn)
-                    .setHostnameVerifier(HOSTNAME_VERIFIER);
+            ((HttpsURLConnection) conn).setHostnameVerifier(HOSTNAME_VERIFIER);
 
         }
         return conn;
