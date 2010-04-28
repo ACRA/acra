@@ -8,6 +8,7 @@ public class CrashTestActivity extends Activity {
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
+    @SuppressWarnings("null")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
