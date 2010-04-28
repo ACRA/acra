@@ -339,6 +339,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void saveCrashReportFile() {
         try {
+            Log.d(LOG_TAG, "Writing crash report file.");
             Random generator = new Random();
             int random = generator.nextInt(99999);
             String FileName = "stack-" + random + ".stacktrace";
@@ -405,11 +406,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         input.close();
                     }
 
+
+                    sendCrashReport(context, previousCrashReport);
+
                     // DELETE FILES !!!!
                     File curFile = new File(mCrashProperties.get(FILE_PATH_KEY)
                             + "/" + curString);
                     curFile.delete();
-                    sendCrashReport(context, previousCrashReport);
                 }
             }
         } catch (Exception e) {
