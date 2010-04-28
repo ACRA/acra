@@ -49,6 +49,8 @@ class HttpUtils {
 
     private static final AllowAllHostnameVerifier HOSTNAME_VERIFIER = new AllowAllHostnameVerifier();
 
+    private static final int SOCKET_TIMEOUT = 3000;
+
     /**
      * Send an HTTP(s) request with POST parameters.
      * 
@@ -62,34 +64,41 @@ class HttpUtils {
     static void doPost(Map<?, ?> parameters, URL url)
             throws UnsupportedEncodingException, IOException,
             KeyManagementException, NoSuchAlgorithmException {
-        URLConnection cnx = getConnection(url);
 
-        // Construct data
-        StringBuilder dataBfr = new StringBuilder();
-        Iterator<?> iKeys = parameters.keySet().iterator();
-        while (iKeys.hasNext()) {
-            if (dataBfr.length() != 0) {
-                dataBfr.append('&');
+            URLConnection cnx = getConnection(url);
+
+            // Construct data
+            StringBuilder dataBfr = new StringBuilder();
+            Iterator<?> iKeys = parameters.keySet().iterator();
+            while (iKeys.hasNext()) {
+                if (dataBfr.length() != 0) {
+                    dataBfr.append('&');
+                }
+                String key = (String) iKeys.next();
+                dataBfr.append(URLEncoder.encode(key, "UTF-8")).append('=')
+                        .append(
+                                URLEncoder.encode((String) parameters.get(key),
+                                        "UTF-8"));
             }
-            String key = (String) iKeys.next();
-            dataBfr.append(URLEncoder.encode(key, "UTF-8")).append('=').append(
-                    URLEncoder.encode((String) parameters.get(key), "UTF-8"));
-        }
-        // POST data
-        cnx.setDoOutput(true);
-        OutputStreamWriter wr = new OutputStreamWriter(cnx.getOutputStream());
-        wr.write(dataBfr.toString());
-        wr.flush();
-        wr.close();
+            // POST data
+            cnx.setDoOutput(true);
 
-        BufferedReader rd = new BufferedReader(new InputStreamReader(cnx
-                .getInputStream()));
+            OutputStreamWriter wr = new OutputStreamWriter(cnx
+                    .getOutputStream());
+            Log.d(LOG_TAG, "Posting crash report data");
+            wr.write(dataBfr.toString());
+            wr.flush();
+            wr.close();
 
-        String line;
-        while ((line = rd.readLine()) != null) {
-            Log.d(LOG_TAG, line);
-        }
-        rd.close();
+            Log.d(LOG_TAG, "Reading response");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(cnx
+                    .getInputStream()));
+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                Log.d(LOG_TAG, line);
+            }
+            rd.close();
     }
 
     /**
@@ -117,6 +126,8 @@ class HttpUtils {
             ((HttpsURLConnection) conn).setHostnameVerifier(HOSTNAME_VERIFIER);
 
         }
+        conn.setConnectTimeout(SOCKET_TIMEOUT);
+        conn.setReadTimeout(SOCKET_TIMEOUT);
         return conn;
     }
 
