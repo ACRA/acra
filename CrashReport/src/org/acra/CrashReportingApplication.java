@@ -59,8 +59,17 @@ public abstract class CrashReportingApplication extends Application {
         super.onCreate();
         ErrorReporter.getInstance().setFormUri(getFormUri());
         ErrorReporter.getInstance().init(getApplicationContext());
-        ErrorReporter.getInstance()
-                .checkAndSendReports(getApplicationContext());
+        new Thread() {
+
+            /* (non-Javadoc)
+             * @see java.lang.Thread#run()
+             */
+            @Override
+            public void run() {
+                ErrorReporter.getInstance().checkAndSendReports(getApplicationContext());
+            }
+            
+        }.start();
     }
 
     /**
