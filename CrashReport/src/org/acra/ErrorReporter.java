@@ -272,6 +272,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
+        handleException(e);
+
+        // Let the official exception handler do it's job
+        // TODO: display a developer-defined message
+        mDfltExceptionHandler.uncaughtException(t, e);
+    }
+
+    /**
+     * Try to send a report, if an error occurs stores a report file for a later
+     * attempt.
+     * 
+     * @param e The exception to be sent.
+     */
+    public void handleException(Throwable e) {
         retrieveCrashData(mContext);
         // TODO: add a field in the googledoc form for the crash date.
         // Date CurDate = new Date();
@@ -300,10 +314,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // The crash report will be posted on the next launch
             saveCrashReportFile();
         }
-
-        // Let the official exception handler do it's job
-        // TODO: display a developer-defined message
-        mDfltExceptionHandler.uncaughtException(t, e);
     }
 
     /**
