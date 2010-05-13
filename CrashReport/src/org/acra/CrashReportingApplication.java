@@ -49,6 +49,10 @@ import android.net.Uri;
 public abstract class CrashReportingApplication extends Application {
     protected static final String LOG_TAG = "CrashReport";
 
+    public static enum ReportingInteractionMode {
+        SILENT, NOTIFICATION, TOAST;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -57,19 +61,23 @@ public abstract class CrashReportingApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ErrorReporter.getInstance().setFormUri(getFormUri());
-        ErrorReporter.getInstance().init(getApplicationContext());
-        new Thread() {
+        // Initialise ErrorReporter with all required data
+        ErrorReporter errorReporter = ErrorReporter.getInstance();
+        errorReporter.setFormUri(getFormUri());
+        errorReporter
+                .setReportingInteractionMode(getReportingInteractionMode() != null ? getReportingInteractionMode()
+                        : ReportingInteractionMode.SILENT);
 
-            /* (non-Javadoc)
-             * @see java.lang.Thread#run()
-             */
-            @Override
-            public void run() {
-                ErrorReporter.getInstance().checkAndSendReports(getApplicationContext());
-            }
-            
-        }.start();
+        if (getToastTextResource() != -1) {
+            ErrorReporter.getInstance().setToastText(
+                    getText(getToastTextResource()));
+        }
+
+        // Activate the ErrorReporter
+        errorReporter.init(this);
+
+        // Check for pending reports
+        errorReporter.checkReportsOnApplicationStart();
     }
 
     /**
@@ -80,8 +88,8 @@ public abstract class CrashReportingApplication extends Application {
      * </p>
      * <p>
      * If you override this method with your own url, your implementation of the
-     * abstract {@link #getFormId()} can be empy as it will not be called by any
-     * other method or object.
+     * abstract {@link #getFormId()} can be empty as it will not be called by
+     * any other method or object.
      * </p>
      * 
      * @return A String containing the Url of your custom server script.
@@ -100,4 +108,21 @@ public abstract class CrashReportingApplication extends Application {
      */
     public abstract String getFormId();
 
+    /**
+     * Override this method to provide a message that will be displayed to the
+     * user in a dialog to ask him if he wants to send reports.
+     * 
+     * @return The resource Id of your message.
+     */
+    public int getToastTextResource() {
+        return -1;
+    }
+
+    public ReportingInteractionMode getReportingInteractionMode() {
+        if (getToastTextResource() != -1) {
+            return ReportingInteractionMode.TOAST;
+        } else {
+            return ReportingInteractionMode.SILENT;
+        }
+    }
 }

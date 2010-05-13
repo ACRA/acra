@@ -35,14 +35,23 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
+import org.acra.CrashReportingApplication.ReportingInteractionMode;
+
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Looper;
 import android.os.StatFs;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * <p>
@@ -58,6 +67,18 @@ import android.util.Log;
  * </p>
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
+    final class ReportsSenderWorker extends Thread {
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Thread#run()
+         */
+        @Override
+        public void run() {
+            checkAndSendReports(mContext);
+        }
+    }
+
     private static final String LOG_TAG = CrashReportingApplication.LOG_TAG;
 
     /**
@@ -110,6 +131,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     // The application context
     private Context mContext;
+
+    // The text displayed in the report Toast message.
+    private CharSequence mToastText = "Sending crash report...";
+
+    private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
     // The Url we have to post the reports to.
     private static Uri mFormUri;
@@ -259,6 +285,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     + getTotalInternalMemorySize());
             mCrashProperties.put(AVAILABLE_MEM_SIZE_KEY, ""
                     + getAvailableInternalMemorySize());
+
+            // Application file path
+            mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir()
+                    .getAbsolutePath());
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         }
@@ -275,7 +305,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         handleException(e);
 
         // Let the official exception handler do it's job
-        // TODO: display a developer-defined message
+        if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                Log.e(LOG_TAG, "Error : ", e1);
+            }
+        }
         mDfltExceptionHandler.uncaughtException(t, e);
     }
 
@@ -283,9 +320,28 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Try to send a report, if an error occurs stores a report file for a later
      * attempt.
      * 
-     * @param e The exception to be sent.
+     * @param e
+     *            The exception to be sent.
      */
     public void handleException(Throwable e) {
+        if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+            new Thread() {
+
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see java.lang.Thread#run()
+                 */
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    Toast.makeText(mContext, mToastText, Toast.LENGTH_LONG)
+                            .show();
+                    Looper.loop();
+                }
+
+            }.start();
+        }
         retrieveCrashData(mContext);
         // TODO: add a field in the googledoc form for the crash date.
         // Date CurDate = new Date();
@@ -308,11 +364,48 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         mCrashProperties.put(STACK_TRACE_KEY, result.toString());
         printWriter.close();
 
+        // Always write the report file
+        saveCrashReportFile();
+
+        if (mReportingInteractionMode == ReportingInteractionMode.SILENT
+                || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+            checkAndSendReports(mContext);
+        } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
+            notifySendReport();
+        }
+
+    }
+
+    /**
+     * 
+     */
+    void notifySendReport() {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager mNotificationManager = (NotificationManager) mContext
+                .getSystemService(ns);
+        int icon = android.R.drawable.stat_notify_error;
+        CharSequence tickerText = "Unexpected error, please send report.";
+        long when = System.currentTimeMillis();
+        Notification notification = new Notification(icon, tickerText, when);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        PackageManager pm = mContext.getPackageManager();
         try {
-            sendCrashReport(mContext, mCrashProperties);
-        } catch (Exception anyException) {
-            // The crash report will be posted on the next launch
-            saveCrashReportFile();
+            CharSequence appName = pm.getApplicationInfo(
+                    mContext.getPackageName(), 0).loadLabel(
+                    mContext.getPackageManager());
+            CharSequence contentTitle = appName + " has crashed...";
+            CharSequence contentText = "Please click here to help fix the issue.";
+            Intent notificationIntent = new Intent(mContext,
+                    CrashReportDialog.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(mContext,
+                    0, notificationIntent, 0);
+            notification.setLatestEventInfo(mContext, contentTitle,
+                    contentText, contentIntent);
+            final int HELLO_ID = 1;
+            mNotificationManager.notify(HELLO_ID, notification);
+        } catch (NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            Log.e(LOG_TAG, "Error : ", e);
         }
     }
 
@@ -344,8 +437,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * When a report can't be sent, it is saved here in a file in the
-     * application private directory.
+     * When a report can't be sent, it is saved here in a file in the root of
+     * the application private directory.
      */
     private void saveCrashReportFile() {
         try {
@@ -369,12 +462,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @return an array containing the names of available crash report files.
      */
-    private String[] getCrashReportFilesList() {
-        File dir = new File(mCrashProperties.get(FILE_PATH_KEY) + "/");
-        Log.d(LOG_TAG, "Looking for error files in "
-                + mCrashProperties.get(FILE_PATH_KEY));
-        // Try to create the files folder if it doesn't exist
-        dir.mkdir();
+    String[] getCrashReportFilesList() {
+        File dir = mContext.getFilesDir();
+
+        Log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
+
         // Filter for ".stacktrace" files
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -398,10 +490,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param context
      *            The application context.
      */
-    public void checkAndSendReports(Context context) {
+    void checkAndSendReports(Context context) {
         try {
-            mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir()
-                    .getAbsolutePath());
+
             String[] reportFilesList = getCrashReportFilesList();
             if (reportFilesList.length > 0) {
                 Properties previousCrashReport = new Properties();
@@ -409,24 +500,62 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 int curIndex = 0;
                 for (String curString : reportFilesList) {
                     if (curIndex++ <= MAX_SEND_REPORTS) {
-                        String filePath = mCrashProperties.get(FILE_PATH_KEY)
-                                + "/" + curString;
-                        InputStream input = new FileInputStream(filePath);
+                        FileInputStream input = context
+                                .openFileInput(curString);
                         previousCrashReport.load(input);
                         input.close();
                     }
 
-
                     sendCrashReport(context, previousCrashReport);
 
                     // DELETE FILES !!!!
-                    File curFile = new File(mCrashProperties.get(FILE_PATH_KEY)
-                            + "/" + curString);
+                    File curFile = new File(context.getFilesDir(), curString);
                     curFile.delete();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * If this method is called providing a non empty CharSequence, enables the
+     * display of a dialog asking the user to confirm that he wants to send a
+     * crash report.
+     * 
+     * @param text
+     *            The question asked to the user.
+     */
+    void setToastText(CharSequence text) {
+        if (text != null && !"".equals(text.toString().trim())) {
+            mToastText = text;
+        }
+    }
+
+    void setReportingInteractionMode(
+            ReportingInteractionMode reportingInteractionMode) {
+        mReportingInteractionMode = reportingInteractionMode;
+    }
+
+    void checkReportsOnApplicationStart() {
+        if (getCrashReportFilesList().length > 0) {
+            if (mReportingInteractionMode == ReportingInteractionMode.SILENT
+                    || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+                if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+                    Toast.makeText(mContext, mToastText, Toast.LENGTH_LONG)
+                            .show();
+                }
+                new ReportsSenderWorker().start();
+            } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
+                ErrorReporter.getInstance().notifySendReport();
+            }
+        }
+
+    }
+
+    public void deletePendingReports() {
+        for (String fileName : getCrashReportFilesList()) {
+            new File(mContext.getFilesDir(), fileName).delete();
         }
     }
 }
