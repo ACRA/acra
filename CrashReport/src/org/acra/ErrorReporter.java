@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -380,14 +379,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      */
     void notifySendReport() {
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager mNotificationManager = (NotificationManager) mContext
-                .getSystemService(ns);
+        // This notification can't be set to AUTO_CANCEL because after a crash,
+        // clicking on it restarts the application and this triggers a check
+        // for pending reports which issues the notification back.
+        // Notification cancellation is done in the dialog activity displayed
+        // on notification click.
+        NotificationManager notificationManager = (NotificationManager) mContext
+                .getSystemService(Context.NOTIFICATION_SERVICE);
         int icon = android.R.drawable.stat_notify_error;
         CharSequence tickerText = "Unexpected error, please send report.";
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         PackageManager pm = mContext.getPackageManager();
         try {
             CharSequence appName = pm.getApplicationInfo(
@@ -401,8 +403,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     0, notificationIntent, 0);
             notification.setLatestEventInfo(mContext, contentTitle,
                     contentText, contentIntent);
-            final int HELLO_ID = 1;
-            mNotificationManager.notify(HELLO_ID, notification);
+            notificationManager.notify(CrashReportingApplication.NOTIF_CRASH_ID, notification);
         } catch (NameNotFoundException e) {
             // TODO Auto-generated catch block
             Log.e(LOG_TAG, "Error : ", e);

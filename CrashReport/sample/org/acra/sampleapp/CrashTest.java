@@ -22,7 +22,7 @@ public class CrashTest extends CrashReportingApplication {
      */
     @Override
     public ReportingInteractionMode getReportingInteractionMode() {
-        return ReportingInteractionMode.TOAST;
+        return ReportingInteractionMode.NOTIFICATION;
     }
 
     

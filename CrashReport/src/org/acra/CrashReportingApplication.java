@@ -49,6 +49,12 @@ import android.net.Uri;
 public abstract class CrashReportingApplication extends Application {
     protected static final String LOG_TAG = "CrashReport";
 
+    /**
+     * This is the identifier (value = 666) use for the status bar notification
+     * issued when crashes occur.
+     */
+    public static final int NOTIF_CRASH_ID = 666;
+
     public static enum ReportingInteractionMode {
         SILENT, NOTIFICATION, TOAST;
     }
@@ -77,6 +83,7 @@ public abstract class CrashReportingApplication extends Application {
         errorReporter.init(this);
 
         // Check for pending reports
+
         errorReporter.checkReportsOnApplicationStart();
     }
 

@@ -1,6 +1,7 @@
 package org.acra;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -54,7 +55,12 @@ public class CrashReportDialog extends Activity {
         buttons.addView(no);
         root.addView(buttons);
         setContentView(root);
+        cancelNotification();
+    }
 
+    protected void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(CrashReportingApplication.NOTIF_CRASH_ID);
     }
 
 }
