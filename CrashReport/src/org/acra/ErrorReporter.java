@@ -301,18 +301,40 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
+        // Generate crash report
         handleException(e);
 
-        // Let the official exception handler do it's job
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
             try {
-                Thread.sleep(3000);
+                // Wait a bit to let the user read the toast 
+                Thread.sleep(4000);
             } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 Log.e(LOG_TAG, "Error : ", e1);
             }
         }
-        mDfltExceptionHandler.uncaughtException(t, e);
+
+        if (mReportingInteractionMode == ReportingInteractionMode.SILENT) {
+            // If using silent mode, let the system default handler do it's job
+            // and display the force close dialog.
+            mDfltExceptionHandler.uncaughtException(t, e);
+        } else {
+            // If ACRA handles user notifications whit a Toast or a Notification
+            // the Force Close dialog is one more notification to the user...
+            // We choose to close the process ourselves using the same actions.
+            CharSequence appName = "Application";
+            try {
+                PackageManager pm = mContext.getPackageManager();
+                appName = pm.getApplicationInfo(mContext.getPackageName(), 0)
+                        .loadLabel(mContext.getPackageManager());
+                Log.e(LOG_TAG, appName + " fatal error : " + e.getMessage(), e);
+            } catch (NameNotFoundException e2) {
+                Log.e(LOG_TAG, "Error : ", e2);
+            } finally {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(10);
+            }
+        }
     }
 
     /**
@@ -323,6 +345,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The exception to be sent.
      */
     public void handleException(Throwable e) {
+        if(e == null) {
+            e = new Exception("Report requested by developer");
+        }
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
             new Thread() {
 
@@ -403,7 +428,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     0, notificationIntent, 0);
             notification.setLatestEventInfo(mContext, contentTitle,
                     contentText, contentIntent);
-            notificationManager.notify(CrashReportingApplication.NOTIF_CRASH_ID, notification);
+            notificationManager.notify(
+                    CrashReportingApplication.NOTIF_CRASH_ID, notification);
         } catch (NameNotFoundException e) {
             // TODO Auto-generated catch block
             Log.e(LOG_TAG, "Error : ", e);
