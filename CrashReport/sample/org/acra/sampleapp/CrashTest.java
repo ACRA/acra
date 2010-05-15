@@ -25,5 +25,22 @@ public class CrashTest extends CrashReportingApplication {
         return ReportingInteractionMode.NOTIFICATION;
     }
 
+    /* (non-Javadoc)
+     * @see org.acra.CrashReportingApplication#getCrashDialogCommentPromptResId()
+     */
+    @Override
+    public int getCrashDialogCommentPromptResId() {
+        
+        return R.string.crash_comment_prompt;
+    }
+
+    /* (non-Javadoc)
+     * @see org.acra.CrashReportingApplication#getCrashDialogTextResId()
+     */
+    @Override
+    public int getCrashDialogTextResId() {
+        return R.string.crash_text;
+    }
+
     
 }

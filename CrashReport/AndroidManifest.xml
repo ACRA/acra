@@ -5,7 +5,8 @@
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:name="CrashTest">
 
-		<activity android:name="org.acra.CrashReportDialog" android:theme="@android:style/Theme.Dialog" />
+		<activity android:name="org.acra.CrashReportDialog"
+			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance" />
 
 		<activity android:name="CrashTestActivity" android:label="@string/app_name">
 			<intent-filter>

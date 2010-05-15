@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CrashReport</string>
-    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help him fix the issue !</string>
+	<string name="app_name">CrashReport</string>
+	<string name="crash_toast_text">Ooooops ! I crashed, but a report has been
+		sent to my developer to help him fix the issue !</string>
+	<string name="crash_text">An unexpected error occurred forcing the
+		application to stop. Please help us fix this by sending us error data,
+		all you have to do is click \'OK\'.</string>
+	<string name="crash_comment_prompt">You might add your comments about the problem below:</string>
 </resources>

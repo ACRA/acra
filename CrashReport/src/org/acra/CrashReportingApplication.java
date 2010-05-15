@@ -132,4 +132,13 @@ public abstract class CrashReportingApplication extends Application {
             return ReportingInteractionMode.SILENT;
         }
     }
+
+    public int getCrashDialogTextResId() {
+        throw new IllegalStateException("You must override CrashReportingApplication.getCrashDialogTextResId() to provide a resource identifier for the text of the crash dialog.");
+    }
+
+    public int getCrashDialogCommentPromptResId() {
+        return -1;
+    }
+    
 }

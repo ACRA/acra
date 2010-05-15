@@ -28,11 +28,12 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
+import java.util.TreeSet;
 
 import org.acra.CrashReportingApplication.ReportingInteractionMode;
 
@@ -112,6 +113,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String AVAILABLE_MEM_SIZE_KEY = "entry.19.single";
     private static final String CUSTOM_DATA_KEY = "entry.20.single";
     private static final String STACK_TRACE_KEY = "entry.21.single";
+
+    static final String USER_COMMENT_KEY = "user.comment";
 
     // This is where we collect crash data
     private Properties mCrashProperties = new Properties();
@@ -306,7 +309,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
             try {
-                // Wait a bit to let the user read the toast 
+                // Wait a bit to let the user read the toast
                 Thread.sleep(4000);
             } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
@@ -345,7 +348,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The exception to be sent.
      */
     public void handleException(Throwable e) {
-        if(e == null) {
+        if (e == null) {
             e = new Exception("Report requested by developer");
         }
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
@@ -470,9 +473,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private void saveCrashReportFile() {
         try {
             Log.d(LOG_TAG, "Writing crash report file.");
-            Random generator = new Random();
-            int random = generator.nextInt(99999);
-            String FileName = "stack-" + random + ".stacktrace";
+            long timestamp = System.currentTimeMillis();
+            String FileName = "stack-" + timestamp + ".stacktrace";
             FileOutputStream trace = mContext.openFileOutput(FileName,
                     Context.MODE_PRIVATE);
             mCrashProperties.store(trace, "");
@@ -521,27 +523,52 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         try {
 
             String[] reportFilesList = getCrashReportFilesList();
-            if (reportFilesList.length > 0) {
+            TreeSet<String> sortedFiles = new TreeSet<String>();
+            sortedFiles.addAll(Arrays.asList(reportFilesList));
+            if (reportFilesList != null && reportFilesList.length > 0) {
                 Properties previousCrashReport = new Properties();
                 // send only a few reports to avoid ANR
                 int curIndex = 0;
-                for (String curString : reportFilesList) {
-                    if (curIndex++ <= MAX_SEND_REPORTS) {
+                for (String curString : sortedFiles) {
+                    if (curIndex < MAX_SEND_REPORTS) {
                         FileInputStream input = context
                                 .openFileInput(curString);
                         previousCrashReport.load(input);
                         input.close();
+                        // Insert the optional user comment written in
+                        // CrashReportDialog, only on the latest report file
+                        if (curIndex == sortedFiles.size() - 1
+                                && mCustomParameters
+                                        .containsKey(USER_COMMENT_KEY)) {
+                            String custom = previousCrashReport
+                                    .getProperty(CUSTOM_DATA_KEY);
+                            if (custom == null) {
+                                custom = "";
+                            } else {
+                                custom += "\n";
+                            }
+                            previousCrashReport.put(CUSTOM_DATA_KEY, custom
+                                    + USER_COMMENT_KEY + " = "
+                                    + mCustomParameters.get(USER_COMMENT_KEY));
+                            mCustomParameters.remove(USER_COMMENT_KEY);
+
+                        }
+                        sendCrashReport(context, previousCrashReport);
+
+                        // DELETE FILES !!!!
+                        File curFile = new File(context.getFilesDir(),
+                                curString);
+                        curFile.delete();
                     }
-
-                    sendCrashReport(context, previousCrashReport);
-
-                    // DELETE FILES !!!!
-                    File curFile = new File(context.getFilesDir(), curString);
-                    curFile.delete();
+                    curIndex++;
                 }
+                
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            // Get rid of any user comment which would not be relevant anymore
+            mCustomParameters.remove(USER_COMMENT_KEY);
         }
     }
 
@@ -565,7 +592,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     void checkReportsOnApplicationStart() {
-        if (getCrashReportFilesList().length > 0) {
+        String[] filesList = getCrashReportFilesList();
+        if (filesList != null && filesList.length > 0) {
             if (mReportingInteractionMode == ReportingInteractionMode.SILENT
                     || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
@@ -581,8 +609,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     public void deletePendingReports() {
-        for (String fileName : getCrashReportFilesList()) {
-            new File(mContext.getFilesDir(), fileName).delete();
+        String[] filesList = getCrashReportFilesList();
+        if (filesList != null) {
+            for (String fileName : filesList) {
+                new File(mContext.getFilesDir(), fileName).delete();
+            }
         }
     }
 }
