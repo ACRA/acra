@@ -19,6 +19,8 @@ package org.acra;
 import android.app.Activity;
 import android.app.Application;
 import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
 
 /**
  * <p>
@@ -47,8 +49,18 @@ import android.net.Uri;
  * </p>
  */
 public abstract class CrashReportingApplication extends Application {
-    protected static final String LOG_TAG = "CrashReport";
+    protected static final String LOG_TAG = "ACRA";
 
+    public static final String RES_NOTIF_ICON = "RES_NOTIF_ICON"; 
+    public static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT"; 
+    public static final String RES_NOTIF_TITLE = "RES_NOTIF_TITLE";
+    public static final String RES_NOTIF_TEXT = "RES_NOTIF_TEXT";
+    public static final String RES_DIALOG_ICON = "RES_DIALOG_ICON";
+    public static final String RES_DIALOG_TITLE = "RES_DIALOG_TITLE";
+    public static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
+    public static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
+    public static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
+    
     /**
      * This is the identifier (value = 666) use for the status bar notification
      * issued when crashes occur.
@@ -71,13 +83,9 @@ public abstract class CrashReportingApplication extends Application {
         ErrorReporter errorReporter = ErrorReporter.getInstance();
         errorReporter.setFormUri(getFormUri());
         errorReporter
-                .setReportingInteractionMode(getReportingInteractionMode() != null ? getReportingInteractionMode()
-                        : ReportingInteractionMode.SILENT);
+                .setReportingInteractionMode(getReportingInteractionMode());
 
-        if (getToastTextResource() != -1) {
-            ErrorReporter.getInstance().setToastText(
-                    getText(getToastTextResource()));
-        }
+        ErrorReporter.getInstance().setCrashResources(getCrashResources());
 
         // Activate the ErrorReporter
         errorReporter.init(this);
@@ -115,30 +123,27 @@ public abstract class CrashReportingApplication extends Application {
      */
     public abstract String getFormId();
 
-    /**
-     * Override this method to provide a message that will be displayed to the
-     * user in a dialog to ask him if he wants to send reports.
-     * 
-     * @return The resource Id of your message.
-     */
-    public int getToastTextResource() {
-        return -1;
-    }
 
-    public ReportingInteractionMode getReportingInteractionMode() {
-        if (getToastTextResource() != -1) {
+    ReportingInteractionMode getReportingInteractionMode() {
+        Bundle res = getCrashResources();
+        if (res != null && res.containsKey(RES_TOAST_TEXT)) {
+            Log.d(LOG_TAG, "Using TOAST mode.");
             return ReportingInteractionMode.TOAST;
+        } else if(res != null
+                &&res.containsKey(RES_NOTIF_TICKER_TEXT)
+                && res.containsKey(RES_NOTIF_TEXT)
+                && res.containsKey(RES_NOTIF_TITLE)
+                && res.containsKey(RES_DIALOG_TEXT)){
+            Log.d(LOG_TAG, "Using NOTIFICATION mode.");
+            return ReportingInteractionMode.NOTIFICATION;
         } else {
+            Log.d(LOG_TAG, "Using SILENT mode.");
             return ReportingInteractionMode.SILENT;
         }
     }
 
-    public int getCrashDialogTextResId() {
-        throw new IllegalStateException("You must override CrashReportingApplication.getCrashDialogTextResId() to provide a resource identifier for the text of the crash dialog.");
-    }
-
-    public int getCrashDialogCommentPromptResId() {
-        return -1;
+    public Bundle getCrashResources() {
+        return null;
     }
     
 }

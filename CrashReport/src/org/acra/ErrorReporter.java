@@ -47,6 +47,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
@@ -134,10 +135,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // The application context
     private Context mContext;
 
-    // The text displayed in the report Toast message.
-    private CharSequence mToastText = "Sending crash report...";
-
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
+
+    private Bundle mCrashResources = new Bundle();
 
     // The Url we have to post the reports to.
     private static Uri mFormUri;
@@ -362,8 +362,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    Toast.makeText(mContext, mToastText, Toast.LENGTH_LONG)
-                            .show();
+                    Toast
+                            .makeText(
+                                    mContext,
+                                    mCrashResources
+                                            .getInt(CrashReportingApplication.RES_TOAST_TEXT),
+                                    Toast.LENGTH_LONG).show();
                     Looper.loop();
                 }
 
@@ -404,7 +408,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * 
+     * Send a status bar notification. The action triggered when the notification is selected
+     * is to start the {@link CrashReportDialog} Activity. Notification details are customizable,
+     * @see CrashReportingApplication#getCrashResources()
      */
     void notifySendReport() {
         // This notification can't be set to AUTO_CANCEL because after a crash,
@@ -414,29 +420,35 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // on notification click.
         NotificationManager notificationManager = (NotificationManager) mContext
                 .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Default notification icon is the warning symbol
         int icon = android.R.drawable.stat_notify_error;
-        CharSequence tickerText = "Unexpected error, please send report.";
+        if (mCrashResources
+                .containsKey(CrashReportingApplication.RES_NOTIF_ICON)) {
+            // Use a developer defined icon if available
+            icon = mCrashResources
+                    .getInt(CrashReportingApplication.RES_NOTIF_ICON);
+        }
+
+        CharSequence tickerText = mContext.getText(mCrashResources
+                .getInt(CrashReportingApplication.RES_NOTIF_TICKER_TEXT));
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
-        PackageManager pm = mContext.getPackageManager();
-        try {
-            CharSequence appName = pm.getApplicationInfo(
-                    mContext.getPackageName(), 0).loadLabel(
-                    mContext.getPackageManager());
-            CharSequence contentTitle = appName + " has crashed...";
-            CharSequence contentText = "Please click here to help fix the issue.";
-            Intent notificationIntent = new Intent(mContext,
-                    CrashReportDialog.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(mContext,
-                    0, notificationIntent, 0);
-            notification.setLatestEventInfo(mContext, contentTitle,
-                    contentText, contentIntent);
-            notificationManager.notify(
-                    CrashReportingApplication.NOTIF_CRASH_ID, notification);
-        } catch (NameNotFoundException e) {
-            // TODO Auto-generated catch block
-            Log.e(LOG_TAG, "Error : ", e);
-        }
+
+        CharSequence contentTitle = mContext.getText(mCrashResources
+                .getInt(CrashReportingApplication.RES_NOTIF_TITLE));
+        CharSequence contentText = mContext.getText(mCrashResources
+                .getInt(CrashReportingApplication.RES_NOTIF_TEXT));
+
+        Intent notificationIntent = new Intent(mContext,
+                CrashReportDialog.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
+                notificationIntent, 0);
+        
+        notification.setLatestEventInfo(mContext, contentTitle, contentText,
+                contentIntent);
+        notificationManager.notify(CrashReportingApplication.NOTIF_CRASH_ID,
+                notification);
     }
 
     /**
@@ -562,27 +574,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     }
                     curIndex++;
                 }
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // Get rid of any user comment which would not be relevant anymore
             mCustomParameters.remove(USER_COMMENT_KEY);
-        }
-    }
-
-    /**
-     * If this method is called providing a non empty CharSequence, enables the
-     * display of a dialog asking the user to confirm that he wants to send a
-     * crash report.
-     * 
-     * @param text
-     *            The question asked to the user.
-     */
-    void setToastText(CharSequence text) {
-        if (text != null && !"".equals(text.toString().trim())) {
-            mToastText = text;
         }
     }
 
@@ -597,8 +595,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (mReportingInteractionMode == ReportingInteractionMode.SILENT
                     || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
-                    Toast.makeText(mContext, mToastText, Toast.LENGTH_LONG)
-                            .show();
+                    Toast
+                            .makeText(
+                                    mContext,
+                                    mCrashResources
+                                            .getInt(CrashReportingApplication.RES_TOAST_TEXT),
+                                    Toast.LENGTH_LONG).show();
                 }
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
@@ -615,5 +617,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 new File(mContext.getFilesDir(), fileName).delete();
             }
         }
+    }
+
+    void setCrashResources(Bundle crashResources) {
+        mCrashResources = crashResources;
     }
 }

@@ -16,7 +16,7 @@ public class CrashReportDialog extends Activity {
 
     private static final int CRASH_DIALOG_LEFT_ICON = android.R.drawable.ic_dialog_alert;
     private EditText userComment = null;
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -26,7 +26,9 @@ public class CrashReportDialog extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
-
+        Bundle crashResources = ((CrashReportingApplication) getApplication())
+                .getCrashResources();
+        
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
@@ -38,16 +40,17 @@ public class CrashReportDialog extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
 
         TextView text = new TextView(this);
-        text.setText(getText(((CrashReportingApplication) getApplication())
-                .getCrashDialogTextResId()));
+
+        text.setText(getText(crashResources
+                .getInt(CrashReportingApplication.RES_DIALOG_TEXT)));
         scroll
                 .addView(text, LayoutParams.FILL_PARENT,
                         LayoutParams.FILL_PARENT);
 
         // Add an optional prompt for user comments
-        int commentPromptId = ((CrashReportingApplication) getApplication())
-                .getCrashDialogCommentPromptResId();
-        if (commentPromptId != -1) {
+        int commentPromptId = crashResources
+                .getInt(CrashReportingApplication.RES_DIALOG_COMMENT_PROMPT);
+        if (commentPromptId != 0) {
             TextView label = new TextView(this);
             label.setText(getText(commentPromptId));
 
@@ -67,8 +70,9 @@ public class CrashReportDialog extends Activity {
         LinearLayout buttons = new LinearLayout(this);
         buttons.setLayoutParams(new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        buttons.setPadding(buttons.getPaddingLeft(), 10, buttons.getPaddingRight(), buttons.getPaddingBottom());
-        
+        buttons.setPadding(buttons.getPaddingLeft(), 10, buttons
+                .getPaddingRight(), buttons.getPaddingBottom());
+
         Button yes = new Button(this);
         yes.setText(android.R.string.yes);
         yes.setOnClickListener(new View.OnClickListener() {
@@ -76,12 +80,13 @@ public class CrashReportDialog extends Activity {
             @Override
             public void onClick(View v) {
                 ErrorReporter err = ErrorReporter.getInstance();
-                if(userComment != null) {
-                    err.addCustomData(ErrorReporter.USER_COMMENT_KEY, userComment.getText().toString());
+                if (userComment != null) {
+                    err.addCustomData(ErrorReporter.USER_COMMENT_KEY,
+                            userComment.getText().toString());
                 }
                 err.new ReportsSenderWorker().start();
-//                Toast.makeText(getApplicationContext(), "Thank you !",
-//                        Toast.LENGTH_LONG).show();
+                // Toast.makeText(getApplicationContext(), "Thank you !",
+                // Toast.LENGTH_LONG).show();
                 finish();
             }
 
@@ -106,8 +111,22 @@ public class CrashReportDialog extends Activity {
 
         setContentView(root);
 
-        getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
-                CRASH_DIALOG_LEFT_ICON);
+        if(crashResources.containsKey(CrashReportingApplication.RES_DIALOG_TITLE)) {
+            setTitle(crashResources.getInt(CrashReportingApplication.RES_DIALOG_TITLE));
+        }
+
+        
+        if (crashResources
+                .containsKey(CrashReportingApplication.RES_DIALOG_ICON)) {
+            getWindow().setFeatureDrawableResource(
+                    Window.FEATURE_LEFT_ICON,
+                    crashResources
+                            .getInt(CrashReportingApplication.RES_DIALOG_ICON));
+        } else {
+            getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
+                    CRASH_DIALOG_LEFT_ICON);
+        }
+
         cancelNotification();
     }
 
