@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CrashReportDialog extends Activity {
 
@@ -26,9 +27,9 @@ public class CrashReportDialog extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
-        Bundle crashResources = ((CrashReportingApplication) getApplication())
+        final Bundle crashResources = ((CrashReportingApplication) getApplication())
                 .getCrashResources();
-        
+
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
@@ -85,9 +86,12 @@ public class CrashReportDialog extends Activity {
                             userComment.getText().toString());
                 }
                 err.new ReportsSenderWorker().start();
-                // Toast.makeText(getApplicationContext(), "Thank you !",
-                // Toast.LENGTH_LONG).show();
-                finish();
+                
+                if(crashResources.containsKey(CrashReportingApplication.RES_DIALOG_OK_TOAST)) {
+                    Toast.makeText(getApplicationContext(), crashResources.getInt(CrashReportingApplication.RES_DIALOG_OK_TOAST),
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
 
         });
@@ -111,11 +115,12 @@ public class CrashReportDialog extends Activity {
 
         setContentView(root);
 
-        if(crashResources.containsKey(CrashReportingApplication.RES_DIALOG_TITLE)) {
-            setTitle(crashResources.getInt(CrashReportingApplication.RES_DIALOG_TITLE));
+        if (crashResources
+                .containsKey(CrashReportingApplication.RES_DIALOG_TITLE)) {
+            setTitle(crashResources
+                    .getInt(CrashReportingApplication.RES_DIALOG_TITLE));
         }
 
-        
         if (crashResources
                 .containsKey(CrashReportingApplication.RES_DIALOG_ICON)) {
             getWindow().setFeatureDrawableResource(

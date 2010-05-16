@@ -14,4 +14,5 @@
 		application to stop. Please help us fix this by sending us error data,
 		all you have to do is click \'OK\'.</string>
 	<string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+	<string name="crash_dialog_ok_toast">Thank you !</string>
 </resources>

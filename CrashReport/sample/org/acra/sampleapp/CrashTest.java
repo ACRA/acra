@@ -17,10 +17,10 @@ public class CrashTest extends CrashReportingApplication {
         // return null;
         
         // Toast mode
-        // return getToastCrashResources();
+        return getToastCrashResources();
         
         // Notification mode with mandatory resources
-        return getMinNotificationCrashResources();
+        //return getMinNotificationCrashResources();
         
         // Notification mode with all resources
         //return getFullNotificationCrashResources();
@@ -42,6 +42,7 @@ public class CrashTest extends CrashReportingApplication {
         result.putInt(RES_DIALOG_TITLE, R.string.crash_dialog_title);
         result.putInt(RES_DIALOG_TEXT, R.string.crash_dialog_text);
         result.putInt(RES_DIALOG_COMMENT_PROMPT, R.string.crash_dialog_comment_prompt);
+        result.putInt(RES_DIALOG_OK_TOAST, R.string.crash_dialog_ok_toast);
         return result;
     }
     

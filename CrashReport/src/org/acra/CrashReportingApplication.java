@@ -62,6 +62,7 @@ public abstract class CrashReportingApplication extends Application implements O
     public static final String RES_DIALOG_TITLE = "RES_DIALOG_TITLE";
     public static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
     public static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
+    public static final String RES_DIALOG_OK_TOAST = "RES_DIALOG_OK_TOAST";
     public static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
 
     /**
