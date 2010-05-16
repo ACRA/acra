@@ -46,23 +46,77 @@ import android.util.Log;
  * </p>
  * <p>
  * If you would like to receive reports as soon as possible, you may want to
- * call {@link ErrorReporter#checkAndSendReports(android.content.Context)} on
+ * call {@link ErrorReporter#checkReportsOnApplicationStart()} on
  * {@link ErrorReporter#getInstance()} in your main {@link Activity} onCreate()
  * method.
  * </p>
  */
-public abstract class CrashReportingApplication extends Application implements OnSharedPreferenceChangeListener {
+public abstract class CrashReportingApplication extends Application implements
+        OnSharedPreferenceChangeListener {
     protected static final String LOG_TAG = "ACRA";
 
+    /**
+     * Bundle key for the icon in the status bar notification.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_NOTIF_ICON = "RES_NOTIF_ICON";
+    /**
+     * Bundle key for the ticker text in the status bar notification.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT";
+    /**
+     * Bundle key for the title in the status bar notification.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_NOTIF_TITLE = "RES_NOTIF_TITLE";
+    /**
+     * Bundle key for the text in the status bar notification.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_NOTIF_TEXT = "RES_NOTIF_TEXT";
+    /**
+     * Bundle key for the icon in the crash dialog.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_DIALOG_ICON = "RES_DIALOG_ICON";
+    /**
+     * Bundle key for the title in the crash dialog.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_DIALOG_TITLE = "RES_DIALOG_TITLE";
+    /**
+     * Bundle key for the text in the crash dialog.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
+    /**
+     * Bundle key for the user comment input label in the crash dialog. If not
+     * provided, disables the input field.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
+    /**
+     * Bundle key for the Toast text triggered when the user accepts to send a
+     * report in the crash dialog.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_DIALOG_OK_TOAST = "RES_DIALOG_OK_TOAST";
+    /**
+     * Bundle key for the Toast text triggered when the application crashes if
+     * the notification+dialog mode is not used.
+     * 
+     * @see #getCrashResources()
+     */
     public static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
 
     /**
@@ -72,12 +126,25 @@ public abstract class CrashReportingApplication extends Application implements O
     public static final int NOTIF_CRASH_ID = 666;
 
     /**
-     * The key of the application default SharedPreference where you can put a 'true'
-     * Boolean value to disable ACRA.
+     * The key of the application default SharedPreference where you can put a
+     * 'true' Boolean value to disable ACRA.
      */
     public static final String PREF_DISABLE_ACRA = "acra.disable";
 
-    public static enum ReportingInteractionMode {
+    /**
+     * Defines the different user interaction modes for ACRA.
+     * <ul>
+     * <li>SILENT: No interaction, reports are sent silently and a "Force close"
+     * dialog terminates the app.</li>
+     * <li>TOAST: A simple Toast is triggered when the application crashes, the
+     * Force close dialog is not displayed.</li>
+     * <li>NOTIFICATION: A status bar notification is triggered when the
+     * application crashes, the Force close dialog is not displayed. When the
+     * user selects the notification, a dialog is displayed asking him if he is
+     * ok to send a report</li>
+     * </ul>
+     */
+    static enum ReportingInteractionMode {
         SILENT, NOTIFICATION, TOAST;
     }
 
@@ -93,13 +160,16 @@ public abstract class CrashReportingApplication extends Application implements O
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
+
+        // If the application default shared preferences contains true for the
+        // key "acra.disable", do not activate ACRA.
         boolean disableAcra = false;
         try {
             disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, false);
         } catch (Exception e) {
             // In case of a ClassCastException
         }
-        
+
         if (disableAcra) {
             Log.d(LOG_TAG, "ACRA is disabled for " + this.getPackageName()
                     + ".");
@@ -110,7 +180,7 @@ public abstract class CrashReportingApplication extends Application implements O
     }
 
     /**
-     * 
+     * Activate ACRA.
      */
     private void initAcra() {
         Log.d(LOG_TAG, "ACRA is enabled for " + this.getPackageName()
@@ -159,15 +229,24 @@ public abstract class CrashReportingApplication extends Application implements O
      */
     public abstract String getFormId();
 
+    /**
+     * Guess the ReportingInteractionMode chosen by the developer by analysing
+     * the content of the Bundle provided by {@link #getCrashResources()}. If it
+     * contains {@link #RES_TOAST_TEXT}, TOAST mode is activated. Otherwise,
+     * NOTIFICATION mode is used if the Bundle contains the minimal set of
+     * resources required. In any other cases, activates the SILENT mode.
+     * 
+     * @return The interaction mode
+     */
     ReportingInteractionMode getReportingInteractionMode() {
         Bundle res = getCrashResources();
-        if (res != null && res.containsKey(RES_TOAST_TEXT)) {
+        if (res != null && res.getInt(RES_TOAST_TEXT) != 0) {
             Log.d(LOG_TAG, "Using TOAST mode.");
             return ReportingInteractionMode.TOAST;
-        } else if (res != null && res.containsKey(RES_NOTIF_TICKER_TEXT)
-                && res.containsKey(RES_NOTIF_TEXT)
-                && res.containsKey(RES_NOTIF_TITLE)
-                && res.containsKey(RES_DIALOG_TEXT)) {
+        } else if (res != null && res.getInt(RES_NOTIF_TICKER_TEXT) != 0
+                && res.getInt(RES_NOTIF_TEXT) != 0
+                && res.getInt(RES_NOTIF_TITLE) != 0
+                && res.getInt(RES_DIALOG_TEXT) != 0) {
             Log.d(LOG_TAG, "Using NOTIFICATION mode.");
             return ReportingInteractionMode.NOTIFICATION;
         } else {
@@ -176,24 +255,44 @@ public abstract class CrashReportingApplication extends Application implements O
         }
     }
 
+    /**
+     * Override this method to activate user notifications. Return a Bundle
+     * containing :
+     * <ul>
+     * <li>{@link #RES_TOAST_TEXT} to activate the Toast notification mode</li>
+     * <li>At least {@link #RES_NOTIF_TICKER_TEXT}, {@link #RES_NOTIF_TEXT},
+     * {@link #RES_NOTIF_TITLE} and {@link #RES_DIALOG_TEXT} to activate status
+     * bar notifications + dialog mode. You can additionally set
+     * {@link #RES_DIALOG_COMMENT_PROMPT} to activate an input field for the
+     * user to add a comment. Use {@link #RES_NOTIF_ICON},
+     * {@link #RES_DIALOG_ICON}, {@link #RES_DIALOG_TITLE} or
+     * {@link #RES_DIALOG_OK_TOAST} for further UI tweaks.</li>
+     * </ul>
+     * 
+     * @return A Bundle containing the resource Ids necessary to interact with the user.
+     */
     public Bundle getCrashResources() {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
+     * onSharedPreferenceChanged(android.content.SharedPreferences,
+     * java.lang.String)
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
             String key) {
-        if(PREF_DISABLE_ACRA.equals(key)) {
+        if (PREF_DISABLE_ACRA.equals(key)) {
             Boolean disableAcra = false;
             try {
                 disableAcra = sharedPreferences.getBoolean(key, false);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // In case of a ClassCastException
             }
-            if(disableAcra) {
+            if (disableAcra) {
                 ErrorReporter.getInstance().disable();
             } else {
                 initAcra();
