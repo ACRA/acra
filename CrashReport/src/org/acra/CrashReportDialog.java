@@ -1,3 +1,19 @@
+/*
+ *  Copyright 2010 Emmanuel Astier & Kevin Gaudin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package org.acra;
 
 import android.app.Activity;
@@ -13,8 +29,19 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This is the dialog Activity used by ACRA to get authorization from the user
+ * to send reports. Requires android:theme="@android:style/Theme.Dialog" and
+ * android:launchMode="singleInstance" in your AndroidManifest to work properly.
+ * 
+ * @author Kevin Gaudin
+ * 
+ */
 public class CrashReportDialog extends Activity {
 
+    /**
+     * Default left title icon.
+     */
     private static final int CRASH_DIALOG_LEFT_ICON = android.R.drawable.ic_dialog_alert;
     private EditText userComment = null;
 
@@ -81,17 +108,23 @@ public class CrashReportDialog extends Activity {
             @Override
             public void onClick(View v) {
                 ErrorReporter err = ErrorReporter.getInstance();
+                // Retrieve user comment
                 if (userComment != null) {
                     err.addCustomData(ErrorReporter.USER_COMMENT_KEY,
                             userComment.getText().toString());
                 }
+
+                // Start the report sending task
                 err.new ReportsSenderWorker().start();
-                
-                if(crashResources.containsKey(CrashReportingApplication.RES_DIALOG_OK_TOAST)) {
-                    Toast.makeText(getApplicationContext(), crashResources.getInt(CrashReportingApplication.RES_DIALOG_OK_TOAST),
+
+                // Optional Toast to thank the user
+                int toastId = crashResources
+                        .getInt(CrashReportingApplication.RES_DIALOG_OK_TOAST);
+                if (toastId != 0) {
+                    Toast.makeText(getApplicationContext(), toastId,
                             Toast.LENGTH_LONG).show();
-                    finish();
                 }
+                finish();
             }
 
         });
@@ -115,18 +148,17 @@ public class CrashReportDialog extends Activity {
 
         setContentView(root);
 
-        if (crashResources
-                .containsKey(CrashReportingApplication.RES_DIALOG_TITLE)) {
-            setTitle(crashResources
-                    .getInt(CrashReportingApplication.RES_DIALOG_TITLE));
+        int resTitle = crashResources
+                .getInt(CrashReportingApplication.RES_DIALOG_TITLE);
+        if (resTitle != 0) {
+            setTitle(resTitle);
         }
 
-        if (crashResources
-                .containsKey(CrashReportingApplication.RES_DIALOG_ICON)) {
-            getWindow().setFeatureDrawableResource(
-                    Window.FEATURE_LEFT_ICON,
-                    crashResources
-                            .getInt(CrashReportingApplication.RES_DIALOG_ICON));
+        int resLeftIcon = crashResources
+                .getInt(CrashReportingApplication.RES_DIALOG_ICON);
+        if (resLeftIcon != 0) {
+            getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
+                    resLeftIcon);
         } else {
             getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
                     CRASH_DIALOG_LEFT_ICON);
@@ -135,6 +167,9 @@ public class CrashReportDialog extends Activity {
         cancelNotification();
     }
 
+    /**
+     * Disable the notification in the Status Bar.
+     */
     protected void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(CrashReportingApplication.NOTIF_CRASH_ID);
