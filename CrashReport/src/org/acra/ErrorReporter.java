@@ -622,4 +622,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     void setCrashResources(Bundle crashResources) {
         mCrashResources = crashResources;
     }
+
+    public void disable() {
+        if(mDfltExceptionHandler != null) {
+            Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
+        }
+    }
 }

@@ -18,8 +18,11 @@ package org.acra;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -48,11 +51,11 @@ import android.util.Log;
  * method.
  * </p>
  */
-public abstract class CrashReportingApplication extends Application {
+public abstract class CrashReportingApplication extends Application implements OnSharedPreferenceChangeListener {
     protected static final String LOG_TAG = "ACRA";
 
-    public static final String RES_NOTIF_ICON = "RES_NOTIF_ICON"; 
-    public static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT"; 
+    public static final String RES_NOTIF_ICON = "RES_NOTIF_ICON";
+    public static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT";
     public static final String RES_NOTIF_TITLE = "RES_NOTIF_TITLE";
     public static final String RES_NOTIF_TEXT = "RES_NOTIF_TEXT";
     public static final String RES_DIALOG_ICON = "RES_DIALOG_ICON";
@@ -60,12 +63,18 @@ public abstract class CrashReportingApplication extends Application {
     public static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
     public static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
     public static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
-    
+
     /**
      * This is the identifier (value = 666) use for the status bar notification
      * issued when crashes occur.
      */
     public static final int NOTIF_CRASH_ID = 666;
+
+    /**
+     * The key of the application default SharedPreference where you can put a 'true'
+     * Boolean value to disable ACRA.
+     */
+    public static final String PREF_DISABLE_ACRA = "acra.disable";
 
     public static enum ReportingInteractionMode {
         SILENT, NOTIFICATION, TOAST;
@@ -79,13 +88,39 @@ public abstract class CrashReportingApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        boolean disableAcra = false;
+        try {
+            disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, false);
+        } catch (Exception e) {
+            // In case of a ClassCastException
+        }
+        
+        if (disableAcra) {
+            Log.d(LOG_TAG, "ACRA is disabled for " + this.getPackageName()
+                    + ".");
+            return;
+        } else {
+            initAcra();
+        }
+    }
+
+    /**
+     * 
+     */
+    private void initAcra() {
+        Log.d(LOG_TAG, "ACRA is enabled for " + this.getPackageName()
+                + ", intializing...");
         // Initialise ErrorReporter with all required data
         ErrorReporter errorReporter = ErrorReporter.getInstance();
         errorReporter.setFormUri(getFormUri());
         errorReporter
                 .setReportingInteractionMode(getReportingInteractionMode());
 
-        ErrorReporter.getInstance().setCrashResources(getCrashResources());
+        errorReporter.setCrashResources(getCrashResources());
 
         // Activate the ErrorReporter
         errorReporter.init(this);
@@ -123,17 +158,15 @@ public abstract class CrashReportingApplication extends Application {
      */
     public abstract String getFormId();
 
-
     ReportingInteractionMode getReportingInteractionMode() {
         Bundle res = getCrashResources();
         if (res != null && res.containsKey(RES_TOAST_TEXT)) {
             Log.d(LOG_TAG, "Using TOAST mode.");
             return ReportingInteractionMode.TOAST;
-        } else if(res != null
-                &&res.containsKey(RES_NOTIF_TICKER_TEXT)
+        } else if (res != null && res.containsKey(RES_NOTIF_TICKER_TEXT)
                 && res.containsKey(RES_NOTIF_TEXT)
                 && res.containsKey(RES_NOTIF_TITLE)
-                && res.containsKey(RES_DIALOG_TEXT)){
+                && res.containsKey(RES_DIALOG_TEXT)) {
             Log.d(LOG_TAG, "Using NOTIFICATION mode.");
             return ReportingInteractionMode.NOTIFICATION;
         } else {
@@ -145,5 +178,26 @@ public abstract class CrashReportingApplication extends Application {
     public Bundle getCrashResources() {
         return null;
     }
-    
+
+    /* (non-Javadoc)
+     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
+     */
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+            String key) {
+        if(PREF_DISABLE_ACRA.equals(key)) {
+            Boolean disableAcra = false;
+            try {
+                disableAcra = sharedPreferences.getBoolean(key, false);
+            } catch(Exception e) {
+                // In case of a ClassCastException
+            }
+            if(disableAcra) {
+                ErrorReporter.getInstance().disable();
+            } else {
+                initAcra();
+            }
+        }
+    }
+
 }
