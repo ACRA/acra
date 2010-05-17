@@ -83,6 +83,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @author Kevin Gaudin
      */
     final class ReportsSenderWorker extends Thread {
+        private String mReportFileName = null;
+
         /*
          * (non-Javadoc)
          * 
@@ -90,7 +92,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          */
         @Override
         public void run() {
-            checkAndSendReports(mContext);
+            checkAndSendReports(mContext, mReportFileName);
+        }
+
+        void setCommentReportFileName(String reportFileName) {
+            mReportFileName = reportFileName;
         }
     }
 
@@ -136,6 +142,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // This key is used in the mCustomParameters Map to store user comment in
     // NOTIFICATION interaction mode.
     static final String USER_COMMENT_KEY = "user.comment";
+
+    static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending
@@ -412,15 +420,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         printWriter.close();
 
         // Always write the report file
-        saveCrashReportFile();
+        String reportFileName = saveCrashReportFile();
 
         if (mReportingInteractionMode == ReportingInteractionMode.SILENT
                 || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
             // Send reports now
-            checkAndSendReports(mContext);
+            checkAndSendReports(mContext, null);
         } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             // Send reports when user accepts
-            notifySendReport();
+            notifySendReport(reportFileName);
         }
 
     }
@@ -432,7 +440,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @see CrashReportingApplication#getCrashResources()
      */
-    void notifySendReport() {
+    void notifySendReport(String reportFileName) {
         // This notification can't be set to AUTO_CANCEL because after a crash,
         // clicking on it restarts the application and this triggers a check
         // for pending reports which issues the notification back.
@@ -462,6 +470,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         Intent notificationIntent = new Intent(mContext,
                 CrashReportDialog.class);
+        notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
         PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
                 notificationIntent, 0);
 
@@ -502,20 +511,22 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * When a report can't be sent, it is saved here in a file in the root of
      * the application private directory.
      */
-    private void saveCrashReportFile() {
+    private String saveCrashReportFile() {
         try {
             Log.d(LOG_TAG, "Writing crash report file.");
             long timestamp = System.currentTimeMillis();
-            String FileName = "stack-" + timestamp + ".stacktrace";
-            FileOutputStream trace = mContext.openFileOutput(FileName,
+            String fileName = "stack-" + timestamp + ".stacktrace";
+            FileOutputStream trace = mContext.openFileOutput(fileName,
                     Context.MODE_PRIVATE);
             mCrashProperties.store(trace, "");
             trace.flush();
             trace.close();
+            return fileName;
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occured while writing the report file...",
                     e);
         }
+        return null;
     }
 
     /**
@@ -551,7 +562,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param context
      *            The application context.
      */
-    void checkAndSendReports(Context context) {
+    void checkAndSendReports(Context context, String userCommentReportFileName) {
         try {
 
             String[] reportFilesList = getCrashReportFilesList();
@@ -561,17 +572,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 Properties previousCrashReport = new Properties();
                 // send only a few reports to avoid ANR
                 int curIndex = 0;
-                for (String curString : sortedFiles) {
+                boolean commentedReportFound = false;
+                for (String curFileName : sortedFiles) {
                     if (curIndex < MAX_SEND_REPORTS) {
                         FileInputStream input = context
-                                .openFileInput(curString);
+                                .openFileInput(curFileName);
                         previousCrashReport.load(input);
                         input.close();
                         // Insert the optional user comment written in
                         // CrashReportDialog, only on the latest report file
-                        if (curIndex == sortedFiles.size() - 1
-                                && mCustomParameters
-                                        .containsKey(USER_COMMENT_KEY)) {
+                        if (!commentedReportFound
+                                && (curFileName
+                                        .equals(userCommentReportFileName) || (curIndex == sortedFiles
+                                        .size() - 1 && mCustomParameters
+                                        .containsKey(USER_COMMENT_KEY)))) {
                             String custom = previousCrashReport
                                     .getProperty(CUSTOM_DATA_KEY);
                             if (custom == null) {
@@ -589,7 +603,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
                         // DELETE FILES !!!!
                         File curFile = new File(context.getFilesDir(),
-                                curString);
+                                curFileName);
                         curFile.delete();
                     }
                     curIndex++;
@@ -633,7 +647,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 }
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-                ErrorReporter.getInstance().notifySendReport();
+                ErrorReporter.getInstance().notifySendReport(null);
             }
         }
 

@@ -16,6 +16,8 @@
 
 package org.acra;
 
+import org.acra.ErrorReporter.ReportsSenderWorker;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.os.Bundle;
@@ -44,7 +46,7 @@ public class CrashReportDialog extends Activity {
      */
     private static final int CRASH_DIALOG_LEFT_ICON = android.R.drawable.ic_dialog_alert;
     private EditText userComment = null;
-
+    String mReportFileName = null;
     /*
      * (non-Javadoc)
      * 
@@ -53,6 +55,9 @@ public class CrashReportDialog extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mReportFileName = getIntent().getStringExtra(ErrorReporter.EXTRA_REPORT_FILE_NAME);
+        
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
         final Bundle crashResources = ((CrashReportingApplication) getApplication())
                 .getCrashResources();
@@ -115,7 +120,9 @@ public class CrashReportDialog extends Activity {
                 }
 
                 // Start the report sending task
-                err.new ReportsSenderWorker().start();
+                ReportsSenderWorker worker = err.new ReportsSenderWorker();
+                worker.setCommentReportFileName(mReportFileName);
+                worker.start();
 
                 // Optional Toast to thank the user
                 int toastId = crashResources
