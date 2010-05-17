@@ -62,12 +62,26 @@ import android.widget.Toast;
  * </p>
  * <p>
  * When a crash occurs, it collects data of the crash context (device, system,
- * stack trace...) and immediately tries to send it. If an error occurs while
- * sending a report, this report is stored in the application private file
- * system for later send attempt using {@link #checkAndSendReports(Context)}.
+ * stack trace...) and writes a report file in the application private
+ * directory. This report file is then sent :
+ * <ul>
+ * <li>immediately if {@link #mReportingInteractionMode} is set to
+ * {@link ReportingInteractionMode#SILENT} or
+ * {@link ReportingInteractionMode#TOAST},</li>
+ * <li>on application start if in the previous case the transmission could not
+ * technically be made,</li>
+ * <li>when the user accepts to send it if {@link #mReportingInteractionMode} is
+ * set to {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </p>
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
+    private static final String LOG_TAG = CrashReportingApplication.LOG_TAG;
+
+    /**
+     * Checks and send reports on a separate Thread.
+     * 
+     * @author Kevin Gaudin
+     */
     final class ReportsSenderWorker extends Thread {
         /*
          * (non-Javadoc)
@@ -79,8 +93,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             checkAndSendReports(mContext);
         }
     }
-
-    private static final String LOG_TAG = CrashReportingApplication.LOG_TAG;
 
     /**
      * This is the number of previously stored reports that we send in
@@ -115,17 +127,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String CUSTOM_DATA_KEY = "entry.20.single";
     private static final String STACK_TRACE_KEY = "entry.21.single";
 
-    static final String USER_COMMENT_KEY = "user.comment";
-
     // This is where we collect crash data
     private Properties mCrashProperties = new Properties();
 
     // Some custom parameters can be added by the application developer. These
     // parameters are stored here.
     Map<String, String> mCustomParameters = new HashMap<String, String>();
+    // This key is used in the mCustomParameters Map to store user comment in
+    // NOTIFICATION interaction mode.
+    static final String USER_COMMENT_KEY = "user.comment";
 
-    // A refernce to the system's previous default UncaughtExceptionHandler
-    // kept in order to execute the defaut exception handling after sending
+    // A reference to the system's previous default UncaughtExceptionHandler
+    // kept in order to execute the default exception handling after sending
     // the report.
     private Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
@@ -135,8 +148,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // The application context
     private Context mContext;
 
+    // User interaction mode defined by the application developer.
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
+    // Bundle containing resources to be used in UI elements.
     private Bundle mCrashResources = new Bundle();
 
     // The Url we have to post the reports to.
@@ -304,7 +319,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
-        // Generate crash report
+        // Generate and send crash report
         handleException(e);
 
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
@@ -385,6 +400,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
         e.printStackTrace(printWriter);
+        Log.getStackTraceString(e);
         // If the exception was thrown in a background thread inside
         // AsyncTask, then the actual exception can be found with getCause
         Throwable cause = e.getCause();
@@ -400,16 +416,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         if (mReportingInteractionMode == ReportingInteractionMode.SILENT
                 || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+            // Send reports now
             checkAndSendReports(mContext);
         } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
+            // Send reports when user accepts
             notifySendReport();
         }
 
     }
 
     /**
-     * Send a status bar notification. The action triggered when the notification is selected
-     * is to start the {@link CrashReportDialog} Activity. Notification details are customizable,
+     * Send a status bar notification. The action triggered when the
+     * notification is selected is to start the {@link CrashReportDialog}
+     * Activity.
+     * 
      * @see CrashReportingApplication#getCrashResources()
      */
     void notifySendReport() {
@@ -444,7 +464,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 CrashReportDialog.class);
         PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
                 notificationIntent, 0);
-        
+
         notification.setLatestEventInfo(mContext, contentTitle, contentText,
                 contentIntent);
         notificationManager.notify(CrashReportingApplication.NOTIF_CRASH_ID,
@@ -584,12 +604,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /**
+     * Set the wanted user interaction mode for sending reports.
+     * 
+     * @param reportingInteractionMode
+     */
     void setReportingInteractionMode(
             ReportingInteractionMode reportingInteractionMode) {
         mReportingInteractionMode = reportingInteractionMode;
     }
 
-    void checkReportsOnApplicationStart() {
+    /**
+     * This method looks for pending reports and does the action required
+     * depending on the interaction mode set.
+     */
+    public void checkReportsOnApplicationStart() {
         String[] filesList = getCrashReportFilesList();
         if (filesList != null && filesList.length > 0) {
             if (mReportingInteractionMode == ReportingInteractionMode.SILENT
@@ -610,6 +639,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     }
 
+    /**
+     * Delete all report files stored.
+     */
     public void deletePendingReports() {
         String[] filesList = getCrashReportFilesList();
         if (filesList != null) {
@@ -619,12 +651,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /**
+     * Provide the UI resources necessary for user interaction.
+     * 
+     * @param crashResources
+     */
     void setCrashResources(Bundle crashResources) {
         mCrashResources = crashResources;
     }
 
+    /**
+     * Disable ACRA : sets this Thread's {@link UncaughtExceptionHandler} back
+     * to the system default.
+     */
     public void disable() {
-        if(mDfltExceptionHandler != null) {
+        if (mDfltExceptionHandler != null) {
             Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
         }
     }
