@@ -94,7 +94,7 @@ public class CrashReportDialog extends Activity {
 
             userComment = new EditText(this);
 
-            userComment.setLines(3);
+            userComment.setLines(2);
             // userComment.setText("User comment");
             root.addView(userComment, new LinearLayout.LayoutParams(
                     LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
