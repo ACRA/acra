@@ -365,16 +365,27 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * Try to send a report, if an error occurs stores a report file for a later
-     * attempt.
+     * attempt. You can set the {@link ReportingInteractionMode} for this
+     * specific report. Use {@link #handleException(Throwable)} to use the
+     * Application default interaction mode.
      * 
      * @param e
-     *            The exception to be sent.
+     *            The Throwable to be reported. If null the report will contain
+     *            a new Exception("Report requested by developer").
+     * @param reportingInteractionMode
+     *            The desired interaction mode.
      */
-    public void handleException(Throwable e) {
+    public void handleException(Throwable e,
+            ReportingInteractionMode reportingInteractionMode) {
+        if (reportingInteractionMode == null) {
+            reportingInteractionMode = mReportingInteractionMode;
+        }
+
         if (e == null) {
             e = new Exception("Report requested by developer");
         }
-        if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+
+        if (reportingInteractionMode == ReportingInteractionMode.TOAST) {
             new Thread() {
 
                 /*
@@ -422,15 +433,26 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Always write the report file
         String reportFileName = saveCrashReportFile();
 
-        if (mReportingInteractionMode == ReportingInteractionMode.SILENT
-                || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+        if (reportingInteractionMode == ReportingInteractionMode.SILENT
+                || reportingInteractionMode == ReportingInteractionMode.TOAST) {
             // Send reports now
             checkAndSendReports(mContext, null);
-        } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
+        } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             // Send reports when user accepts
             notifySendReport(reportFileName);
         }
 
+    }
+
+    /**
+     * Send a report for this Throwable.
+     * 
+     * @param e
+     *            The Throwable to be reported. If null the report will contain
+     *            a new Exception("Report requested by developer").
+     */
+    public void handleException(Throwable e) {
+        handleException(e, mReportingInteractionMode);
     }
 
     /**
