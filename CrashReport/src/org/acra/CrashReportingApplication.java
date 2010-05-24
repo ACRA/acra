@@ -194,7 +194,7 @@ public abstract class CrashReportingApplication extends Application implements
         errorReporter.setCrashResources(getCrashResources());
 
         // Activate the ErrorReporter
-        errorReporter.init(this);
+        errorReporter.init(getApplicationContext());
 
         // Check for pending reports
 
