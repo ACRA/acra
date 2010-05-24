@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.acra.CrashReportingApplication.ReportingInteractionMode;
 
 import android.app.Activity;
 import android.app.Notification;
