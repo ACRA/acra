@@ -282,7 +282,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
                 // Application Version
-                mCrashProperties.put(VERSION_NAME_KEY, pi.versionName);
+                mCrashProperties.put(VERSION_NAME_KEY, pi.versionName != null ? pi.versionName : "not set");
             } else {
                 // Could not retrieve package info...
                 mCrashProperties.put(PACKAGE_NAME_KEY, "Package info unavailable");
