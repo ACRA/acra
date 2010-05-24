@@ -283,13 +283,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (pi != null) {
                 // Application Version
                 mCrashProperties.put(VERSION_NAME_KEY, pi.versionName);
-                // Application Package name
-                mCrashProperties.put(PACKAGE_NAME_KEY, pi.packageName);
             } else {
                 // Could not retrieve package info...
-                mCrashProperties.put(VERSION_NAME_KEY, "app info unavailable");
-                mCrashProperties.put(PACKAGE_NAME_KEY, "app info unavailable");
+                mCrashProperties.put(PACKAGE_NAME_KEY, "Package info unavailable");
             }
+            // Application Package name
+            mCrashProperties.put(PACKAGE_NAME_KEY, context.getPackageName());
             // Device model
             mCrashProperties.put(PHONE_MODEL_KEY, android.os.Build.MODEL);
             // Android version
