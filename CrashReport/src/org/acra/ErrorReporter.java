@@ -379,7 +379,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param reportingInteractionMode
      *            The desired interaction mode.
      */
-    public void handleException(Throwable e,
+    void handleException(Throwable e,
             ReportingInteractionMode reportingInteractionMode) {
         if (reportingInteractionMode == null) {
             reportingInteractionMode = mReportingInteractionMode;
@@ -457,6 +457,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     public void handleException(Throwable e) {
         handleException(e, mReportingInteractionMode);
+    }
+    
+    public void handleSilentException(Throwable e) {
+        handleException(e, ReportingInteractionMode.SILENT);
     }
 
     /**
