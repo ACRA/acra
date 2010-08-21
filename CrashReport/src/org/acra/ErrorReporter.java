@@ -687,7 +687,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 }
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-                ErrorReporter.getInstance().notifySendReport(null);
+                ErrorReporter.getInstance().notifySendReport(filesList[filesList.length - 1]);
             }
         }
 
