@@ -57,7 +57,9 @@ public class CrashReportDialog extends Activity {
         super.onCreate(savedInstanceState);
         
         mReportFileName = getIntent().getStringExtra(ErrorReporter.EXTRA_REPORT_FILE_NAME);
-        
+        if(mReportFileName == null) {
+            finish();
+        }
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
         final Bundle crashResources = ((CrashReportingApplication) getApplication())
                 .getCrashResources();

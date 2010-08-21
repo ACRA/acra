@@ -131,6 +131,13 @@ public abstract class CrashReportingApplication extends Application implements
      */
     public static final String PREF_DISABLE_ACRA = "acra.disable";
 
+    /**
+     * Alternatively, you can use this key if you prefer your users to have the
+     * checkbox ticked to enable crash reports. If both acra.disable and
+     * acra.enable are set, the value of acra.disable takes over the other.
+     */
+    public static final String PREF_ENABLE_ACRA = "acra.enable";
+
     /*
      * (non-Javadoc)
      * 
@@ -140,15 +147,16 @@ public abstract class CrashReportingApplication extends Application implements
     public void onCreate() {
         super.onCreate();
 
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
+        SharedPreferences prefs = getACRASharedPreferences();
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         // If the application default shared preferences contains true for the
-        // key "acra.disable", do not activate ACRA.
+        // key "acra.disable", do not activate ACRA. Also checks the alternative
+        // opposite setting "acra.enable" if "acra.disable" is not found.
         boolean disableAcra = false;
         try {
-            disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, false);
+            disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA,
+                    !prefs.getBoolean(PREF_ENABLE_ACRA, true));
         } catch (Exception e) {
             // In case of a ClassCastException
         }
@@ -252,7 +260,8 @@ public abstract class CrashReportingApplication extends Application implements
      * {@link #RES_DIALOG_OK_TOAST} for further UI tweaks.</li>
      * </ul>
      * 
-     * @return A Bundle containing the resource Ids necessary to interact with the user.
+     * @return A Bundle containing the resource Ids necessary to interact with
+     *         the user.
      */
     public Bundle getCrashResources() {
         return null;
@@ -283,4 +292,14 @@ public abstract class CrashReportingApplication extends Application implements
         }
     }
 
+    /**
+     * Override this method if you need to store "acra.disable" or "acra.enable"
+     * in a different SharedPrefence than the application's default.
+     * 
+     * @return The Shared Preferences where ACRA will check the value of the
+     *         setting which disables/enables it's action.
+     */
+    public SharedPreferences getACRASharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(this);
+    }
 }

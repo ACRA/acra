@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -141,6 +140,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // This key is used in the mCustomParameters Map to store user comment in
     // NOTIFICATION interaction mode.
     static final String USER_COMMENT_KEY = "user.comment";
+    // This key is used to store the silent state of a report sent by
+    // handleSilentException().
+    static final String IS_SILENT_KEY = "silent";
+    static final String SILENT_PREFIX = IS_SILENT_KEY + "-";
 
     static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
@@ -281,10 +284,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
                 // Application Version
-                mCrashProperties.put(VERSION_NAME_KEY, pi.versionName != null ? pi.versionName : "not set");
+                mCrashProperties.put(VERSION_NAME_KEY,
+                        pi.versionName != null ? pi.versionName : "not set");
             } else {
                 // Could not retrieve package info...
-                mCrashProperties.put(PACKAGE_NAME_KEY, "Package info unavailable");
+                mCrashProperties.put(PACKAGE_NAME_KEY,
+                        "Package info unavailable");
             }
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME_KEY, context.getPackageName());
@@ -400,12 +405,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    Toast
-                            .makeText(
-                                    mContext,
-                                    mCrashResources
-                                            .getInt(CrashReportingApplication.RES_TOAST_TEXT),
-                                    Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            mContext,
+                            mCrashResources
+                                    .getInt(CrashReportingApplication.RES_TOAST_TEXT),
+                            Toast.LENGTH_LONG).show();
                     Looper.loop();
                 }
 
@@ -458,8 +462,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void handleException(Throwable e) {
         handleException(e, mReportingInteractionMode);
     }
-    
+
     public void handleSilentException(Throwable e) {
+        // Mark this report as silent.
+        mCrashProperties.put(IS_SILENT_KEY, "true");
         handleException(e, ReportingInteractionMode.SILENT);
     }
 
@@ -528,6 +534,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static void sendCrashReport(Context context, Properties errorContent)
             throws UnsupportedEncodingException, IOException,
             KeyManagementException, NoSuchAlgorithmException {
+        // values observed in the GoogleDocs original html form
         errorContent.put("pageNumber", "0");
         errorContent.put("backupCache", "");
         errorContent.put("submit", "Envoyer");
@@ -545,7 +552,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         try {
             Log.d(LOG_TAG, "Writing crash report file.");
             long timestamp = System.currentTimeMillis();
-            String fileName = "stack-" + timestamp + ".stacktrace";
+            String isSilent = mCrashProperties.getProperty(IS_SILENT_KEY);
+            String fileName = (isSilent != null ? SILENT_PREFIX : "")
+                    + "stack-" + timestamp + ".stacktrace";
             FileOutputStream trace = mContext.openFileOutput(fileName,
                     Context.MODE_PRIVATE);
             mCrashProperties.store(trace, "");
@@ -665,15 +674,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void checkReportsOnApplicationStart() {
         String[] filesList = getCrashReportFilesList();
         if (filesList != null && filesList.length > 0) {
+            boolean onlySilentReports = containsOnlySilentReports(filesList);
             if (mReportingInteractionMode == ReportingInteractionMode.SILENT
-                    || mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+                    || mReportingInteractionMode == ReportingInteractionMode.TOAST
+                    || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentReports)) {
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
-                    Toast
-                            .makeText(
-                                    mContext,
-                                    mCrashResources
-                                            .getInt(CrashReportingApplication.RES_TOAST_TEXT),
-                                    Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            mContext,
+                            mCrashResources
+                                    .getInt(CrashReportingApplication.RES_TOAST_TEXT),
+                            Toast.LENGTH_LONG).show();
                 }
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
@@ -712,5 +722,24 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (mDfltExceptionHandler != null) {
             Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
         }
+    }
+
+    /**
+     * Checks if the list of pending reports contains only silently sent
+     * reports.
+     * 
+     * @param reports
+     *            the list of reports provided by
+     *            {@link #getCrashReportFilesList()}
+     * @return True if there only silent reports. False if there is at least one
+     *         nont-silent report.
+     */
+    public boolean containsOnlySilentReports(String[] reportFileNames) {
+        for (String reportFileName : reportFileNames) {
+            if (!reportFileName.startsWith(SILENT_PREFIX)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
