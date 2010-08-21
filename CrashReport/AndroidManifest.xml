@@ -16,13 +16,14 @@
 			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance"
 			android:excludeFromRecents="true" android:finishOnTaskLaunch="true" />
 
-		<activity android:name="CrashTestActivity" android:label="@string/app_name"
-			android:theme="@android:style/Theme.Dialog">
+		<activity android:name="CrashTestLauncher" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"></action>
 				<category android:name="android.intent.category.LAUNCHER"></category>
 			</intent-filter>
 		</activity>
+		
+		<activity android:name="CrashTestActivity" />
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 
