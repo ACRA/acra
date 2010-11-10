@@ -61,8 +61,7 @@ public class CrashReportDialog extends Activity {
             finish();
         }
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
-        final Bundle crashResources = ((CrashReportingApplication) getApplication())
-                .getCrashResources();
+        final Bundle crashResources = ACRA.getCrashResources();
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -77,14 +76,14 @@ public class CrashReportDialog extends Activity {
         TextView text = new TextView(this);
 
         text.setText(getText(crashResources
-                .getInt(CrashReportingApplication.RES_DIALOG_TEXT)));
+                .getInt(ACRA.RES_DIALOG_TEXT)));
         scroll
                 .addView(text, LayoutParams.FILL_PARENT,
                         LayoutParams.FILL_PARENT);
 
         // Add an optional prompt for user comments
         int commentPromptId = crashResources
-                .getInt(CrashReportingApplication.RES_DIALOG_COMMENT_PROMPT);
+                .getInt(ACRA.RES_DIALOG_COMMENT_PROMPT);
         if (commentPromptId != 0) {
             TextView label = new TextView(this);
             label.setText(getText(commentPromptId));
@@ -128,7 +127,7 @@ public class CrashReportDialog extends Activity {
 
                 // Optional Toast to thank the user
                 int toastId = crashResources
-                        .getInt(CrashReportingApplication.RES_DIALOG_OK_TOAST);
+                        .getInt(ACRA.RES_DIALOG_OK_TOAST);
                 if (toastId != 0) {
                     Toast.makeText(getApplicationContext(), toastId,
                             Toast.LENGTH_LONG).show();
@@ -158,13 +157,13 @@ public class CrashReportDialog extends Activity {
         setContentView(root);
 
         int resTitle = crashResources
-                .getInt(CrashReportingApplication.RES_DIALOG_TITLE);
+                .getInt(ACRA.RES_DIALOG_TITLE);
         if (resTitle != 0) {
             setTitle(resTitle);
         }
 
         int resLeftIcon = crashResources
-                .getInt(CrashReportingApplication.RES_DIALOG_ICON);
+                .getInt(ACRA.RES_DIALOG_ICON);
         if (resLeftIcon != 0) {
             getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
                     resLeftIcon);
@@ -181,7 +180,7 @@ public class CrashReportDialog extends Activity {
      */
     protected void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(CrashReportingApplication.NOTIF_CRASH_ID);
+        notificationManager.cancel(ACRA.NOTIF_CRASH_ID);
     }
 
 }

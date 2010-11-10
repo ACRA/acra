@@ -28,6 +28,6 @@ package org.acra;
  * ok to send a report</li>
  * </ul>
  */
-enum ReportingInteractionMode {
+public enum ReportingInteractionMode {
     SILENT, NOTIFICATION, TOAST;
 }

@@ -43,7 +43,7 @@ import android.util.Log;
  * Helper class to send POST data over HTTP/HTTPS.
  */
 class HttpUtils {
-    private static final String LOG_TAG = CrashReportingApplication.LOG_TAG;
+    private static final String LOG_TAG = ACRA.LOG_TAG;
 
     private static final TrustManager[] TRUST_MANAGER = { new NaiveTrustManager() };
 

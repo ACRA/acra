@@ -51,6 +51,7 @@ import android.util.Log;
  * method.
  * </p>
  */
+@Deprecated
 public abstract class CrashReportingApplication extends Application implements
         OnSharedPreferenceChangeListener {
     protected static final String LOG_TAG = "ACRA";

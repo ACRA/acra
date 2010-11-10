@@ -73,7 +73,7 @@ import android.widget.Toast;
  * </p>
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
-    private static final String LOG_TAG = CrashReportingApplication.LOG_TAG;
+    private static final String LOG_TAG = ACRA.LOG_TAG;
 
     /**
      * Checks and send reports on a separate Thread.
@@ -408,7 +408,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     Toast.makeText(
                             mContext,
                             mCrashResources
-                                    .getInt(CrashReportingApplication.RES_TOAST_TEXT),
+                                    .getInt(ACRA.RES_TOAST_TEXT),
                             Toast.LENGTH_LONG).show();
                     Looper.loop();
                 }
@@ -488,21 +488,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Default notification icon is the warning symbol
         int icon = android.R.drawable.stat_notify_error;
         if (mCrashResources
-                .containsKey(CrashReportingApplication.RES_NOTIF_ICON)) {
+                .containsKey(ACRA.RES_NOTIF_ICON)) {
             // Use a developer defined icon if available
             icon = mCrashResources
-                    .getInt(CrashReportingApplication.RES_NOTIF_ICON);
+                    .getInt(ACRA.RES_NOTIF_ICON);
         }
 
         CharSequence tickerText = mContext.getText(mCrashResources
-                .getInt(CrashReportingApplication.RES_NOTIF_TICKER_TEXT));
+                .getInt(ACRA.RES_NOTIF_TICKER_TEXT));
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
 
         CharSequence contentTitle = mContext.getText(mCrashResources
-                .getInt(CrashReportingApplication.RES_NOTIF_TITLE));
+                .getInt(ACRA.RES_NOTIF_TITLE));
         CharSequence contentText = mContext.getText(mCrashResources
-                .getInt(CrashReportingApplication.RES_NOTIF_TEXT));
+                .getInt(ACRA.RES_NOTIF_TEXT));
 
         Intent notificationIntent = new Intent(mContext,
                 CrashReportDialog.class);
@@ -512,7 +512,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         notification.setLatestEventInfo(mContext, contentTitle, contentText,
                 contentIntent);
-        notificationManager.notify(CrashReportingApplication.NOTIF_CRASH_ID,
+        notificationManager.notify(ACRA.NOTIF_CRASH_ID,
                 notification);
     }
 
@@ -682,7 +682,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     Toast.makeText(
                             mContext,
                             mCrashResources
-                                    .getInt(CrashReportingApplication.RES_TOAST_TEXT),
+                                    .getInt(ACRA.RES_TOAST_TEXT),
                             Toast.LENGTH_LONG).show();
                 }
                 new ReportsSenderWorker().start();
