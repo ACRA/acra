@@ -53,7 +53,7 @@ public @interface ReportsCrashes {
     /**
      * Resource id for the icon in the status bar notification.
      */
-    int resNotifIcon() default 0;
+    int resNotifIcon() default android.R.drawable.stat_notify_error;
     /**
      * Resource id for the text in the status bar notification.
      */ 
