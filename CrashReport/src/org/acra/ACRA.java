@@ -124,7 +124,7 @@ public class ACRA {
                             try {
                                 initAcra();
                             } catch (ACRAConfigurationException e) {
-                                Log.e(LOG_TAG, "Error : ", e);
+                                Log.w(LOG_TAG, "Error : ", e);
                             }
                         }
                     }
@@ -151,7 +151,7 @@ public class ACRA {
                 try {
                     initAcra();
                 } catch (ACRAConfigurationException e) {
-                    Log.e(LOG_TAG, "Error : ", e);
+                    Log.w(LOG_TAG, "Error : ", e);
                 }
             }
 
@@ -218,7 +218,7 @@ public class ACRA {
     private static Uri getFormUri() {
 
         return mReportsCrashes.formUri().equals("") ? Uri.parse("http://spreadsheets.google.com/formResponse?formkey="
-                + mReportsCrashes.value() + "&amp;ifq") : Uri.parse(mReportsCrashes.formUri());
+                + mReportsCrashes.formId() + "&amp;ifq") : Uri.parse(mReportsCrashes.formUri());
     }
 
     /**

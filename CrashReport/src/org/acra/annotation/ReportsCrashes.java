@@ -13,7 +13,7 @@ import org.acra.ReportingInteractionMode;
 @Target(ElementType.TYPE)
 public @interface ReportsCrashes {
     // ACRA FormId
-    String value();
+    String formId();
     String formUri() default "";
     ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
     int resDialogCommentPrompt() default 0;
