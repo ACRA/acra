@@ -113,7 +113,8 @@ public class ACRA {
                     if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
                         Boolean disableAcra = false;
                         try {
-                            disableAcra = sharedPreferences.getBoolean(PREF_DISABLE_ACRA, !sharedPreferences.getBoolean(PREF_ENABLE_ACRA, true));
+                            disableAcra = sharedPreferences.getBoolean(PREF_DISABLE_ACRA,
+                                    !sharedPreferences.getBoolean(PREF_ENABLE_ACRA, true));
                         } catch (Exception e) {
                             // In case of a ClassCastException
                         }
@@ -159,7 +160,8 @@ public class ACRA {
 
     /**
      * Activate ACRA.
-     * @throws ACRAConfigurationException 
+     * 
+     * @throws ACRAConfigurationException
      */
     private static void initAcra() throws ACRAConfigurationException {
         initCrashResources();
@@ -179,30 +181,36 @@ public class ACRA {
         errorReporter.checkReportsOnApplicationStart();
     }
 
-
     static void initCrashResources() throws ACRAConfigurationException {
         mCrashResources = new Bundle();
         switch (mReportsCrashes.mode()) {
         case TOAST:
-            if(mReportsCrashes.resToastText() == 0) {
-                throw new ACRAConfigurationException("TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
+            if (mReportsCrashes.resToastText() == 0) {
+                throw new ACRAConfigurationException(
+                        "TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
             }
             mCrashResources.putInt(RES_TOAST_TEXT, mReportsCrashes.resToastText());
             break;
         case NOTIFICATION:
-            mCrashResources.putInt(RES_NOTIF_TICKER_TEXT, mReportsCrashes.resNotifTickerText());
-            mCrashResources.putInt(RES_NOTIF_TITLE, mReportsCrashes.resNotifTitle());
-            mCrashResources.putInt(RES_NOTIF_TEXT, mReportsCrashes.resNotifText());
-            mCrashResources.putInt(RES_NOTIF_ICON, mReportsCrashes.resNotifIcon());
-            mCrashResources.putInt(RES_DIALOG_ICON, mReportsCrashes.resDialogIcon());
-            mCrashResources.putInt(RES_DIALOG_TITLE, mReportsCrashes.resDialogTitle());
-            mCrashResources.putInt(RES_DIALOG_TEXT, mReportsCrashes.resDialogText());
-            mCrashResources.putInt(RES_DIALOG_COMMENT_PROMPT, mReportsCrashes.resDialogCommentPrompt());
-            mCrashResources.putInt(RES_DIALOG_OK_TOAST, mReportsCrashes.resDialogOkToast());
+            if (mReportsCrashes.resNotifTickerText() != 0 && mReportsCrashes.resNotifTitle() != 0
+                    && mReportsCrashes.resNotifText() != 0 && mReportsCrashes.resDialogText() != 0) {
+                mCrashResources.putInt(RES_NOTIF_TICKER_TEXT, mReportsCrashes.resNotifTickerText());
+                mCrashResources.putInt(RES_NOTIF_TITLE, mReportsCrashes.resNotifTitle());
+                mCrashResources.putInt(RES_NOTIF_TEXT, mReportsCrashes.resNotifText());
+                mCrashResources.putInt(RES_DIALOG_TEXT, mReportsCrashes.resDialogText());
+                mCrashResources.putInt(RES_NOTIF_ICON, mReportsCrashes.resNotifIcon());
+                mCrashResources.putInt(RES_DIALOG_ICON, mReportsCrashes.resDialogIcon());
+                mCrashResources.putInt(RES_DIALOG_TITLE, mReportsCrashes.resDialogTitle());
+                mCrashResources.putInt(RES_DIALOG_COMMENT_PROMPT, mReportsCrashes.resDialogCommentPrompt());
+                mCrashResources.putInt(RES_DIALOG_OK_TOAST, mReportsCrashes.resDialogOkToast());
+            } else {
+                throw new ACRAConfigurationException(
+                        "NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText, resDialogText parameters in your application @ReportsCrashes() annotation.");
+            }
             break;
         }
     }
-    
+
     static Bundle getCrashResources() {
         return mCrashResources;
     }
