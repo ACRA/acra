@@ -12,10 +12,26 @@ import org.acra.ReportingInteractionMode;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ReportsCrashes {
-    // ACRA FormId
+    /**
+     * The id of the Google Doc form.
+     * @return
+     */
     String formId();
+    /**
+     * The Uri of your own server side script that will receive reports.
+     * @return
+     */
     String formUri() default "";
+    /**
+     * The interaction mode you want to implement.
+     * @return
+     */
     ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
+    
+    /**
+     * Resource id for the user comment input label in the crash dialog. If not
+     * provided, disables the input field.
+     */
     int resDialogCommentPrompt() default 0;
     /**
      * Resource id for the icon in the crash dialog.
