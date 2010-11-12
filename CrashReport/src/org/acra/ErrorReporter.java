@@ -728,7 +728,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Checks if the list of pending reports contains only silently sent
      * reports.
      * 
-     * @param reports
+     * @param reportFileNames
      *            the list of reports provided by
      *            {@link #getCrashReportFilesList()}
      * @return True if there only silent reports. False if there is at least one

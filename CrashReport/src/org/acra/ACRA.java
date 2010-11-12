@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2010 Emmanuel Astier & Kevin Gaudin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
@@ -10,78 +25,68 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+/**
+ * Use this class to initialize the crash reporting feature using
+ * {@link #init(Application)} as soon as possible in your {@link Application}
+ * subclass. Configuration items must have been set by using
+ * {@link ReportsCrashes} above the declaration of your {@link Application}
+ * subclass.
+ * 
+ * @author Kevin Gaudin
+ * 
+ */
 public class ACRA {
-    protected static final String LOG_TAG = "ACRA";
+    protected static final String LOG_TAG = ACRA.class.getSimpleName();
 
     /**
      * Bundle key for the icon in the status bar notification.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_NOTIF_ICON = "RES_NOTIF_ICON";
+    static final String RES_NOTIF_ICON = "RES_NOTIF_ICON";
     /**
      * Bundle key for the ticker text in the status bar notification.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT";
+    static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT";
     /**
      * Bundle key for the title in the status bar notification.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_NOTIF_TITLE = "RES_NOTIF_TITLE";
+    static final String RES_NOTIF_TITLE = "RES_NOTIF_TITLE";
     /**
      * Bundle key for the text in the status bar notification.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_NOTIF_TEXT = "RES_NOTIF_TEXT";
+    static final String RES_NOTIF_TEXT = "RES_NOTIF_TEXT";
     /**
      * Bundle key for the icon in the crash dialog.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_DIALOG_ICON = "RES_DIALOG_ICON";
+    static final String RES_DIALOG_ICON = "RES_DIALOG_ICON";
     /**
      * Bundle key for the title in the crash dialog.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_DIALOG_TITLE = "RES_DIALOG_TITLE";
+    static final String RES_DIALOG_TITLE = "RES_DIALOG_TITLE";
     /**
      * Bundle key for the text in the crash dialog.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
+    static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
     /**
      * Bundle key for the user comment input label in the crash dialog. If not
      * provided, disables the input field.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
+    static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
     /**
      * Bundle key for the Toast text triggered when the user accepts to send a
      * report in the crash dialog.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_DIALOG_OK_TOAST = "RES_DIALOG_OK_TOAST";
+    static final String RES_DIALOG_OK_TOAST = "RES_DIALOG_OK_TOAST";
     /**
      * Bundle key for the Toast text triggered when the application crashes if
      * the notification+dialog mode is not used.
-     * 
-     * @see #getCrashResources()
      */
-    public static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
+    static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
 
     /**
      * This is the identifier (value = 666) use for the status bar notification
      * issued when crashes occur.
      */
-    public static final int NOTIF_CRASH_ID = 666;
+    static final int NOTIF_CRASH_ID = 666;
 
     /**
      * The key of the application default SharedPreference where you can put a
@@ -100,6 +105,10 @@ public class ACRA {
     private static ReportsCrashes mReportsCrashes;
     private static Bundle mCrashResources;
 
+    /**
+     * 
+     * @param app
+     */
     public static void init(Application app) {
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
@@ -229,7 +238,11 @@ public class ACRA {
      *         setting which disables/enables it's action.
      */
     public static SharedPreferences getACRASharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(mApplication);
+        if(!"".equals(mReportsCrashes.sharedPreferencesName())) {
+            return mApplication.getSharedPreferences(mReportsCrashes.sharedPreferencesName(), mReportsCrashes.sharedPreferencesMode());
+        } else {
+            return PreferenceManager.getDefaultSharedPreferences(mApplication);
+        }
     }
 
 }
