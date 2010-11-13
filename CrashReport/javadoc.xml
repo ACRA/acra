@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+	<target name="javadoc">
+		<javadoc access="public" author="true" classpath="." destdir="javadoc" doctitle="ACRA (Android)" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.6" sourcepath="src" splitindex="true" use="true" version="true">
+			<link offline="true" href="http://d.android.com/reference" packagelistloc="/tools/android-sdk-windows-1.6_r1/docs/reference/"/>
+		</javadoc>
+	</target>
+</project>

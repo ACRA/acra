@@ -22,7 +22,13 @@ import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
 
-@ReportsCrashes(formId = "dEM4SDNGX0tvaDVxSjk0NVM5ZTl4Y3c6MQ", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text)
+@ReportsCrashes(formId = "dEM4SDNGX0tvaDVxSjk0NVM5ZTl4Y3c6MQ",
+        mode = ReportingInteractionMode.NOTIFICATION,
+        resNotifTickerText = R.string.crash_notif_ticker_text,
+        resNotifTitle = R.string.crash_notif_title,
+        resNotifText = R.string.crash_notif_text,
+        resDialogText = R.string.crash_dialog_text,
+        resDialogCommentPrompt = R.string.crash_dialog_comment_prompt)
 public class CrashTest extends Application {
 
     /*
@@ -32,8 +38,8 @@ public class CrashTest extends Application {
      */
     @Override
     public void onCreate() {
-        super.onCreate();
         ACRA.init(this);
+        super.onCreate();
     }
 
     // private Bundle getToastCrashResources() {

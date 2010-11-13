@@ -28,9 +28,9 @@ import android.util.Log;
 /**
  * Use this class to initialize the crash reporting feature using
  * {@link #init(Application)} as soon as possible in your {@link Application}
- * subclass. Configuration items must have been set by using
- * {@link ReportsCrashes} above the declaration of your {@link Application}
- * subclass.
+ * subclass {@link Application#onCreate()} method. Configuration items must have
+ * been set by using {@link ReportsCrashes} above the declaration of your
+ * {@link Application} subclass.
  * 
  * @author Kevin Gaudin
  * 
@@ -238,8 +238,9 @@ public class ACRA {
      *         setting which disables/enables it's action.
      */
     public static SharedPreferences getACRASharedPreferences() {
-        if(!"".equals(mReportsCrashes.sharedPreferencesName())) {
-            return mApplication.getSharedPreferences(mReportsCrashes.sharedPreferencesName(), mReportsCrashes.sharedPreferencesMode());
+        if (!"".equals(mReportsCrashes.sharedPreferencesName())) {
+            return mApplication.getSharedPreferences(mReportsCrashes.sharedPreferencesName(),
+                    mReportsCrashes.sharedPreferencesMode());
         } else {
             return PreferenceManager.getDefaultSharedPreferences(mApplication);
         }

@@ -70,6 +70,7 @@ import android.widget.Toast;
  * technically be made,</li>
  * <li>when the user accepts to send it if {@link #mReportingInteractionMode} is
  * set to {@link ReportingInteractionMode#NOTIFICATION}.</li>
+ * </ul>
  * </p>
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
