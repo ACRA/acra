@@ -30,7 +30,7 @@ import android.preference.PreferenceManager;
 /**
  * Provide configuration elemets to the
  * {@link ACRA#init(android.app.Application)} method. The only mandatory
- * configuration item is the {@link #formId()} parameter which is the Id of your
+ * configuration item is the {@link #formKey()} parameter which is the Id of your
  * Google Documents form which will receive reports.
  * 
  * @author Kevin Gaudin
@@ -45,7 +45,7 @@ public @interface ReportsCrashes {
      * 
      * @return
      */
-    String formId();
+    String formKey();
 
     /**
      * The Uri of your own server-side script that will receive reports. This is

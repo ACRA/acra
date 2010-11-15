@@ -28,7 +28,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-@ReportsCrashes(formId = "dElaOTBqc0cwdUs2dGhraWhzSWYxOFE6MQ",
+@ReportsCrashes(formKey = "dElydHpKOEV6dDZ5ZnBNLTVjbFJnSlE6MQ",
         mode = ReportingInteractionMode.NOTIFICATION,
         resNotifTickerText = R.string.crash_notif_ticker_text,
         resNotifTitle = R.string.crash_notif_title,
