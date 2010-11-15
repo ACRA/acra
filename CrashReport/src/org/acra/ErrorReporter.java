@@ -28,6 +28,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -138,7 +139,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String INITIAL_CONFIGURATION_KEY = "entry.22.single";
     private static final String CRASH_CONFIGURATION_KEY = "entry.23.single";
     private static final String DISPLAY_KEY = "entry.24.single";
-    private static final String XUSER_COMMENT_KEY = "entry.25.single";
+    private static final String USER_COMMENT_KEY = "entry.25.single";
+    private static final String USER_CRASH_DATE_KEY = "entry.26.single";
 
     // This is where we collect crash data
     private Properties mCrashProperties = new Properties();
@@ -343,6 +345,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             mCrashProperties.put(DISPLAY_KEY, toString(display));
 
+            // User crash date with local timezone
+            Date curDate = new Date();
+            mCrashProperties.put(USER_CRASH_DATE_KEY, curDate.toString());
+            
+            // Add custom info, they are all stored in a single field
+            mCrashProperties.put(CUSTOM_DATA_KEY, createCustomInfoString());
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         }
@@ -448,12 +457,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
         retrieveCrashData(mContext);
-        // TODO: add a field in the googledoc form for the crash date.
-        // Date CurDate = new Date();
-        // Report += "Error Report collected on : " + CurDate.toString();
-
-        // Add custom info, they are all stored in a single field
-        mCrashProperties.put(CUSTOM_DATA_KEY, createCustomInfoString());
+        
 
         // Build stack trace
         final Writer result = new StringWriter();
@@ -476,7 +480,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST) {
             // Send reports now
-            checkAndSendReports(mContext, null);
+            new ReportsSenderWorker().start();
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             // Send reports when user accepts
             notifySendReport(reportFileName);
@@ -646,7 +650,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                             } else {
                                 custom += "\n";
                             }
-                            previousCrashReport.put(XUSER_COMMENT_KEY, mUserComment);
+                            previousCrashReport.put(USER_COMMENT_KEY, mUserComment);
                             mUserComment = "";
 
                         }
