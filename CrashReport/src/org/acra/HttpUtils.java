@@ -95,8 +95,12 @@ class HttpUtils {
                     .getInputStream()));
 
             String line;
+            int linecount = 0;
             while ((line = rd.readLine()) != null) {
-                Log.d(LOG_TAG, line);
+                linecount++;
+                if(linecount <= 2) {
+                    Log.d(LOG_TAG, line);
+                }
             }
             rd.close();
     }
