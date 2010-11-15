@@ -116,8 +116,7 @@ public class CrashReportDialog extends Activity {
                 ErrorReporter err = ErrorReporter.getInstance();
                 // Retrieve user comment
                 if (userComment != null) {
-                    err.addCustomData(ErrorReporter.USER_COMMENT_KEY,
-                            userComment.getText().toString());
+                    err.setUserComment(userComment.getText().toString());
                 }
 
                 // Start the report sending task

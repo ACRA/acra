@@ -44,12 +44,16 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 /**
@@ -117,7 +121,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String BOARD_KEY = "entry.5.single";
     private static final String BRAND_KEY = "entry.6.single";
     private static final String DEVICE_KEY = "entry.7.single";
-    private static final String DISPLAY_KEY = "entry.8.single";
+    private static final String BUILD_DISPLAY_KEY = "entry.8.single";
     private static final String FINGERPRINT_KEY = "entry.9.single";
     private static final String HOST_KEY = "entry.10.single";
     private static final String ID_KEY = "entry.11.single";
@@ -131,6 +135,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String AVAILABLE_MEM_SIZE_KEY = "entry.19.single";
     private static final String CUSTOM_DATA_KEY = "entry.20.single";
     private static final String STACK_TRACE_KEY = "entry.21.single";
+    private static final String INITIAL_CONFIGURATION_KEY = "entry.22.single";
+    private static final String CRASH_CONFIGURATION_KEY = "entry.23.single";
+    private static final String DISPLAY_KEY = "entry.24.single";
+    private static final String XUSER_COMMENT_KEY = "entry.25.single";
 
     // This is where we collect crash data
     private Properties mCrashProperties = new Properties();
@@ -138,9 +146,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // Some custom parameters can be added by the application developer. These
     // parameters are stored here.
     Map<String, String> mCustomParameters = new HashMap<String, String>();
-    // This key is used in the mCustomParameters Map to store user comment in
-    // NOTIFICATION interaction mode.
-    static final String USER_COMMENT_KEY = "user.comment";
+    // Store the user comment from the CrashReportDialog
+    static String mUserComment = "";
     // This key is used to store the silent state of a report sent by
     // handleSilentException().
     static final String IS_SILENT_KEY = "silent";
@@ -158,6 +165,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     // The application context
     private Context mContext;
+
+    // The Configuration obtained on application start.
+    private Configuration mInitialConfiguration;
 
     // User interaction mode defined by the application developer.
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
@@ -239,9 +249,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The android application context.
      */
     public void init(Context context) {
-        mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
-        mContext = context;
+        // If mDfltExceptionHandler is not null, initialisation is already done.
+        // Don't do it twice to avoid losing the original handler.
+        if (mDfltExceptionHandler == null) {
+            mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+            Thread.setDefaultUncaughtExceptionHandler(this);
+            mContext = context;
+            mInitialConfiguration = mContext.getResources().getConfiguration();
+        }
     }
 
     /**
@@ -280,31 +295,33 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void retrieveCrashData(Context context) {
         try {
+            // Device Configuration when crashing
+            Configuration crashConf = context.getResources().getConfiguration();
+            mCrashProperties.put(INITIAL_CONFIGURATION_KEY, ConfigurationInspector.toString(mInitialConfiguration));
+            mCrashProperties.put(CRASH_CONFIGURATION_KEY, ConfigurationInspector.toString(crashConf));
+
             PackageManager pm = context.getPackageManager();
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
                 // Application Version
-                mCrashProperties.put(VERSION_NAME_KEY,
-                        pi.versionName != null ? pi.versionName : "not set");
+                mCrashProperties.put(VERSION_NAME_KEY, pi.versionName != null ? pi.versionName : "not set");
             } else {
                 // Could not retrieve package info...
-                mCrashProperties.put(PACKAGE_NAME_KEY,
-                        "Package info unavailable");
+                mCrashProperties.put(PACKAGE_NAME_KEY, "Package info unavailable");
             }
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME_KEY, context.getPackageName());
             // Device model
             mCrashProperties.put(PHONE_MODEL_KEY, android.os.Build.MODEL);
             // Android version
-            mCrashProperties.put(ANDROID_VERSION_KEY,
-                    android.os.Build.VERSION.RELEASE);
+            mCrashProperties.put(ANDROID_VERSION_KEY, android.os.Build.VERSION.RELEASE);
 
             // Android build data
             mCrashProperties.put(BOARD_KEY, android.os.Build.BOARD);
             mCrashProperties.put(BRAND_KEY, android.os.Build.BRAND);
             mCrashProperties.put(DEVICE_KEY, android.os.Build.DEVICE);
-            mCrashProperties.put(DISPLAY_KEY, android.os.Build.DISPLAY);
+            mCrashProperties.put(BUILD_DISPLAY_KEY, android.os.Build.DISPLAY);
             mCrashProperties.put(FINGERPRINT_KEY, android.os.Build.FINGERPRINT);
             mCrashProperties.put(HOST_KEY, android.os.Build.HOST);
             mCrashProperties.put(ID_KEY, android.os.Build.ID);
@@ -316,17 +333,37 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             mCrashProperties.put(USER_KEY, android.os.Build.USER);
 
             // Device Memory
-            mCrashProperties.put(TOTAL_MEM_SIZE_KEY, ""
-                    + getTotalInternalMemorySize());
-            mCrashProperties.put(AVAILABLE_MEM_SIZE_KEY, ""
-                    + getAvailableInternalMemorySize());
+            mCrashProperties.put(TOTAL_MEM_SIZE_KEY, "" + getTotalInternalMemorySize());
+            mCrashProperties.put(AVAILABLE_MEM_SIZE_KEY, "" + getAvailableInternalMemorySize());
 
             // Application file path
-            mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir()
-                    .getAbsolutePath());
+            mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir().getAbsolutePath());
+
+            // Main display details
+            Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            mCrashProperties.put(DISPLAY_KEY, toString(display));
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         }
+    }
+
+    private static String toString(Display display) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        StringBuilder result = new StringBuilder();
+        result.append("width=").append(display.getWidth()).append('\n')
+            .append("height=").append(display.getHeight()).append('\n')
+            .append("pixelFormat=").append(display.getPixelFormat()).append('\n')
+            .append("refreshRate=").append(display.getRefreshRate()).append("fps").append('\n')
+            .append("metrics.density=x").append(metrics.density).append('\n')
+            .append("metrics.scaledDensity=x").append(metrics.scaledDensity).append('\n')
+            .append("metrics.widthPixels=").append(metrics.widthPixels).append('\n')
+            .append("metrics.heightPixels=").append(metrics.heightPixels).append('\n')
+            .append("metrics.xdpi=").append(metrics.xdpi).append('\n')
+            .append("metrics.ydpi=").append(metrics.ydpi);
+
+        return result.toString();
     }
 
     /*
@@ -361,8 +398,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             CharSequence appName = "Application";
             try {
                 PackageManager pm = mContext.getPackageManager();
-                appName = pm.getApplicationInfo(mContext.getPackageName(), 0)
-                        .loadLabel(mContext.getPackageManager());
+                appName = pm.getApplicationInfo(mContext.getPackageName(), 0).loadLabel(mContext.getPackageManager());
                 Log.e(LOG_TAG, appName + " fatal error : " + e.getMessage(), e);
             } catch (NameNotFoundException e2) {
                 Log.e(LOG_TAG, "Error : ", e2);
@@ -385,8 +421,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param reportingInteractionMode
      *            The desired interaction mode.
      */
-    void handleException(Throwable e,
-            ReportingInteractionMode reportingInteractionMode) {
+    void handleException(Throwable e, ReportingInteractionMode reportingInteractionMode) {
         if (reportingInteractionMode == null) {
             reportingInteractionMode = mReportingInteractionMode;
         }
@@ -406,11 +441,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    Toast.makeText(
-                            mContext,
-                            mCrashResources
-                                    .getInt(ACRA.RES_TOAST_TEXT),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, mCrashResources.getInt(ACRA.RES_TOAST_TEXT), Toast.LENGTH_LONG).show();
                     Looper.loop();
                 }
 
@@ -488,33 +519,24 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         // Default notification icon is the warning symbol
         int icon = android.R.drawable.stat_notify_error;
-        if (mCrashResources
-                .containsKey(ACRA.RES_NOTIF_ICON)) {
+        if (mCrashResources.containsKey(ACRA.RES_NOTIF_ICON)) {
             // Use a developer defined icon if available
-            icon = mCrashResources
-                    .getInt(ACRA.RES_NOTIF_ICON);
+            icon = mCrashResources.getInt(ACRA.RES_NOTIF_ICON);
         }
 
-        CharSequence tickerText = mContext.getText(mCrashResources
-                .getInt(ACRA.RES_NOTIF_TICKER_TEXT));
+        CharSequence tickerText = mContext.getText(mCrashResources.getInt(ACRA.RES_NOTIF_TICKER_TEXT));
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
 
-        CharSequence contentTitle = mContext.getText(mCrashResources
-                .getInt(ACRA.RES_NOTIF_TITLE));
-        CharSequence contentText = mContext.getText(mCrashResources
-                .getInt(ACRA.RES_NOTIF_TEXT));
+        CharSequence contentTitle = mContext.getText(mCrashResources.getInt(ACRA.RES_NOTIF_TITLE));
+        CharSequence contentText = mContext.getText(mCrashResources.getInt(ACRA.RES_NOTIF_TEXT));
 
-        Intent notificationIntent = new Intent(mContext,
-                CrashReportDialog.class);
+        Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
-        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
-                notificationIntent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
 
-        notification.setLatestEventInfo(mContext, contentTitle, contentText,
-                contentIntent);
-        notificationManager.notify(ACRA.NOTIF_CRASH_ID,
-                notification);
+        notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
+        notificationManager.notify(ACRA.NOTIF_CRASH_ID, notification);
     }
 
     /**
@@ -532,9 +554,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @throws KeyManagementException
      *             Might be thrown if sending over https.
      */
-    private static void sendCrashReport(Context context, Properties errorContent)
-            throws UnsupportedEncodingException, IOException,
-            KeyManagementException, NoSuchAlgorithmException {
+    private static void sendCrashReport(Context context, Properties errorContent) throws UnsupportedEncodingException,
+            IOException, KeyManagementException, NoSuchAlgorithmException {
         // values observed in the GoogleDocs original html form
         errorContent.put("pageNumber", "0");
         errorContent.put("backupCache", "");
@@ -554,17 +575,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.d(LOG_TAG, "Writing crash report file.");
             long timestamp = System.currentTimeMillis();
             String isSilent = mCrashProperties.getProperty(IS_SILENT_KEY);
-            String fileName = (isSilent != null ? SILENT_PREFIX : "")
-                    + "stack-" + timestamp + ".stacktrace";
-            FileOutputStream trace = mContext.openFileOutput(fileName,
-                    Context.MODE_PRIVATE);
+            String fileName = (isSilent != null ? SILENT_PREFIX : "") + "stack-" + timestamp + ".stacktrace";
+            FileOutputStream trace = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
             mCrashProperties.store(trace, "");
             trace.flush();
             trace.close();
             return fileName;
         } catch (Exception e) {
-            Log.e(LOG_TAG, "An error occured while writing the report file...",
-                    e);
+            Log.e(LOG_TAG, "An error occured while writing the report file...", e);
         }
         return null;
     }
@@ -615,35 +633,27 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 boolean commentedReportFound = false;
                 for (String curFileName : sortedFiles) {
                     if (curIndex < MAX_SEND_REPORTS) {
-                        FileInputStream input = context
-                                .openFileInput(curFileName);
+                        FileInputStream input = context.openFileInput(curFileName);
                         previousCrashReport.load(input);
                         input.close();
                         // Insert the optional user comment written in
                         // CrashReportDialog, only on the latest report file
                         if (!commentedReportFound
-                                && (curFileName
-                                        .equals(userCommentReportFileName) || (curIndex == sortedFiles
-                                        .size() - 1 && mCustomParameters
-                                        .containsKey(USER_COMMENT_KEY)))) {
-                            String custom = previousCrashReport
-                                    .getProperty(CUSTOM_DATA_KEY);
+                                && (curFileName.equals(userCommentReportFileName) || (curIndex == sortedFiles.size() - 1 && !"".equals(mUserComment)))) {
+                            String custom = previousCrashReport.getProperty(CUSTOM_DATA_KEY);
                             if (custom == null) {
                                 custom = "";
                             } else {
                                 custom += "\n";
                             }
-                            previousCrashReport.put(CUSTOM_DATA_KEY, custom
-                                    + USER_COMMENT_KEY + " = "
-                                    + mCustomParameters.get(USER_COMMENT_KEY));
-                            mCustomParameters.remove(USER_COMMENT_KEY);
+                            previousCrashReport.put(XUSER_COMMENT_KEY, mUserComment);
+                            mUserComment = "";
 
                         }
                         sendCrashReport(context, previousCrashReport);
 
                         // DELETE FILES !!!!
-                        File curFile = new File(context.getFilesDir(),
-                                curFileName);
+                        File curFile = new File(context.getFilesDir(), curFileName);
                         curFile.delete();
                     }
                     curIndex++;
@@ -654,7 +664,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             e.printStackTrace();
         } finally {
             // Get rid of any user comment which would not be relevant anymore
-            mCustomParameters.remove(USER_COMMENT_KEY);
+            mUserComment = "";
         }
     }
 
@@ -663,8 +673,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @param reportingInteractionMode
      */
-    void setReportingInteractionMode(
-            ReportingInteractionMode reportingInteractionMode) {
+    void setReportingInteractionMode(ReportingInteractionMode reportingInteractionMode) {
         mReportingInteractionMode = reportingInteractionMode;
     }
 
@@ -680,11 +689,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     || mReportingInteractionMode == ReportingInteractionMode.TOAST
                     || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentReports)) {
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
-                    Toast.makeText(
-                            mContext,
-                            mCrashResources
-                                    .getInt(ACRA.RES_TOAST_TEXT),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, mCrashResources.getInt(ACRA.RES_TOAST_TEXT), Toast.LENGTH_LONG).show();
                 }
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
@@ -742,5 +747,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
         }
         return true;
+    }
+
+    public void setUserComment(String userComment) {
+        mUserComment = userComment;
     }
 }
