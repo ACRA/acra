@@ -169,7 +169,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private Context mContext;
 
     // The Configuration obtained on application start.
-    private Configuration mInitialConfiguration;
+    private String mInitialConfiguration;
 
     // User interaction mode defined by the application developer.
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
@@ -251,13 +251,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The android application context.
      */
     public void init(Context context) {
-        // If mDfltExceptionHandler is not null, initialisation is already done.
+        // If mDfltExceptionHandler is not null, initialization is already done.
         // Don't do it twice to avoid losing the original handler.
         if (mDfltExceptionHandler == null) {
             mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
             Thread.setDefaultUncaughtExceptionHandler(this);
             mContext = context;
-            mInitialConfiguration = mContext.getResources().getConfiguration();
+            mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
         }
     }
 
@@ -298,8 +298,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private void retrieveCrashData(Context context) {
         try {
             // Device Configuration when crashing
+            mCrashProperties.put(INITIAL_CONFIGURATION_KEY, mInitialConfiguration);
             Configuration crashConf = context.getResources().getConfiguration();
-            mCrashProperties.put(INITIAL_CONFIGURATION_KEY, ConfigurationInspector.toString(mInitialConfiguration));
             mCrashProperties.put(CRASH_CONFIGURATION_KEY, ConfigurationInspector.toString(crashConf));
 
             PackageManager pm = context.getPackageManager();
