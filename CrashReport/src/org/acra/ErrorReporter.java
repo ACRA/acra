@@ -186,7 +186,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param formUri
      *            The Url of the crash reports destination (HTTP POST).
      */
-    public void setFormUri(Uri formUri) {
+    void setFormUri(Uri formUri) {
         mFormUri = formUri;
     }
 
@@ -267,7 +267,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @return Number of bytes available.
      */
-    public static long getAvailableInternalMemorySize() {
+    private static long getAvailableInternalMemorySize() {
         File path = Environment.getDataDirectory();
         StatFs stat = new StatFs(path.getPath());
         long blockSize = stat.getBlockSize();
@@ -281,7 +281,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @return Total number of bytes.
      */
-    public static long getTotalInternalMemorySize() {
+    private static long getTotalInternalMemorySize() {
         File path = Environment.getDataDirectory();
         StatFs stat = new StatFs(path.getPath());
         long blockSize = stat.getBlockSize();
@@ -348,7 +348,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // User crash date with local timezone
             Date curDate = new Date();
             mCrashProperties.put(USER_CRASH_DATE_KEY, curDate.toString());
-            
+
             // Add custom info, they are all stored in a single field
             mCrashProperties.put(CUSTOM_DATA_KEY, createCustomInfoString());
 
@@ -361,16 +361,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         StringBuilder result = new StringBuilder();
-        result.append("width=").append(display.getWidth()).append('\n')
-            .append("height=").append(display.getHeight()).append('\n')
-            .append("pixelFormat=").append(display.getPixelFormat()).append('\n')
-            .append("refreshRate=").append(display.getRefreshRate()).append("fps").append('\n')
-            .append("metrics.density=x").append(metrics.density).append('\n')
-            .append("metrics.scaledDensity=x").append(metrics.scaledDensity).append('\n')
-            .append("metrics.widthPixels=").append(metrics.widthPixels).append('\n')
-            .append("metrics.heightPixels=").append(metrics.heightPixels).append('\n')
-            .append("metrics.xdpi=").append(metrics.xdpi).append('\n')
-            .append("metrics.ydpi=").append(metrics.ydpi);
+        result.append("width=").append(display.getWidth()).append('\n').append("height=").append(display.getHeight())
+                .append('\n').append("pixelFormat=").append(display.getPixelFormat()).append('\n')
+                .append("refreshRate=").append(display.getRefreshRate()).append("fps").append('\n')
+                .append("metrics.density=x").append(metrics.density).append('\n').append("metrics.scaledDensity=x")
+                .append(metrics.scaledDensity).append('\n').append("metrics.widthPixels=").append(metrics.widthPixels)
+                .append('\n').append("metrics.heightPixels=").append(metrics.heightPixels).append('\n')
+                .append("metrics.xdpi=").append(metrics.xdpi).append('\n').append("metrics.ydpi=").append(metrics.ydpi);
 
         return result.toString();
     }
@@ -457,7 +454,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
         retrieveCrashData(mContext);
-        
 
         // Build stack trace
         final Writer result = new StringWriter();
@@ -489,16 +485,26 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Send a report for this Throwable.
+     * Send a report for this {@link Throwable} with the reporting interaction
+     * mode set by the application developer.
      * 
      * @param e
-     *            The Throwable to be reported. If null the report will contain
-     *            a new Exception("Report requested by developer").
+     *            The {@link Throwable} to be reported. If null the report will
+     *            contain a new Exception("Report requested by developer").
      */
     public void handleException(Throwable e) {
         handleException(e, mReportingInteractionMode);
     }
 
+    /**
+     * Send a report for this {@link Throwable} silently (forces the use of
+     * {@link ReportingInteractionMode#SILENT} for this report, whatever is the
+     * mode set for the application. Very useful for tracking difficult defects.
+     * 
+     * @param e
+     *            The {@link Throwable} to be reported. If null the report will
+     *            contain a new Exception("Report requested by developer").
+     */
     public void handleSilentException(Throwable e) {
         // Mark this report as silent.
         mCrashProperties.put(IS_SILENT_KEY, "true");
@@ -643,7 +649,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         // Insert the optional user comment written in
                         // CrashReportDialog, only on the latest report file
                         if (!commentedReportFound
-                                && (curFileName.equals(userCommentReportFileName) || (curIndex == sortedFiles.size() - 1 && !"".equals(mUserComment)))) {
+                                && (curFileName.equals(userCommentReportFileName) || (curIndex == sortedFiles.size() - 1 && !""
+                                        .equals(mUserComment)))) {
                             String custom = previousCrashReport.getProperty(CUSTOM_DATA_KEY);
                             if (custom == null) {
                                 custom = "";
@@ -744,7 +751,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @return True if there only silent reports. False if there is at least one
      *         nont-silent report.
      */
-    public boolean containsOnlySilentReports(String[] reportFileNames) {
+    private boolean containsOnlySilentReports(String[] reportFileNames) {
         for (String reportFileName : reportFileNames) {
             if (!reportFileName.startsWith(SILENT_PREFIX)) {
                 return false;
