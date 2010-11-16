@@ -17,6 +17,9 @@
 <resources>
 
 	<string name="app_name">CrashTest</string>
+ 
+    <string name="btn_crash">CRASH !</string>
+    <string name="btn_silent_report">Send silent report</string>
 	
 	<string name="crash_toast_text">Ooooops ! I crashed, but a report has been
 		sent to my developer to help him fix the issue !</string>

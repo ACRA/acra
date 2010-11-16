@@ -17,19 +17,14 @@
 package org.acra.sampleapp;
 
 import org.acra.ACRA;
-import org.acra.ConfigurationInspector;
-import org.acra.ErrorReporter;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
-import android.content.Context;
-import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
-@ReportsCrashes(formKey = "dElydHpKOEV6dDZ5ZnBNLTVjbFJnSlE6MQ",
+@ReportsCrashes(formKey = "dEhXSldocldoUDBzR25jM2dtSGo2QXc6MQ",
         mode = ReportingInteractionMode.NOTIFICATION,
+        resToastText = R.string.crash_toast_text,
         resNotifTickerText = R.string.crash_notif_ticker_text,
         resNotifTitle = R.string.crash_notif_title,
         resNotifText = R.string.crash_notif_text,

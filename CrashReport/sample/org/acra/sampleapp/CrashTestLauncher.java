@@ -1,5 +1,7 @@
 package org.acra.sampleapp;
 
+import org.acra.ErrorReporter;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +17,9 @@ public class CrashTestLauncher extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Button crashButton = new Button(this);
-        crashButton.setText("CRASH");
-        crashButton.setOnClickListener(new OnClickListener() {
+        setContentView(R.layout.crash_test_launcher);
+        Button btn = (Button) findViewById(R.id.btn_crash);
+        btn.setOnClickListener(new OnClickListener() {
             
             @Override
             public void onClick(View v) {
@@ -25,7 +27,16 @@ public class CrashTestLauncher extends Activity {
                 startActivity(intent);
             }
         });
-        setContentView(crashButton);
+        
+        btn = (Button) findViewById(R.id.btn_silent_report);
+        btn.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                ErrorReporter.getInstance().handleSilentException(new Exception("This is a silent report!"));
+            }
+        });
+
     }
 
 }
