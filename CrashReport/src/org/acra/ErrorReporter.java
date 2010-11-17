@@ -381,15 +381,27 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     public void uncaughtException(Thread t, Throwable e) {
         // Generate and send crash report
-        handleException(e);
+        ReportsSenderWorker worker = handleException(e);
 
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
             try {
                 // Wait a bit to let the user read the toast
                 Thread.sleep(4000);
             } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
                 Log.e(LOG_TAG, "Error : ", e1);
+            }
+        }
+
+        if (worker != null) {
+            while (worker.isAlive()) {
+                try {
+                    // Wait for the report sender to finish it's task before
+                    // killing
+                    // the process
+                    Thread.sleep(100);
+                } catch (InterruptedException e1) {
+                    Log.e(LOG_TAG, "Error : ", e1);
+                }
             }
         }
 
@@ -427,7 +439,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param reportingInteractionMode
      *            The desired interaction mode.
      */
-    void handleException(Throwable e, ReportingInteractionMode reportingInteractionMode) {
+    ReportsSenderWorker handleException(Throwable e, ReportingInteractionMode reportingInteractionMode) {
         if (reportingInteractionMode == null) {
             reportingInteractionMode = mReportingInteractionMode;
         }
@@ -476,12 +488,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST) {
             // Send reports now
-            new ReportsSenderWorker().start();
+            ReportsSenderWorker wk = new ReportsSenderWorker();
+            wk.start();
+            return wk;
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             // Send reports when user accepts
             notifySendReport(reportFileName);
         }
-
+        return null;
     }
 
     /**
@@ -492,8 +506,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The {@link Throwable} to be reported. If null the report will
      *            contain a new Exception("Report requested by developer").
      */
-    public void handleException(Throwable e) {
-        handleException(e, mReportingInteractionMode);
+    public ReportsSenderWorker handleException(Throwable e) {
+        return handleException(e, mReportingInteractionMode);
     }
 
     /**
@@ -505,10 +519,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The {@link Throwable} to be reported. If null the report will
      *            contain a new Exception("Report requested by developer").
      */
-    public void handleSilentException(Throwable e) {
+    public ReportsSenderWorker handleSilentException(Throwable e) {
         // Mark this report as silent.
         mCrashProperties.put(IS_SILENT_KEY, "true");
-        handleException(e, ReportingInteractionMode.SILENT);
+        return handleException(e, ReportingInteractionMode.SILENT);
     }
 
     /**
