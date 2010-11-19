@@ -750,6 +750,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * to the system default.
      */
     public void disable() {
+        Log.d(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName());
         if (mDfltExceptionHandler != null) {
             Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
         }

@@ -104,6 +104,7 @@ public class ACRA {
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
     private static Bundle mCrashResources;
+    private static OnSharedPreferenceChangeListener mPrefListener;
 
     /**
      * 
@@ -115,10 +116,15 @@ public class ACRA {
         if (mReportsCrashes != null) {
 
             SharedPreferences prefs = getACRASharedPreferences();
-            prefs.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+            Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
+            // We HAVE to keep a reference otrherwise the listener could be
+            // garbage collected:
+            // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
+            mPrefListener = new OnSharedPreferenceChangeListener() {
 
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    Log.d(ACRA.LOG_TAG, "Preferences changed, check if ACRA configuration must change.");
                     if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
                         Boolean disableAcra = false;
                         try {
@@ -139,13 +145,13 @@ public class ACRA {
                     }
 
                 }
-            });
+            };
 
+            prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
             // If the application default shared preferences contains true for
-            // the
-            // key "acra.disable", do not activate ACRA. Also checks the
-            // alternative
-            // opposite setting "acra.enable" if "acra.disable" is not found.
+            // the key "acra.disable", do not activate ACRA. Also checks the
+            // alternative opposite setting "acra.enable" if "acra.disable" is
+            // not found.
             boolean disableAcra = false;
             try {
                 disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, !prefs.getBoolean(PREF_ENABLE_ACRA, true));
@@ -239,9 +245,11 @@ public class ACRA {
      */
     public static SharedPreferences getACRASharedPreferences() {
         if (!"".equals(mReportsCrashes.sharedPreferencesName())) {
+            Log.d(ACRA.LOG_TAG, "Retrieve SharedPreferences " + mReportsCrashes.sharedPreferencesName());
             return mApplication.getSharedPreferences(mReportsCrashes.sharedPreferencesName(),
                     mReportsCrashes.sharedPreferencesMode());
         } else {
+            Log.d(ACRA.LOG_TAG, "Retrieve application default SharedPreferences.");
             return PreferenceManager.getDefaultSharedPreferences(mApplication);
         }
     }
