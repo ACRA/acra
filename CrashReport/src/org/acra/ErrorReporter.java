@@ -710,14 +710,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         String[] filesList = getCrashReportFilesList();
         if (filesList != null && filesList.length > 0) {
             boolean onlySilentReports = containsOnlySilentReports(filesList);
+            // Immediately send reports for SILENT and TOAST modes.
+            // Immediately send reports int NOTIFICATION mode only if they are all silent.
             if (mReportingInteractionMode == ReportingInteractionMode.SILENT
                     || mReportingInteractionMode == ReportingInteractionMode.TOAST
                     || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentReports)) {
-                if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+
+                if (mReportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentReports) {
+                    // Display the Toast in TOAST mode only if there are non-silent reports.
                     Toast.makeText(mContext, mCrashResources.getInt(ACRA.RES_TOAST_TEXT), Toast.LENGTH_LONG).show();
                 }
+                
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
+                // There are reports to send, display the notification
                 ErrorReporter.getInstance().notifySendReport(filesList[filesList.length - 1]);
             }
         }
