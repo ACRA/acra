@@ -28,7 +28,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,6 +50,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
+import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -297,27 +297,33 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void retrieveCrashData(Context context) {
         try {
+            StopWatch.start("COLLECT_CONFIG");
             // Device Configuration when crashing
             mCrashProperties.put(INITIAL_CONFIGURATION_KEY, mInitialConfiguration);
             Configuration crashConf = context.getResources().getConfiguration();
             mCrashProperties.put(CRASH_CONFIGURATION_KEY, ConfigurationInspector.toString(crashConf));
-
+            Log.i(LOG_TAG, "COLLECT_CONFIG:" + StopWatch.stop("COLLECT_CONFIG"));
+            
+            StopWatch.start("COLLECT_PACKAGEINFO");
             PackageManager pm = context.getPackageManager();
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
                 // Application Version
-                mCrashProperties.put(VERSION_NAME_KEY, pi.versionName != null ? pi.versionName : "not set");
+                mCrashProperties.put(VERSION_NAME_KEY, pi.versionName != null ? "'" + pi.versionName : "not set");
             } else {
                 // Could not retrieve package info...
                 mCrashProperties.put(PACKAGE_NAME_KEY, "Package info unavailable");
             }
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME_KEY, context.getPackageName());
+            Log.i(LOG_TAG, "COLLECT_PACKAGEINFO:" + StopWatch.stop("COLLECT_PACKAGEINFO"));
+            
+            StopWatch.start("COLLECT_ANDROIDBUILD");
             // Device model
             mCrashProperties.put(PHONE_MODEL_KEY, android.os.Build.MODEL);
             // Android version
-            mCrashProperties.put(ANDROID_VERSION_KEY, android.os.Build.VERSION.RELEASE);
+            mCrashProperties.put(ANDROID_VERSION_KEY, "'" + android.os.Build.VERSION.RELEASE);
 
             // Android build data
             mCrashProperties.put(BOARD_KEY, android.os.Build.BOARD);
@@ -333,21 +339,30 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             mCrashProperties.put(TIME_KEY, "" + android.os.Build.TIME);
             mCrashProperties.put(TYPE_KEY, android.os.Build.TYPE);
             mCrashProperties.put(USER_KEY, android.os.Build.USER);
+            Log.i(LOG_TAG, "COLLECT_ANDROIDBUILD:" + StopWatch.stop("COLLECT_ANDROIDBUILD"));
 
+            StopWatch.start("COLLECT_MEMORY");
             // Device Memory
             mCrashProperties.put(TOTAL_MEM_SIZE_KEY, "" + getTotalInternalMemorySize());
             mCrashProperties.put(AVAILABLE_MEM_SIZE_KEY, "" + getAvailableInternalMemorySize());
+            Log.i(LOG_TAG, "COLLECT_MEMORY:" + StopWatch.stop("COLLECT_MEMORY"));
 
             // Application file path
             mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir().getAbsolutePath());
 
+            
+            StopWatch.start("COLLECT_DISPLAY");
             // Main display details
             Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             mCrashProperties.put(DISPLAY_KEY, toString(display));
+            Log.i(LOG_TAG, "COLLECT_DISPLAY:" + StopWatch.stop("COLLECT_DISPLAY"));
 
+            StopWatch.start("COLLECT_DATE");
             // User crash date with local timezone
-            Date curDate = new Date();
-            mCrashProperties.put(USER_CRASH_DATE_KEY, curDate.toString());
+            Time curDate = new Time();
+            curDate.setToNow();
+            mCrashProperties.put(USER_CRASH_DATE_KEY, curDate.format3339(false));
+            Log.i(LOG_TAG, "COLLECT_DATE:" + StopWatch.stop("COLLECT_DATE"));
 
             // Add custom info, they are all stored in a single field
             mCrashProperties.put(CUSTOM_DATA_KEY, createCustomInfoString());
@@ -465,8 +480,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             }.start();
         }
+        
+        StopWatch.start("FULL_COLLECT");
         retrieveCrashData(mContext);
+        Log.i(LOG_TAG, "FULL_COLLECT:" + StopWatch.stop("FULL_COLLECT"));
 
+        StopWatch.start("BUILD_STACKTRACE");
         // Build stack trace
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
@@ -481,9 +500,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
         mCrashProperties.put(STACK_TRACE_KEY, result.toString());
         printWriter.close();
+        Log.i(LOG_TAG, "BUILD_STACKTRACE:" + StopWatch.stop("BUILD_STACKTRACE"));
 
+        StopWatch.start("SAVE_REPORT");
         // Always write the report file
         String reportFileName = saveCrashReportFile();
+        Log.i(LOG_TAG, "SAVE_REPORT:" + StopWatch.stop("SAVE_REPORT"));
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST) {
@@ -597,13 +619,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private String saveCrashReportFile() {
         try {
             Log.d(LOG_TAG, "Writing crash report file.");
-            long timestamp = System.currentTimeMillis();
+            StopWatch.start("SAVE_GETMILLIS");
+            Time now = new Time();
+            now.setToNow();
+            long timestamp = now.toMillis(false);
+            Log.i(LOG_TAG, "SAVE_GETMILLIS: " + StopWatch.stop("SAVE_GETMILLIS"));
+            StopWatch.start("SAVE_BUILDNAME");
             String isSilent = mCrashProperties.getProperty(IS_SILENT_KEY);
             String fileName = (isSilent != null ? SILENT_PREFIX : "") + "stack-" + timestamp + ".stacktrace";
+            Log.i(LOG_TAG, "SAVE_BUILDNAME: " + StopWatch.stop("SAVE_BUILDNAME"));
             FileOutputStream trace = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
-            mCrashProperties.store(trace, "");
-            trace.flush();
+            StopWatch.start("SAVE_WRITE");
+            mCrashProperties.storeToXML(trace, "");
+//            trace.flush();
             trace.close();
+            Log.i(LOG_TAG, "SAVE_WRITE: " + StopWatch.stop("SAVE_WRITE"));
             return fileName;
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occured while writing the report file...", e);
@@ -658,7 +688,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 for (String curFileName : sortedFiles) {
                     if (curIndex < MAX_SEND_REPORTS) {
                         FileInputStream input = context.openFileInput(curFileName);
-                        previousCrashReport.load(input);
+                        previousCrashReport.loadFromXML(input);
                         input.close();
                         // Insert the optional user comment written in
                         // CrashReportDialog, only on the latest report file
