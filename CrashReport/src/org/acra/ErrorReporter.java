@@ -743,7 +743,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @return
      */
     private boolean storeToXML() {
-        return getAPILevel() >= 5;
+        return getAPILevel() < 5;
     }
 
     /**
