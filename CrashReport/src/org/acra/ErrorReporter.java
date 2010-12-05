@@ -25,6 +25,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -46,6 +47,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -303,7 +305,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Configuration crashConf = context.getResources().getConfiguration();
             mCrashProperties.put(CRASH_CONFIGURATION_KEY, ConfigurationInspector.toString(crashConf));
             Log.i(LOG_TAG, "COLLECT_CONFIG:" + StopWatch.stop("COLLECT_CONFIG"));
-            
+
             StopWatch.start("COLLECT_PACKAGEINFO");
             PackageManager pm = context.getPackageManager();
             PackageInfo pi;
@@ -318,7 +320,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME_KEY, context.getPackageName());
             Log.i(LOG_TAG, "COLLECT_PACKAGEINFO:" + StopWatch.stop("COLLECT_PACKAGEINFO"));
-            
+
             StopWatch.start("COLLECT_ANDROIDBUILD");
             // Device model
             mCrashProperties.put(PHONE_MODEL_KEY, android.os.Build.MODEL);
@@ -350,7 +352,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Application file path
             mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir().getAbsolutePath());
 
-            
             StopWatch.start("COLLECT_DISPLAY");
             // Main display details
             Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -480,7 +481,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             }.start();
         }
-        
+
         StopWatch.start("FULL_COLLECT");
         retrieveCrashData(mContext);
         Log.i(LOG_TAG, "FULL_COLLECT:" + StopWatch.stop("FULL_COLLECT"));
@@ -630,8 +631,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.i(LOG_TAG, "SAVE_BUILDNAME: " + StopWatch.stop("SAVE_BUILDNAME"));
             FileOutputStream trace = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
             StopWatch.start("SAVE_WRITE");
-            mCrashProperties.storeToXML(trace, "");
-//            trace.flush();
+            if (storeToXML()) {
+                mCrashProperties.storeToXML(trace, "");
+            } else {
+                mCrashProperties.store(trace, "");
+            }
             trace.close();
             Log.i(LOG_TAG, "SAVE_WRITE: " + StopWatch.stop("SAVE_WRITE"));
             return fileName;
@@ -688,7 +692,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 for (String curFileName : sortedFiles) {
                     if (curIndex < MAX_SEND_REPORTS) {
                         FileInputStream input = context.openFileInput(curFileName);
-                        previousCrashReport.loadFromXML(input);
+                        if (storeToXML()) {
+                            previousCrashReport.loadFromXML(input);
+                        } else {
+                            previousCrashReport.load(input);
+                        }
                         input.close();
                         // Insert the optional user comment written in
                         // CrashReportDialog, only on the latest report file
@@ -724,6 +732,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
+     * We need to store reports in XML format on android 1.5 and 1.6 and only
+     * these versions. The reason is that with android 1.5 and 1.6 the
+     * Properties.store() call takes nearly 4 seconds just because it includes a
+     * new Date().toString() to generate a (unneeded) date comment in the file.
+     * The problem with the XML format on android 2.X is that it takes much more
+     * time to execute than standard storage, and even more time than previous
+     * android versions with XML storage!
+     * 
+     * @return
+     */
+    private boolean storeToXML() {
+        return getAPILevel() >= 5;
+    }
+
+    /**
      * Set the wanted user interaction mode for sending reports.
      * 
      * @param reportingInteractionMode
@@ -741,16 +764,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (filesList != null && filesList.length > 0) {
             boolean onlySilentReports = containsOnlySilentReports(filesList);
             // Immediately send reports for SILENT and TOAST modes.
-            // Immediately send reports int NOTIFICATION mode only if they are all silent.
+            // Immediately send reports int NOTIFICATION mode only if they are
+            // all silent.
             if (mReportingInteractionMode == ReportingInteractionMode.SILENT
                     || mReportingInteractionMode == ReportingInteractionMode.TOAST
                     || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentReports)) {
 
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentReports) {
-                    // Display the Toast in TOAST mode only if there are non-silent reports.
+                    // Display the Toast in TOAST mode only if there are
+                    // non-silent reports.
                     Toast.makeText(mContext, mCrashResources.getInt(ACRA.RES_TOAST_TEXT), Toast.LENGTH_LONG).show();
                 }
-                
+
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
                 // There are reports to send, display the notification
@@ -813,5 +838,26 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     public void setUserComment(String userComment) {
         mUserComment = userComment;
+    }
+
+    private static int getAPILevel() {
+        int apiLevel;
+        try {
+            Field SDK_INT = Build.VERSION.class.getField("SDK_INT");
+            apiLevel = SDK_INT.getInt(null);
+        } catch (SecurityException e) {
+            Log.e(LOG_TAG, "Error : ", e);
+            apiLevel = Integer.parseInt(Build.VERSION.SDK);
+        } catch (NoSuchFieldException e) {
+            Log.e(LOG_TAG, "Error : ", e);
+            apiLevel = Integer.parseInt(Build.VERSION.SDK);
+        } catch (IllegalArgumentException e) {
+            Log.e(LOG_TAG, "Error : ", e);
+            apiLevel = Integer.parseInt(Build.VERSION.SDK);
+        } catch (IllegalAccessException e) {
+            Log.e(LOG_TAG, "Error : ", e);
+            apiLevel = Integer.parseInt(Build.VERSION.SDK);
+        }
+        return apiLevel;
     }
 }
