@@ -90,6 +90,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     final class ReportsSenderWorker extends Thread {
         private String mReportFileName = null;
+        private boolean mSendOnlySilentReports = false;
+
+        public ReportsSenderWorker(boolean sendOnlySilentReports) {
+            mSendOnlySilentReports = sendOnlySilentReports;
+        }
+
+        public ReportsSenderWorker() {
+        }
 
         /*
          * (non-Javadoc)
@@ -98,7 +106,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          */
         @Override
         public void run() {
-            checkAndSendReports(mContext, mReportFileName);
+            checkAndSendReports(mContext, mReportFileName, mSendOnlySilentReports);
         }
 
         void setCommentReportFileName(String reportFileName) {
@@ -155,8 +163,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // This key is used to store the silent state of a report sent by
     // handleSilentException().
     static final String IS_SILENT_KEY = "silent";
-    static final String SILENT_PREFIX = IS_SILENT_KEY + "-";
+    static final String SILENT_SUFFIX = "-" + IS_SILENT_KEY;
 
+    // Used in the intent starting CrashReportDialog.
     static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
     // A reference to the system's previous default UncaughtExceptionHandler
@@ -299,14 +308,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void retrieveCrashData(Context context) {
         try {
-            StopWatch.start("COLLECT_CONFIG");
             // Device Configuration when crashing
             mCrashProperties.put(INITIAL_CONFIGURATION_KEY, mInitialConfiguration);
             Configuration crashConf = context.getResources().getConfiguration();
             mCrashProperties.put(CRASH_CONFIGURATION_KEY, ConfigurationInspector.toString(crashConf));
-            Log.i(LOG_TAG, "COLLECT_CONFIG:" + StopWatch.stop("COLLECT_CONFIG"));
 
-            StopWatch.start("COLLECT_PACKAGEINFO");
             PackageManager pm = context.getPackageManager();
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
@@ -319,9 +325,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME_KEY, context.getPackageName());
-            Log.i(LOG_TAG, "COLLECT_PACKAGEINFO:" + StopWatch.stop("COLLECT_PACKAGEINFO"));
 
-            StopWatch.start("COLLECT_ANDROIDBUILD");
             // Device model
             mCrashProperties.put(PHONE_MODEL_KEY, android.os.Build.MODEL);
             // Android version
@@ -341,29 +345,22 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             mCrashProperties.put(TIME_KEY, "" + android.os.Build.TIME);
             mCrashProperties.put(TYPE_KEY, android.os.Build.TYPE);
             mCrashProperties.put(USER_KEY, android.os.Build.USER);
-            Log.i(LOG_TAG, "COLLECT_ANDROIDBUILD:" + StopWatch.stop("COLLECT_ANDROIDBUILD"));
 
-            StopWatch.start("COLLECT_MEMORY");
             // Device Memory
             mCrashProperties.put(TOTAL_MEM_SIZE_KEY, "" + getTotalInternalMemorySize());
             mCrashProperties.put(AVAILABLE_MEM_SIZE_KEY, "" + getAvailableInternalMemorySize());
-            Log.i(LOG_TAG, "COLLECT_MEMORY:" + StopWatch.stop("COLLECT_MEMORY"));
 
             // Application file path
             mCrashProperties.put(FILE_PATH_KEY, context.getFilesDir().getAbsolutePath());
 
-            StopWatch.start("COLLECT_DISPLAY");
             // Main display details
             Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             mCrashProperties.put(DISPLAY_KEY, toString(display));
-            Log.i(LOG_TAG, "COLLECT_DISPLAY:" + StopWatch.stop("COLLECT_DISPLAY"));
 
-            StopWatch.start("COLLECT_DATE");
             // User crash date with local timezone
             Time curDate = new Time();
             curDate.setToNow();
             mCrashProperties.put(USER_CRASH_DATE_KEY, curDate.format3339(false));
-            Log.i(LOG_TAG, "COLLECT_DATE:" + StopWatch.stop("COLLECT_DATE"));
 
             // Add custom info, they are all stored in a single field
             mCrashProperties.put(CUSTOM_DATA_KEY, createCustomInfoString());
@@ -456,8 +453,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The desired interaction mode.
      */
     ReportsSenderWorker handleException(Throwable e, ReportingInteractionMode reportingInteractionMode) {
+        boolean sendOnlySilentReports = false;
+
         if (reportingInteractionMode == null) {
             reportingInteractionMode = mReportingInteractionMode;
+        } else {
+            sendOnlySilentReports = true;
         }
 
         if (e == null) {
@@ -482,11 +483,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
 
-        StopWatch.start("FULL_COLLECT");
         retrieveCrashData(mContext);
-        Log.i(LOG_TAG, "FULL_COLLECT:" + StopWatch.stop("FULL_COLLECT"));
 
-        StopWatch.start("BUILD_STACKTRACE");
         // Build stack trace
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
@@ -501,17 +499,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
         mCrashProperties.put(STACK_TRACE_KEY, result.toString());
         printWriter.close();
-        Log.i(LOG_TAG, "BUILD_STACKTRACE:" + StopWatch.stop("BUILD_STACKTRACE"));
 
-        StopWatch.start("SAVE_REPORT");
         // Always write the report file
         String reportFileName = saveCrashReportFile();
-        Log.i(LOG_TAG, "SAVE_REPORT:" + StopWatch.stop("SAVE_REPORT"));
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST) {
             // Send reports now
-            ReportsSenderWorker wk = new ReportsSenderWorker();
+            ReportsSenderWorker wk = new ReportsSenderWorker(sendOnlySilentReports);
             wk.start();
             return wk;
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
@@ -620,24 +615,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private String saveCrashReportFile() {
         try {
             Log.d(LOG_TAG, "Writing crash report file.");
-            StopWatch.start("SAVE_GETMILLIS");
             Time now = new Time();
             now.setToNow();
             long timestamp = now.toMillis(false);
-            Log.i(LOG_TAG, "SAVE_GETMILLIS: " + StopWatch.stop("SAVE_GETMILLIS"));
-            StopWatch.start("SAVE_BUILDNAME");
             String isSilent = mCrashProperties.getProperty(IS_SILENT_KEY);
-            String fileName = (isSilent != null ? SILENT_PREFIX : "") + "stack-" + timestamp + ".stacktrace";
-            Log.i(LOG_TAG, "SAVE_BUILDNAME: " + StopWatch.stop("SAVE_BUILDNAME"));
+            String fileName = "" + timestamp + (isSilent != null ? SILENT_SUFFIX : "") + ".stacktrace";
             FileOutputStream trace = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
-            StopWatch.start("SAVE_WRITE");
             if (storeToXML()) {
                 mCrashProperties.storeToXML(trace, "");
             } else {
                 mCrashProperties.store(trace, "");
             }
             trace.close();
-            Log.i(LOG_TAG, "SAVE_WRITE: " + StopWatch.stop("SAVE_WRITE"));
             return fileName;
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occured while writing the report file...", e);
@@ -677,8 +666,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * @param context
      *            The application context.
+     * @param sendOnlySilentReports
      */
-    void checkAndSendReports(Context context, String userCommentReportFileName) {
+    void checkAndSendReports(Context context, String userCommentReportFileName, boolean sendOnlySilentReports) {
         try {
 
             String[] reportFilesList = getCrashReportFilesList();
@@ -690,38 +680,39 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 int curIndex = 0;
                 boolean commentedReportFound = false;
                 for (String curFileName : sortedFiles) {
-                    if (curIndex < MAX_SEND_REPORTS) {
-                        FileInputStream input = context.openFileInput(curFileName);
-                        if (storeToXML()) {
-                            previousCrashReport.loadFromXML(input);
-                        } else {
-                            previousCrashReport.load(input);
-                        }
-                        input.close();
-                        // Insert the optional user comment written in
-                        // CrashReportDialog, only on the latest report file
-                        if (!commentedReportFound
-                                && (curFileName.equals(userCommentReportFileName) || (curIndex == sortedFiles.size() - 1 && !""
-                                        .equals(mUserComment)))) {
-                            String custom = previousCrashReport.getProperty(CUSTOM_DATA_KEY);
-                            if (custom == null) {
-                                custom = "";
+                    if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
+                        if (curIndex < MAX_SEND_REPORTS) {
+                            FileInputStream input = context.openFileInput(curFileName);
+                            if (storeToXML()) {
+                                previousCrashReport.loadFromXML(input);
                             } else {
-                                custom += "\n";
+                                previousCrashReport.load(input);
                             }
-                            previousCrashReport.put(USER_COMMENT_KEY, mUserComment);
-                            mUserComment = "";
+                            input.close();
+                            // Insert the optional user comment written in
+                            // CrashReportDialog, only on the latest report file
+                            if (!commentedReportFound
+                                    && (curFileName.equals(userCommentReportFileName) || (curIndex == sortedFiles
+                                            .size() - 1 && !"".equals(mUserComment)))) {
+                                String custom = previousCrashReport.getProperty(CUSTOM_DATA_KEY);
+                                if (custom == null) {
+                                    custom = "";
+                                } else {
+                                    custom += "\n";
+                                }
+                                previousCrashReport.put(USER_COMMENT_KEY, mUserComment);
+                                mUserComment = "";
 
+                            }
+                            sendCrashReport(context, previousCrashReport);
+
+                            // DELETE FILES !!!!
+                            File curFile = new File(context.getFilesDir(), curFileName);
+                            curFile.delete();
                         }
-                        sendCrashReport(context, previousCrashReport);
-
-                        // DELETE FILES !!!!
-                        File curFile = new File(context.getFilesDir(), curFileName);
-                        curFile.delete();
+                        curIndex++;
                     }
-                    curIndex++;
                 }
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -825,15 +816,19 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            the list of reports provided by
      *            {@link #getCrashReportFilesList()}
      * @return True if there only silent reports. False if there is at least one
-     *         nont-silent report.
+     *         non-silent report.
      */
     private boolean containsOnlySilentReports(String[] reportFileNames) {
         for (String reportFileName : reportFileNames) {
-            if (!reportFileName.startsWith(SILENT_PREFIX)) {
+            if (!isSilent(reportFileName)) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private boolean isSilent(String reportFileName) {
+        return reportFileName.contains(SILENT_SUFFIX);
     }
 
     public void setUserComment(String userComment) {
