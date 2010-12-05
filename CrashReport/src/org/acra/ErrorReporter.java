@@ -846,16 +846,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Field SDK_INT = Build.VERSION.class.getField("SDK_INT");
             apiLevel = SDK_INT.getInt(null);
         } catch (SecurityException e) {
-            Log.e(LOG_TAG, "Error : ", e);
             apiLevel = Integer.parseInt(Build.VERSION.SDK);
         } catch (NoSuchFieldException e) {
-            Log.e(LOG_TAG, "Error : ", e);
             apiLevel = Integer.parseInt(Build.VERSION.SDK);
         } catch (IllegalArgumentException e) {
-            Log.e(LOG_TAG, "Error : ", e);
             apiLevel = Integer.parseInt(Build.VERSION.SDK);
         } catch (IllegalAccessException e) {
-            Log.e(LOG_TAG, "Error : ", e);
             apiLevel = Integer.parseInt(Build.VERSION.SDK);
         }
         return apiLevel;
