@@ -202,6 +202,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
+     * Deprecated. Use {@link #putCustomData(String, String)}.
+     * 
+     * @param key
+     * @param value
+     */
+    @Deprecated
+    public void addCustomData(String key, String value) {
+        mCustomParameters.put(key, value);
+    }
+
+    /**
      * <p>
      * Use this method to provide the ErrorReporter with data of your running
      * application. You should call this at several key places in your code the
@@ -218,9 +229,38 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            A key for your custom data.
      * @param value
      *            The value associated to your key.
+     * @return The previous value for this key if there was one, or null.
+     * @see #removeCustomData(String)
+     * @see #getCustomData(String)
      */
-    public void addCustomData(String key, String value) {
-        mCustomParameters.put(key, value);
+    public String putCustomData(String key, String value) {
+        return mCustomParameters.put(key, value);
+    }
+
+    /**
+     * Removes a key/value pair from your reports custom data field.
+     * 
+     * @param key
+     *            The key to be removed.
+     * @return The value for this key before removal.
+     * @see #putCustomData(String, String)
+     * @see #getCustomData(String)
+     */
+    public String removeCustomData(String key) {
+        return mCustomParameters.remove(key);
+    }
+
+    /**
+     * Gets the current value for a key in your reports custom data field.
+     * 
+     * @param key
+     *            The key to be retrieved.
+     * @return The value for this key.
+     * @see #putCustomData(String, String)
+     * @see #removeCustomData(String)
+     */
+    public String getCustomData(String key) {
+        return mCustomParameters.get(key);
     }
 
     /**
@@ -769,21 +809,64 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
                 new ReportsSenderWorker().start();
             } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-                // There are reports to send, display the notification
-                ErrorReporter.getInstance().notifySendReport(filesList[filesList.length - 1]);
+                // There are reports to send, display the notification.
+                // The user comment will be associated to the latest report
+                ErrorReporter.getInstance().notifySendReport(getLatestNonSilentReport(filesList));
             }
         }
 
+    }
+
+    private String getLatestNonSilentReport(String[] filesList) {
+        if (filesList != null && filesList.length > 0) {
+            for (int i = filesList.length - 1; i >= 0; i--) {
+                if (!isSilent(filesList[i])) {
+                    return filesList[i];
+                }
+            }
+            // We should never have this result, but this should be secure...
+            return filesList[filesList.length - 1];
+        } else {
+            return null;
+        }
     }
 
     /**
      * Delete all report files stored.
      */
     public void deletePendingReports() {
+        deletePendingReports(true, true);
+    }
+
+    /**
+     * Delete all pending silent reports.
+     */
+    public void deletePendingSilentReports() {
+        deletePendingReports(true, false);
+    }
+
+    /**
+     * Delete all pending non silent reports.
+     */
+    public void deletePendingNonSilentReports() {
+        deletePendingReports(false, true);
+    }
+
+    /**
+     * Delete pending reports.
+     * 
+     * @param deleteSilentReports
+     *            Set to true to delete silent reports.
+     * @param deleteNonSilentReports
+     *            Set to true to delete non silent reports.
+     */
+    private void deletePendingReports(boolean deleteSilentReports, boolean deleteNonSilentReports) {
         String[] filesList = getCrashReportFilesList();
         if (filesList != null) {
             for (String fileName : filesList) {
-                new File(mContext.getFilesDir(), fileName).delete();
+                if ((isSilent(fileName) && deleteSilentReports) || (!isSilent(fileName) && deleteNonSilentReports)) {
+                    new File(mContext.getFilesDir(), fileName).delete();
+                }
             }
         }
     }
@@ -826,7 +909,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
         return true;
     }
-    
+
     private boolean isSilent(String reportFileName) {
         return reportFileName.contains(SILENT_SUFFIX);
     }
