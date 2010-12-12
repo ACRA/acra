@@ -18,6 +18,7 @@
 
 	<string name="app_name">CrashTest</string>
  
+    <string name="hello">Ready to crash ?</string>
     <string name="btn_crash">CRASH !</string>
     <string name="btn_silent_report">Send silent report</string>
 	
