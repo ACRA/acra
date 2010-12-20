@@ -452,6 +452,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
+        Log.e(ACRA.LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName() + ". Building report.");
         // Generate and send crash report
         ReportsSenderWorker worker = handleException(e);
 
