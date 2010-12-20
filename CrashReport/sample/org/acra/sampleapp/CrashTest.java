@@ -22,7 +22,7 @@ import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
 
-@ReportsCrashes(formKey = "dEhXSldocldoUDBzR25jM2dtSGo2QXc6MQ",
+@ReportsCrashes(formKey = "dGJrUkI0YTN4a2JRcTlDRkZ3aXdsb0E6MQ",
         mode = ReportingInteractionMode.NOTIFICATION,
         resToastText = R.string.crash_toast_text,
         resNotifTickerText = R.string.crash_notif_ticker_text,

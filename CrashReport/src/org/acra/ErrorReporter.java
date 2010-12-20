@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
+import android.Manifest.permission;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -45,6 +47,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PermissionInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -151,6 +154,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String DISPLAY_KEY = "entry.24.single";
     private static final String USER_COMMENT_KEY = "entry.25.single";
     private static final String USER_CRASH_DATE_KEY = "entry.26.single";
+    private static final String LOGCAT_KEY = "entry.27.single";
+    private static final String DROPBOX_KEY = "entry.28.single";
 
     // This is where we collect crash data
     private Properties mCrashProperties = new Properties();
@@ -348,12 +353,26 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void retrieveCrashData(Context context) {
         try {
+            PackageManager pm = context.getPackageManager();
+
+            // Collect DropBox and logcat
+            if (pm != null) {
+                if(pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA will include LogCat and DropBox data.");
+                    mCrashProperties.put(LOGCAT_KEY, LogCatCollector.collectLogCat((ArrayList<String>[])null).toString());
+                    mCrashProperties.put(DROPBOX_KEY, DropBoxCollector.read(mContext));
+                } else {
+                    Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
+                }
+            }
+            
+
+            
             // Device Configuration when crashing
             mCrashProperties.put(INITIAL_CONFIGURATION_KEY, mInitialConfiguration);
             Configuration crashConf = context.getResources().getConfiguration();
             mCrashProperties.put(CRASH_CONFIGURATION_KEY, ConfigurationInspector.toString(crashConf));
 
-            PackageManager pm = context.getPackageManager();
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
@@ -932,6 +951,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         } catch (IllegalAccessException e) {
             apiLevel = Integer.parseInt(Build.VERSION.SDK);
         }
+
         return apiLevel;
     }
 }
