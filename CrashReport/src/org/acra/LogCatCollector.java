@@ -15,7 +15,10 @@ class LogCatCollector {
             try{
                 ArrayList<String> commandLine = new ArrayList<String>();
                 commandLine.add("logcat");
-                commandLine.add("-d");
+                commandLine.add("-t");
+                commandLine.add("200");
+                commandLine.add("-v");
+                commandLine.add("time");
                 ArrayList<String> arguments = ((params != null) && (params.length > 0)) ? params[0] : null;
                 if (null != arguments){
                     commandLine.addAll(arguments);

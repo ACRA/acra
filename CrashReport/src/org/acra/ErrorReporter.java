@@ -47,11 +47,9 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.PermissionInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
@@ -191,7 +189,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
     // Bundle containing resources to be used in UI elements.
-    private Bundle mCrashResources = new Bundle();
+//    private Bundle mCrashResources = new Bundle();
 
     // The Url we have to post the reports to.
     private static Uri mFormUri;
@@ -357,17 +355,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Collect DropBox and logcat
             if (pm != null) {
-                if(pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                if (pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA will include LogCat and DropBox data.");
-                    mCrashProperties.put(LOGCAT_KEY, LogCatCollector.collectLogCat((ArrayList<String>[])null).toString());
-                    mCrashProperties.put(DROPBOX_KEY, DropBoxCollector.read(mContext));
+                    mCrashProperties.put(LOGCAT_KEY, LogCatCollector.collectLogCat((ArrayList<String>[]) null)
+                            .toString());
+                    mCrashProperties.put(DROPBOX_KEY,
+                            DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
                 } else {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
                 }
             }
-            
 
-            
             // Device Configuration when crashing
             mCrashProperties.put(INITIAL_CONFIGURATION_KEY, mInitialConfiguration);
             Configuration crashConf = context.getResources().getConfiguration();
@@ -452,7 +450,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
-        Log.e(ACRA.LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName() + ". Building report.");
+        Log.e(ACRA.LOG_TAG,
+                "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
+                        + ". Building report.");
         // Generate and send crash report
         ReportsSenderWorker worker = handleException(e);
 
@@ -536,7 +536,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    Toast.makeText(mContext, mCrashResources.getInt(ACRA.RES_TOAST_TEXT), Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
                     Looper.loop();
                 }
 
@@ -620,18 +620,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Default notification icon is the warning symbol
-        int icon = android.R.drawable.stat_notify_error;
-        if (mCrashResources.containsKey(ACRA.RES_NOTIF_ICON)) {
-            // Use a developer defined icon if available
-            icon = mCrashResources.getInt(ACRA.RES_NOTIF_ICON);
-        }
+        int icon = ACRA.getConfig().resNotifIcon();
 
-        CharSequence tickerText = mContext.getText(mCrashResources.getInt(ACRA.RES_NOTIF_TICKER_TEXT));
+        CharSequence tickerText = mContext.getText(ACRA.getConfig().resNotifTickerText());
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
 
-        CharSequence contentTitle = mContext.getText(mCrashResources.getInt(ACRA.RES_NOTIF_TITLE));
-        CharSequence contentText = mContext.getText(mCrashResources.getInt(ACRA.RES_NOTIF_TEXT));
+        CharSequence contentTitle = mContext.getText(ACRA.getConfig().resNotifTitle());
+        CharSequence contentText = mContext.getText(ACRA.getConfig().resNotifText());
 
         Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
@@ -824,7 +820,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentReports) {
                     // Display the Toast in TOAST mode only if there are
                     // non-silent reports.
-                    Toast.makeText(mContext, mCrashResources.getInt(ACRA.RES_TOAST_TEXT), Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
                 }
 
                 new ReportsSenderWorker().start();
@@ -889,15 +885,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 }
             }
         }
-    }
-
-    /**
-     * Provide the UI resources necessary for user interaction.
-     * 
-     * @param crashResources
-     */
-    void setCrashResources(Bundle crashResources) {
-        mCrashResources = crashResources;
     }
 
     /**
