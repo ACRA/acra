@@ -55,7 +55,7 @@ public class DropBoxCollector {
                                     dropboxContent.append("Not Text!").append('\n');
                                 }
                                 close.invoke(entry, (Object[]) null);
-                                getNextEntry.invoke(dropbox, tag, msec);
+                                entry = getNextEntry.invoke(dropbox, tag, msec);
                             }
                         } else {
                             dropboxContent.append("Nothing.").append('\n');
