@@ -29,7 +29,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -152,8 +151,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String DISPLAY_KEY = "entry.24.single";
     private static final String USER_COMMENT_KEY = "entry.25.single";
     private static final String USER_CRASH_DATE_KEY = "entry.26.single";
-    private static final String LOGCAT_KEY = "entry.27.single";
-    private static final String DROPBOX_KEY = "entry.28.single";
+    private static final String DROPBOX_KEY = "entry.27.single";
+    private static final String LOGCAT_KEY = "entry.28.single";
+    private static final String EVENTSLOG_KEY = "entry.29.single";
+    private static final String RADIOLOG_KEY = "entry.30.single";
 
     // This is where we collect crash data
     private Properties mCrashProperties = new Properties();
@@ -189,7 +190,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
     // Bundle containing resources to be used in UI elements.
-//    private Bundle mCrashResources = new Bundle();
+    // private Bundle mCrashResources = new Bundle();
 
     // The Url we have to post the reports to.
     private static Uri mFormUri;
@@ -357,8 +358,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (pm != null) {
                 if (pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA will include LogCat and DropBox data.");
-                    mCrashProperties.put(LOGCAT_KEY, LogCatCollector.collectLogCat((ArrayList<String>[]) null)
-                            .toString());
+                    mCrashProperties.put(LOGCAT_KEY, LogCatCollector.collectLogCat(null).toString());
+                    if(ACRA.getConfig().includeEventsLogcat()) {
+                        mCrashProperties.put(EVENTSLOG_KEY, LogCatCollector.collectLogCat("events").toString());
+                    } else {
+                        mCrashProperties.put(EVENTSLOG_KEY, "@ReportsCrashes(includeEventsLog=false)");
+                    }
+                    if(ACRA.getConfig().includeRadioLogcat()) {
+                        mCrashProperties.put(RADIOLOG_KEY, LogCatCollector.collectLogCat("radio").toString());
+                    } else {
+                        mCrashProperties.put(RADIOLOG_KEY, "@ReportsCrashes(includeRadioLog=false)");
+                    }
                     mCrashProperties.put(DROPBOX_KEY,
                             DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
                 } else {

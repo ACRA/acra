@@ -100,7 +100,7 @@ public class ACRA {
     public static final String PREF_ENABLE_ACRA = "acra.enable";
 
     private static Application mApplication;
-    static ReportsCrashes mReportsCrashes;
+    private static ReportsCrashes mReportsCrashes;
     private static OnSharedPreferenceChangeListener mPrefListener;
 
     /**

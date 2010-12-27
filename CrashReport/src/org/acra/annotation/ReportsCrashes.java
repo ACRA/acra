@@ -161,4 +161,33 @@ public @interface ReportsCrashes {
      * DropBoxManager.
      */
     int dropboxCollectionMinutes() default 5;
+
+    /**
+     * <p>
+     * Arguments to be passed to the logcat command line. Default is { "-t",
+     * "200", "-v", "time" } for:
+     * </p>
+     * 
+     * <pre>
+     * logcat -t 200 -v time
+     * </pre>
+     * 
+     * <p>
+     * Do not include -b arguments for buffer selection, use
+     * {@link #includeEventsLogcat()} and {@link #includeRadioLogcat()} to
+     * activate alternative logcat buffers reporting. They will use the same
+     * other arguments as those provided here.
+     * </p>
+     * 
+     * <p>
+     * See <a href=
+     * "http://developer.android.com/intl/fr/guide/developing/tools/adb.html#logcatoptions"
+     * >Listing of logcat Command Options</a>.
+     * </p>
+     */
+    String[] logcatArguments() default { "-t", "200", "-v", "time" };
+
+    boolean includeRadioLogcat() default false;
+
+    boolean includeEventsLogcat() default false;
 }
