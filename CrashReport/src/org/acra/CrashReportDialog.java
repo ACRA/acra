@@ -103,14 +103,12 @@ public class CrashReportDialog extends Activity {
             @Override
             public void onClick(View v) {
                 ErrorReporter err = ErrorReporter.getInstance();
-                // Retrieve user comment
-                if (userComment != null) {
-                    err.setUserComment(userComment.getText().toString());
-                }
 
                 // Start the report sending task
                 ReportsSenderWorker worker = err.new ReportsSenderWorker();
-                worker.setCommentReportFileName(mReportFileName);
+                worker.setApprovePendingReports();
+                // Retrieve user comment
+                worker.setComment(mReportFileName, userComment.getText().toString());
                 worker.start();
 
                 // Optional Toast to thank the user
