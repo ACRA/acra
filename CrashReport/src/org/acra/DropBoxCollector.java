@@ -65,17 +65,17 @@ public class DropBoxCollector {
                 return dropboxContent.toString();
             }
         } catch (SecurityException e) {
-            Log.e(ACRA.LOG_TAG, "Error : ", e);
+            Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         } catch (NoSuchMethodException e) {
-            Log.e(ACRA.LOG_TAG, "Error : ", e);
+            Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         } catch (IllegalArgumentException e) {
-            Log.e(ACRA.LOG_TAG, "Error : ", e);
+            Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         } catch (IllegalAccessException e) {
-            Log.e(ACRA.LOG_TAG, "Error : ", e);
+            Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         } catch (InvocationTargetException e) {
-            Log.e(ACRA.LOG_TAG, "Error : ", e);
+            Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         } catch (NoSuchFieldException e) {
-            Log.e(ACRA.LOG_TAG, "Error : ", e);
+            Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         }
         return "N/A";
     }

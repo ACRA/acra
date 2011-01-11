@@ -774,39 +774,29 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param sendOnlySilentReports
      */
     void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
+        try {
 
-        // Check that the network is available before sending anything
-        ConnectivityManager connectivityManager = (ConnectivityManager) mContext
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo.isConnected()) {
+            String[] reportFiles = getCrashReportFilesList();
+            if (reportFiles != null && reportFiles.length > 0) {
+                Arrays.sort(reportFiles);
+                Properties previousCrashReport = new Properties();
+                // send only a few reports to avoid overloading the network
+                int reportsSentCount = 0;
+                for (String curFileName : reportFiles) {
+                    if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
+                        if (reportsSentCount < MAX_SEND_REPORTS) {
+                            sendCrashReport(context, previousCrashReport);
 
-            try {
-
-                String[] reportFiles = getCrashReportFilesList();
-                if (reportFiles != null && reportFiles.length > 0) {
-                    Arrays.sort(reportFiles);
-                    Properties previousCrashReport = new Properties();
-                    // send only a few reports to avoid overloading the network
-                    int reportsSentCount = 0;
-                    for (String curFileName : reportFiles) {
-                        if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
-                            if (reportsSentCount < MAX_SEND_REPORTS) {
-                                sendCrashReport(context, previousCrashReport);
-
-                                // DELETE FILES !!!!
-                                File curFile = new File(context.getFilesDir(), curFileName);
-                                curFile.delete();
-                            }
-                            reportsSentCount++;
+                            // DELETE FILES !!!!
+                            File curFile = new File(context.getFilesDir(), curFileName);
+                            curFile.delete();
                         }
+                        reportsSentCount++;
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        } else {
-            Log.w(LOG_TAG, "Network not available. Reports will be sent later.");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -822,7 +812,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @return
      */
     private static boolean storeToXML() {
-        return getAPILevel() < 5;
+        return Compatibility.getAPILevel() < 5;
     }
 
     /**
@@ -913,8 +903,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (filesList != null) {
             boolean isReportApproved = false;
             for (String fileName : filesList) {
-                isReportApproved = isApproved(fileName); 
-                if (( isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
+                isReportApproved = isApproved(fileName);
+                if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
                     new File(mContext.getFilesDir(), fileName).delete();
                 }
             }
@@ -970,24 +960,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private boolean isApproved(String reportFileName) {
         return isSilent(reportFileName) || reportFileName.contains(APPROVED_SUFFIX);
-    }
-
-    private static int getAPILevel() {
-        int apiLevel;
-        try {
-            Field SDK_INT = Build.VERSION.class.getField("SDK_INT");
-            apiLevel = SDK_INT.getInt(null);
-        } catch (SecurityException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        } catch (NoSuchFieldException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        } catch (IllegalArgumentException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        } catch (IllegalAccessException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        }
-
-        return apiLevel;
     }
 
     private static void addCommentToReport(Context context, String commentedReportFileName, String userComment) {
