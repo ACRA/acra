@@ -41,9 +41,7 @@ import android.widget.Toast;
  */
 public class CrashReportDialog extends Activity {
 
-    /**
-     * Default left title icon.
-     */
+
     private EditText userComment = null;
     String mReportFileName = null;
 

@@ -118,6 +118,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         void setComment(String reportFileName, String userComment) {
             mCommentedReportFileName = reportFileName;
+            mUserComment = userComment;
         }
 
         public void setApprovePendingReports() {
@@ -785,6 +786,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 for (String curFileName : reportFiles) {
                     if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
                         if (reportsSentCount < MAX_SEND_REPORTS) {
+                            FileInputStream input = context.openFileInput(curFileName);
+                            if (storeToXML()) {
+                                previousCrashReport.loadFromXML(input);
+                            } else {
+                                previousCrashReport.load(input);
+                            }
+                            input.close();
                             sendCrashReport(context, previousCrashReport);
 
                             // DELETE FILES !!!!
@@ -963,24 +971,28 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     private static void addCommentToReport(Context context, String commentedReportFileName, String userComment) {
-        try {
-            FileInputStream input = context.openFileInput(commentedReportFileName);
-            Properties commentedCrashReport = new Properties();
-            if (storeToXML()) {
-                commentedCrashReport.loadFromXML(input);
-            } else {
-                commentedCrashReport.load(input);
+        if (commentedReportFileName != null && userComment != null) {
+            try {
+                FileInputStream input = context.openFileInput(commentedReportFileName);
+                Properties commentedCrashReport = new Properties();
+                if (storeToXML()) {
+                    Log.d(LOG_TAG, "Loading XML report to insert user comment.");
+                    commentedCrashReport.loadFromXML(input);
+                } else {
+                    Log.d(LOG_TAG, "Loading Properties report to insert user comment.");
+                    commentedCrashReport.load(input);
+                }
+                input.close();
+                commentedCrashReport.put(USER_COMMENT_KEY, userComment);
+                saveCrashReportFile(commentedReportFileName, commentedCrashReport);
+            } catch (FileNotFoundException e) {
+                Log.e(LOG_TAG, "Error : ", e);
+            } catch (InvalidPropertiesFormatException e) {
+                Log.e(LOG_TAG, "Error : ", e);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error : ", e);
             }
-            input.close();
-            commentedCrashReport.put(USER_COMMENT_KEY, userComment);
-            saveCrashReportFile(commentedReportFileName, commentedCrashReport);
-        } catch (FileNotFoundException e) {
-            Log.e(LOG_TAG, "Error : ", e);
-        } catch (InvalidPropertiesFormatException e) {
-            Log.e(LOG_TAG, "Error : ", e);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error : ", e);
-        }
 
+        }
     }
 }

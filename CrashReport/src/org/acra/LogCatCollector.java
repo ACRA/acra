@@ -1,15 +1,15 @@
 package org.acra;
 
+import static org.acra.ACRA.LOG_TAG;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import util.BoundedLinkedList;
-
 import android.util.Log;
 
 class LogCatCollector {
@@ -44,9 +44,10 @@ class LogCatCollector {
             logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
             commandLine.addAll(logcatArgumentsList);
 
-            Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[0]));
+            Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
+            Log.d(LOG_TAG, "Retrieving logcat output...");
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 logcatBuf.add(line);
