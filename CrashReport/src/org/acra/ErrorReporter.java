@@ -26,7 +26,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -48,10 +47,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
@@ -111,7 +107,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          */
         @Override
         public void run() {
-            approvePendingReports();
+            if(mApprovePendingReports) {
+                approvePendingReports();
+            }
             addCommentToReport(mContext, mCommentedReportFileName, mUserComment);
             checkAndSendReports(mContext, mSendOnlySilentReports);
         }
@@ -163,10 +161,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private static final String DISPLAY_KEY = "entry.24.single";
     private static final String USER_COMMENT_KEY = "entry.25.single";
     private static final String USER_CRASH_DATE_KEY = "entry.26.single";
-    private static final String DROPBOX_KEY = "entry.27.single";
-    private static final String LOGCAT_KEY = "entry.28.single";
-    private static final String EVENTSLOG_KEY = "entry.29.single";
-    private static final String RADIOLOG_KEY = "entry.30.single";
+    private static final String DUMPSYS_MEMINFO_KEY = "entry.27.single";
+    private static final String DROPBOX_KEY = "entry.28.single";
+    private static final String LOGCAT_KEY = "entry.29.single";
+    private static final String EVENTSLOG_KEY = "entry.30.single";
+    private static final String RADIOLOG_KEY = "entry.31.single";
 
     // This is where we collect crash data
     private static Properties mCrashProperties = new Properties();
@@ -376,6 +375,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void retrieveCrashData(Context context) {
         try {
+            
+            // Collect meminfo
+            mCrashProperties.put(DUMPSYS_MEMINFO_KEY, DumpSysCollector.collectMemInfo());
+            
             PackageManager pm = context.getPackageManager();
 
             // Collect DropBox and logcat

@@ -21,6 +21,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -108,13 +109,14 @@ public class ACRA {
      * @param app
      */
     public static void init(Application app) {
+        Log.i(LOG_TAG, "My PID: " + Process.myPid());
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
         if (mReportsCrashes != null) {
 
             SharedPreferences prefs = getACRASharedPreferences();
             Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
-            // We HAVE to keep a reference otrherwise the listener could be
+            // We HAVE to keep a reference otherwise the listener could be
             // garbage collected:
             // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
             mPrefListener = new OnSharedPreferenceChangeListener() {

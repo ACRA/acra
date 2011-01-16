@@ -21,9 +21,8 @@ import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
-import android.os.DropBoxManager;
 
-@ReportsCrashes(formKey = "dFVkcENacjNPRDZJVWZhenZoSEJqRVE6MQ",
+@ReportsCrashes(formKey = "dFpaTk5GZ1phemI4c0hwMkxYZWh0M1E6MQ",
         mode = ReportingInteractionMode.NOTIFICATION,
         resToastText = R.string.crash_toast_text,
         resNotifTickerText = R.string.crash_notif_ticker_text,
@@ -49,10 +48,10 @@ public class CrashTest extends Application {
     }
 
     private void addDropBoxEvents() {
-        DropBoxManager dbm = (DropBoxManager) getSystemService(DROPBOX_SERVICE);
-        dbm.addText("toto", "gabü");
-        dbm.addText("tata", "zhô");
-        dbm.addText("titi", "meuh");
+//        DropBoxManager dbm = (DropBoxManager) getSystemService(DROPBOX_SERVICE);
+//        dbm.addText("toto", "gabü");
+//        dbm.addText("tata", "zhô");
+//        dbm.addText("titi", "meuh");
     }
 
 }

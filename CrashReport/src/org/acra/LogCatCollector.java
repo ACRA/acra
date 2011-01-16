@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2010 Kevin Gaudin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -27,18 +42,16 @@ class LogCatCollector {
             }
             // "-t n" argument has been introduced in FroYo (API level 8). For
             // devices with lower API level, we will have to emulate its job.
-            boolean fakeTail = false;
             int tailCount = -1;
             List<String> logcatArgumentsList = new ArrayList<String>(Arrays.asList(ACRA.getConfig().logcatArguments()));
 
             int tailIndex = logcatArgumentsList.indexOf("-t");
             if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
-                tailCount = Integer.parseInt(logcatArgumentsList.remove(tailIndex + 1));
+                tailCount = Integer.parseInt(logcatArgumentsList.get(tailIndex + 1));
                 if (Compatibility.getAPILevel() < 8) {
-
+                    logcatArgumentsList.remove(tailIndex + 1);
                     logcatArgumentsList.remove(tailIndex);
                     logcatArgumentsList.add("-d");
-                    fakeTail = true;
                 }
             }
             logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
@@ -50,33 +63,13 @@ class LogCatCollector {
             Log.d(LOG_TAG, "Retrieving logcat output...");
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                logcatBuf.add(line);
-                logcatBuf.add("\n");
+                logcatBuf.add(line+"\n");
             }
 
         } catch (IOException e) {
-            Log.e(ACRA.LOG_TAG, "CollectLogTask.doInBackground failed", e);
+            Log.e(ACRA.LOG_TAG, "LogCatCollector.collectLogcat could not retrieve data.", e);
         }
 
         return logcatBuf.toString();
-    }
-
-    /**
-     * Keeps only a given number of trailing lines from a StringBuilder.
-     * 
-     * @param sBuilder
-     * @param linesToKeep
-     */
-    private static void tail(StringBuilder sBuilder, int linesToKeep) {
-        int idxNewLine = sBuilder.indexOf("\n");
-        ArrayList<Integer> listNewLines = new ArrayList<Integer>();
-
-        while (idxNewLine != -1) {
-            listNewLines.add(idxNewLine);
-        }
-        if (listNewLines.size() > linesToKeep) {
-            int idxTruncate = listNewLines.get(listNewLines.size() - 1 - linesToKeep);
-            sBuilder.delete(0, idxTruncate + 1); // exclude NewLine char
-        }
     }
 }
