@@ -16,6 +16,8 @@
 package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.GoogleFormSender;
+import org.acra.sender.HttpPostSender;
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -36,7 +38,7 @@ import android.util.Log;
  * 
  */
 public class ACRA {
-    protected static final String LOG_TAG = ACRA.class.getSimpleName();
+    public static final String LOG_TAG = ACRA.class.getSimpleName();
 
     /**
      * Bundle key for the icon in the status bar notification.
@@ -109,7 +111,6 @@ public class ACRA {
      * @param app
      */
     public static void init(Application app) {
-        Log.i(LOG_TAG, "My PID: " + Process.myPid());
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
         if (mReportsCrashes != null) {
@@ -181,7 +182,18 @@ public class ACRA {
         checkCrashResources();
         Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
         // Initialize ErrorReporter with all required data
+
+        // First try to instantiate a sender for a Google Form
         ErrorReporter errorReporter = ErrorReporter.getInstance();
+        if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
+            errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
+        }
+
+        // If formUri is set, instantiate a sender for a generic HTTP POST form
+        if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
+            errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri()));
+        }
+        // TODO: Create a new sender for generic HTTP POST
         errorReporter.setFormUri(getFormUri());
         errorReporter.setReportingInteractionMode(mReportsCrashes.mode());
 

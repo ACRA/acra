@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra;
+package org.acra.sender;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +35,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.acra.ACRA;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import android.util.Log;
@@ -61,7 +62,7 @@ class HttpUtils {
      * @throws KeyManagementException
      * @throws NoSuchAlgorithmException
      */
-    static void doPost(Map<?, ?> parameters, URL url)
+    public static void doPost(Map<?, ?> parameters, URL url)
             throws UnsupportedEncodingException, IOException,
             KeyManagementException, NoSuchAlgorithmException {
 

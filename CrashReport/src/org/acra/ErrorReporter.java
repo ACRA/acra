@@ -15,6 +15,8 @@
  */
 package org.acra;
 
+import static org.acra.ACRA.LOG_TAG;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,15 +28,18 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+
+import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderException;
 
 import android.Manifest.permission;
 import android.app.Activity;
@@ -80,8 +85,9 @@ import android.widget.Toast;
  * </p>
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
-    private static final String LOG_TAG = ACRA.LOG_TAG;
 
+    private static ArrayList<ReportSender> mReportSenders = new ArrayList<ReportSender>();
+    
     /**
      * Checks and send reports on a separate Thread.
      * 
@@ -91,7 +97,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         private String mCommentedReportFileName = null;
         private String mUserComment = null;
         private boolean mSendOnlySilentReports = false;
-        private boolean mApprovePendingReports;
+        private boolean mApprovePendingReports = false;
 
         public ReportsSenderWorker(boolean sendOnlySilentReports) {
             mSendOnlySilentReports = sendOnlySilentReports;
@@ -487,6 +493,25 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
+        if(mReportingInteractionMode != ReportingInteractionMode.SILENT) {
+            new Thread() {
+
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see java.lang.Thread#run()
+                 */
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    Toast.makeText(mContext, "Collecting crash report data.", Toast.LENGTH_LONG).show();
+                    Looper.loop();
+                }
+
+            }.start();
+
+        }
+        
         Log.e(ACRA.LOG_TAG,
                 "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
                         + ". Building report.");
@@ -689,16 +714,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @throws KeyManagementException
      *             Might be thrown if sending over https.
      */
-    private static void sendCrashReport(Context context, Properties errorContent) throws UnsupportedEncodingException,
-            IOException, KeyManagementException, NoSuchAlgorithmException {
-        // values observed in the GoogleDocs original html form
-        errorContent.put("pageNumber", "0");
-        errorContent.put("backupCache", "");
-        errorContent.put("submit", "Envoyer");
-
-        URL reportUrl = new URL(mFormUri.toString());
-        Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-        HttpUtils.doPost(errorContent, reportUrl);
+    private static void sendCrashReport(Context context, Properties errorContent) throws ReportSenderException {
+//        // values observed in the GoogleDocs original html form
+//        errorContent.put("pageNumber", "0");
+//        errorContent.put("backupCache", "");
+//        errorContent.put("submit", "Envoyer");
+//
+//        URL reportUrl = new URL(mFormUri.toString());
+//        Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
+//        HttpUtils.doPost(errorContent, reportUrl);
+        for(ReportSender sender : mReportSenders) {
+            sender.send(errorContent);
+        }
     }
 
     /**
@@ -997,5 +1024,25 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
 
         }
+    }
+    
+    public void addReportSender(ReportSender sender) {
+        mReportSenders.add(sender);
+    }
+
+    public void removeReportSender(ReportSender sender) {
+        mReportSenders.remove(sender);
+    }
+
+    public void removeReportSenders(Class<?> senderClass) {
+        for(ReportSender sender : mReportSenders) {
+            if(senderClass.isInstance(sender)) {
+                mReportSenders.remove(sender);
+            }
+        }
+    }
+    
+    public void removeAllReportSenders() {
+        mReportSenders.clear();
     }
 }
