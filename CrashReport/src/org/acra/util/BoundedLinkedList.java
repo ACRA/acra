@@ -1,4 +1,4 @@
-package util;
+package org.acra.util;
 
 import java.util.Collection;
 import java.util.LinkedList;

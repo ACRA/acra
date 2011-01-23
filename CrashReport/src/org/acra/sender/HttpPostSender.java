@@ -2,14 +2,9 @@ package org.acra.sender;
 
 import static org.acra.ACRA.LOG_TAG;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
 
+import org.acra.CrashReportData;
 
 import android.net.Uri;
 import android.util.Log;
@@ -22,7 +17,7 @@ public class HttpPostSender implements ReportSender {
     }
 
     @Override
-    public void send(Properties report) throws ReportSenderException {
+    public void send(CrashReportData report) throws ReportSenderException {
 
         try {
             URL reportUrl;

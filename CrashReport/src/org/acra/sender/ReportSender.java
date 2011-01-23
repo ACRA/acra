@@ -1,7 +1,8 @@
 package org.acra.sender;
 
-import java.util.Properties;
+import org.acra.CrashReportData;
+
 
 public interface ReportSender {
-    public void send(Properties report) throws ReportSenderException;
+    public void send(CrashReportData errorContent) throws ReportSenderException;
 }

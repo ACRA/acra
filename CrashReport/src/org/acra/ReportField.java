@@ -1,0 +1,38 @@
+package org.acra;
+
+public enum ReportField {
+    VERSION_NAME,
+    PACKAGE_NAME,
+    FILE_PATH,
+    PHONE_MODEL,
+    ANDROID_VERSION,
+    BOARD,
+    BRAND,
+    DEVICE,
+    BUILD_DISPLAY,
+    FINGERPRINT,
+    HOST,
+    ID,
+    MODEL,
+    PRODUCT,
+    TAGS,
+    TIME,
+    TYPE,
+    USER,
+    TOTAL_MEM_SIZE,
+    AVAILABLE_MEM_SIZE,
+    CUSTOM_DATA,
+    STACK_TRACE,
+    INITIAL_CONFIGURATION,
+    CRASH_CONFIGURATION,
+    DISPLAY,
+    USER_COMMENT,
+    USER_CRASH_DATE,
+    DUMPSYS_MEMINFO,
+    DROPBOX,
+    LOGCAT,
+    EVENTSLOG,
+    RADIOLOG,
+    IS_SILENT;
+
+}

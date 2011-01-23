@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import util.BoundedLinkedList;
+import org.acra.util.BoundedLinkedList;
+
 import android.util.Log;
 
 class LogCatCollector {

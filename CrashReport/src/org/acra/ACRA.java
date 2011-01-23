@@ -23,7 +23,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
-import android.os.Process;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -193,8 +192,7 @@ public class ACRA {
         if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
             errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri()));
         }
-        // TODO: Create a new sender for generic HTTP POST
-        errorReporter.setFormUri(getFormUri());
+
         errorReporter.setReportingInteractionMode(mReportsCrashes.mode());
 
         // Activate the ErrorReporter
