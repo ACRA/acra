@@ -3,8 +3,9 @@ package org.acra.sender;
 import static org.acra.ACRA.LOG_TAG;
 
 import java.net.URL;
+import java.util.Map;
 
-import org.acra.CrashReportData;
+import org.acra.ReportField;
 import org.acra.util.HttpUtils;
 
 import android.net.Uri;
@@ -18,7 +19,7 @@ public class HttpPostSender implements ReportSender {
     }
 
     @Override
-    public void send(CrashReportData report) throws ReportSenderException {
+    public void send(Map<ReportField, String> report) throws ReportSenderException {
 
         try {
             URL reportUrl;

@@ -1,8 +1,10 @@
 package org.acra.sender;
 
-import org.acra.CrashReportData;
+import java.util.Map;
+
+import org.acra.ReportField;
 
 
 public interface ReportSender {
-    public void send(CrashReportData errorContent) throws ReportSenderException;
+    public void send(Map<ReportField, String> errorContent) throws ReportSenderException;
 }
