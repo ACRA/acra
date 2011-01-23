@@ -373,8 +373,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 						context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
 					Log.i(ACRA.LOG_TAG,
 							"READ_LOGS granted! ACRA will include LogCat and DropBox data.");
-					mCrashProperties.put(LOGCAT, LogCatCollector
-							.collectLogCat(null).toString());
+					mCrashProperties.put(LOGCAT,
+							LogCatCollector.collectLogCat(null).toString());
 					if (ACRA.getConfig().includeEventsLogcat()) {
 						mCrashProperties.put(EVENTSLOG, LogCatCollector
 								.collectLogCat("events").toString());
@@ -390,8 +390,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 								"@ReportsCrashes(includeRadioLog=false)");
 					}
 					mCrashProperties
-							.put(DROPBOX, DropBoxCollector.read(mContext,
-									ACRA.getConfig().additionalDropBoxTags()));
+							.put(DROPBOX, DropBoxCollector.read(mContext, ACRA
+									.getConfig().additionalDropBoxTags()));
 				} else {
 					Log.i(ACRA.LOG_TAG,
 							"READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
@@ -399,8 +399,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 			}
 
 			// Device Configuration when crashing
-			mCrashProperties.put(INITIAL_CONFIGURATION,
-					mInitialConfiguration);
+			mCrashProperties.put(INITIAL_CONFIGURATION, mInitialConfiguration);
 			Configuration crashConf = context.getResources().getConfiguration();
 			mCrashProperties.put(CRASH_CONFIGURATION,
 					ConfigurationInspector.toString(crashConf));
@@ -409,13 +408,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 			pi = pm.getPackageInfo(context.getPackageName(), 0);
 			if (pi != null) {
 				// Application Version
-				mCrashProperties.put(VERSION_NAME,
-						pi.versionName != null ? "'" + pi.versionName
-								: "not set");
+				mCrashProperties.put(VERSION_NAME, pi.versionName != null ? "'"
+						+ pi.versionName : "not set");
 			} else {
 				// Could not retrieve package info...
-				mCrashProperties.put(PACKAGE_NAME,
-						"Package info unavailable");
+				mCrashProperties.put(PACKAGE_NAME, "Package info unavailable");
 			}
 			// Application Package name
 			mCrashProperties.put(PACKAGE_NAME, context.getPackageName());
@@ -437,8 +434,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 			mCrashProperties.put(MODEL, android.os.Build.MODEL);
 			mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
 			mCrashProperties.put(TAGS, android.os.Build.TAGS);
-			mCrashProperties
-					.put(TIME, Long.toString(android.os.Build.TIME));
+			mCrashProperties.put(TIME, Long.toString(android.os.Build.TIME));
 			mCrashProperties.put(TYPE, android.os.Build.TYPE);
 			mCrashProperties.put(USER, android.os.Build.USER);
 
@@ -461,8 +457,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 			// User crash date with local timezone
 			Time curDate = new Time();
 			curDate.setToNow();
-			mCrashProperties
-					.put(USER_CRASH_DATE, curDate.format3339(false));
+			mCrashProperties.put(USER_CRASH_DATE, curDate.format3339(false));
 
 			// Add custom info, they are all stored in a single field
 			mCrashProperties.put(CUSTOM_DATA, createCustomInfoString());
@@ -795,16 +790,22 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 	 */
 	String[] getCrashReportFilesList() {
 		File dir = mContext.getFilesDir();
+		if (dir != null) {
+			Log.d(LOG_TAG,
+					"Looking for error files in " + dir.getAbsolutePath());
 
-		Log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
-
-		// Filter for ".stacktrace" files
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".stacktrace");
-			}
-		};
-		return dir.list(filter);
+			// Filter for ".stacktrace" files
+			FilenameFilter filter = new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".stacktrace");
+				}
+			};
+			return dir.list(filter);
+		} else {
+			Log.w(LOG_TAG,
+					"Application files directory does not exist! The application may not be installed correctly. Please try reinstalling.");
+			return new String[0];
+		}
 	}
 
 	/**
