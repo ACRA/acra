@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.acra.CrashReportData;
 import org.acra.ReportField;
+import org.acra.util.HttpUtils;
 
 import android.net.Uri;
 import android.util.Log;

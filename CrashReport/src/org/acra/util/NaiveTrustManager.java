@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.sender;
+package org.acra.util;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

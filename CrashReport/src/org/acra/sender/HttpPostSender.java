@@ -5,6 +5,7 @@ import static org.acra.ACRA.LOG_TAG;
 import java.net.URL;
 
 import org.acra.CrashReportData;
+import org.acra.util.HttpUtils;
 
 import android.net.Uri;
 import android.util.Log;

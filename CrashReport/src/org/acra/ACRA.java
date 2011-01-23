@@ -22,7 +22,6 @@ import org.acra.sender.HttpPostSender;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -219,12 +218,6 @@ public class ACRA {
             }
             break;
         }
-    }
-
-    private static Uri getFormUri() {
-
-        return mReportsCrashes.formUri().equals("") ? Uri.parse("http://spreadsheets.google.com/formResponse?formkey="
-                + mReportsCrashes.formKey() + "&amp;ifq") : Uri.parse(mReportsCrashes.formUri());
     }
 
     /**

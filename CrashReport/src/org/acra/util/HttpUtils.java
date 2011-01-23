@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.sender;
+package org.acra.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import android.util.Log;
 /**
  * Helper class to send POST data over HTTP/HTTPS.
  */
-class HttpUtils {
+public class HttpUtils {
     private static final String LOG_TAG = ACRA.LOG_TAG;
 
     private static final TrustManager[] TRUST_MANAGER = { new NaiveTrustManager() };
