@@ -238,7 +238,7 @@ public class ACRA {
         }
     }
 
-    static ReportsCrashes getConfig() {
+    public static ReportsCrashes getConfig() {
         return mReportsCrashes;
     }
 

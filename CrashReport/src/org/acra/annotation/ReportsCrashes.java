@@ -190,4 +190,7 @@ public @interface ReportsCrashes {
     boolean includeRadioLogcat() default false;
 
     boolean includeEventsLogcat() default false;
+    
+    String formUriBasicAuthLogin();
+    String formUriBasicAuthPassword();
 }

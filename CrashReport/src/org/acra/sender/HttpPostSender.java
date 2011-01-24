@@ -5,6 +5,7 @@ import static org.acra.ACRA.LOG_TAG;
 import java.net.URL;
 import java.util.Map;
 
+import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.util.HttpUtils;
 
@@ -25,7 +26,7 @@ public class HttpPostSender implements ReportSender {
             URL reportUrl;
             reportUrl = new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-            HttpUtils.doPost(report, reportUrl);
+            HttpUtils.doPost(report, reportUrl, ACRA.getConfig().formUriBasicAuthLogin(), ACRA.getConfig().formUriBasicAuthPassword());
         } catch (Exception e) {
             throw new ReportSenderException("Error while sending report to Http Post Form.", e);
         }

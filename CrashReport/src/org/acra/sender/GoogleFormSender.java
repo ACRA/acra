@@ -31,7 +31,7 @@ public class GoogleFormSender implements ReportSender {
             URL reportUrl;
             reportUrl = new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-            HttpUtils.doPost(formParams, reportUrl);
+            HttpUtils.doPost(formParams, reportUrl, null, null);
         } catch (Exception e) {
             throw new ReportSenderException("Error while sending report to Google Form.", e);
         }
