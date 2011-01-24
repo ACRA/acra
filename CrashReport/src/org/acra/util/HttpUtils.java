@@ -36,6 +36,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import android.util.Log;
@@ -83,7 +84,7 @@ public class HttpUtils {
 		}
 
 		// Add BASIC auth credentials if available
-		if (login != null || password != null) {
+		if (!isNull(login) || !isNull(password)) {
 			String userPassword = (login != null ? login : "") + ":"
 					+ (password != null ? password : "");
 			String encodedAuth = Base64.encodeToString(userPassword.getBytes(),
@@ -112,6 +113,10 @@ public class HttpUtils {
 			}
 		}
 		rd.close();
+	}
+
+	private static boolean isNull(String aString) {
+		return aString == null || aString == ReportsCrashes.NULL_VALUE;
 	}
 
 	/**
