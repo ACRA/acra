@@ -189,7 +189,7 @@ public class ACRA {
 
         // If formUri is set, instantiate a sender for a generic HTTP POST form
         if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
-            errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri()));
+            errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(),null));
         }
 
         errorReporter.setReportingInteractionMode(mReportsCrashes.mode());

@@ -71,15 +71,17 @@ public class HttpUtils {
 
 		// Construct data
 		StringBuilder dataBfr = new StringBuilder();
-		Iterator<?> iKeys = parameters.keySet().iterator();
-		while (iKeys.hasNext()) {
+		for(Object key : parameters.keySet()) {
 			if (dataBfr.length() != 0) {
 				dataBfr.append('&');
 			}
-			String key = (String) iKeys.next();
-			dataBfr.append(URLEncoder.encode(key, "UTF-8"))
+			Object value = parameters.get(key);
+			if(value == null) {
+			    value = "";
+			}
+			dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"))
 					.append('=')
-					.append(URLEncoder.encode((String) parameters.get(key),
+					.append(URLEncoder.encode(value.toString(),
 							"UTF-8"));
 		}
 
