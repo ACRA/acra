@@ -16,12 +16,15 @@
 package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.EmailIntentSender;
 import org.acra.sender.GoogleFormSender;
 import org.acra.sender.HttpPostSender;
 
+import android.Manifest.permission;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -179,20 +182,33 @@ public class ACRA {
     private static void initAcra() throws ACRAConfigurationException {
         checkCrashResources();
         Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+
         // Initialize ErrorReporter with all required data
-
-        // First try to instantiate a sender for a Google Form
         ErrorReporter errorReporter = ErrorReporter.getInstance();
-        if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
-            errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
-        }
-
-        // If formUri is set, instantiate a sender for a generic HTTP POST form
-        if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
-            errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(),null));
-        }
-
         errorReporter.setReportingInteractionMode(mReportsCrashes.mode());
+
+        // Check for Internet permission, if not granted fallback to email
+        // report
+        PackageManager pm = mApplication.getPackageManager();
+        if (pm != null) {
+            if (pm.checkPermission(permission.INTERNET, mApplication.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                // First try to instantiate a sender for a Google Form
+                if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
+                    errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
+                }
+
+                // If formUri is set, instantiate a sender for a generic HTTP
+                // POST form
+                if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
+                    errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
+                }
+            } else if(!"".equals(mReportsCrashes.mailTo()) && (mReportsCrashes.mode() == ReportingInteractionMode.NOTIFICATION || mReportsCrashes.mode() == ReportingInteractionMode.TOAST)) {
+                Log.w(LOG_TAG, "Permission " + permission.INTERNET + " is not granted to " + mApplication.getPackageName() + ". Reports will be sent by email (if accepted by user).");
+                errorReporter.addReportSender(new EmailIntentSender(mApplication));
+            } else {
+                Log.e(LOG_TAG, mApplication.getPackageName() + " should be granted permission " + permission.INTERNET + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also use TOAST or NOTIFICATION to enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
+            }
+        } 
 
         // Activate the ErrorReporter
         errorReporter.init(mApplication.getApplicationContext());

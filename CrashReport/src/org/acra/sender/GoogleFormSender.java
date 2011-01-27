@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.acra.CrashReportData;
 import org.acra.ReportField;
 import org.acra.util.HttpUtils;
 
@@ -20,7 +21,7 @@ public class GoogleFormSender implements ReportSender {
     }
 
     @Override
-    public void send(Map<ReportField, String> report) throws ReportSenderException {
+    public void send(CrashReportData report) throws ReportSenderException {
         Map<String,String> formParams = remap(report);
         // values observed in the GoogleDocs original html form
         formParams.put("pageNumber", "0");

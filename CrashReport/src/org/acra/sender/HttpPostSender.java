@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.acra.ACRA;
+import org.acra.CrashReportData;
 import org.acra.ReportField;
 import org.acra.util.HttpUtils;
 
@@ -23,7 +24,7 @@ public class HttpPostSender implements ReportSender {
     }
 
     @Override
-    public void send(Map<ReportField, String> report) throws ReportSenderException {
+    public void send(CrashReportData report) throws ReportSenderException {
 
         try {
             URL reportUrl;

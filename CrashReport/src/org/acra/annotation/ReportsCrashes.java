@@ -194,4 +194,5 @@ public @interface ReportsCrashes {
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
     String formUriBasicAuthLogin() default NULL_VALUE;
     String formUriBasicAuthPassword() default NULL_VALUE;
+    String mailTo() default "";
 }
