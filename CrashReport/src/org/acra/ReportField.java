@@ -1,7 +1,8 @@
 package org.acra;
 
 public enum ReportField {
-    VERSION_NAME,
+    APP_VERSION_CODE,
+    APP_VERSION_NAME,
     PACKAGE_NAME,
     FILE_PATH,
     PHONE_MODEL,
@@ -33,6 +34,7 @@ public enum ReportField {
     LOGCAT,
     EVENTSLOG,
     RADIOLOG,
-    IS_SILENT;
+    IS_SILENT,
+    DEVICE_ID;
 
 }

@@ -17,6 +17,8 @@ package org.acra;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.ANDROID_VERSION;
+import static org.acra.ReportField.APP_VERSION_CODE;
+import static org.acra.ReportField.APP_VERSION_NAME;
 import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
 import static org.acra.ReportField.BOARD;
 import static org.acra.ReportField.BRAND;
@@ -24,6 +26,7 @@ import static org.acra.ReportField.BUILD_DISPLAY;
 import static org.acra.ReportField.CRASH_CONFIGURATION;
 import static org.acra.ReportField.CUSTOM_DATA;
 import static org.acra.ReportField.DEVICE;
+import static org.acra.ReportField.DEVICE_ID;
 import static org.acra.ReportField.DISPLAY;
 import static org.acra.ReportField.DROPBOX;
 import static org.acra.ReportField.DUMPSYS_MEMINFO;
@@ -45,10 +48,9 @@ import static org.acra.ReportField.TAGS;
 import static org.acra.ReportField.TIME;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
 import static org.acra.ReportField.TYPE;
+import static org.acra.ReportField.USER;
 import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_CRASH_DATE;
-import static org.acra.ReportField.USER;
-import static org.acra.ReportField.VERSION_NAME;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -84,6 +86,7 @@ import android.content.res.Configuration;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
+import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -385,6 +388,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 } else {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
                 }
+                
+                // Retrieve UDID(IMEI) if permission is available
+                if(pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                    String deviceId = tm.getDeviceId(); 
+                    if(deviceId != null) {
+                        mCrashProperties.put(DEVICE_ID, deviceId);
+                    }
+                }
             }
 
             // Device Configuration when crashing
@@ -396,7 +408,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
                 // Application Version
-                mCrashProperties.put(VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
+                mCrashProperties.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
+                mCrashProperties.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
             } else {
                 // Could not retrieve package info...
                 mCrashProperties.put(PACKAGE_NAME, "Package info unavailable");

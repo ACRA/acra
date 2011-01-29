@@ -200,6 +200,6 @@ public @interface ReportsCrashes {
 
     String mailTo() default "";
 
-    ReportField[] mailReportFields() default { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION, ReportField.VERSION_NAME,
+    ReportField[] mailReportFields() default { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION, ReportField.APP_VERSION_NAME,
             ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE };
 }
