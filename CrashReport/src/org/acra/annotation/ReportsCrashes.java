@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.acra.ACRA;
+import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 
 import android.content.Context;
@@ -192,7 +193,13 @@ public @interface ReportsCrashes {
     boolean includeEventsLogcat() default false;
 
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
+
     String formUriBasicAuthLogin() default NULL_VALUE;
+
     String formUriBasicAuthPassword() default NULL_VALUE;
+
     String mailTo() default "";
+
+    ReportField[] mailReportFields() default { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION, ReportField.VERSION_NAME,
+            ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE };
 }

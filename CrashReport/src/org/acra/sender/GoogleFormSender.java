@@ -45,7 +45,7 @@ public class GoogleFormSender implements ReportSender {
         for(Object originalKey : report.keySet()) {
             switch((ReportField)originalKey) {
             case VERSION_NAME:
-                result.put("entry.0.single",report.get(originalKey));
+                result.put("entry.0.single","'" + report.get(originalKey));
                 break;
             case PACKAGE_NAME:
                 result.put("entry.1.single",report.get(originalKey));
@@ -57,7 +57,7 @@ public class GoogleFormSender implements ReportSender {
                 result.put("entry.3.single",report.get(originalKey));
                 break;
             case ANDROID_VERSION:
-                result.put("entry.4.single",report.get(originalKey));
+                result.put("entry.4.single", "'" + report.get(originalKey));
                 break;
             case BOARD:
                 result.put("entry.5.single",report.get(originalKey));
