@@ -22,7 +22,7 @@ import static org.acra.ReportField.APP_VERSION_NAME;
 import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
 import static org.acra.ReportField.BOARD;
 import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.BUILD_DISPLAY;
+import static org.acra.ReportField.BUILD_DISPLAY_ID;
 import static org.acra.ReportField.CRASH_CONFIGURATION;
 import static org.acra.ReportField.CUSTOM_DATA;
 import static org.acra.ReportField.DEVICE;
@@ -33,8 +33,8 @@ import static org.acra.ReportField.DUMPSYS_MEMINFO;
 import static org.acra.ReportField.EVENTSLOG;
 import static org.acra.ReportField.FILE_PATH;
 import static org.acra.ReportField.FINGERPRINT;
-import static org.acra.ReportField.HOST;
-import static org.acra.ReportField.ID;
+import static org.acra.ReportField.BUILD_HOST;
+import static org.acra.ReportField.BUILD_ID;
 import static org.acra.ReportField.INITIAL_CONFIGURATION;
 import static org.acra.ReportField.IS_SILENT;
 import static org.acra.ReportField.LOGCAT;
@@ -44,11 +44,11 @@ import static org.acra.ReportField.PHONE_MODEL;
 import static org.acra.ReportField.PRODUCT;
 import static org.acra.ReportField.RADIOLOG;
 import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.TAGS;
-import static org.acra.ReportField.TIME;
+import static org.acra.ReportField.BUILD_TAGS;
+import static org.acra.ReportField.BUILD_TIME;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.TYPE;
-import static org.acra.ReportField.USER;
+import static org.acra.ReportField.BUILD_TYPE;
+import static org.acra.ReportField.BUILD_USER;
 import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_CRASH_DATE;
 
@@ -388,12 +388,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 } else {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
                 }
-                
+
                 // Retrieve UDID(IMEI) if permission is available
-                if(pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                if (pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                    String deviceId = tm.getDeviceId(); 
-                    if(deviceId != null) {
+                    String deviceId = tm.getDeviceId();
+                    if (deviceId != null) {
                         mCrashProperties.put(DEVICE_ID, deviceId);
                     }
                 }
@@ -412,7 +412,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 mCrashProperties.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
             } else {
                 // Could not retrieve package info...
-                mCrashProperties.put(PACKAGE_NAME, "Package info unavailable");
+                mCrashProperties.put(APP_VERSION_NAME, "Package info unavailable");
             }
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME, context.getPackageName());
@@ -426,16 +426,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             mCrashProperties.put(BOARD, android.os.Build.BOARD);
             mCrashProperties.put(BRAND, android.os.Build.BRAND);
             mCrashProperties.put(DEVICE, android.os.Build.DEVICE);
-            mCrashProperties.put(BUILD_DISPLAY, android.os.Build.DISPLAY);
+            mCrashProperties.put(BUILD_DISPLAY_ID, android.os.Build.DISPLAY);
             mCrashProperties.put(FINGERPRINT, android.os.Build.FINGERPRINT);
-            mCrashProperties.put(HOST, android.os.Build.HOST);
-            mCrashProperties.put(ID, android.os.Build.ID);
+            mCrashProperties.put(BUILD_HOST, android.os.Build.HOST);
+            mCrashProperties.put(BUILD_ID, android.os.Build.ID);
             mCrashProperties.put(MODEL, android.os.Build.MODEL);
             mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
-            mCrashProperties.put(TAGS, android.os.Build.TAGS);
-            mCrashProperties.put(TIME, Long.toString(android.os.Build.TIME));
-            mCrashProperties.put(TYPE, android.os.Build.TYPE);
-            mCrashProperties.put(USER, android.os.Build.USER);
+            mCrashProperties.put(BUILD_TAGS, android.os.Build.TAGS);
+            mCrashProperties.put(BUILD_TIME, Long.toString(android.os.Build.TIME));
+            mCrashProperties.put(BUILD_TYPE, android.os.Build.TYPE);
+            mCrashProperties.put(BUILD_USER, android.os.Build.USER);
 
             // Device Memory
             mCrashProperties.put(TOTAL_MEM_SIZE, Long.toString(getTotalInternalMemorySize()));
@@ -484,6 +484,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
+        // If not in SILENT mode, display a Toast before gathering crash data to
+        // let the user know that somthing is happening
         if (mReportingInteractionMode != ReportingInteractionMode.SILENT) {
             new Thread() {
 
@@ -855,8 +857,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 }
 
                 new ReportsSenderWorker().start();
-            } else if (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-                // There are reports to send, display the notification.
+            } else if (ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
+                // NOTIFICATION mode, and there are unapproved reports to send
+                // (latest notification has been ignored: neither accepted nor
+                // refused.
+                ErrorReporter.getInstance().deletePendingNonApprovedReports();
+            } else {
+                // NOTIFICATION mode, and there are unapproved reports to send
+                // (latest notification has been ignored: neither accepted nor
+                // refused.
+                // Display the notification.
                 // The user comment will be associated to the latest report
                 ErrorReporter.getInstance().notifySendReport(getLatestNonSilentReport(filesList));
             }

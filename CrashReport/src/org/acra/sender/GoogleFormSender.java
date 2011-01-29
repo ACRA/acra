@@ -71,16 +71,16 @@ public class GoogleFormSender implements ReportSender {
             case DEVICE:
                 result.put("entry.8.single",report.get(originalKey));
                 break;
-            case BUILD_DISPLAY:
+            case BUILD_DISPLAY_ID:
                 result.put("entry.9.single",report.get(originalKey));
                 break;
             case FINGERPRINT:
                 result.put("entry.10.single",report.get(originalKey));
                 break;
-            case HOST:
+            case BUILD_HOST:
                 result.put("entry.11.single",report.get(originalKey));
                 break;
-            case ID:
+            case BUILD_ID:
                 result.put("entry.12.single",report.get(originalKey));
                 break;
             case MODEL:
@@ -89,16 +89,16 @@ public class GoogleFormSender implements ReportSender {
             case PRODUCT:
                 result.put("entry.14.single",report.get(originalKey));
                 break;
-            case TAGS:
+            case BUILD_TAGS:
                 result.put("entry.15.single",report.get(originalKey));
                 break;
-            case TIME:
+            case BUILD_TIME:
                 result.put("entry.16.single",report.get(originalKey));
                 break;
-            case TYPE:
+            case BUILD_TYPE:
                 result.put("entry.17.single",report.get(originalKey));
                 break;
-            case USER:
+            case BUILD_USER:
                 result.put("entry.18.single",report.get(originalKey));
                 break;
             case TOTAL_MEM_SIZE:
