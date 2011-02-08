@@ -196,15 +196,16 @@ public class ACRA {
             PackageManager pm = mApplication.getPackageManager();
             if (pm != null) {
                 if (pm.checkPermission(permission.INTERNET, mApplication.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    // First try to instantiate a sender for a Google Form
-                    if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
-                        errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
-                    }
 
                     // If formUri is set, instantiate a sender for a generic
                     // HTTP POST form
                     if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
                         errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
+                    } else {
+                        // The default behavior is to us the formKey for a Google Docs Form.
+                        if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
+                            errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
+                        }
                     }
                 } else {
                     Log.e(LOG_TAG,
