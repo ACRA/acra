@@ -44,110 +44,108 @@ import android.util.Log;
  * Helper class to send POST data over HTTP/HTTPS.
  */
 public class HttpUtils {
-	private static final String LOG_TAG = ACRA.LOG_TAG;
+    private static final String LOG_TAG = ACRA.LOG_TAG;
 
-	private static final TrustManager[] TRUST_MANAGER = { new NaiveTrustManager() };
+    private static final TrustManager[] TRUST_MANAGER = { new NaiveTrustManager() };
 
-	private static final AllowAllHostnameVerifier HOSTNAME_VERIFIER = new AllowAllHostnameVerifier();
+    private static final AllowAllHostnameVerifier HOSTNAME_VERIFIER = new AllowAllHostnameVerifier();
 
-	private static final int SOCKET_TIMEOUT = 3000;
+    private static final int SOCKET_TIMEOUT = 3000;
 
-	/**
-	 * Send an HTTP(s) request with POST parameters.
-	 * 
-	 * @param parameters
-	 * @param url
-	 * @throws UnsupportedEncodingException
-	 * @throws IOException
-	 * @throws KeyManagementException
-	 * @throws NoSuchAlgorithmException
-	 */
-	public static void doPost(Map<?, ?> parameters, URL url, String login,
-			String password) throws UnsupportedEncodingException, IOException,
-			KeyManagementException, NoSuchAlgorithmException {
+    /**
+     * Send an HTTP(s) request with POST parameters.
+     * 
+     * @param parameters
+     * @param url
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     * @throws KeyManagementException
+     * @throws NoSuchAlgorithmException
+     */
+    public static void doPost(Map<?, ?> parameters, URL url, String login, String password)
+            throws UnsupportedEncodingException, IOException, KeyManagementException, NoSuchAlgorithmException {
 
-		URLConnection cnx = getConnection(url);
+        URLConnection cnx = getConnection(url);
 
-		// Construct data
-		StringBuilder dataBfr = new StringBuilder();
-		for(Object key : parameters.keySet()) {
-			if (dataBfr.length() != 0) {
-				dataBfr.append('&');
-			}
-			Object value = parameters.get(key);
-			if(value == null) {
-			    value = "";
-			}
-			dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"))
-					.append('=')
-					.append(URLEncoder.encode(value.toString(),
-							"UTF-8"));
-		}
+        // Construct data
+        StringBuilder dataBfr = new StringBuilder();
+        for (Object key : parameters.keySet()) {
+            if (dataBfr.length() != 0) {
+                dataBfr.append('&');
+            }
+            Object value = parameters.get(key);
+            if (value == null) {
+                value = "";
+            }
+            dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8")).append('=')
+                    .append(URLEncoder.encode(value.toString(), "UTF-8"));
+        }
 
-		// Add BASIC auth credentials if available
-		if (!isNull(login) || !isNull(password)) {
-			String userPassword = (login != null ? login : "") + ":"
-					+ (password != null ? password : "");
-			String encodedAuth = Base64.encodeToString(userPassword.getBytes(),
-					Base64.DEFAULT);
-			cnx.setRequestProperty("Authorization", "Basic " + encodedAuth);
-		}
-		// POST data
-		cnx.setDoOutput(true);
+        // Add BASIC auth credentials if available
+        if (!isNull(login) || !isNull(password)) {
+            String userPassword = (login != null ? login : "") + ":" + (password != null ? password : "");
+            String encodedAuth = Base64.encodeToString(userPassword.getBytes(), Base64.DEFAULT);
+            cnx.setRequestProperty("Authorization", "Basic " + encodedAuth);
+        }
+        // POST data
+        cnx.setDoOutput(true);
+        
+        OutputStreamWriter wr = new OutputStreamWriter(cnx.getOutputStream());
+        Log.d(LOG_TAG, "Posting crash report data");
+        wr.write(dataBfr.toString());
+        wr.flush();
+        wr.close();
 
-		OutputStreamWriter wr = new OutputStreamWriter(cnx.getOutputStream());
-		Log.d(LOG_TAG, "Posting crash report data");
-		wr.write(dataBfr.toString());
-		wr.flush();
-		wr.close();
+        Log.d(LOG_TAG, "Reading response");
+        BufferedReader rd = new BufferedReader(new InputStreamReader(cnx.getInputStream()));
 
-		Log.d(LOG_TAG, "Reading response");
-		BufferedReader rd = new BufferedReader(new InputStreamReader(
-				cnx.getInputStream()));
+        String line;
+        int linecount = 0;
+        try {
+            while ((line = rd.readLine()) != null) {
+                linecount++;
+                if (linecount <= 10) {
+                    Log.d(LOG_TAG, line);
+                }
+            }
+        } catch (Exception e) {
+            Log.i(LOG_TAG, "Ignoring exception while reading result", e);
+        }
+        rd.close();
+    }
 
-		String line;
-		int linecount = 0;
-		while ((line = rd.readLine()) != null) {
-			linecount++;
-			if (linecount <= 2) {
-				Log.d(LOG_TAG, line);
-			}
-		}
-		rd.close();
-	}
+    private static boolean isNull(String aString) {
+        return aString == null || aString == ReportsCrashes.NULL_VALUE;
+    }
 
-	private static boolean isNull(String aString) {
-		return aString == null || aString == ReportsCrashes.NULL_VALUE;
-	}
+    /**
+     * Open an URL connection. If HTTPS, accepts any certificate even if not
+     * valid, and connects to any host name.
+     * 
+     * @param url
+     *            The destination URL, HTTP or HTTPS.
+     * @return The URLConnection.
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
+    private static URLConnection getConnection(URL url) throws IOException, NoSuchAlgorithmException,
+            KeyManagementException {
+        URLConnection conn = url.openConnection();
+        if (conn instanceof HttpsURLConnection) {
+            // Trust all certificates
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(new KeyManager[0], TRUST_MANAGER, new SecureRandom());
+            SSLSocketFactory socketFactory = context.getSocketFactory();
+            ((HttpsURLConnection) conn).setSSLSocketFactory(socketFactory);
 
-	/**
-	 * Open an URL connection. If HTTPS, accepts any certificate even if not
-	 * valid, and connects to any host name.
-	 * 
-	 * @param url
-	 *            The destination URL, HTTP or HTTPS.
-	 * @return The URLConnection.
-	 * @throws IOException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
-	 */
-	private static URLConnection getConnection(URL url) throws IOException,
-			NoSuchAlgorithmException, KeyManagementException {
-		URLConnection conn = url.openConnection();
-		if (conn instanceof HttpsURLConnection) {
-			// Trust all certificates
-			SSLContext context = SSLContext.getInstance("TLS");
-			context.init(new KeyManager[0], TRUST_MANAGER, new SecureRandom());
-			SSLSocketFactory socketFactory = context.getSocketFactory();
-			((HttpsURLConnection) conn).setSSLSocketFactory(socketFactory);
+            // Allow all hostnames
+            ((HttpsURLConnection) conn).setHostnameVerifier(HOSTNAME_VERIFIER);
 
-			// Allow all hostnames
-			((HttpsURLConnection) conn).setHostnameVerifier(HOSTNAME_VERIFIER);
-
-		}
-		conn.setConnectTimeout(SOCKET_TIMEOUT);
-		conn.setReadTimeout(SOCKET_TIMEOUT);
-		return conn;
-	}
+        }
+        conn.setConnectTimeout(SOCKET_TIMEOUT);
+        conn.setReadTimeout(SOCKET_TIMEOUT);
+        return conn;
+    }
 
 }
