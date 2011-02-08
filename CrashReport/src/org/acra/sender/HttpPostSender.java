@@ -47,7 +47,7 @@ public class HttpPostSender implements ReportSender {
                 finalReport.put(mMapping.get(field), report.get(field));
             }
         }
-        return null;
+        return finalReport;
     }
 
 }
