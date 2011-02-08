@@ -571,9 +571,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         boolean sendOnlySilentReports = false;
 
         if (reportingInteractionMode == null) {
+            // No interaction mode defined, we assume it has been set during
+            // ACRA.initACRA()
             reportingInteractionMode = mReportingInteractionMode;
         } else {
-            sendOnlySilentReports = true;
+            // An interaction mode has been provided. If ACRA has been
+            // initialized with a non SILENT mode and this mode is overridden
+            // with SILENT, then we have to send only reports which have been
+            // explicitly declared as silent via handleSilentException().
+            if (reportingInteractionMode == ReportingInteractionMode.SILENT
+                    && mReportingInteractionMode != ReportingInteractionMode.SILENT) {
+                sendOnlySilentReports = true;
+            }
         }
 
         if (e == null) {
