@@ -35,6 +35,7 @@ public enum ReportField {
     EVENTSLOG,
     RADIOLOG,
     IS_SILENT,
-    DEVICE_ID;
+    DEVICE_ID,
+    USER_EMAIL;
 
 }

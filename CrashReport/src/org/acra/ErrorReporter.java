@@ -51,6 +51,7 @@ import static org.acra.ReportField.BUILD_TYPE;
 import static org.acra.ReportField.BUILD_USER;
 import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_CRASH_DATE;
+import static org.acra.ReportField.USER_EMAIL;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,6 +80,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -363,6 +365,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private void retrieveCrashData(Context context) {
         try {
 
+            SharedPreferences prefs = ACRA.getACRASharedPreferences();
+
             // Collect meminfo
             mCrashProperties.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
 
@@ -370,7 +374,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Collect DropBox and logcat
             if (pm != null) {
-                if (pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
+                        && pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA will include LogCat and DropBox data.");
                     mCrashProperties.put(LOGCAT, LogCatCollector.collectLogCat(null).toString());
                     if (ACRA.getConfig().includeEventsLogcat()) {
@@ -390,7 +395,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 }
 
                 // Retrieve UDID(IMEI) if permission is available
-                if (pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                if (prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
+                        && pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
                     String deviceId = tm.getDeviceId();
                     if (deviceId != null) {
@@ -455,6 +461,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Add custom info, they are all stored in a single field
             mCrashProperties.put(CUSTOM_DATA, createCustomInfoString());
+
+            // Add user email address, if set in the app's preferences
+            mCrashProperties.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
@@ -628,7 +637,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         String reportFileName = saveCrashReportFile(null, null);
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
-                || reportingInteractionMode == ReportingInteractionMode.TOAST) {
+                || reportingInteractionMode == ReportingInteractionMode.TOAST
+                || ACRA.getACRASharedPreferences().getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
             // Send reports now
             ReportsSenderWorker wk = new ReportsSenderWorker(sendOnlySilentReports);
             wk.start();

@@ -102,6 +102,28 @@ public class ACRA {
      * acra.enable are set, the value of acra.disable takes over the other.
      */
     public static final String PREF_ENABLE_ACRA = "acra.enable";
+    
+    /**
+     * The key of the SharedPreference allowing the user to disable sending content of logcat/dropbox.
+     * System logs collection is also dependent of the READ_LOGS permission.
+     */
+    public static final String PREF_ENABLE_SYSTEM_LOGS = "acra.syslog.enable"; 
+
+    /**
+     * The key of the SharedPreference allowing the user to disable sending his device id.
+     * Device ID collection is also dependent of the READ_PHONE_STATE permission.
+     */
+    public static final String PREF_ENABLE_DEVICE_ID = "acra.deviceid.enable"; 
+
+    /**
+     * The key of the SharedPreference allowing the user to always include his email address.
+     */
+    public static final String PREF_USER_EMAIL_ADDRESS = "acra.user.email"; 
+
+    /**
+     * The key of the SharedPreference allowing the user to automatically accept sending reports.
+     */
+    public static final String PREF_ALWAYS_ACCEPT = "acra.alwaysaccept"; 
 
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
