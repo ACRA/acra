@@ -170,7 +170,6 @@ public class ACRA {
                 }
             };
 
-            prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
             // If the application default shared preferences contains true for
             // the key "acra.disable", do not activate ACRA. Also checks the
             // alternative opposite setting "acra.enable" if "acra.disable" is
@@ -193,6 +192,10 @@ public class ACRA {
                 }
             }
 
+            // This listener has to be set after initAcra is called to avoid a
+            // NPE in ErrorReporter.disable() because
+            // the context could be null at this moment.
+            prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
         }
     }
 
