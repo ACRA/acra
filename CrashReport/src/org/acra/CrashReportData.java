@@ -1,4 +1,6 @@
 /*
+ * java.util.Properties.java modified by Kevin Gaudin to allow usage of enums as keys.
+ * 
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
  *  this work for additional information regarding copyright ownership.
@@ -34,33 +36,30 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * A {@code Properties} object is a {@code Hashtable} where the keys and values
- * must be {@code String}s. Each property can have a default
- * {@code Properties} list which specifies the default
- * values to be used when a given key is not found in this {@code Properties}
- * instance.
- *
- * @see Hashtable
- * @see java.lang.System#getProperties
+ * Stores a crash reports data with {@link ReportField} enum values as keys.
+ * This is basically the source of {@link Properties} adapted to extend an
+ * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
+ * amounts of android time in the generation of a date comment.
  */
 public class CrashReportData extends EnumMap<ReportField, String> {
 
     private static final long serialVersionUID = 4112578634029874840L;
 
-//    private transient DocumentBuilder builder = null;
+    // private transient DocumentBuilder builder = null;
 
     private static final String PROP_DTD_NAME = "http://java.sun.com/dtd/properties.dtd";
 
-//    private static final String PROP_DTD = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-//            + "    <!ELEMENT properties (comment?, entry*) >"
-//            + "    <!ATTLIST properties version CDATA #FIXED \"1.0\" >"
-//            + "    <!ELEMENT comment (#PCDATA) >"
-//            + "    <!ELEMENT entry (#PCDATA) >"
-//            + "    <!ATTLIST entry key CDATA #REQUIRED >";
+    // private static final String PROP_DTD =
+    // "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    // + "    <!ELEMENT properties (comment?, entry*) >"
+    // + "    <!ATTLIST properties version CDATA #FIXED \"1.0\" >"
+    // + "    <!ELEMENT comment (#PCDATA) >"
+    // + "    <!ELEMENT entry (#PCDATA) >"
+    // + "    <!ATTLIST entry key CDATA #REQUIRED >";
 
     /**
      * The default values for keys not found in this {@code Properties}
@@ -68,8 +67,7 @@ public class CrashReportData extends EnumMap<ReportField, String> {
      */
     protected CrashReportData defaults;
 
-    private static final int NONE = 0, SLASH = 1, UNICODE = 2, CONTINUE = 3,
-            KEY_DONE = 4, IGNORE = 5;
+    private static final int NONE = 0, SLASH = 1, UNICODE = 2, CONTINUE = 3, KEY_DONE = 4, IGNORE = 5;
 
     /**
      * Constructs a new {@code Properties} object.
@@ -86,7 +84,7 @@ public class CrashReportData extends EnumMap<ReportField, String> {
      *            the default {@code Properties}.
      */
     public CrashReportData(CrashReportData properties) {
-    	super(ReportField.class);
+        super(ReportField.class);
         defaults = properties;
     }
 
@@ -172,12 +170,11 @@ public class CrashReportData extends EnumMap<ReportField, String> {
 
     /**
      * Lists the mappings in this {@code Properties} to the specified
-     * {@code PrintStream} in a
-     * human readable form.
+     * {@code PrintStream} in a human readable form.
      * 
      * @param out
-     *            the {@code PrintStream} to write the content to in human readable
-     *            form.
+     *            the {@code PrintStream} to write the content to in human
+     *            readable form.
      */
     public void list(PrintStream out) {
         if (out == null) {
@@ -208,8 +205,7 @@ public class CrashReportData extends EnumMap<ReportField, String> {
 
     /**
      * Lists the mappings in this {@code Properties} to the specified
-     * {@code PrintWriter} in a
-     * human readable form.
+     * {@code PrintWriter} in a human readable form.
      * 
      * @param writer
      *            the {@code PrintWriter} to write the content to in human
@@ -260,34 +256,36 @@ public class CrashReportData extends EnumMap<ReportField, String> {
         boolean isEbcdic = isEbcdic(bis);
         bis.reset();
 
-        if(!isEbcdic){
+        if (!isEbcdic) {
             load(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
-        }else{
+        } else {
             load(new InputStreamReader(bis)); //$NON-NLS-1$
         }
     }
 
-    private boolean isEbcdic(BufferedInputStream in) throws IOException{
+    private boolean isEbcdic(BufferedInputStream in) throws IOException {
         byte b;
         while ((b = (byte) in.read()) != -1) {
-            if (b == 0x23 || b == 0x0a || b == 0x3d) {//ascii: newline/#/=
+            if (b == 0x23 || b == 0x0a || b == 0x3d) {// ascii: newline/#/=
                 return false;
             }
-            if (b == 0x15) {//EBCDIC newline
+            if (b == 0x15) {// EBCDIC newline
                 return true;
             }
         }
-        //we found no ascii newline, '#', neither '=', relative safe to consider it
-        //as non-ascii, the only exception will be a single line with only key(no value and '=')
-        //in this case, it should be no harm to read it in default charset
+        // we found no ascii newline, '#', neither '=', relative safe to
+        // consider it
+        // as non-ascii, the only exception will be a single line with only
+        // key(no value and '=')
+        // in this case, it should be no harm to read it in default charset
         return false;
     }
-    
+
     /**
      * Loads properties from the specified InputStream. The properties are of
      * the form <code>key=value</code>, one property per line. It may be not
-     * encode as 'ISO-8859-1'.The {@code Properties} file is interpreted according to the
-     * following rules:
+     * encode as 'ISO-8859-1'.The {@code Properties} file is interpreted
+     * according to the following rules:
      * <ul>
      * <li>Empty lines are ignored.</li>
      * <li>Lines starting with either a "#" or a "!" are comment lines and are
@@ -320,7 +318,8 @@ public class CrashReportData extends EnumMap<ReportField, String> {
 
         while (true) {
             intVal = br.read();
-            if (intVal == -1) break;
+            if (intVal == -1)
+                break;
             nextChar = (char) intVal;
 
             if (offset == buf.length) {
@@ -382,10 +381,11 @@ public class CrashReportData extends EnumMap<ReportField, String> {
                     if (firstChar) {
                         while (true) {
                             intVal = br.read();
-                            if (intVal == -1) break;
+                            if (intVal == -1)
+                                break;
                             nextChar = (char) intVal; // & 0xff
-                                                                    // not
-                                                                    // required
+                                                      // not
+                                                      // required
                             if (nextChar == '\r' || nextChar == '\n' || nextChar == '\u0085') {
                                 break;
                             }
@@ -398,7 +398,7 @@ public class CrashReportData extends EnumMap<ReportField, String> {
                         mode = IGNORE; // Ignore whitespace on the next line
                         continue;
                     }
-                // fall into the next case
+                    // fall into the next case
                 case '\u0085':
                 case '\r':
                     mode = NONE;
@@ -408,8 +408,7 @@ public class CrashReportData extends EnumMap<ReportField, String> {
                             keyLength = offset;
                         }
                         String temp = new String(buf, 0, offset);
-                        put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), temp
-                                .substring(keyLength));
+                        put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), temp.substring(keyLength));
                     }
                     keyLength = -1;
                     offset = 0;
@@ -469,26 +468,24 @@ public class CrashReportData extends EnumMap<ReportField, String> {
             }
             put(key, value);
         }
-    }   
-
-
-
-
+    }
 
     private Enumeration<ReportField> keys() {
-		return Collections.enumeration(keySet());
-	}
+        return Collections.enumeration(keySet());
+    }
 
-	/**
-     * Saves the mappings in this {@code Properties} to the specified {@code
-     * OutputStream}, putting the specified comment at the beginning. The output
-     * from this method is suitable for being read by the
+    /**
+     * Saves the mappings in this {@code Properties} to the specified
+     * {@code OutputStream}, putting the specified comment at the beginning. The
+     * output from this method is suitable for being read by the
      * {@link #load(InputStream)} method.
      * 
-     * @param out the {@code OutputStream} to write to.
-     * @param comment the comment to add at the beginning.
-     * @throws ClassCastException if the key or value of a mapping is not a
-     *                String.
+     * @param out
+     *            the {@code OutputStream} to write to.
+     * @param comment
+     *            the comment to add at the beginning.
+     * @throws ClassCastException
+     *             if the key or value of a mapping is not a String.
      * @deprecated This method ignores any {@code IOException} thrown while
      *             writing -- use {@link #store} instead for better exception
      *             handling.
@@ -517,44 +514,42 @@ public class CrashReportData extends EnumMap<ReportField, String> {
 
     private static String lineSeparator = "\n";
 
-	/**
-	 * Stores the mappings in this Properties to the specified OutputStream,
-	 * putting the specified comment at the beginning. The output from this
-	 * method is suitable for being read by the load() method.
-	 * 
-	 * @param out
-	 *            the OutputStream
-	 * @param comment
-	 *            the comment
-	 * @throws IOException 
-	 * 
-	 * @exception ClassCastException
-	 *                when the key or value of a mapping is not a String
-	 */
-	public synchronized void store(OutputStream out, String comment)
-			throws IOException {
+    /**
+     * Stores the mappings in this Properties to the specified OutputStream,
+     * putting the specified comment at the beginning. The output from this
+     * method is suitable for being read by the load() method.
+     * 
+     * @param out
+     *            the OutputStream
+     * @param comment
+     *            the comment
+     * @throws IOException
+     * 
+     * @exception ClassCastException
+     *                when the key or value of a mapping is not a String
+     */
+    public synchronized void store(OutputStream out, String comment) throws IOException {
 
-		StringBuilder buffer = new StringBuilder(200);
-		OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1"); //$NON-NLS-1$
-		if (comment != null) {
+        StringBuilder buffer = new StringBuilder(200);
+        OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1"); //$NON-NLS-1$
+        if (comment != null) {
             writer.write("#"); //$NON-NLS-1$
             writer.write(comment);
-			writer.write(lineSeparator); 
+            writer.write(lineSeparator);
         }
 
+        for (Map.Entry<ReportField, String> entry : entrySet()) {
+            String key = entry.getKey().toString();
+            dumpString(buffer, key, true);
+            buffer.append('=');
+            dumpString(buffer, entry.getValue(), false);
+            buffer.append(lineSeparator);
+            writer.write(buffer.toString());
+            buffer.setLength(0);
+        }
+        writer.flush();
+    }
 
-		for (Map.Entry<ReportField, String> entry : entrySet()) {
-			String key = entry.getKey().toString();
-			dumpString(buffer, key, true);
-			buffer.append('=');
-			dumpString(buffer, entry.getValue(), false);
-			buffer.append(lineSeparator);
-			writer.write(buffer.toString());
-			buffer.setLength(0);
-		}
-		writer.flush();
-	}
-    
     /**
      * Stores the mappings in this Properties to the specified OutputStream,
      * putting the specified comment at the beginning. The output from this
@@ -564,18 +559,17 @@ public class CrashReportData extends EnumMap<ReportField, String> {
      *            the writer
      * @param comment
      *            the comment
-     * @throws IOException 
-     *            if any I/O exception occurs
-     * @since 1.6 
+     * @throws IOException
+     *             if any I/O exception occurs
+     * @since 1.6
      */
     public synchronized void store(Writer writer, String comment) throws IOException {
         StringBuilder buffer = new StringBuilder(200);
         if (comment != null) {
             writer.write("#"); //$NON-NLS-1$
             writer.write(comment);
-            writer.write(lineSeparator); 
+            writer.write(lineSeparator);
         }
-
 
         for (Map.Entry<ReportField, String> entry : entrySet()) {
             String key = entry.getKey().toString();
@@ -593,133 +587,141 @@ public class CrashReportData extends EnumMap<ReportField, String> {
      * Loads the properties from an {@code InputStream} containing the
      * properties in XML form. The XML document must begin with (and conform to)
      * following DOCTYPE:
-     *
+     * 
      * <pre>
      * &lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
      * </pre>
-     *
+     * 
      * Also the content of the XML data must satisfy the DTD but the xml is not
      * validated against it. The DTD is not loaded from the SYSTEM ID. After
      * this method returns the InputStream is not closed.
-     *
-     * @param in the InputStream containing the XML document.
-     * @throws IOException in case an error occurs during a read operation.
-     * @throws InvalidPropertiesFormatException if the XML data is not a valid
-     *             properties file.
+     * 
+     * @param in
+     *            the InputStream containing the XML document.
+     * @throws IOException
+     *             in case an error occurs during a read operation.
+     * @throws InvalidPropertiesFormatException
+     *             if the XML data is not a valid properties file.
      */
-//    public synchronized void loadFromXML(InputStream in) throws IOException,
-//            InvalidPropertiesFormatException {
-//        if (in == null) {
-//            throw new NullPointerException();
-//        }
-//
-//        if (builder == null) {
-//            DocumentBuilderFactory factory = DocumentBuilderFactory
-//                    .newInstance();
-//            factory.setValidating(true);
-//
-//            try {
-//                builder = factory.newDocumentBuilder();
-//            } catch (ParserConfigurationException e) {
-//                throw new Error(e);
-//            }
-//
-//            builder.setErrorHandler(new ErrorHandler() {
-//                public void warning(SAXParseException e) throws SAXException {
-//                    throw e;
-//                }
-//
-//                public void error(SAXParseException e) throws SAXException {
-//                    throw e;
-//                }
-//
-//                public void fatalError(SAXParseException e) throws SAXException {
-//                    throw e;
-//                }
-//            });
-//
-//            builder.setEntityResolver(new EntityResolver() {
-//                public InputSource resolveEntity(String publicId,
-//                        String systemId) throws SAXException, IOException {
-//                    if (systemId.equals(PROP_DTD_NAME)) {
-//                        InputSource result = new InputSource(new StringReader(
-//                                PROP_DTD));
-//                        result.setSystemId(PROP_DTD_NAME);
-//                        return result;
-//                    }
-//                    throw new SAXException("Invalid DOCTYPE declaration: "
-//                            + systemId);
-//                }
-//            });
-//        }
-//
-//        try {
-//            Document doc = builder.parse(in);
-//            NodeList entries = doc.getElementsByTagName("entry");
-//            if (entries == null) {
-//                return;
-//            }
-//            int entriesListLength = entries.getLength();
-//
-//            for (int i = 0; i < entriesListLength; i++) {
-//                Element entry = (Element) entries.item(i);
-//                String key = entry.getAttribute("key");
-//                String value = entry.getTextContent();
-//
-//                /*
-//                 * key != null & value != null but key or(and) value can be
-//                 * empty String
-//                 */
-//                put(key, value);
-//            }
-//        } catch (IOException e) {
-//            throw e;
-//        } catch (SAXException e) {
-//            throw new InvalidPropertiesFormatException(e);
-//        }
-//    }
+    // public synchronized void loadFromXML(InputStream in) throws IOException,
+    // InvalidPropertiesFormatException {
+    // if (in == null) {
+    // throw new NullPointerException();
+    // }
+    //
+    // if (builder == null) {
+    // DocumentBuilderFactory factory = DocumentBuilderFactory
+    // .newInstance();
+    // factory.setValidating(true);
+    //
+    // try {
+    // builder = factory.newDocumentBuilder();
+    // } catch (ParserConfigurationException e) {
+    // throw new Error(e);
+    // }
+    //
+    // builder.setErrorHandler(new ErrorHandler() {
+    // public void warning(SAXParseException e) throws SAXException {
+    // throw e;
+    // }
+    //
+    // public void error(SAXParseException e) throws SAXException {
+    // throw e;
+    // }
+    //
+    // public void fatalError(SAXParseException e) throws SAXException {
+    // throw e;
+    // }
+    // });
+    //
+    // builder.setEntityResolver(new EntityResolver() {
+    // public InputSource resolveEntity(String publicId,
+    // String systemId) throws SAXException, IOException {
+    // if (systemId.equals(PROP_DTD_NAME)) {
+    // InputSource result = new InputSource(new StringReader(
+    // PROP_DTD));
+    // result.setSystemId(PROP_DTD_NAME);
+    // return result;
+    // }
+    // throw new SAXException("Invalid DOCTYPE declaration: "
+    // + systemId);
+    // }
+    // });
+    // }
+    //
+    // try {
+    // Document doc = builder.parse(in);
+    // NodeList entries = doc.getElementsByTagName("entry");
+    // if (entries == null) {
+    // return;
+    // }
+    // int entriesListLength = entries.getLength();
+    //
+    // for (int i = 0; i < entriesListLength; i++) {
+    // Element entry = (Element) entries.item(i);
+    // String key = entry.getAttribute("key");
+    // String value = entry.getTextContent();
+    //
+    // /*
+    // * key != null & value != null but key or(and) value can be
+    // * empty String
+    // */
+    // put(key, value);
+    // }
+    // } catch (IOException e) {
+    // throw e;
+    // } catch (SAXException e) {
+    // throw new InvalidPropertiesFormatException(e);
+    // }
+    // }
 
     /**
-     * Writes all properties stored in this instance into the {@code
-     * OutputStream} in XML representation. The DOCTYPE is
-     *
+     * Writes all properties stored in this instance into the
+     * {@code OutputStream} in XML representation. The DOCTYPE is
+     * 
      * <pre>
      * &lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
      * </pre>
-     *
+     * 
      * If the comment is null, no comment is added to the output. UTF-8 is used
      * as the encoding. The {@code OutputStream} is not closed at the end. A
      * call to this method is the same as a call to {@code storeToXML(os,
      * comment, "UTF-8")}.
-     *
-     * @param os the {@code OutputStream} to write to.
-     * @param comment the comment to add. If null, no comment is added.
-     * @throws IOException if an error occurs during writing to the output.
+     * 
+     * @param os
+     *            the {@code OutputStream} to write to.
+     * @param comment
+     *            the comment to add. If null, no comment is added.
+     * @throws IOException
+     *             if an error occurs during writing to the output.
      */
     public void storeToXML(OutputStream os, String comment) throws IOException {
         storeToXML(os, comment, "UTF-8"); //$NON-NLS-1$
     }
 
     /**
-     * Writes all properties stored in this instance into the {@code
-     * OutputStream} in XML representation. The DOCTYPE is
-     *
+     * Writes all properties stored in this instance into the
+     * {@code OutputStream} in XML representation. The DOCTYPE is
+     * 
      * <pre>
      * &lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
      * </pre>
-     *
+     * 
      * If the comment is null, no comment is added to the output. The parameter
-     * {@code encoding} defines which encoding should be used. The {@code
-     * OutputStream} is not closed at the end.
-     *
-     * @param os the {@code OutputStream} to write to.
-     * @param comment the comment to add. If null, no comment is added.
-     * @param encoding the code identifying the encoding that should be used to
-     *            write into the {@code OutputStream}.
-     * @throws IOException if an error occurs during writing to the output.
+     * {@code encoding} defines which encoding should be used. The
+     * {@code OutputStream} is not closed at the end.
+     * 
+     * @param os
+     *            the {@code OutputStream} to write to.
+     * @param comment
+     *            the comment to add. If null, no comment is added.
+     * @param encoding
+     *            the code identifying the encoding that should be used to write
+     *            into the {@code OutputStream}.
+     * @throws IOException
+     *             if an error occurs during writing to the output.
      */
-    public synchronized void storeToXML(OutputStream os, String comment,
-            String encoding) throws IOException {
+    public synchronized void storeToXML(OutputStream os, String comment, String encoding) throws IOException {
 
         if (os == null || encoding == null) {
             throw new NullPointerException();
@@ -736,17 +738,14 @@ public class CrashReportData extends EnumMap<ReportField, String> {
         try {
             encodingCanonicalName = Charset.forName(encoding).name();
         } catch (IllegalCharsetNameException e) {
-            System.out.println("Warning: encoding name " + encoding
-                    + " is illegal, using UTF-8 as default encoding");
+            System.out.println("Warning: encoding name " + encoding + " is illegal, using UTF-8 as default encoding");
             encodingCanonicalName = "UTF-8";
         } catch (UnsupportedCharsetException e) {
-            System.out.println("Warning: encoding " + encoding
-                    + " is not supported, using UTF-8 as default encoding");
+            System.out.println("Warning: encoding " + encoding + " is not supported, using UTF-8 as default encoding");
             encodingCanonicalName = "UTF-8";
         }
 
-        PrintStream printStream = new PrintStream(os, false,
-                encodingCanonicalName);
+        PrintStream printStream = new PrintStream(os, false, encodingCanonicalName);
 
         printStream.print("<?xml version=\"1.0\" encoding=\"");
         printStream.print(encodingCanonicalName);
@@ -783,8 +782,7 @@ public class CrashReportData extends EnumMap<ReportField, String> {
          * substitution for predefined character entities to use them safely in
          * XML
          */
-        return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(
-                ">", "&gt;").replaceAll("\u0027", "&apos;").replaceAll("\"",
-                "&quot;");
+        return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+                .replaceAll("\u0027", "&apos;").replaceAll("\"", "&quot;");
     }
 }

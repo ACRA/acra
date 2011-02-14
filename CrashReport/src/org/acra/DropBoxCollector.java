@@ -15,7 +15,6 @@
  */
 package org.acra;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,15 +24,26 @@ import android.content.Context;
 import android.text.format.Time;
 import android.util.Log;
 
-public class DropBoxCollector {
-    private static final String[] SYSTEM_TAGS = { "system_app_anr", "system_app_wtf", "system_app_crash", "system_server_anr",
-        "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
-        "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE",
-        "APANIC_THREADS", "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode" };
+/**
+ * Collects data from the DropBoxManager introduced with Android API Level 8. A
+ * set of DropBox tags have been identified in the Android source code. , we
+ * collect data associated to these tags with hope that some of them could help
+ * debugging applications. Application specific tags can be provided by the app
+ * dev to track his own usage of the DropBoxManager.
+ * 
+ * @author Kevin Gaudin
+ * 
+ */
+class DropBoxCollector {
+    private static final String[] SYSTEM_TAGS = { "system_app_anr", "system_app_wtf", "system_app_crash",
+            "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
+            "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
+            "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode" };
 
     public static String read(Context context, String[] additionalTags) {
         try {
-            String serviceName = getDropBoxServiceName();
+            // Use reflection API to allow compilation with API Level 5.
+            String serviceName = Compatibility.getDropBoxServiceName();
             if (serviceName != null) {
                 StringBuilder dropboxContent = new StringBuilder();
                 Object dropbox = context.getSystemService(serviceName);
@@ -44,8 +54,8 @@ public class DropBoxCollector {
                     timer.minute -= ACRA.getConfig().dropboxCollectionMinutes();
                     timer.normalize(false);
                     long time = timer.toMillis(false);
-                    ArrayList<String> tags = new ArrayList<String>(Arrays.asList(SYSTEM_TAGS)); 
-                    if(additionalTags != null && additionalTags.length > 0) {
+                    ArrayList<String> tags = new ArrayList<String>(Arrays.asList(SYSTEM_TAGS));
+                    if (additionalTags != null && additionalTags.length > 0) {
                         tags.addAll(Arrays.asList(additionalTags));
                     }
                     String text = null;
@@ -74,7 +84,7 @@ public class DropBoxCollector {
                         } else {
                             dropboxContent.append("Nothing.").append('\n');
                         }
-                        
+
                     }
                 }
                 return dropboxContent.toString();
@@ -93,21 +103,5 @@ public class DropBoxCollector {
             Log.i(ACRA.LOG_TAG, "DropBoxManager not available: ", e);
         }
         return "N/A";
-    }
-
-    /**
-     * @throws NoSuchFieldException
-     * @throws SecurityException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * 
-     */
-    private static String getDropBoxServiceName() throws SecurityException, NoSuchFieldException,
-            IllegalArgumentException, IllegalAccessException {
-        Field serviceName = Context.class.getField("DROPBOX_SERVICE");
-        if (serviceName != null) {
-            return (String) serviceName.get(null);
-        }
-        return null;
     }
 }

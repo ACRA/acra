@@ -102,36 +102,46 @@ public class ACRA {
      * acra.enable are set, the value of acra.disable takes over the other.
      */
     public static final String PREF_ENABLE_ACRA = "acra.enable";
-    
-    /**
-     * The key of the SharedPreference allowing the user to disable sending content of logcat/dropbox.
-     * System logs collection is also dependent of the READ_LOGS permission.
-     */
-    public static final String PREF_ENABLE_SYSTEM_LOGS = "acra.syslog.enable"; 
 
     /**
-     * The key of the SharedPreference allowing the user to disable sending his device id.
-     * Device ID collection is also dependent of the READ_PHONE_STATE permission.
+     * The key of the SharedPreference allowing the user to disable sending
+     * content of logcat/dropbox. System logs collection is also dependent of
+     * the READ_LOGS permission.
      */
-    public static final String PREF_ENABLE_DEVICE_ID = "acra.deviceid.enable"; 
+    public static final String PREF_ENABLE_SYSTEM_LOGS = "acra.syslog.enable";
 
     /**
-     * The key of the SharedPreference allowing the user to always include his email address.
+     * The key of the SharedPreference allowing the user to disable sending his
+     * device id. Device ID collection is also dependent of the READ_PHONE_STATE
+     * permission.
      */
-    public static final String PREF_USER_EMAIL_ADDRESS = "acra.user.email"; 
+    public static final String PREF_ENABLE_DEVICE_ID = "acra.deviceid.enable";
 
     /**
-     * The key of the SharedPreference allowing the user to automatically accept sending reports.
+     * The key of the SharedPreference allowing the user to always include his
+     * email address.
      */
-    public static final String PREF_ALWAYS_ACCEPT = "acra.alwaysaccept"; 
+    public static final String PREF_USER_EMAIL_ADDRESS = "acra.user.email";
+
+    /**
+     * The key of the SharedPreference allowing the user to automatically accept
+     * sending reports.
+     */
+    public static final String PREF_ALWAYS_ACCEPT = "acra.alwaysaccept";
 
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
     private static OnSharedPreferenceChangeListener mPrefListener;
 
     /**
+     * <p>
+     * Initialize ACRA for a given Application. The call to this method should
+     * be placed as soon as possible in the {@link Application#onCreate()}
+     * method.
+     * </p>
      * 
      * @param app
+     *            Your Application class.
      */
     public static void init(Application app) {
         mApplication = app;
@@ -227,7 +237,8 @@ public class ACRA {
                     if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
                         errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
                     } else {
-                        // The default behavior is to us the formKey for a Google Docs Form.
+                        // The default behavior is to us the formKey for a
+                        // Google Docs Form.
                         if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
                             errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
                         }
@@ -246,7 +257,6 @@ public class ACRA {
         errorReporter.init(mApplication.getApplicationContext());
 
         // Check for pending reports
-
         errorReporter.checkReportsOnApplicationStart();
     }
 
@@ -269,11 +279,13 @@ public class ACRA {
     }
 
     /**
-     * Override this method if you need to store "acra.disable" or "acra.enable"
-     * in a different SharedPrefence than the application's default.
+     * Retrieves the {@link SharedPreferences} instance where user adjustable
+     * settings for ACRA are stored. Default are the Application default
+     * SharedPreferences, but you can provide another SharedPreferences name
+     * with {@link ReportsCrashes#sharedPreferencesName()}.
      * 
-     * @return The Shared Preferences where ACRA will check the value of the
-     *         setting which disables/enables it's action.
+     * @return The Shared Preferences where ACRA will retrieve its user
+     *         adjustable setting.
      */
     public static SharedPreferences getACRASharedPreferences() {
         if (!"".equals(mReportsCrashes.sharedPreferencesName())) {
@@ -286,6 +298,10 @@ public class ACRA {
         }
     }
 
+    /**
+     * Provides the configuration annotation instance.
+     * @return ACRA {@link ReportsCrashes} configuration instance.
+     */
     public static ReportsCrashes getConfig() {
         return mReportsCrashes;
     }
