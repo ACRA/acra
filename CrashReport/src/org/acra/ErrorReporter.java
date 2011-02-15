@@ -743,7 +743,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Sends the report with all configured ReportSenders.
+     * Sends the report with all configured ReportSenders. If at least one
+     * sender completed its job, the report is considered as sent and will not
+     * be sent again for failing senders.
      * 
      * @param context
      *            The application context.
@@ -761,8 +763,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 // later.
                 sentAtLeastOnce = true;
             } catch (ReportSenderException e) {
+                Log.w(LOG_TAG, "An exception occured while executing a ReportSender.", e);
                 if (!sentAtLeastOnce) {
+                    Log.e(LOG_TAG, "The first sender failed, ACRA will try all senders again later.");
                     throw e;
+                } else {
+                    Log.w(LOG_TAG, "ReportSender of class " + sender.getClass().getName() + " failed but other senders completed their task. ACRA will not send this report again.");
                 }
             }
         }
