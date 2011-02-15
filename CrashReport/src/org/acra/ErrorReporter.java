@@ -116,9 +116,15 @@ import android.widget.Toast;
  * set to {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </ul>
  * </p>
+ * <p>
+ * If an error occurs while sending a report, it is kept for later attempts.
+ * </p>
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
+    /**
+     * Contains the active {@link ReportSender}s.
+     */
     private static ArrayList<ReportSender> mReportSenders = new ArrayList<ReportSender>();
 
     /**
@@ -132,10 +138,23 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         private boolean mSendOnlySilentReports = false;
         private boolean mApprovePendingReports = false;
 
+        /**
+         * Creates a new {@link ReportsSenderWorker} to try sending pending
+         * reports.
+         * 
+         * @param sendOnlySilentReports
+         *            If set to true, will send only reports which have been
+         *            explicitly declared as silent by the application
+         *            developer.
+         */
         public ReportsSenderWorker(boolean sendOnlySilentReports) {
             mSendOnlySilentReports = sendOnlySilentReports;
         }
 
+        /**
+         * Creates a new {@link ReportsSenderWorker} which will try to send ALL
+         * pending reports.
+         */
         public ReportsSenderWorker() {
         }
 
@@ -153,11 +172,22 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             checkAndSendReports(mContext, mSendOnlySilentReports);
         }
 
+        /**
+         * Associates a user comment to a specific report file name.
+         * 
+         * @param reportFileName
+         *            The file name of the report.
+         * @param userComment
+         *            The comment given by the user.
+         */
         void setComment(String reportFileName, String userComment) {
             mCommentedReportFileName = reportFileName;
             mUserComment = userComment;
         }
 
+        /**
+         * Sets all pending reports as approved for sending by the user.
+         */
         public void setApprovePendingReports() {
             mApprovePendingReports = true;
         }
@@ -203,9 +233,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // User interaction mode defined by the application developer.
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
-    // Bundle containing resources to be used in UI elements.
-    // private Bundle mCrashResources = new Bundle();
-
+    /**
+     * Flag all pending reports as "approved" by the user. These reports can be
+     * sent.
+     */
     public void approvePendingReports() {
         String[] reportFileNames = getCrashReportFilesList();
         File reportFile = null;
@@ -746,28 +777,28 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            data (user comment for example). In such cases, you can
      *            provide the already existing file name here to overwrite the
      *            report file. If null, a new file report will be generated
-     * @param crashProperties
+     * @param crashData
      *            Can be used to save an alternative (or previously generated)
      *            report data. Used to store again a report with the addition of
      *            user comment. If null, the default current crash data are
      *            used.
      */
-    private static String saveCrashReportFile(String fileName, CrashReportData crashProperties) {
+    private static String saveCrashReportFile(String fileName, CrashReportData crashData) {
         try {
             Log.d(LOG_TAG, "Writing crash report file.");
-            if (crashProperties == null) {
-                crashProperties = mCrashProperties;
+            if (crashData == null) {
+                crashData = mCrashProperties;
             }
             if (fileName == null) {
                 Time now = new Time();
                 now.setToNow();
                 long timestamp = now.toMillis(false);
-                String isSilent = crashProperties.getProperty(IS_SILENT);
+                String isSilent = crashData.getProperty(IS_SILENT);
                 fileName = "" + timestamp + (isSilent != null ? SILENT_SUFFIX : "") + ".stacktrace";
             }
-            FileOutputStream trace = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
-            crashProperties.store(trace, "");
-            trace.close();
+            FileOutputStream reportFile = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+            crashData.store(reportFile, "");
+            reportFile.close();
             return fileName;
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occured while writing the report file...", e);
@@ -954,7 +985,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * to the system default.
      */
     public void disable() {
-        if(mContext != null) {
+        if (mContext != null) {
             Log.d(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName());
         } else {
             Log.d(ACRA.LOG_TAG, "ACRA is disabled.");
@@ -1004,6 +1035,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         return isSilent(reportFileName) || reportFileName.contains(APPROVED_SUFFIX);
     }
 
+    /**
+     * Sets the user comment value in an existing report file. User comments are
+     * ALWAYS entered by the user in a Dialog which is displayed after
+     * application restart. This means that the report file has already been
+     * generated and saved to the filesystem. Associating the comment to the
+     * report requires to reopen an existing report, insert the comment value
+     * and save the report back.
+     * 
+     * @param context
+     *            The application context.
+     * @param commentedReportFileName
+     *            The file name of the report which should receive the comment.
+     * @param userComment
+     *            The comment entered by the user.
+     */
     private static void addCommentToReport(Context context, String commentedReportFileName, String userComment) {
         if (commentedReportFileName != null && userComment != null) {
             try {
@@ -1025,6 +1071,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /**
+     * Add a {@link ReportSender} to the list of active {@link ReportSender}s.
+     * 
+     * @param sender
+     *            The {@link ReportSender} to be added.
+     */
     public void addReportSender(ReportSender sender) {
         mReportSenders.add(sender);
     }

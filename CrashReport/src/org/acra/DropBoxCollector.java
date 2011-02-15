@@ -40,6 +40,16 @@ class DropBoxCollector {
             "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
             "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode" };
 
+    /**
+     * Read latest messages contained in the DropBox for system related tags and
+     * optional developer-set tags.
+     * 
+     * @param context
+     *            The application context.
+     * @param additionalTags
+     *            An array of tags provided by the application developer.
+     * @return A readable formatted String listing messages retrieved.
+     */
     public static String read(Context context, String[] additionalTags) {
         try {
             // Use reflection API to allow compilation with API Level 5.

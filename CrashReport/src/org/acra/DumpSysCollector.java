@@ -24,8 +24,20 @@ import java.util.ArrayList;
 
 import android.util.Log;
 
+/**
+ * Collects results of the <code>dumpsys</code> command.
+ * 
+ * @author Kevin Gaudin
+ * 
+ */
 class DumpSysCollector {
 
+    /**
+     * Collect results of the <code>dumpsys meminfo</code> command restricted to
+     * this application process.
+     * 
+     * @return The execution result.
+     */
     protected static String collectMemInfo() {
         StringBuilder meminfo = new StringBuilder();
         try {
