@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="acra" default="help">
+
+	<!-- The local.properties file is created and updated by the 'android' tool.
+         It contains the path to the SDK. It should *NOT* be checked into Version Control Systems. -->
+	<property file="local.properties" />
+
+	<property file="build.properties" />
+
+	<!-- The default.properties file is created and updated by the 'android' tool, as well as ADT.
+         This file is an integral part of the build system for your application and should be checked into Version Control Systems. -->
+	<property file="default.properties" />
+
+	<!-- Custom Android task to deal with the project target, and import the proper rules.
+		 This requires ant 1.6.0 or above. -->
+	<path id="android.antlibs">
+		<pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
+		<pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
+		<pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+	</path>
+
+	<taskdef name="setup" classname="com.android.ant.SetupTask" classpathref="android.antlibs" />
+	<setup />
+
+	<property name="acra.jar.file" value="${out.dir}/${ant.project.name}-${acra.version}.jar" />
+	
+	<target name="compile">
+		<javac srcdir="${src.dir}"
+         destdir="${out.classes.dir}"
+         debug="on" includeantruntime="false"/>
+	</target>
+	
+	<target name="jar" depends="compile" description="build the acra jar file">
+		<jar basedir="${out.classes.dir}" destfile="${acra.jar.file}" excludes="org/acra/sampleapp/**" compress="true" />
+	</target>
+	
+	<target name="help"></target>
+
+</project>
