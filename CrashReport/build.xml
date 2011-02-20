@@ -31,7 +31,7 @@
 	</target>
 	
 	<target name="jar" depends="compile" description="build the acra jar file">
-		<jar basedir="${out.classes.dir}" destfile="${acra.jar.file}" excludes="org/acra/sampleapp/**" compress="true" />
+		<jar basedir="${out.classes.dir}" destfile="${acra.jar.file}" excludes="org/acra/sampleapp/**,*.dex,*.ap*" compress="true"/>
 	</target>
 	
 	<target name="help"></target>
