@@ -213,7 +213,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // user in NOTIFICATION mode
     static final String APPROVED_SUFFIX = "-approved";
 
-    // Used in the intent starting CrashReportDialog.
+    // Used in the intent starting CrashReportDialog to provide the name of the
+    // latest generated report file in order to be able to associate the user
+    // comment.
     static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
     // A reference to the system's previous default UncaughtExceptionHandler
@@ -355,6 +357,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
             Thread.setDefaultUncaughtExceptionHandler(this);
             mContext = context;
+            // Store the initial Configuration state.
             mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
         }
     }
@@ -501,6 +504,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /**
+     * Returns a String representation of the content of a {@link Display}
+     * object. It might be interesting in a future release to replace this with
+     * a reflection-based collector like {@link ConfigurationInspector}.
+     * 
+     * @param display
+     *            A Display instance to be inspected.
+     * @return A String representation of the content of the given
+     *         {@link Display} object.
+     */
     private static String toString(Display display) {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
@@ -564,8 +577,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             while (worker.isAlive()) {
                 try {
                     // Wait for the report sender to finish it's task before
-                    // killing
-                    // the process
+                    // killing the process
                     Thread.sleep(100);
                 } catch (InterruptedException e1) {
                     Log.e(LOG_TAG, "Error : ", e1);
@@ -768,7 +780,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     Log.e(LOG_TAG, "The first sender failed, ACRA will try all senders again later.");
                     throw e;
                 } else {
-                    Log.w(LOG_TAG, "ReportSender of class " + sender.getClass().getName() + " failed but other senders completed their task. ACRA will not send this report again.");
+                    Log.w(LOG_TAG, "ReportSender of class " + sender.getClass().getName()
+                            + " failed but other senders completed their task. ACRA will not send this report again.");
                 }
             }
         }
