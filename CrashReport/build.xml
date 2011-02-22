@@ -23,17 +23,47 @@
 	<setup />
 
 	<property name="acra.jar.file" value="${out.dir}/${ant.project.name}-${acra.version}.jar" />
-	
-	<target name="compile">
-		<javac srcdir="${src.dir}"
-         destdir="${out.classes.dir}"
-         debug="on" includeantruntime="false"/>
-	</target>
-	
-	<target name="jar" depends="compile" description="build the acra jar file">
-		<jar basedir="${out.classes.dir}" destfile="${acra.jar.file}" excludes="org/acra/sampleapp/**,*.dex,*.ap*" compress="true"/>
-	</target>
-	
-	<target name="help"></target>
 
+	<target name="compile">
+		<javac srcdir="${src.dir}" destdir="${out.classes.dir}" debug="on" includeantruntime="false" />
+	</target>
+
+	<target name="jar" depends="compile" description="build the acra jar file">
+		<jar basedir="${out.classes.dir}" destfile="${acra.jar.file}" excludes="org/acra/sampleapp/**,*.dex,*.ap*" compress="true" />
+	</target>
+
+	<target name="javadoc">
+		<javadoc access="public" author="true" classpath="." destdir="javadoc" doctitle="ACRA - Application Crash Reports for Android" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.6" sourcepath="src" splitindex="true" use="true" version="true">
+			<link offline="true" href="http://d.android.com/reference" packagelistloc="/tools/android-sdk-windows-1.6_r1/docs/reference/" />
+		</javadoc>
+	</target>
+
+	<target name="preparePkg" depends="jar, javadoc" description="prepare the final zip directory tree">
+		<mkdir dir="${out.dir}/${ant.project.name}-${acra.version}/build" />
+		<mkdir dir="${out.dir}/${ant.project.name}-${acra.version}/doc" />
+		<copy todir="${out.dir}/${ant.project.name}-${acra.version}" file="${out.classes.dir}/LICENSE" />
+		<copy todir="${out.dir}/${ant.project.name}-${acra.version}" file="${out.classes.dir}/NOTICE" />
+		<copy todir="${out.dir}/${ant.project.name}-${acra.version}/build/" file="${acra.jar.file}" />
+		<copy todir="${out.dir}/${ant.project.name}-${acra.version}/doc" file="doc/CrashReports-Template.csv" />
+		<zip destfile="${out.dir}/${ant.project.name}-${acra.version}/doc/${ant.project.name}-${acra.version}-javadoc.zip">
+			<fileset dir="javadoc">
+				<include name="**" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="dist" depends="preparePkg" description="release zip file">
+		<zip destfile="${out.dir}/${ant.project.name}-${acra.version}.zip">
+			<fileset dir="${out.dir}">
+				<include name="${ant.project.name}-${acra.version}/**" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="help" description="print this help">
+		<echo level="info">ACRA - Application Crash Reports for Android</echo>
+		<echo level="info">Build help. Main targets:</echo>
+		<echo level="info">    jar: just build the acra jar library</echo>
+		<echo level="info">    dist: build the full acra release archive</echo>
+	</target>
 </project>
