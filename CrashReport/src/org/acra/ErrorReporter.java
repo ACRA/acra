@@ -537,27 +537,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
-        // If not in SILENT mode, display a Toast before gathering crash data to
-        // let the user know that somthing is happening
-        if (mReportingInteractionMode != ReportingInteractionMode.SILENT) {
-            new Thread() {
-
-                /*
-                 * (non-Javadoc)
-                 * 
-                 * @see java.lang.Thread#run()
-                 */
-                @Override
-                public void run() {
-                    Looper.prepare();
-                    Toast.makeText(mContext, "Collecting crash report data.", Toast.LENGTH_LONG).show();
-                    Looper.loop();
-                }
-
-            }.start();
-
-        }
-
         Log.e(ACRA.LOG_TAG,
                 "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
                         + ". Building report.");
@@ -641,7 +620,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             e = new Exception("Report requested by developer");
         }
 
-        if (reportingInteractionMode == ReportingInteractionMode.TOAST) {
+        if (reportingInteractionMode == ReportingInteractionMode.TOAST
+                || (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION && ACRA.getConfig().resToastText() != 0)) {
             new Thread() {
 
                 /*
