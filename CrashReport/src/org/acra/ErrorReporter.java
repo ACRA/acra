@@ -23,6 +23,12 @@ import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
 import static org.acra.ReportField.BOARD;
 import static org.acra.ReportField.BRAND;
 import static org.acra.ReportField.BUILD_DISPLAY_ID;
+import static org.acra.ReportField.BUILD_HOST;
+import static org.acra.ReportField.BUILD_ID;
+import static org.acra.ReportField.BUILD_TAGS;
+import static org.acra.ReportField.BUILD_TIME;
+import static org.acra.ReportField.BUILD_TYPE;
+import static org.acra.ReportField.BUILD_USER;
 import static org.acra.ReportField.CRASH_CONFIGURATION;
 import static org.acra.ReportField.CUSTOM_DATA;
 import static org.acra.ReportField.DEVICE;
@@ -33,8 +39,6 @@ import static org.acra.ReportField.DUMPSYS_MEMINFO;
 import static org.acra.ReportField.EVENTSLOG;
 import static org.acra.ReportField.FILE_PATH;
 import static org.acra.ReportField.FINGERPRINT;
-import static org.acra.ReportField.BUILD_HOST;
-import static org.acra.ReportField.BUILD_ID;
 import static org.acra.ReportField.INITIAL_CONFIGURATION;
 import static org.acra.ReportField.IS_SILENT;
 import static org.acra.ReportField.LOGCAT;
@@ -44,11 +48,7 @@ import static org.acra.ReportField.PHONE_MODEL;
 import static org.acra.ReportField.PRODUCT;
 import static org.acra.ReportField.RADIOLOG;
 import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.BUILD_TAGS;
-import static org.acra.ReportField.BUILD_TIME;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.BUILD_TYPE;
-import static org.acra.ReportField.BUILD_USER;
 import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_CRASH_DATE;
 import static org.acra.ReportField.USER_EMAIL;
@@ -70,11 +70,11 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
 
 import android.Manifest.permission;
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -621,7 +621,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         if (reportingInteractionMode == ReportingInteractionMode.TOAST
-                || (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION && ACRA.getConfig().resToastText() != 0)) {
+                || (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION && ACRA.getConfig()
+                        .resToastText() != 0)) {
             new Thread() {
 
                 /*
@@ -675,7 +676,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * Send a report for this {@link Throwable} with the reporting interaction
-     * mode set by the application developer.
+     * mode set on the Application level by the developer.
      * 
      * @param e
      *            The {@link Throwable} to be reported. If null the report will
@@ -716,15 +717,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         NotificationManager notificationManager = (NotificationManager) mContext
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Default notification icon is the warning symbol
-        int icon = ACRA.getConfig().resNotifIcon();
+        ReportsCrashes conf = ACRA.getConfig();
 
-        CharSequence tickerText = mContext.getText(ACRA.getConfig().resNotifTickerText());
+        // Default notification icon is the warning symbol
+        int icon = conf.resNotifIcon();
+
+        CharSequence tickerText = mContext.getText(conf.resNotifTickerText());
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
 
-        CharSequence contentTitle = mContext.getText(ACRA.getConfig().resNotifTitle());
-        CharSequence contentText = mContext.getText(ACRA.getConfig().resNotifText());
+        CharSequence contentTitle = mContext.getText(conf.resNotifTitle());
+        CharSequence contentText = mContext.getText(conf.resNotifText());
 
         Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
@@ -806,9 +809,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Returns an array containing the names of available crash report files.
+     * Returns an array containing the names of pending crash report files.
      * 
-     * @return an array containing the names of available crash report files.
+     * @return an array containing the names of pending crash report files.
      */
     String[] getCrashReportFilesList() {
         File dir = mContext.getFilesDir();
@@ -830,19 +833,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * <p>
-     * You can call this method in your main {@link Activity} onCreate() method
-     * in order to check if previously unsent crashes occured and immediately
-     * send them.
-     * </p>
-     * <p>
-     * This is called by default in any Application extending
-     * {@link CrashReportingApplication}.
-     * </p>
+     * Send pending reports.
      * 
      * @param context
      *            The application context.
      * @param sendOnlySilentReports
+     *            Send only reports explicitly declared as SILENT by the
+     *            developer (sent via {@link #handleSilentException(Throwable)}.
      */
     void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
         try {
@@ -923,6 +920,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     }
 
+    /**
+     * Retrieve the most recently created "non silent" report from an array of
+     * report file names. A non silent is any report which has not been created
+     * with {@link #handleSilentException(Throwable)}.
+     * 
+     * @param filesList
+     *            An array of report file names.
+     * @return The most recently created "non silent" report file name.
+     */
     private String getLatestNonSilentReport(String[] filesList) {
         if (filesList != null && filesList.length > 0) {
             for (int i = filesList.length - 1; i >= 0; i--) {
@@ -945,14 +951,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Delete all pending silent reports.
+     * Delete all pending SILENT reports. These are the reports created with
+     * {@link #handleSilentException(Throwable)}.
      */
     public void deletePendingSilentReports() {
         deletePendingReports(true, false);
     }
 
     /**
-     * Delete all pending non silent reports.
+     * Delete all pending non approved reports.
      */
     public void deletePendingNonApprovedReports() {
         deletePendingReports(false, true);
@@ -995,14 +1002,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Checks if the list of pending reports contains only silently sent
-     * reports.
+     * Checks if an array of reports files names contains only silent or
+     * approved reports.
      * 
      * @param reportFileNames
-     *            the list of reports provided by
-     *            {@link #getCrashReportFilesList()}
-     * @return True if there only silent reports. False if there is at least one
-     *         non-silent report.
+     *            the list of reports (as provided by
+     *            {@link #getCrashReportFilesList()})
+     * @return True if there are only silent or approved reports. False if there
+     *         is at least one non-approved report.
      */
     private boolean containsOnlySilentOrApprovedReports(String[] reportFileNames) {
         for (String reportFileName : reportFileNames) {
@@ -1013,6 +1020,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         return true;
     }
 
+    /**
+     * Guess that a report is silent from its file name.
+     * 
+     * @param reportFileName
+     * @return True if the report has been declared explicitly silent using
+     *         {@link #handleSilentException(Throwable)}.
+     */
     private boolean isSilent(String reportFileName) {
         return reportFileName.contains(SILENT_SUFFIX);
     }
@@ -1024,7 +1038,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * <ul>
      * <li>Reports which were pending when the user agreed to send a report in
      * the NOTIFICATION mode Dialog.</li>
-     * <li>Silent reports</li>
+     * <li>Explicit silent reports</li>
      * </ul>
      * 
      * @param reportFileName
@@ -1080,18 +1094,37 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         mReportSenders.add(sender);
     }
 
+    /**
+     * Remove a specific instance of {@link ReportSender} from the list of
+     * active {@link ReportSender}s.
+     * 
+     * @param sender
+     *            The {@link ReportSender} instance to be removed.
+     */
     public void removeReportSender(ReportSender sender) {
         mReportSenders.remove(sender);
     }
 
+    /**
+     * Remove all {@link ReportSender} instances from a specific class.
+     * 
+     * @param senderClass
+     */
     public void removeReportSenders(Class<?> senderClass) {
-        for (ReportSender sender : mReportSenders) {
-            if (senderClass.isInstance(sender)) {
-                mReportSenders.remove(sender);
+        if (ReportSender.class.isAssignableFrom(senderClass)) {
+            for (ReportSender sender : mReportSenders) {
+                if (senderClass.isInstance(sender)) {
+                    mReportSenders.remove(sender);
+                }
             }
         }
     }
 
+    /**
+     * Clears the list of active {@link ReportSender}s. You should then call
+     * {@link #addReportSender(ReportSender)} or ACRA will not send any report
+     * anymore.
+     */
     public void removeAllReportSenders() {
         mReportSenders.clear();
     }
