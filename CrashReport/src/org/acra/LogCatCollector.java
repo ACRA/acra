@@ -24,14 +24,37 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.acra.annotation.ReportsCrashes;
 import org.acra.util.BoundedLinkedList;
 
 import android.util.Log;
 
+/**
+ * Executes logcat commands and collects it's output.
+ * @author Kevin Gaudin
+ *
+ */
 class LogCatCollector {
 
+    /**
+     * Default number of latest lines kept from the logcat output.
+     */
     private static final int DEFAULT_TAIL_COUNT = 100;
 
+    /**
+     * Executes the logcat command with arguments taken from
+     * {@link ReportsCrashes#logcatArguments()}
+     * 
+     * @param bufferName
+     *            The name of the buffer to be read: "main" (default), "radio"
+     *            or "events".
+     * @return A {@link String} containing the latest lines of the output.
+     *         Default is 100 lines, use "-t", "300" in
+     *         {@link ReportsCrashes#logcatArguments()} if you want 300 lines.
+     *         You should be aware that increasing this value causes a longer
+     *         report generation time and a bigger footprint on the device data
+     *         plan consumption.
+     */
     protected static String collectLogCat(String bufferName) {
         BoundedLinkedList<String> logcatBuf = null;
         try {

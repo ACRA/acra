@@ -42,7 +42,6 @@ import static org.acra.ReportField.FINGERPRINT;
 import static org.acra.ReportField.INITIAL_CONFIGURATION;
 import static org.acra.ReportField.IS_SILENT;
 import static org.acra.ReportField.LOGCAT;
-import static org.acra.ReportField.MODEL;
 import static org.acra.ReportField.PACKAGE_NAME;
 import static org.acra.ReportField.PHONE_MODEL;
 import static org.acra.ReportField.PRODUCT;
@@ -470,7 +469,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             mCrashProperties.put(FINGERPRINT, android.os.Build.FINGERPRINT);
             mCrashProperties.put(BUILD_HOST, android.os.Build.HOST);
             mCrashProperties.put(BUILD_ID, android.os.Build.ID);
-            mCrashProperties.put(MODEL, android.os.Build.MODEL);
             mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
             mCrashProperties.put(BUILD_TAGS, android.os.Build.TAGS);
             mCrashProperties.put(BUILD_TIME, Long.toString(android.os.Build.TIME));
