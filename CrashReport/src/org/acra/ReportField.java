@@ -17,6 +17,7 @@ package org.acra;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION;
 
@@ -94,6 +95,55 @@ public enum ReportField {
     /**
      * Android build Id. {@link Build#ID}
      */
-    BUILD_ID, PRODUCT, BUILD_TAGS, BUILD_TIME, BUILD_TYPE, BUILD_USER, TOTAL_MEM_SIZE, AVAILABLE_MEM_SIZE, CUSTOM_DATA, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION, DISPLAY, USER_COMMENT, USER_CRASH_DATE, DUMPSYS_MEMINFO, DROPBOX, LOGCAT, EVENTSLOG, RADIOLOG, IS_SILENT, DEVICE_ID, USER_EMAIL;
+    BUILD_ID,
+    /**
+     * Device overall product code. {@link Build#PRODUCT}
+     */
+    PRODUCT,
+    /**
+     * Tags associated to the android build. {@link Build#TAGS}
+     */
+    BUILD_TAGS,
+    /**
+     * Android build time. {@link Build#TIME}
+     */
+    BUILD_TIME,
+    /**
+     * Android type of build ("user", "eng"...). {@link Build#TYPE}
+     */
+    BUILD_TYPE,
+    /**
+     * Android build user. {@link Build#USER}
+     */
+    BUILD_USER,
+    /**
+     * Estimation of the total device memory size based on filesystem stats.
+     */
+    TOTAL_MEM_SIZE,
+    /**
+     * Estimation of the available device memory size based on filesystem stats.
+     */
+    AVAILABLE_MEM_SIZE,
+    /**
+     * Contains key = value pairs defined by the application developer during
+     * the application execution.
+     */
+    CUSTOM_DATA,
+    /**
+     * The Holy Stack Trace.
+     */
+    STACK_TRACE,
+    /**
+     * {@link Configuration} fields state on the application start.
+     */
+    INITIAL_CONFIGURATION,
+    /**
+     * {@link Configuration} fields state on the application crash.
+     */
+    CRASH_CONFIGURATION,
+    /**
+     * Device display specs.
+     */
+    DISPLAY, USER_COMMENT, USER_CRASH_DATE, DUMPSYS_MEMINFO, DROPBOX, LOGCAT, EVENTSLOG, RADIOLOG, IS_SILENT, DEVICE_ID, USER_EMAIL;
 
 }
