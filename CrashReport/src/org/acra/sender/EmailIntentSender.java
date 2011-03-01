@@ -18,13 +18,16 @@ package org.acra.sender;
 import org.acra.ACRA;
 import org.acra.CrashReportData;
 import org.acra.ReportField;
+import org.acra.annotation.ReportsCrashes;
 
 import android.content.Context;
 import android.content.Intent;
 
 /**
- * Send reports throught an email intent. The user will be asked to chose his prefered email client.
- * Included report fields can be defined using {@link ReportsCrashes#mailReportFields()}.
+ * Send reports through an email intent. The user will be asked to chose his
+ * preferred email client. Included report fields can be defined using
+ * {@link ReportsCrashes#mailReportFields()}. Crash receiving mailbox has to be
+ * defined with {@link ReportsCrashes#mailTo()}.
  */
 public class EmailIntentSender implements ReportSender {
     Context mContext = null;
@@ -49,7 +52,7 @@ public class EmailIntentSender implements ReportSender {
 
     private String buildBody(CrashReportData errorContent) {
         StringBuilder builder = new StringBuilder();
-        for(ReportField field : ACRA.getConfig().mailReportFields()) {
+        for (ReportField field : ACRA.getConfig().mailReportFields()) {
             builder.append(field.toString()).append("=");
             builder.append(errorContent.get(field).toString());
             builder.append('\n');

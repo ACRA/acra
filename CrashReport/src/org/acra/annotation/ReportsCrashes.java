@@ -188,20 +188,65 @@ public @interface ReportsCrashes {
      */
     String[] logcatArguments() default { "-t", "200", "-v", "time" };
 
+    /**
+     * Inlude logcat events from the radio log (logcat -b radio).
+     */
     boolean includeRadioLogcat() default false;
 
+    /**
+     * Include logcat events from the eventslog (logcat -b event).
+     */
     boolean includeEventsLogcat() default false;
 
+    /**
+     * A special String value to allow the usage of a pseudo-null default value
+     * in annotation parameters.
+     */
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
+    /**
+     * When using the {@link #formUri()} parameter to send reports to a custom
+     * server-side script, you can set here and in
+     * {@link #formUriBasicAuthPassword()} the credentials for a BASIC HTTP
+     * authentication.
+     */
     String formUriBasicAuthLogin() default NULL_VALUE;
 
+    /**
+     * When using the {@link #formUri()} parameter to send reports to a custom
+     * server-side script, you can set here and in
+     * {@link #formUriBasicAuthLogin()} the credentials for a BASIC HTTP
+     * authentication.
+     */
     String formUriBasicAuthPassword() default NULL_VALUE;
 
+    /**
+     * Add your crash reports mailbox here if you want to send reports via
+     * email. This allows to get rid of the INTERNET permission.
+     */
     String mailTo() default "";
 
-    ReportField[] mailReportFields() default { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION, ReportField.APP_VERSION_NAME,
-            ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE };
-            
+    /**
+     * You can set here the list of {@link ReportField}s you want to send in
+     * your email reports {@see #mailTo()}. Default is:
+     * {@link ReportField#USER_COMMENT}, {@link ReportField#ANDROID_VERSION},
+     * {@link ReportField#APP_VERSION_NAME}, {@link ReportField#BRAND},
+     * {@link ReportField#PHONE_MODEL}, {@link ReportField#CUSTOM_DATA},
+     * {@link ReportField#STACK_TRACE}
+     */
+    ReportField[] mailReportFields() default { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION,
+            ReportField.APP_VERSION_NAME, ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA,
+            ReportField.STACK_TRACE };
+
+    /**
+     * Controls wether unapproved reports are deleted on application start or
+     * not. Default is true. This is a change from versions of ACRA before 3.2
+     * as in NOTIFICATION mode reports were previously kept until the user
+     * explicitly opens the Notification dialog AND choose to send or discard the
+     * report. Unitl then, on application restart, ACRA was issuing a new crash
+     * notification for previous reports pending for approval. This could be
+     * misunderstood by the user with a new crash, resulting in bad appreciation
+     * of the application.
+     */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 }
