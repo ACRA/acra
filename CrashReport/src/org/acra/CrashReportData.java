@@ -43,7 +43,8 @@ import java.util.Properties;
  * Stores a crash reports data with {@link ReportField} enum values as keys.
  * This is basically the source of {@link Properties} adapted to extend an
  * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
- * amounts of android time in the generation of a date comment.
+ * amounts of android time in the generation of a date comment when storing to
+ * file.
  */
 public class CrashReportData extends EnumMap<ReportField, String> {
 

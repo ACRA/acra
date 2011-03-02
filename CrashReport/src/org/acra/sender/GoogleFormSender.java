@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Emmanuel Astier & Kevin Gaudin
+ *  Copyright 2010 Kevin Gaudin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,13 +29,18 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * A ReportSender
+ * ACRA's default {@link ReportSender}: sends report data to a GoogleDocs Form.
+ * 
  * @author Kevin Gaudin
- *
+ * 
  */
 public class GoogleFormSender implements ReportSender {
     private Uri mFormUri = null;
 
+    /**
+     * Creates a new GoogleFormSender which will send data to a Form identified by its key.
+     * @param formKey The key of the form. The key is the formKey parameter value in the Form Url: https://spreadsheets.google.com/viewform?formkey=<b>dDN6NDdnN2I2aWU1SW5XNmNyWVljWmc6MQ</b>
+     */
     public GoogleFormSender(String formKey) {
         mFormUri = Uri.parse("http://spreadsheets.google.com/formResponse?formkey=" + formKey + "&amp;ifq");
     }
