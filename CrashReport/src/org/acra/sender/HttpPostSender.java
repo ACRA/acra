@@ -46,7 +46,7 @@ import android.util.Log;
  * </p>
  * 
  * <pre>
- * @ReportsCrashes(...)
+ * &#64;ReportsCrashes(...)
  * public class myApplication extends Application {
  * 
  *     public void onCreate() {
