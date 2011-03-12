@@ -16,14 +16,17 @@
 
 package org.acra;
 
+import static org.acra.ACRA.LOG_TAG;
+
 import org.acra.ErrorReporter.ReportsSenderWorker;
 
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -41,7 +44,6 @@ import android.widget.Toast;
  */
 public class CrashReportDialog extends Activity {
 
-
     private EditText userComment = null;
     String mReportFileName = null;
 
@@ -55,6 +57,7 @@ public class CrashReportDialog extends Activity {
         super.onCreate(savedInstanceState);
 
         mReportFileName = getIntent().getStringExtra(ErrorReporter.EXTRA_REPORT_FILE_NAME);
+        Log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
         if (mReportFileName == null) {
             finish();
         }

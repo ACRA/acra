@@ -249,7 +249,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         String newName;
         for (String reportFileName : reportFileNames) {
             if (!isApproved(reportFileName)) {
-                reportFile = new File(reportFileName);
+                reportFile = new File(mContext.getFilesDir(), reportFileName);
                 newName = reportFileName.replace(REPORTFILE_EXTENSION, APPROVED_SUFFIX + REPORTFILE_EXTENSION);
                 reportFile.renameTo(new File(mContext.getFilesDir(), newName));
             }
@@ -737,9 +737,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         Log.d(LOG_TAG, "Creating Notification for " + reportFileName);
         notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
-        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
+
+        // Send new notification
+        notificationManager.cancelAll();
         notificationManager.notify(ACRA.NOTIF_CRASH_ID, notification);
     }
 
@@ -986,6 +989,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private void deletePendingReports(boolean deleteApprovedReports, boolean deleteNonApprovedReports,
             int nbOfLatestToKeep) {
         String[] filesList = getCrashReportFilesList();
+        Arrays.sort(filesList);
         if (filesList != null) {
             boolean isReportApproved = false;
             String fileName;
