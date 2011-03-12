@@ -121,6 +121,8 @@ import android.widget.Toast;
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
+    public static final String REPORTFILE_EXTENSION = ".stacktrace";
+
     /**
      * Contains the active {@link ReportSender}s.
      */
@@ -166,6 +168,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         public void run() {
             if (mApprovePendingReports) {
                 approvePendingReports();
+                mCommentedReportFileName = mCommentedReportFileName.replace(REPORTFILE_EXTENSION, APPROVED_SUFFIX
+                        + REPORTFILE_EXTENSION);
             }
             addCommentToReport(mContext, mCommentedReportFileName, mUserComment);
             checkAndSendReports(mContext, mSendOnlySilentReports);
@@ -239,12 +243,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * sent.
      */
     public void approvePendingReports() {
+        Log.d(LOG_TAG, "Mark all pending reports as approved.");
         String[] reportFileNames = getCrashReportFilesList();
         File reportFile = null;
+        String newName;
         for (String reportFileName : reportFileNames) {
             if (!isApproved(reportFileName)) {
                 reportFile = new File(reportFileName);
-                reportFile.renameTo(new File(reportFile + APPROVED_SUFFIX));
+                newName = reportFileName.replace(REPORTFILE_EXTENSION, APPROVED_SUFFIX + REPORTFILE_EXTENSION);
+                reportFile.renameTo(new File(mContext.getFilesDir(), newName));
             }
         }
     }
@@ -728,6 +735,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         CharSequence contentText = mContext.getText(conf.resNotifText());
 
         Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
+        Log.d(LOG_TAG, "Creating Notification for " + reportFileName);
         notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
         PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
 
@@ -794,7 +802,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 now.setToNow();
                 long timestamp = now.toMillis(false);
                 String isSilent = crashData.getProperty(IS_SILENT);
-                fileName = "" + timestamp + (isSilent != null ? SILENT_SUFFIX : "") + ".stacktrace";
+                fileName = "" + timestamp + (isSilent != null ? SILENT_SUFFIX : "") + REPORTFILE_EXTENSION;
             }
             FileOutputStream reportFile = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
             crashData.store(reportFile, "");
@@ -819,7 +827,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Filter for ".stacktrace" files
             FilenameFilter filter = new FilenameFilter() {
                 public boolean accept(File dir, String name) {
-                    return name.endsWith(".stacktrace");
+                    return name.endsWith(REPORTFILE_EXTENSION);
                 }
             };
             return dir.list(filter);
@@ -904,12 +912,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             } else if (ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
                 // NOTIFICATION mode, and there are unapproved reports to send
                 // (latest notification has been ignored: neither accepted nor
-                // refused.
+                // refused). The application developer has decided that these
+                // reports should not be renotified ==> destroy them.
                 ErrorReporter.getInstance().deletePendingNonApprovedReports();
             } else {
                 // NOTIFICATION mode, and there are unapproved reports to send
                 // (latest notification has been ignored: neither accepted nor
-                // refused.
+                // refused).
                 // Display the notification.
                 // The user comment will be associated to the latest report
                 ErrorReporter.getInstance().notifySendReport(getLatestNonSilentReport(filesList));
@@ -945,7 +954,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Delete all report files stored.
      */
     public void deletePendingReports() {
-        deletePendingReports(true, true);
+        deletePendingReports(true, true, 0);
     }
 
     /**
@@ -953,14 +962,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * {@link #handleSilentException(Throwable)}.
      */
     public void deletePendingSilentReports() {
-        deletePendingReports(true, false);
+        deletePendingReports(true, false, 0);
     }
 
     /**
      * Delete all pending non approved reports.
      */
     public void deletePendingNonApprovedReports() {
-        deletePendingReports(false, true);
+        // In NOTIFICATION mode, we have to keep the latest report which could
+        // be needed for an existing not yet discarded notification.
+        int nbReportsToKeep = mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION ? 1 : 0;
+        deletePendingReports(false, true, nbReportsToKeep);
     }
 
     /**
@@ -971,11 +983,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param deleteNonApprovedReports
      *            Set to true to delete non approved/silent reports.
      */
-    private void deletePendingReports(boolean deleteApprovedReports, boolean deleteNonApprovedReports) {
+    private void deletePendingReports(boolean deleteApprovedReports, boolean deleteNonApprovedReports,
+            int nbOfLatestToKeep) {
         String[] filesList = getCrashReportFilesList();
         if (filesList != null) {
             boolean isReportApproved = false;
-            for (String fileName : filesList) {
+            String fileName;
+            for (int iFile = 0; iFile < filesList.length - nbOfLatestToKeep; iFile++) {
+                fileName = filesList[iFile];
                 isReportApproved = isApproved(fileName);
                 if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
                     new File(mContext.getFilesDir(), fileName).delete();
@@ -1062,6 +1077,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The comment entered by the user.
      */
     private static void addCommentToReport(Context context, String commentedReportFileName, String userComment) {
+        Log.d(LOG_TAG, "Add user comment to " + commentedReportFileName);
         if (commentedReportFileName != null && userComment != null) {
             try {
                 FileInputStream input = context.openFileInput(commentedReportFileName);
