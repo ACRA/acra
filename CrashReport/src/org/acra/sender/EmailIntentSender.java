@@ -54,7 +54,7 @@ public class EmailIntentSender implements ReportSender {
         StringBuilder builder = new StringBuilder();
         for (ReportField field : ACRA.getConfig().mailReportFields()) {
             builder.append(field.toString()).append("=");
-            builder.append(errorContent.get(field).toString());
+            builder.append(errorContent.get(field));
             builder.append('\n');
         }
         return builder.toString();
