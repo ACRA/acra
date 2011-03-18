@@ -42,7 +42,7 @@ public class GoogleFormSender implements ReportSender {
      * @param formKey The key of the form. The key is the formKey parameter value in the Form Url: https://spreadsheets.google.com/viewform?formkey=<b>dDN6NDdnN2I2aWU1SW5XNmNyWVljWmc6MQ</b>
      */
     public GoogleFormSender(String formKey) {
-        mFormUri = Uri.parse("http://spreadsheets.google.com/formResponse?formkey=" + formKey + "&amp;ifq");
+        mFormUri = Uri.parse("https://spreadsheets.google.com/formResponse?formkey=" + formKey + "&amp;ifq");
     }
 
     @Override
