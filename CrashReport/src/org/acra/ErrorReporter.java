@@ -1146,4 +1146,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void removeAllReportSenders() {
         mReportSenders.clear();
     }
+    
+    /**
+     * Removes all previously set {@link ReportSender}s and set the given one as the new {@link ReportSender}.
+     * @param sender
+     */
+    public void setReportSender(ReportSender sender) {
+        removeAllReportSenders();
+        addReportSender(sender);
+    }
 }
