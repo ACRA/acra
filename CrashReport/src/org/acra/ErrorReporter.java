@@ -198,8 +198,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * This is the number of previously stored reports that we send in
-     * {@link #checkAndSendReports(Context)}. The number of reports is limited
-     * to avoid ANR on application start.
+     * {@link #checkAndSendReports(Context, boolean)}. The number of reports is
+     * limited to avoid ANR on application start.
      */
     private static final int MAX_SEND_REPORTS = 5;
 
@@ -710,8 +710,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Send a status bar notification. The action triggered when the
      * notification is selected is to start the {@link CrashReportDialog}
      * Activity.
-     * 
-     * @see CrashReportingApplication#getCrashResources()
      */
     void notifySendReport(String reportFileName) {
         // This notification can't be set to AUTO_CANCEL because after a crash,
@@ -737,7 +735,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         Log.d(LOG_TAG, "Creating Notification for " + reportFileName);
         notificationIntent.putExtra(EXTRA_REPORT_FILE_NAME, reportFileName);
-        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
 
@@ -851,8 +850,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            developer (sent via {@link #handleSilentException(Throwable)}.
      */
     void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
+        File curFile = null;
         try {
-
             String[] reportFiles = getCrashReportFilesList();
             if (reportFiles != null && reportFiles.length > 0) {
                 Arrays.sort(reportFiles);
@@ -860,23 +859,34 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 // send only a few reports to avoid overloading the network
                 int reportsSentCount = 0;
                 for (String curFileName : reportFiles) {
+                    curFile = null;
                     if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
                         if (reportsSentCount < MAX_SEND_REPORTS) {
                             Log.i(LOG_TAG, "Sending file " + curFileName);
+                            curFile = new File(context.getFilesDir(), curFileName);
                             FileInputStream input = context.openFileInput(curFileName);
                             previousCrashReport.load(input);
                             input.close();
                             sendCrashReport(context, previousCrashReport);
 
                             // DELETE FILES !!!!
-                            File curFile = new File(context.getFilesDir(), curFileName);
                             curFile.delete();
                         }
                         reportsSentCount++;
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            if (curFile != null) {
+                curFile.delete();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (curFile != null) {
+                curFile.delete();
+            }
+        } catch (ReportSenderException e) {
             e.printStackTrace();
         }
     }
@@ -1146,9 +1156,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void removeAllReportSenders() {
         mReportSenders.clear();
     }
-    
+
     /**
-     * Removes all previously set {@link ReportSender}s and set the given one as the new {@link ReportSender}.
+     * Removes all previously set {@link ReportSender}s and set the given one as
+     * the new {@link ReportSender}.
+     * 
      * @param sender
      */
     public void setReportSender(ReportSender sender) {
