@@ -156,8 +156,8 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://acra.googlecode.com/svn/branches/maven_build/acra</connection>
-		<developerConnection>scm:svn:https://acra.googlecode.com/svn/branches/maven_build/acra</developerConnection>
+		<connection>scm:svn:https://acra.googlecode.com/svn/trunk/acra</connection>
+		<developerConnection>scm:svn:https://acra.googlecode.com/svn/trunk/acra</developerConnection>
 		<url>https://acra.googlecode.com/svn/trunk/acra</url>
 	</scm>
 
