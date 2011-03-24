@@ -3,7 +3,7 @@
 
 	<groupId>org.acra</groupId>
 	<artifactId>acra</artifactId>
-	<version>3.1.2</version>
+	<version>3.1.3-SNAPSHOT</version>
 
 	<name>Application Crash Report for Android</name>
 
@@ -106,9 +106,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://acra.googlecode.com/svn/tags/acra-3.1.2</connection>
-		<developerConnection>scm:svn:https://acra.googlecode.com/svn/tags/acra-3.1.2</developerConnection>
-		<url>https://acra.googlecode.com/svn/tags/acra-3.1.2</url>
+		<connection>scm:svn:https://acra.googlecode.com/svn/branches/maven_build/acra</connection>
+		<developerConnection>scm:svn:https://acra.googlecode.com/svn/branches/maven_build/acra</developerConnection>
+		<url>https://acra.googlecode.com/svn/trunk/acra</url>
 	</scm>
 
 </project>
