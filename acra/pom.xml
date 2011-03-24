@@ -3,7 +3,7 @@
 
 	<groupId>org.acra</groupId>
 	<artifactId>acra</artifactId>
-	<version>3.2.0-MVN_TEST</version>
+	<version>3.2.1-MVN_TEST-SNAPSHOT</version>
 
 	<name>Application Crash Report for Android</name>
 
@@ -106,9 +106,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://acra.googlecode.com/svn/tags/acra-3.2.0-MVN_TEST</connection>
-		<developerConnection>scm:svn:https://acra.googlecode.com/svn/tags/acra-3.2.0-MVN_TEST</developerConnection>
-		<url>https://acra.googlecode.com/svn/tags/acra-3.2.0-MVN_TEST</url>
+		<connection>scm:svn:https://acra.googlecode.com/svn/branches/maven_build/acra</connection>
+		<developerConnection>scm:svn:https://acra.googlecode.com/svn/branches/maven_build/acra</developerConnection>
+		<url>https://acra.googlecode.com/svn/trunk/acra</url>
 	</scm>
 
 </project>
