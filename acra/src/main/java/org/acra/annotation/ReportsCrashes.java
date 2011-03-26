@@ -152,6 +152,16 @@ public @interface ReportsCrashes {
     int sharedPreferencesMode() default Context.MODE_PRIVATE;
 
     /**
+     * Set this to true if you want to include DropBoxManager text data in your reports. You can configure DropBox event collection with:
+     * <ul><li>{@link #dropboxCollectionMinutes()}: max age of collected events in minutes
+     * </li><li>{@link #additionalDropBoxTags()}: additional DropBox tags
+     * </li></ul>
+     * Contents of non-text events will not be included in reports.
+     * @return
+     */
+    boolean includeDropBox() default false;
+
+    /**
      * You can provide here a list of tags that will be fetched when collecting
      * DropBox entries.
      */
@@ -249,4 +259,5 @@ public @interface ReportsCrashes {
      * of the application.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
+
 }

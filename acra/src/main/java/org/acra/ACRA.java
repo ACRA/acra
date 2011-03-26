@@ -157,7 +157,6 @@ public class ACRA {
 
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    Log.d(ACRA.LOG_TAG, "Preferences changed, check if ACRA configuration must change.");
                     if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
                         Boolean disableAcra = false;
                         try {

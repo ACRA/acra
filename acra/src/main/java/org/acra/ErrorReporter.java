@@ -428,8 +428,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     } else {
                         mCrashProperties.put(RADIOLOG, "@ReportsCrashes(includeRadioLog=false)");
                     }
-                    mCrashProperties.put(DROPBOX,
-                            DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
+                    if (ACRA.getConfig().includeDropBox()) {
+                        mCrashProperties.put(DROPBOX,
+                                DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
+                    } else {
+                        mCrashProperties.put(DROPBOX, "@ReportsCrashes(includeDropBox=false)");
+                    }
                 } else {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
                 }
