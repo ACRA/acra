@@ -26,7 +26,7 @@ import android.content.res.Configuration;
 public enum ReportField {
     /**
      * Application version code. This is the incremental integer version code
-     * use to differentiate versions on the android market. {@see
+     * used to differentiate versions on the android market. {@see
      * PackageInfo#versionCode}
      */
     APP_VERSION_CODE,
