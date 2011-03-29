@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 
 /**
@@ -132,6 +133,7 @@ public class ACRA {
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
     private static OnSharedPreferenceChangeListener mPrefListener;
+    private static Time mAppStartDate;
 
     /**
      * <p>
@@ -144,6 +146,8 @@ public class ACRA {
      *            Your Application class.
      */
     public static void init(Application app) {
+        mAppStartDate = new Time();
+        mAppStartDate.setToNow();
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
         if (mReportsCrashes != null) {
@@ -220,6 +224,7 @@ public class ACRA {
         // Initialize ErrorReporter with all required data
         ErrorReporter errorReporter = ErrorReporter.getInstance();
         errorReporter.setReportingInteractionMode(mReportsCrashes.mode());
+        errorReporter.setAppStartDate(mAppStartDate);
 
         if (!"".equals(mReportsCrashes.mailTo())) {
             Log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");

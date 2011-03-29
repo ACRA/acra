@@ -149,6 +149,10 @@ public enum ReportField {
      */
     USER_COMMENT,
     /**
+     * User date on application start.
+     */
+    USER_APP_START_DATE,
+    /**
      * User date immediately after the crash occurred.
      */
     USER_CRASH_DATE,

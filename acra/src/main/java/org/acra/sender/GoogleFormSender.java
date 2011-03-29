@@ -147,29 +147,32 @@ public class GoogleFormSender implements ReportSender {
             case USER_COMMENT:
                 result.put("entry.25.single", report.get(originalKey));
                 break;
-            case USER_CRASH_DATE:
+            case USER_APP_START_DATE:
                 result.put("entry.26.single", report.get(originalKey));
                 break;
-            case DUMPSYS_MEMINFO:
+            case USER_CRASH_DATE:
                 result.put("entry.27.single", report.get(originalKey));
                 break;
-            case DROPBOX:
+            case DUMPSYS_MEMINFO:
                 result.put("entry.28.single", report.get(originalKey));
                 break;
-            case LOGCAT:
+            case DROPBOX:
                 result.put("entry.29.single", report.get(originalKey));
                 break;
-            case EVENTSLOG:
+            case LOGCAT:
                 result.put("entry.30.single", report.get(originalKey));
                 break;
-            case RADIOLOG:
+            case EVENTSLOG:
                 result.put("entry.31.single", report.get(originalKey));
                 break;
-            case DEVICE_ID:
+            case RADIOLOG:
                 result.put("entry.32.single", report.get(originalKey));
                 break;
-            case USER_EMAIL:
+            case DEVICE_ID:
                 result.put("entry.33.single", report.get(originalKey));
+                break;
+            case USER_EMAIL:
+                result.put("entry.34.single", report.get(originalKey));
                 break;
             default:
                 break;

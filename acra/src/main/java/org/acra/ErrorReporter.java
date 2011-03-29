@@ -1171,4 +1171,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         removeAllReportSenders();
         addReportSender(sender);
     }
+
+    /**
+     * Sets the application start date. This will be included in the reports, will be helpfull compared to user_crash date.
+     * @param appStartDate
+     */
+    public void setAppStartDate(Time appStartDate) {
+        mCrashProperties.put(ReportField.USER_APP_START_DATE,appStartDate.format3339(false));
+    }
 }
