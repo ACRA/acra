@@ -162,6 +162,30 @@ public @interface ReportsCrashes {
     boolean includeDropBox() default false;
 
     /**
+     * If enabled, DropBox events collection will include system tags:
+     * <ul>
+     *   <li>system_app_anr</li>
+     *   <li>system_app_wtf</li>
+     *   <li>system_app_crash</li>
+     *   <li>system_server_anr</li>
+     *   <li>system_server_wtf</li>
+     *   <li>system_server_crash</li>
+     *   <li>BATTERY_DISCHARGE_INFO</li>
+     *   <li>SYSTEM_RECOVERY_LOG</li>
+     *   <li>SYSTEM_BOOT</li>
+     *   <li>SYSTEM_LAST_KMSG</li>
+     *   <li>APANIC_CONSOLE</li>
+     *   <li>APANIC_THREADS</li>
+     *   <li>SYSTEM_RESTART</li>
+     *   <li>SYSTEM_TOMBSTONE</li>
+     *   <li>data_app_strictmode</li>
+     * </ul>
+     * Requires {@link #includeDropBox()} true.
+     * @return
+     */
+    boolean includeDropBoxSystemTags() default false;
+
+    /**
      * You can provide here a list of tags that will be fetched when collecting
      * DropBox entries.
      */

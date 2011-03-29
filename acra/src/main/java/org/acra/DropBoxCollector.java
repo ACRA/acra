@@ -64,37 +64,46 @@ class DropBoxCollector {
                     timer.minute -= ACRA.getConfig().dropboxCollectionMinutes();
                     timer.normalize(false);
                     long time = timer.toMillis(false);
-                    ArrayList<String> tags = new ArrayList<String>(Arrays.asList(SYSTEM_TAGS));
+                    ArrayList<String> tags;
+                    if (ACRA.getConfig().includeDropBoxSystemTags()) {
+                        tags = new ArrayList<String>(Arrays.asList(SYSTEM_TAGS));
+                    } else {
+                        tags = new ArrayList<String>();
+                    }
                     if (additionalTags != null && additionalTags.length > 0) {
                         tags.addAll(Arrays.asList(additionalTags));
                     }
                     String text = null;
                     Object entry = null;
-                    for (String tag : tags) {
-                        long msec = time;
-                        dropboxContent.append("Tag: ").append(tag).append('\n');
-                        entry = getNextEntry.invoke(dropbox, tag, msec);
-                        if (entry != null) {
-                            Method getText = entry.getClass().getMethod("getText", int.class);
-                            Method getTimeMillis = entry.getClass().getMethod("getTimeMillis", (Class[]) null);
-                            Method close = entry.getClass().getMethod("close", (Class[]) null);
-                            while (entry != null) {
-                                msec = (Long) getTimeMillis.invoke(entry, (Object[]) null);
-                                timer.set(msec);
-                                dropboxContent.append("@").append(timer.format2445()).append('\n');
-                                text = (String) getText.invoke(entry, 500);
-                                if (text != null) {
-                                    dropboxContent.append("Text: ").append(text).append('\n');
-                                } else {
-                                    dropboxContent.append("Not Text!").append('\n');
+                    if (tags.size() > 0) {
+                        for (String tag : tags) {
+                            long msec = time;
+                            dropboxContent.append("Tag: ").append(tag).append('\n');
+                            entry = getNextEntry.invoke(dropbox, tag, msec);
+                            if (entry != null) {
+                                Method getText = entry.getClass().getMethod("getText", int.class);
+                                Method getTimeMillis = entry.getClass().getMethod("getTimeMillis", (Class[]) null);
+                                Method close = entry.getClass().getMethod("close", (Class[]) null);
+                                while (entry != null) {
+                                    msec = (Long) getTimeMillis.invoke(entry, (Object[]) null);
+                                    timer.set(msec);
+                                    dropboxContent.append("@").append(timer.format2445()).append('\n');
+                                    text = (String) getText.invoke(entry, 500);
+                                    if (text != null) {
+                                        dropboxContent.append("Text: ").append(text).append('\n');
+                                    } else {
+                                        dropboxContent.append("Not Text!").append('\n');
+                                    }
+                                    close.invoke(entry, (Object[]) null);
+                                    entry = getNextEntry.invoke(dropbox, tag, msec);
                                 }
-                                close.invoke(entry, (Object[]) null);
-                                entry = getNextEntry.invoke(dropbox, tag, msec);
+                            } else {
+                                dropboxContent.append("Nothing.").append('\n');
                             }
-                        } else {
-                            dropboxContent.append("Nothing.").append('\n');
-                        }
 
+                        }
+                    } else {
+                        dropboxContent.append("No tag configured for collection.");
                     }
                 }
                 return dropboxContent.toString();
