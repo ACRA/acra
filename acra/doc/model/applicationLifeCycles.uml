@@ -1,4 +1,6 @@
 @startuml
+skinparam activityFontSize 10
+skinparam activityFontName Helvetica
 title NOTIFICATION MODE
 
 (*) --> "Application start"
