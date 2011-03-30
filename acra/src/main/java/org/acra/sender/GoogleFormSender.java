@@ -174,6 +174,9 @@ public class GoogleFormSender implements ReportSender {
             case USER_EMAIL:
                 result.put("entry.34.single", report.get(originalKey));
                 break;
+            case DEVICE_FEATURES:
+                result.put("entry.35.single", report.get(originalKey));
+                break;
             default:
                 break;
             }

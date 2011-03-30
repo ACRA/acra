@@ -454,6 +454,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Configuration crashConf = context.getResources().getConfiguration();
             mCrashProperties.put(CRASH_CONFIGURATION, ConfigurationInspector.toString(crashConf));
 
+            
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
@@ -507,6 +508,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Add user email address, if set in the app's preferences
             mCrashProperties.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
+
+            // Device features
+            mCrashProperties.put(ReportField.DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);

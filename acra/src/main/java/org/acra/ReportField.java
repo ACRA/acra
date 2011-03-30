@@ -188,6 +188,9 @@ public enum ReportField {
     /**
      * User email address. Can be provided by the user in the {@value ACRA#PREF_USER_EMAIL_ADDRESS} SharedPreference.
      */
-    USER_EMAIL;
-
+    USER_EMAIL,
+    /**
+     * Features declared as available on this device by the system.
+     */
+    DEVICE_FEATURES;
 }
