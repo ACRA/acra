@@ -86,6 +86,12 @@ public @interface ReportsCrashes {
     int resDialogCommentPrompt() default 0;
 
     /**
+     * Resource id for the user email address input label in the crash dialog. If not
+     * provided, disables the input field.
+     */
+    int resDialogEmailPrompt() default 0;
+
+    /**
      * Resource id for the icon in the crash dialog.
      */
     int resDialogIcon() default android.R.drawable.ic_dialog_alert;
@@ -283,5 +289,4 @@ public @interface ReportsCrashes {
      * of the application.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
-
 }

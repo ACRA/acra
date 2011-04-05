@@ -22,7 +22,10 @@ import org.acra.ErrorReporter.ReportsSenderWorker;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -44,7 +47,9 @@ import android.widget.Toast;
  */
 public class CrashReportDialog extends Activity {
 
+    private SharedPreferences prefs = null;
     private EditText userComment = null;
+    private EditText userEmail = null;
     String mReportFileName = null;
 
     /*
@@ -93,6 +98,26 @@ public class CrashReportDialog extends Activity {
                     new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         }
 
+        // Add an optional user email field
+        int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
+        if (emailPromptId != 0) {
+            TextView label = new TextView(this);
+            label.setText(getText(emailPromptId));
+
+            label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
+            root.addView(label, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+
+            userEmail = new EditText(this);
+            userEmail.setSingleLine();
+            userEmail.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+            prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig()
+                    .sharedPreferencesMode());
+            userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
+
+            root.addView(userEmail, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        }
+
         LinearLayout buttons = new LinearLayout(this);
         buttons.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         buttons.setPadding(buttons.getPaddingLeft(), 10, buttons.getPaddingRight(), buttons.getPaddingBottom());
@@ -108,9 +133,23 @@ public class CrashReportDialog extends Activity {
                 // Start the report sending task
                 ReportsSenderWorker worker = err.new ReportsSenderWorker();
                 worker.setApprovePendingReports();
+
                 // Retrieve user comment
-                worker.setComment(mReportFileName, userComment.getText().toString());
+                if(userComment != null) {
+                    worker.setUserComment(mReportFileName, userComment.getText().toString());
+                }
+                
+                // Store the user email
+                if (prefs != null && userEmail != null) {
+                    String usrEmail = userEmail.getText().toString();
+                    Editor prefEditor = prefs.edit();
+                    prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
+                    prefEditor.commit();
+                    worker.setUserEmail(mReportFileName, usrEmail);
+                }
+
                 worker.start();
+
 
                 // Optional Toast to thank the user
                 int toastId = ACRA.getConfig().resDialogOkToast();

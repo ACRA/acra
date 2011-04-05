@@ -136,6 +136,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     final class ReportsSenderWorker extends Thread {
         private String mCommentedReportFileName = null;
         private String mUserComment = null;
+        private String mUserEmail = null;
         private boolean mSendOnlySilentReports = false;
         private boolean mApprovePendingReports = false;
 
@@ -171,7 +172,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 mCommentedReportFileName = mCommentedReportFileName.replace(REPORTFILE_EXTENSION, APPROVED_SUFFIX
                         + REPORTFILE_EXTENSION);
             }
-            addCommentToReport(mContext, mCommentedReportFileName, mUserComment);
+            addUserDataToReport(mContext, mCommentedReportFileName, mUserComment, mUserEmail);
             checkAndSendReports(mContext, mSendOnlySilentReports);
         }
 
@@ -183,9 +184,22 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * @param userComment
          *            The comment given by the user.
          */
-        void setComment(String reportFileName, String userComment) {
+        void setUserComment(String reportFileName, String userComment) {
             mCommentedReportFileName = reportFileName;
             mUserComment = userComment;
+        }
+
+        /**
+         * Associates a user email to a specific report file name.
+         * 
+         * @param reportFileName
+         *            The file name of the report.
+         * @param userEmail
+         *            The email address given by the user.
+         */
+        void setUserEmail(String reportFileName, String userEmail) {
+            mCommentedReportFileName = reportFileName;
+            mUserEmail = userEmail;
         }
 
         /**
@@ -1097,8 +1111,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The file name of the report which should receive the comment.
      * @param userComment
      *            The comment entered by the user.
+     * @param userEmail 
      */
-    private static void addCommentToReport(Context context, String commentedReportFileName, String userComment) {
+    private static void addUserDataToReport(Context context, String commentedReportFileName, String userComment, String userEmail) {
         Log.d(LOG_TAG, "Add user comment to " + commentedReportFileName);
         if (commentedReportFileName != null && userComment != null) {
             try {
@@ -1108,7 +1123,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 commentedCrashReport.load(input);
                 input.close();
                 commentedCrashReport.put(USER_COMMENT, userComment);
-                saveCrashReportFile(commentedReportFileName, commentedCrashReport);
+                commentedCrashReport.put(USER_EMAIL, userEmail);
+                            saveCrashReportFile(commentedReportFileName, commentedCrashReport);
             } catch (FileNotFoundException e) {
                 Log.w(LOG_TAG, "User comment not added: ", e);
             } catch (InvalidPropertiesFormatException e) {
