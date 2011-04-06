@@ -691,6 +691,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 || reportingInteractionMode == ReportingInteractionMode.TOAST
                 || ACRA.getACRASharedPreferences().getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
             // Send reports now
+            approvePendingReports();
             ReportsSenderWorker wk = new ReportsSenderWorker(sendOnlySilentReports);
             wk.start();
             return wk;
