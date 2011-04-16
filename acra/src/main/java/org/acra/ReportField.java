@@ -52,66 +52,17 @@ public enum ReportField {
      */
     ANDROID_VERSION,
     /**
-     * Android build board. {@see Build#BOARD}
+     * Android Build details. {@see Build}
      */
-    BOARD,
+    BUILD,
     /**
      * Device brand (manufacturer or carrier). {@see Build#BRAND}
      */
     BRAND,
     /**
-     * Device industrial design name. {@see Build#DEVICE}
-     */
-    DEVICE,
-    /**
-     * Android build display ID. Content might vary. Examples found:
-     * <ul>
-     * <li>unknown (Motorola)</li>
-     * <li>FRG22D (Motorola)</li>
-     * <li>CUPCAKE (Motorola, Samsung)</li>
-     * <li>FROYO.XWJJ3 (Samsung)</li>
-     * <li>VZW (Motorola/Verizon)</li>
-     * <li>Donut.V10a (LG Electronics)</li>
-     * <li>1.56.651.2 (HTC/Sprint)</li>
-     * <li>RK-1.2.9.eng.root.20101517.173848 (Archos)</li>
-     * <li>FRF91 (HTC/T Mobile Uk)</li>
-     * <li>ChevyNo1 -> Simply Stunning v2.0.2 ESE53 [3/9/2010] (Custom ROM)</li>
-     * <li>...</li>
-     * </ul> {@see Build#DISPLAY}
-     */
-    BUILD_DISPLAY_ID,
-    /**
-     * Android build fingerprint (unique id). {@see Build#FINGERPRINT}
-     */
-    FINGERPRINT,
-    /**
-     * Android build host. {@see Build#HOST}
-     */
-    BUILD_HOST,
-    /**
-     * Android build Id. {@see Build#ID}
-     */
-    BUILD_ID,
-    /**
      * Device overall product code. {@see Build#PRODUCT}
      */
     PRODUCT,
-    /**
-     * Tags associated to the android build. {@see Build#TAGS}
-     */
-    BUILD_TAGS,
-    /**
-     * Android build time. {@see Build#TIME}
-     */
-    BUILD_TIME,
-    /**
-     * Android type of build ("user", "eng"...). {@see Build#TYPE}
-     */
-    BUILD_TYPE,
-    /**
-     * Android build user. {@see Build#USER}
-     */
-    BUILD_USER,
     /**
      * Estimation of the total device memory size based on filesystem stats.
      */

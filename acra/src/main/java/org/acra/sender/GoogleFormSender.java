@@ -84,98 +84,71 @@ public class GoogleFormSender implements ReportSender {
             case PHONE_MODEL:
                 result.put("entry.4.single", report.get(originalKey));
                 break;
-            case ANDROID_VERSION:
-                result.put("entry.5.single", "'" + report.get(originalKey));
-                break;
-            case BOARD:
-                result.put("entry.6.single", report.get(originalKey));
-                break;
             case BRAND:
-                result.put("entry.7.single", report.get(originalKey));
-                break;
-            case DEVICE:
-                result.put("entry.8.single", report.get(originalKey));
-                break;
-            case BUILD_DISPLAY_ID:
-                result.put("entry.9.single", report.get(originalKey));
-                break;
-            case FINGERPRINT:
-                result.put("entry.10.single", report.get(originalKey));
-                break;
-            case BUILD_HOST:
-                result.put("entry.11.single", report.get(originalKey));
-                break;
-            case BUILD_ID:
-                result.put("entry.12.single", report.get(originalKey));
+                result.put("entry.5.single", report.get(originalKey));
                 break;
             case PRODUCT:
-                result.put("entry.13.single", report.get(originalKey));
+                result.put("entry.6.single", report.get(originalKey));
                 break;
-            case BUILD_TAGS:
-                result.put("entry.14.single", report.get(originalKey));
+            case ANDROID_VERSION:
+                result.put("entry.7.single", "'" + report.get(originalKey));
                 break;
-            case BUILD_TIME:
-                result.put("entry.15.single", report.get(originalKey));
-                break;
-            case BUILD_TYPE:
-                result.put("entry.16.single", report.get(originalKey));
-                break;
-            case BUILD_USER:
-                result.put("entry.17.single", report.get(originalKey));
+            case BUILD:
+                result.put("entry.8.single", report.get(originalKey));
                 break;
             case TOTAL_MEM_SIZE:
-                result.put("entry.18.single", report.get(originalKey));
+                result.put("entry.9.single", report.get(originalKey));
                 break;
             case AVAILABLE_MEM_SIZE:
-                result.put("entry.19.single", report.get(originalKey));
+                result.put("entry.10.single", report.get(originalKey));
                 break;
             case CUSTOM_DATA:
-                result.put("entry.20.single", report.get(originalKey));
+                result.put("entry.11.single", report.get(originalKey));
                 break;
             case STACK_TRACE:
-                result.put("entry.21.single", report.get(originalKey));
+                result.put("entry.12.single", report.get(originalKey));
                 break;
             case INITIAL_CONFIGURATION:
-                result.put("entry.22.single", report.get(originalKey));
+                result.put("entry.13.single", report.get(originalKey));
                 break;
             case CRASH_CONFIGURATION:
-                result.put("entry.23.single", report.get(originalKey));
+                result.put("entry.14.single", report.get(originalKey));
                 break;
             case DISPLAY:
-                result.put("entry.24.single", report.get(originalKey));
+                result.put("entry.15.single", report.get(originalKey));
                 break;
             case USER_COMMENT:
-                result.put("entry.25.single", report.get(originalKey));
-                break;
-            case USER_APP_START_DATE:
-                result.put("entry.26.single", report.get(originalKey));
-                break;
-            case USER_CRASH_DATE:
-                result.put("entry.27.single", report.get(originalKey));
-                break;
-            case DUMPSYS_MEMINFO:
-                result.put("entry.28.single", report.get(originalKey));
-                break;
-            case DROPBOX:
-                result.put("entry.29.single", report.get(originalKey));
-                break;
-            case LOGCAT:
-                result.put("entry.30.single", report.get(originalKey));
-                break;
-            case EVENTSLOG:
-                result.put("entry.31.single", report.get(originalKey));
-                break;
-            case RADIOLOG:
-                result.put("entry.32.single", report.get(originalKey));
-                break;
-            case DEVICE_ID:
-                result.put("entry.33.single", report.get(originalKey));
+                result.put("entry.16.single", report.get(originalKey));
                 break;
             case USER_EMAIL:
-                result.put("entry.34.single", report.get(originalKey));
+                result.put("entry.17.single", report.get(originalKey));
+                break;
+            case USER_APP_START_DATE:
+                result.put("entry.18.single", report.get(originalKey));
+                break;
+            case USER_CRASH_DATE:
+                result.put("entry.19.single", report.get(originalKey));
+                break;
+            case DUMPSYS_MEMINFO:
+                result.put("entry.20.single", report.get(originalKey));
+                break;
+            case DROPBOX:
+                result.put("entry.21.single", report.get(originalKey));
+                break;
+            case LOGCAT:
+                result.put("entry.22.single", report.get(originalKey));
+                break;
+            case EVENTSLOG:
+                result.put("entry.23.single", report.get(originalKey));
+                break;
+            case RADIOLOG:
+                result.put("entry.24.single", report.get(originalKey));
+                break;
+            case DEVICE_ID:
+                result.put("entry.25.single", report.get(originalKey));
                 break;
             case DEVICE_FEATURES:
-                result.put("entry.35.single", report.get(originalKey));
+                result.put("entry.26.single", report.get(originalKey));
                 break;
             default:
                 break;

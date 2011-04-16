@@ -20,25 +20,16 @@ import static org.acra.ReportField.ANDROID_VERSION;
 import static org.acra.ReportField.APP_VERSION_CODE;
 import static org.acra.ReportField.APP_VERSION_NAME;
 import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
-import static org.acra.ReportField.BOARD;
+import static org.acra.ReportField.BUILD;
 import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.BUILD_DISPLAY_ID;
-import static org.acra.ReportField.BUILD_HOST;
-import static org.acra.ReportField.BUILD_ID;
-import static org.acra.ReportField.BUILD_TAGS;
-import static org.acra.ReportField.BUILD_TIME;
-import static org.acra.ReportField.BUILD_TYPE;
-import static org.acra.ReportField.BUILD_USER;
 import static org.acra.ReportField.CRASH_CONFIGURATION;
 import static org.acra.ReportField.CUSTOM_DATA;
-import static org.acra.ReportField.DEVICE;
 import static org.acra.ReportField.DEVICE_ID;
 import static org.acra.ReportField.DISPLAY;
 import static org.acra.ReportField.DROPBOX;
 import static org.acra.ReportField.DUMPSYS_MEMINFO;
 import static org.acra.ReportField.EVENTSLOG;
 import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.FINGERPRINT;
 import static org.acra.ReportField.INITIAL_CONFIGURATION;
 import static org.acra.ReportField.IS_SILENT;
 import static org.acra.ReportField.LOGCAT;
@@ -468,7 +459,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Configuration crashConf = context.getResources().getConfiguration();
             mCrashProperties.put(CRASH_CONFIGURATION, ConfigurationInspector.toString(crashConf));
 
-            
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
@@ -482,24 +472,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Application Package name
             mCrashProperties.put(PACKAGE_NAME, context.getPackageName());
 
+            // TEST: BUILD data auto collection
+            mCrashProperties.put(BUILD, FieldsCollector.getConstants(android.os.Build.class));
+            
             // Device model
             mCrashProperties.put(PHONE_MODEL, android.os.Build.MODEL);
             // Android version
             mCrashProperties.put(ANDROID_VERSION, android.os.Build.VERSION.RELEASE);
 
             // Android build data
-            mCrashProperties.put(BOARD, android.os.Build.BOARD);
             mCrashProperties.put(BRAND, android.os.Build.BRAND);
-            mCrashProperties.put(DEVICE, android.os.Build.DEVICE);
-            mCrashProperties.put(BUILD_DISPLAY_ID, android.os.Build.DISPLAY);
-            mCrashProperties.put(FINGERPRINT, android.os.Build.FINGERPRINT);
-            mCrashProperties.put(BUILD_HOST, android.os.Build.HOST);
-            mCrashProperties.put(BUILD_ID, android.os.Build.ID);
             mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
-            mCrashProperties.put(BUILD_TAGS, android.os.Build.TAGS);
-            mCrashProperties.put(BUILD_TIME, Long.toString(android.os.Build.TIME));
-            mCrashProperties.put(BUILD_TYPE, android.os.Build.TYPE);
-            mCrashProperties.put(BUILD_USER, android.os.Build.USER);
 
             // Device Memory
             mCrashProperties.put(TOTAL_MEM_SIZE, Long.toString(getTotalInternalMemorySize()));
