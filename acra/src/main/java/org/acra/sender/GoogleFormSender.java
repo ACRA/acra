@@ -77,91 +77,14 @@ public class GoogleFormSender implements ReportSender {
         }
         for (Object originalKey : fields) {
             switch ((ReportField) originalKey) {
-            case REPORT_ID:
-                result.put("entry." + inputId + ".single", "'" + report.get(originalKey));
-                break;
-            case APP_VERSION_CODE:
-                result.put("entry." + inputId + ".single", "'" + report.get(originalKey));
-                break;
             case APP_VERSION_NAME:
                 result.put("entry." + inputId + ".single", "'" + report.get(originalKey));
-                break;
-            case PACKAGE_NAME:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case FILE_PATH:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case PHONE_MODEL:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case BRAND:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case PRODUCT:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
                 break;
             case ANDROID_VERSION:
                 result.put("entry." + inputId + ".single", "'" + report.get(originalKey));
                 break;
-            case BUILD:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case TOTAL_MEM_SIZE:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case AVAILABLE_MEM_SIZE:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case CUSTOM_DATA:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case STACK_TRACE:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case INITIAL_CONFIGURATION:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case CRASH_CONFIGURATION:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case DISPLAY:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case USER_COMMENT:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case USER_EMAIL:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case USER_APP_START_DATE:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case USER_CRASH_DATE:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case DUMPSYS_MEMINFO:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case DROPBOX:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case LOGCAT:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case EVENTSLOG:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case RADIOLOG:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case DEVICE_ID:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
-            case DEVICE_FEATURES:
-                result.put("entry." + inputId + ".single", report.get(originalKey));
-                break;
             default:
+                result.put("entry." + inputId + ".single", report.get(originalKey));
                 break;
             }
             inputId++;
