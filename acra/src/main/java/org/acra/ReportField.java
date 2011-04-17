@@ -141,7 +141,13 @@ public enum ReportField {
      */
     DEVICE_ID,
     /**
-     * User email address. Can be provided by the user in the {@value ACRA#PREF_USER_EMAIL_ADDRESS} SharedPreference.
+     * Installation unique ID. This identifier allow you to track a specific
+     * user application installation without using any personal data.
+     */
+    INSTALLATION_ID,
+    /**
+     * User email address. Can be provided by the user in the
+     * {@value ACRA#PREF_USER_EMAIL_ADDRESS} SharedPreference.
      */
     USER_EMAIL,
     /**
