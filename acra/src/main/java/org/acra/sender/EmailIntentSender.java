@@ -52,7 +52,11 @@ public class EmailIntentSender implements ReportSender {
 
     private String buildBody(CrashReportData errorContent) {
         StringBuilder builder = new StringBuilder();
-        for (ReportField field : ACRA.getConfig().mailReportFields()) {
+        ReportField[] fields = ACRA.getConfig().customReportContent();
+        if(fields.length == 0) {
+            fields = ReportsCrashes.DEFAULT_MAIL_REPORT_FIELDS;
+        }
+        for (ReportField field : fields) {
             builder.append(field.toString()).append("=");
             builder.append(errorContent.get(field));
             builder.append('\n');

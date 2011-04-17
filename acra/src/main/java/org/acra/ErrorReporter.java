@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.ReportSender;
@@ -412,6 +413,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             SharedPreferences prefs = ACRA.getACRASharedPreferences();
 
+            // Generate report uuid
+            mCrashProperties.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
+            
             // Collect meminfo
             mCrashProperties.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
 

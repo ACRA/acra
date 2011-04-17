@@ -15,6 +15,7 @@
  */
 package org.acra.annotation;
 
+import static org.acra.ReportField.*;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -86,8 +87,8 @@ public @interface ReportsCrashes {
     int resDialogCommentPrompt() default 0;
 
     /**
-     * Resource id for the user email address input label in the crash dialog. If not
-     * provided, disables the input field.
+     * Resource id for the user email address input label in the crash dialog.
+     * If not provided, disables the input field.
      */
     int resDialogEmailPrompt() default 0;
 
@@ -158,11 +159,15 @@ public @interface ReportsCrashes {
     int sharedPreferencesMode() default Context.MODE_PRIVATE;
 
     /**
-     * Set this to true if you want to include DropBoxManager text data in your reports. You can configure DropBox event collection with:
-     * <ul><li>{@link #dropboxCollectionMinutes()}: max age of collected events in minutes
-     * </li><li>{@link #additionalDropBoxTags()}: additional DropBox tags
-     * </li></ul>
+     * Set this to true if you want to include DropBoxManager text data in your
+     * reports. You can configure DropBox event collection with:
+     * <ul>
+     * <li>{@link #dropboxCollectionMinutes()}: max age of collected events in
+     * minutes</li>
+     * <li>{@link #additionalDropBoxTags()}: additional DropBox tags</li>
+     * </ul>
      * Contents of non-text events will not be included in reports.
+     * 
      * @return
      */
     boolean includeDropBox() default false;
@@ -170,23 +175,24 @@ public @interface ReportsCrashes {
     /**
      * If enabled, DropBox events collection will include system tags:
      * <ul>
-     *   <li>system_app_anr</li>
-     *   <li>system_app_wtf</li>
-     *   <li>system_app_crash</li>
-     *   <li>system_server_anr</li>
-     *   <li>system_server_wtf</li>
-     *   <li>system_server_crash</li>
-     *   <li>BATTERY_DISCHARGE_INFO</li>
-     *   <li>SYSTEM_RECOVERY_LOG</li>
-     *   <li>SYSTEM_BOOT</li>
-     *   <li>SYSTEM_LAST_KMSG</li>
-     *   <li>APANIC_CONSOLE</li>
-     *   <li>APANIC_THREADS</li>
-     *   <li>SYSTEM_RESTART</li>
-     *   <li>SYSTEM_TOMBSTONE</li>
-     *   <li>data_app_strictmode</li>
+     * <li>system_app_anr</li>
+     * <li>system_app_wtf</li>
+     * <li>system_app_crash</li>
+     * <li>system_server_anr</li>
+     * <li>system_server_wtf</li>
+     * <li>system_server_crash</li>
+     * <li>BATTERY_DISCHARGE_INFO</li>
+     * <li>SYSTEM_RECOVERY_LOG</li>
+     * <li>SYSTEM_BOOT</li>
+     * <li>SYSTEM_LAST_KMSG</li>
+     * <li>APANIC_CONSOLE</li>
+     * <li>APANIC_THREADS</li>
+     * <li>SYSTEM_RESTART</li>
+     * <li>SYSTEM_TOMBSTONE</li>
+     * <li>data_app_strictmode</li>
      * </ul>
      * Requires {@link #includeDropBox()} true.
+     * 
      * @return
      */
     boolean includeDropBoxSystemTags() default false;
@@ -261,20 +267,32 @@ public @interface ReportsCrashes {
     String formUriBasicAuthPassword() default NULL_VALUE;
 
     /**
+     * Specifies the list of fields to be included in reports with their order.
+     */
+    ReportField[] customReportContent() default {};
+
+    static final ReportField[] DEFAULT_REPORT_FIELDS = { REPORT_ID, APP_VERSION_CODE, APP_VERSION_NAME, PACKAGE_NAME,
+            FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE, AVAILABLE_MEM_SIZE,
+            CUSTOM_DATA, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION, DISPLAY, USER_COMMENT, USER_EMAIL,
+            USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, DROPBOX, LOGCAT, EVENTSLOG, RADIOLOG, DEVICE_ID,
+            DEVICE_FEATURES };
+
+    /**
      * Add your crash reports mailbox here if you want to send reports via
-     * email. This allows to get rid of the INTERNET permission.
+     * email. This allows to get rid of the INTERNET permission. Reports content
+     * can be customized with {@link #reportFields()}. Default fields are:
+     * {@link ReportField#USER_COMMENT}, {@link ReportField#ANDROID_VERSION},
+     * {@link ReportField#APP_VERSION_NAME} , {@link ReportField#BRAND},
+     * {@link ReportField#PHONE_MODEL}, {@link ReportField#CUSTOM_DATA},
+     * {@link ReportField#STACK_TRACE}
      */
     String mailTo() default "";
 
     /**
-     * You can set here the list of {@link ReportField}s you want to send in
-     * your email reports {@see #mailTo()}. Default is:
-     * {@link ReportField#USER_COMMENT}, {@link ReportField#ANDROID_VERSION},
-     * {@link ReportField#APP_VERSION_NAME}, {@link ReportField#BRAND},
-     * {@link ReportField#PHONE_MODEL}, {@link ReportField#CUSTOM_DATA},
-     * {@link ReportField#STACK_TRACE}
+     * Default list of {@link ReportField}s to be sent in email reports {@see
+     * #mailTo()}. You can set your own list with {@link #reportFields()}.
      */
-    ReportField[] mailReportFields() default { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION,
+    final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION,
             ReportField.APP_VERSION_NAME, ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA,
             ReportField.STACK_TRACE };
 
@@ -282,11 +300,11 @@ public @interface ReportsCrashes {
      * Controls whether unapproved reports are deleted on application start or
      * not. Default is true. This is a change from versions of ACRA before 3.2
      * as in NOTIFICATION mode reports were previously kept until the user
-     * explicitly opens the Notification dialog AND choose to send or discard the
-     * report. Until then, on application restart, ACRA was issuing a new crash
-     * notification for previous reports pending for approval. This could be
-     * misunderstood by the user with a new crash, resulting in bad appreciation
-     * of the application.
+     * explicitly opens the Notification dialog AND choose to send or discard
+     * the report. Until then, on application restart, ACRA was issuing a new
+     * crash notification for previous reports pending for approval. This could
+     * be misunderstood by the user with a new crash, resulting in bad
+     * appreciation of the application.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 }
