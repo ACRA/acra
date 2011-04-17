@@ -16,32 +16,7 @@
 package org.acra;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.ANDROID_VERSION;
-import static org.acra.ReportField.APP_VERSION_CODE;
-import static org.acra.ReportField.APP_VERSION_NAME;
-import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
-import static org.acra.ReportField.BUILD;
-import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.CRASH_CONFIGURATION;
-import static org.acra.ReportField.CUSTOM_DATA;
-import static org.acra.ReportField.DEVICE_ID;
-import static org.acra.ReportField.DISPLAY;
-import static org.acra.ReportField.DROPBOX;
-import static org.acra.ReportField.DUMPSYS_MEMINFO;
-import static org.acra.ReportField.EVENTSLOG;
-import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.INITIAL_CONFIGURATION;
-import static org.acra.ReportField.IS_SILENT;
-import static org.acra.ReportField.LOGCAT;
-import static org.acra.ReportField.PACKAGE_NAME;
-import static org.acra.ReportField.PHONE_MODEL;
-import static org.acra.ReportField.PRODUCT;
-import static org.acra.ReportField.RADIOLOG;
-import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_CRASH_DATE;
-import static org.acra.ReportField.USER_EMAIL;
+import static org.acra.ReportField.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -410,14 +386,28 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void retrieveCrashData(Context context) {
         try {
+            ReportsCrashes config = ACRA.getConfig();
+            ReportField[] fields = config.customReportContent();
+            if (fields.length == 0) {
+                if (config.mailTo() == null || "".equals(config.mailTo())) {
+                    fields = ReportsCrashes.DEFAULT_REPORT_FIELDS;
+                } else if (!"".equals(config.mailTo())) {
+                    fields = ReportsCrashes.DEFAULT_MAIL_REPORT_FIELDS;
+                }
+            }
+            List<ReportField> fieldsList = Arrays.asList(fields);
 
             SharedPreferences prefs = ACRA.getACRASharedPreferences();
 
             // Generate report uuid
-            mCrashProperties.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
-            
+            if (fieldsList.contains(REPORT_ID)) {
+                mCrashProperties.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
+            }
+
             // Collect meminfo
-            mCrashProperties.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
+            if (fieldsList.contains(DUMPSYS_MEMINFO)) {
+                mCrashProperties.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
+            }
 
             PackageManager pm = context.getPackageManager();
 
@@ -425,30 +415,39 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (pm != null) {
                 if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
                         && pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA will include LogCat and DropBox data.");
-                    mCrashProperties.put(LOGCAT, LogCatCollector.collectLogCat(null).toString());
-                    if (ACRA.getConfig().includeEventsLogcat()) {
-                        mCrashProperties.put(EVENTSLOG, LogCatCollector.collectLogCat("events").toString());
-                    } else {
-                        mCrashProperties.put(EVENTSLOG, "@ReportsCrashes(includeEventsLog=false)");
+                    Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                    if (fieldsList.contains(LOGCAT)) {
+                        mCrashProperties.put(LOGCAT, LogCatCollector.collectLogCat(null).toString());
                     }
-                    if (ACRA.getConfig().includeRadioLogcat()) {
-                        mCrashProperties.put(RADIOLOG, LogCatCollector.collectLogCat("radio").toString());
-                    } else {
-                        mCrashProperties.put(RADIOLOG, "@ReportsCrashes(includeRadioLog=false)");
+                    if (fieldsList.contains(EVENTSLOG)) {
+                        if (ACRA.getConfig().includeEventsLogcat()) {
+                            mCrashProperties.put(EVENTSLOG, LogCatCollector.collectLogCat("events").toString());
+                        } else {
+                            mCrashProperties.put(EVENTSLOG, "@ReportsCrashes(includeEventsLog=false)");
+                        }
                     }
-                    if (ACRA.getConfig().includeDropBox()) {
-                        mCrashProperties.put(DROPBOX,
-                                DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
-                    } else {
-                        mCrashProperties.put(DROPBOX, "@ReportsCrashes(includeDropBox=false)");
+                    if (fieldsList.contains(RADIOLOG)) {
+                        if (ACRA.getConfig().includeRadioLogcat()) {
+                            mCrashProperties.put(RADIOLOG, LogCatCollector.collectLogCat("radio").toString());
+                        } else {
+                            mCrashProperties.put(RADIOLOG, "@ReportsCrashes(includeRadioLog=false)");
+                        }
+                    }
+                    if (fieldsList.contains(DROPBOX)) {
+                        if (ACRA.getConfig().includeDropBox()) {
+                            mCrashProperties.put(DROPBOX,
+                                    DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
+                        } else {
+                            mCrashProperties.put(DROPBOX, "@ReportsCrashes(includeDropBox=false)");
+                        }
                     }
                 } else {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
                 }
 
                 // Retrieve UDID(IMEI) if permission is available
-                if (prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
+                if (fieldsList.contains(DEVICE_ID)
+                        && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
                         && pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
                     String deviceId = tm.getDeviceId();
@@ -459,59 +458,97 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
 
             // Device Configuration when crashing
-            mCrashProperties.put(INITIAL_CONFIGURATION, mInitialConfiguration);
-            Configuration crashConf = context.getResources().getConfiguration();
-            mCrashProperties.put(CRASH_CONFIGURATION, ConfigurationInspector.toString(crashConf));
+            if (fieldsList.contains(INITIAL_CONFIGURATION)) {
+                mCrashProperties.put(INITIAL_CONFIGURATION, mInitialConfiguration);
+            }
+            if (fieldsList.contains(CRASH_CONFIGURATION)) {
+                Configuration crashConf = context.getResources().getConfiguration();
+                mCrashProperties.put(CRASH_CONFIGURATION, ConfigurationInspector.toString(crashConf));
+            }
 
             PackageInfo pi;
             pi = pm.getPackageInfo(context.getPackageName(), 0);
             if (pi != null) {
                 // Application Version
-                mCrashProperties.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
-                mCrashProperties.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
+                if (fieldsList.contains(APP_VERSION_CODE)) {
+                    mCrashProperties.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
+                }
+                if (fieldsList.contains(APP_VERSION_NAME)) {
+                    mCrashProperties.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
+                }
             } else {
                 // Could not retrieve package info...
                 mCrashProperties.put(APP_VERSION_NAME, "Package info unavailable");
             }
+
             // Application Package name
-            mCrashProperties.put(PACKAGE_NAME, context.getPackageName());
+            if (fieldsList.contains(PACKAGE_NAME)) {
+                mCrashProperties.put(PACKAGE_NAME, context.getPackageName());
+            }
 
-            // TEST: BUILD data auto collection
-            mCrashProperties.put(BUILD, FieldsCollector.getConstants(android.os.Build.class));
-            
+            // Android OS Build details
+            if (fieldsList.contains(BUILD)) {
+                mCrashProperties.put(BUILD, FieldsCollector.getConstants(android.os.Build.class));
+            }
+
             // Device model
-            mCrashProperties.put(PHONE_MODEL, android.os.Build.MODEL);
+            if (fieldsList.contains(PHONE_MODEL)) {
+                mCrashProperties.put(PHONE_MODEL, android.os.Build.MODEL);
+            }
             // Android version
-            mCrashProperties.put(ANDROID_VERSION, android.os.Build.VERSION.RELEASE);
+            if (fieldsList.contains(ANDROID_VERSION)) {
+                mCrashProperties.put(ANDROID_VERSION, android.os.Build.VERSION.RELEASE);
+            }
 
-            // Android build data
-            mCrashProperties.put(BRAND, android.os.Build.BRAND);
-            mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
+            // Device Brand (manufacturer)
+            if (fieldsList.contains(BRAND)) {
+                mCrashProperties.put(BRAND, android.os.Build.BRAND);
+            }
+            if (fieldsList.contains(PRODUCT)) {
+                mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
+            }
 
             // Device Memory
-            mCrashProperties.put(TOTAL_MEM_SIZE, Long.toString(getTotalInternalMemorySize()));
-            mCrashProperties.put(AVAILABLE_MEM_SIZE, Long.toString(getAvailableInternalMemorySize()));
+            if (fieldsList.contains(TOTAL_MEM_SIZE)) {
+                mCrashProperties.put(TOTAL_MEM_SIZE, Long.toString(getTotalInternalMemorySize()));
+            }
+            if (fieldsList.contains(AVAILABLE_MEM_SIZE)) {
+                mCrashProperties.put(AVAILABLE_MEM_SIZE, Long.toString(getAvailableInternalMemorySize()));
+            }
 
             // Application file path
-            mCrashProperties.put(FILE_PATH, context.getFilesDir().getAbsolutePath());
+            if (fieldsList.contains(FILE_PATH)) {
+                mCrashProperties.put(FILE_PATH, context.getFilesDir().getAbsolutePath());
+            }
 
             // Main display details
-            Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            mCrashProperties.put(DISPLAY, toString(display));
+            if (fieldsList.contains(DISPLAY)) {
+                Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                        .getDefaultDisplay();
+                mCrashProperties.put(DISPLAY, toString(display));
+            }
 
             // User crash date with local timezone
-            Time curDate = new Time();
-            curDate.setToNow();
-            mCrashProperties.put(USER_CRASH_DATE, curDate.format3339(false));
+            if (fieldsList.contains(USER_CRASH_DATE)) {
+                Time curDate = new Time();
+                curDate.setToNow();
+                mCrashProperties.put(USER_CRASH_DATE, curDate.format3339(false));
+            }
 
             // Add custom info, they are all stored in a single field
-            mCrashProperties.put(CUSTOM_DATA, createCustomInfoString());
+            if (fieldsList.contains(CUSTOM_DATA)) {
+                mCrashProperties.put(CUSTOM_DATA, createCustomInfoString());
+            }
 
             // Add user email address, if set in the app's preferences
-            mCrashProperties.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
+            if (fieldsList.contains(USER_EMAIL)) {
+                mCrashProperties.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
+            }
 
             // Device features
-            mCrashProperties.put(ReportField.DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
+            if (fieldsList.contains(DEVICE_FEATURES)) {
+                mCrashProperties.put(DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
+            }
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
@@ -1099,9 +1136,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The file name of the report which should receive the comment.
      * @param userComment
      *            The comment entered by the user.
-     * @param userEmail 
+     * @param userEmail
      */
-    private static void addUserDataToReport(Context context, String commentedReportFileName, String userComment, String userEmail) {
+    private static void addUserDataToReport(Context context, String commentedReportFileName, String userComment,
+            String userEmail) {
         Log.d(LOG_TAG, "Add user comment to " + commentedReportFileName);
         if (commentedReportFileName != null && userComment != null) {
             try {
@@ -1112,7 +1150,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 input.close();
                 commentedCrashReport.put(USER_COMMENT, userComment);
                 commentedCrashReport.put(USER_EMAIL, userEmail);
-                            saveCrashReportFile(commentedReportFileName, commentedCrashReport);
+                saveCrashReportFile(commentedReportFileName, commentedCrashReport);
             } catch (FileNotFoundException e) {
                 Log.w(LOG_TAG, "User comment not added: ", e);
             } catch (InvalidPropertiesFormatException e) {
@@ -1181,10 +1219,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Sets the application start date. This will be included in the reports, will be helpfull compared to user_crash date.
+     * Sets the application start date. This will be included in the reports,
+     * will be helpfull compared to user_crash date.
+     * 
      * @param appStartDate
      */
     public void setAppStartDate(Time appStartDate) {
-        mCrashProperties.put(ReportField.USER_APP_START_DATE,appStartDate.format3339(false));
+        mCrashProperties.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
     }
 }
