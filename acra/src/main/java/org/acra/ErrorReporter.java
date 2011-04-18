@@ -40,6 +40,7 @@ import java.util.UUID;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
+import org.acra.util.Installation;
 
 import android.Manifest.permission;
 import android.app.Notification;
@@ -456,6 +457,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     }
                 }
             }
+            
+            // Installation unique ID
+            if(fieldsList.contains(INSTALLATION_ID)) {
+                mCrashProperties.put(INSTALLATION_ID, Installation.id(mContext));
+            }
 
             // Device Configuration when crashing
             if (fieldsList.contains(INITIAL_CONFIGURATION)) {
@@ -488,7 +494,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Android OS Build details
             if (fieldsList.contains(BUILD)) {
-                mCrashProperties.put(BUILD, FieldsCollector.getConstants(android.os.Build.class));
+                mCrashProperties.put(BUILD, ReflectionCollector.collectConstants(android.os.Build.class));
             }
 
             // Device model
@@ -548,6 +554,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Device features
             if (fieldsList.contains(DEVICE_FEATURES)) {
                 mCrashProperties.put(DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
+            }
+            
+            // Environment (External storage state)
+            if(fieldsList.contains(ENVIRONMENT)) {
+                mCrashProperties.put(ENVIRONMENT, ReflectionCollector.collectStaticGettersResults(Environment.class));
             }
 
         } catch (Exception e) {

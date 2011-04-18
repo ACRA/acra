@@ -153,5 +153,9 @@ public enum ReportField {
     /**
      * Features declared as available on this device by the system.
      */
-    DEVICE_FEATURES;
+    DEVICE_FEATURES,
+    /**
+     * External storage state and standard directories.
+     */
+    ENVIRONMENT;
 }
