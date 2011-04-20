@@ -157,5 +157,14 @@ public enum ReportField {
     /**
      * External storage state and standard directories.
      */
-    ENVIRONMENT;
+    ENVIRONMENT,
+    /**
+     * System settings.
+     */
+    SETTINGS_SYSTEM,
+    /**
+     * Secure settings (applications can't modify them).
+     */
+    SETTINGS_SECURE
+    ;
 }

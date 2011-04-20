@@ -457,9 +457,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     }
                 }
             }
-            
+
             // Installation unique ID
-            if(fieldsList.contains(INSTALLATION_ID)) {
+            if (fieldsList.contains(INSTALLATION_ID)) {
                 mCrashProperties.put(INSTALLATION_ID, Installation.id(mContext));
             }
 
@@ -555,12 +555,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (fieldsList.contains(DEVICE_FEATURES)) {
                 mCrashProperties.put(DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
             }
-            
+
             // Environment (External storage state)
-            if(fieldsList.contains(ENVIRONMENT)) {
+            if (fieldsList.contains(ENVIRONMENT)) {
                 mCrashProperties.put(ENVIRONMENT, ReflectionCollector.collectStaticGettersResults(Environment.class));
             }
 
+            // System settings
+            if (fieldsList.contains(SETTINGS_SYSTEM)) {
+                Log.d(LOG_TAG, SettingsCollector.collectSystemSettings(mContext));
+            }
+
+            // Secure settings
+            if (fieldsList.contains(SETTINGS_SECURE)) {
+                Log.d(LOG_TAG, SettingsCollector.collectSecureSettings(mContext));
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         }
