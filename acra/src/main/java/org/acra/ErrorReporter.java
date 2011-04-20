@@ -421,26 +421,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         mCrashProperties.put(LOGCAT, LogCatCollector.collectLogCat(null).toString());
                     }
                     if (fieldsList.contains(EVENTSLOG)) {
-                        if (ACRA.getConfig().includeEventsLogcat()) {
-                            mCrashProperties.put(EVENTSLOG, LogCatCollector.collectLogCat("events").toString());
-                        } else {
-                            mCrashProperties.put(EVENTSLOG, "@ReportsCrashes(includeEventsLog=false)");
-                        }
+                        mCrashProperties.put(EVENTSLOG, LogCatCollector.collectLogCat("events").toString());
                     }
                     if (fieldsList.contains(RADIOLOG)) {
-                        if (ACRA.getConfig().includeRadioLogcat()) {
-                            mCrashProperties.put(RADIOLOG, LogCatCollector.collectLogCat("radio").toString());
-                        } else {
-                            mCrashProperties.put(RADIOLOG, "@ReportsCrashes(includeRadioLog=false)");
-                        }
+                        mCrashProperties.put(RADIOLOG, LogCatCollector.collectLogCat("radio").toString());
                     }
                     if (fieldsList.contains(DROPBOX)) {
-                        if (ACRA.getConfig().includeDropBox()) {
-                            mCrashProperties.put(DROPBOX,
-                                    DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
-                        } else {
-                            mCrashProperties.put(DROPBOX, "@ReportsCrashes(includeDropBox=false)");
-                        }
+                        mCrashProperties.put(DROPBOX,
+                                DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
                     }
                 } else {
                     Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");

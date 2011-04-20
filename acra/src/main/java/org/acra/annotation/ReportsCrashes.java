@@ -159,20 +159,6 @@ public @interface ReportsCrashes {
     int sharedPreferencesMode() default Context.MODE_PRIVATE;
 
     /**
-     * Set this to true if you want to include DropBoxManager text data in your
-     * reports. You can configure DropBox event collection with:
-     * <ul>
-     * <li>{@link #dropboxCollectionMinutes()}: max age of collected events in
-     * minutes</li>
-     * <li>{@link #additionalDropBoxTags()}: additional DropBox tags</li>
-     * </ul>
-     * Contents of non-text events will not be included in reports.
-     * 
-     * @return
-     */
-    boolean includeDropBox() default false;
-
-    /**
      * If enabled, DropBox events collection will include system tags:
      * <ul>
      * <li>system_app_anr</li>
@@ -233,16 +219,6 @@ public @interface ReportsCrashes {
      * </p>
      */
     String[] logcatArguments() default { "-t", "200", "-v", "time" };
-
-    /**
-     * Inlude logcat events from the radio log (logcat -b radio).
-     */
-    boolean includeRadioLogcat() default false;
-
-    /**
-     * Include logcat events from the eventslog (logcat -b event).
-     */
-    boolean includeEventsLogcat() default false;
 
     /**
      * A special String value to allow the usage of a pseudo-null default value
