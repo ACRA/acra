@@ -551,12 +551,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // System settings
             if (fieldsList.contains(SETTINGS_SYSTEM)) {
-                Log.d(LOG_TAG, SettingsCollector.collectSystemSettings(mContext));
+                mCrashProperties.put(SETTINGS_SYSTEM, SettingsCollector.collectSystemSettings(mContext));
             }
 
             // Secure settings
             if (fieldsList.contains(SETTINGS_SECURE)) {
-                Log.d(LOG_TAG, SettingsCollector.collectSecureSettings(mContext));
+                mCrashProperties.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(mContext));
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);

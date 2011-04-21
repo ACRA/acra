@@ -15,8 +15,6 @@
  */
 package org.acra;
 
-import static org.acra.ACRA.LOG_TAG;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -49,7 +47,6 @@ class DumpSysCollector {
             Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            Log.d(LOG_TAG, "Retrieving dumpsys meminfo output...");
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 meminfo.append(line);
