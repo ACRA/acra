@@ -20,9 +20,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import android.util.Log;
-
+/**
+ * Tools to retrieve key/value pairs from static fields and getters of any
+ * class. Reflection API usage allows to retrieve data without having to
+ * implement a class for each android version of each intersting class.
+ * It can also help find hidden properties.
+ * 
+ * @author Kevin Gaudin
+ * 
+ */
 public class ReflectionCollector {
+    /**
+     * Retrieves key/value pairs from static fields of a class.
+     * @param someClass the class to be inspected.
+     * @return A human readable string with a key=value pair on each line.
+     */
     public static String collectConstants(Class<? extends Object> someClass) {
         StringBuilder result = new StringBuilder();
 
@@ -42,6 +54,11 @@ public class ReflectionCollector {
         return result.toString();
     }
 
+    /**
+     * Retrieves key/value pairs from static getters of a class (get*() or is*()).
+     * @param someClass the class to be inspected.
+     * @return A human readable string with a key=value pair on each line.
+     */
     public static String collectStaticGettersResults(Class<? extends Object> someClass) {
         StringBuilder result = new StringBuilder();
         Method[] methods = someClass.getMethods();
@@ -53,13 +70,11 @@ public class ReflectionCollector {
                     result.append(method.getName()).append('=').append(method.invoke(null, (Object[]) null))
                             .append("\n");
                 } catch (IllegalArgumentException e) {
-                    Log.w(ACRA.LOG_TAG, "Could not invoke method : ", e);
+                    // NOOP
                 } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    Log.w(ACRA.LOG_TAG, "Error : ", e);
+                    // NOOP
                 } catch (InvocationTargetException e) {
-                    // TODO Auto-generated catch block
-                    Log.w(ACRA.LOG_TAG, "Error : ", e);
+                    // NOOP
                 }
             }
         }
