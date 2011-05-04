@@ -78,7 +78,7 @@ public class SettingsCollector {
         StringBuilder result = new StringBuilder();
         Field[] keys = Settings.Secure.class.getFields();
         for (Field key : keys) {
-            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class) {
+            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                 try {
                     Object value = Settings.Secure.getString(ctx.getContentResolver(), (String) key.get(null));
                     if (value != null) {
@@ -94,5 +94,13 @@ public class SettingsCollector {
 
         return result.toString();
     }
+
+	private static boolean isAuthorized(Field key) {
+		if(key==null
+				|| key.getName().startsWith("WIFI_AP")) {
+			return false;
+		}
+		return true;
+	}
 
 }
