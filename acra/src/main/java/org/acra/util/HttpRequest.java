@@ -118,7 +118,7 @@ public class HttpRequest {
 			ret = EntityUtils.toString(response.getEntity());
 		}
 
-		Log.d(ACRA.LOG_TAG, "Returning value:" + ret);
+		Log.d(ACRA.LOG_TAG, "Returning value:" + ret.substring(0,200));
 
 		return ret;
 	}
