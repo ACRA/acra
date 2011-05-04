@@ -283,4 +283,6 @@ public @interface ReportsCrashes {
      * appreciation of the application.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
+    
+    int socketTimeout() default 3000;
 }
