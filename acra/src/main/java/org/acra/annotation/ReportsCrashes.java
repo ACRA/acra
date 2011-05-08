@@ -292,5 +292,8 @@ public @interface ReportsCrashes {
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
+    /**
+     * Value in milliseconds for network operations timeout (default 3000ms).
+     */
     int socketTimeout() default 3000;
 }

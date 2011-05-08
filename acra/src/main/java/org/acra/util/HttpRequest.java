@@ -1,3 +1,8 @@
+/*
+ * This class was copied from this Stackoverflow Q&A:
+ * http://stackoverflow.com/questions/2253061/secure-http-post-in-android/2253280#2253280
+ * Thanks go to MattC!  
+ */
 package org.acra.util;
 
 import java.io.IOException;
