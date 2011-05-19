@@ -37,136 +37,128 @@ import android.util.Log;
 
 public class HttpRequest {
 
-	DefaultHttpClient httpClient;
-	HttpContext localContext;
-	private String ret;
+    DefaultHttpClient httpClient;
+    HttpContext localContext;
+    private String ret;
 
-	HttpResponse response = null;
-	HttpPost httpPost = null;
-	HttpGet httpGet = null;
-	UsernamePasswordCredentials creds = null;
+    HttpResponse response = null;
+    HttpPost httpPost = null;
+    HttpGet httpGet = null;
+    UsernamePasswordCredentials creds = null;
 
-	public HttpRequest(String login, String password) {
-		if (login != null || password != null) {
-			creds = new UsernamePasswordCredentials(login, password);
-		}
-		HttpParams httpParams = new BasicHttpParams();
+    public HttpRequest(String login, String password) {
+        if (login != null || password != null) {
+            creds = new UsernamePasswordCredentials(login, password);
+        }
+        HttpParams httpParams = new BasicHttpParams();
 
-		HttpConnectionParams.setConnectionTimeout(httpParams, ACRA.getConfig()
-				.socketTimeout());
-		HttpConnectionParams.setSoTimeout(httpParams, ACRA.getConfig()
-				.socketTimeout());
-		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-		registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
-		httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(
-				httpParams, registry), httpParams);
-		localContext = new BasicHttpContext();
-	}
+        HttpConnectionParams.setConnectionTimeout(httpParams, ACRA.getConfig().socketTimeout());
+        HttpConnectionParams.setSoTimeout(httpParams, ACRA.getConfig().socketTimeout());
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+        registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
+        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(httpParams, registry), httpParams);
+        localContext = new BasicHttpContext();
+    }
 
-	public void clearCookies() {
-		httpClient.getCookieStore().clear();
-	}
+    public void clearCookies() {
+        httpClient.getCookieStore().clear();
+    }
 
-	public void abort() {
-		try {
-			if (httpClient != null) {
-				Log.d(ACRA.LOG_TAG, "Abort HttpClient request.");
-				httpPost.abort();
-			}
-		} catch (Exception e) {
-			Log.e(ACRA.LOG_TAG, "Error while aborting HttpClient request", e);
-		}
-	}
+    public void abort() {
+        try {
+            if (httpClient != null) {
+                Log.d(ACRA.LOG_TAG, "Abort HttpClient request.");
+                httpPost.abort();
+            }
+        } catch (Exception e) {
+            Log.e(ACRA.LOG_TAG, "Error while aborting HttpClient request", e);
+        }
+    }
 
-	public String sendPost(String url, String data)
-			throws ClientProtocolException, IOException {
-		return sendPost(url, data, null);
-	}
+    public String sendPost(String url, String data) throws ClientProtocolException, IOException {
+        return sendPost(url, data, null);
+    }
 
-	public String sendPost(String url, String data, String contentType)
-			throws ClientProtocolException, IOException {
-		ret = null;
+    public String sendPost(String url, String data, String contentType) throws ClientProtocolException, IOException {
+        ret = null;
 
-		httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY,
-				CookiePolicy.RFC_2109);
+        httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
-		httpPost = new HttpPost(url);
-		response = null;
+        httpPost = new HttpPost(url);
+        response = null;
 
-		StringEntity tmp = null;
+        StringEntity tmp = null;
 
-		Log.d(ACRA.LOG_TAG, "Setting httpPost headers");
-		if (creds != null) {
-			httpPost.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
-		}
-		httpPost.setHeader("User-Agent", "Android");
-		httpPost.setHeader(
-				"Accept",
-				"text/html,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+        Log.d(ACRA.LOG_TAG, "Setting httpPost headers");
+        if (creds != null) {
+            httpPost.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
+        }
+        httpPost.setHeader("User-Agent", "Android");
+        httpPost.setHeader("Accept",
+                "text/html,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
 
-		if (contentType != null) {
-			httpPost.setHeader("Content-Type", contentType);
-		} else {
-			httpPost.setHeader("Content-Type",
-					"application/x-www-form-urlencoded");
-		}
+        if (contentType != null) {
+            httpPost.setHeader("Content-Type", contentType);
+        } else {
+            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        }
 
-		tmp = new StringEntity(data, "UTF-8");
-		httpPost.setEntity(tmp);
+        tmp = new StringEntity(data, "UTF-8");
+        httpPost.setEntity(tmp);
 
-		Log.d(ACRA.LOG_TAG, "Sending request to " + url);
+        Log.d(ACRA.LOG_TAG, "Sending request to " + url);
 
-		response = httpClient.execute(httpPost, localContext);
+        response = httpClient.execute(httpPost, localContext);
 
-		if (response != null) {
-			ret = EntityUtils.toString(response.getEntity());
-		}
+        if (response != null) {
+            ret = EntityUtils.toString(response.getEntity());
+        }
 
-		Log.d(ACRA.LOG_TAG, "Returning value:" + ret.substring(0,200));
+        Log.d(ACRA.LOG_TAG, "Returning value:" + ret.substring(0, Math.min(ret.length(), 200)));
 
-		return ret;
-	}
+        return ret;
+    }
 
-	public String sendGet(String url) throws ClientProtocolException, IOException {
-		httpGet = new HttpGet(url);
+    public String sendGet(String url) throws ClientProtocolException, IOException {
+        httpGet = new HttpGet(url);
 
-		response = httpClient.execute(httpGet);
+        response = httpClient.execute(httpGet);
 
-		// int status = response.getStatusLine().getStatusCode();
+        // int status = response.getStatusLine().getStatusCode();
 
-		// we assume that the response body contains the error message
-		ret = EntityUtils.toString(response.getEntity());
+        // we assume that the response body contains the error message
+        ret = EntityUtils.toString(response.getEntity());
 
-		return ret;
-	}
+        return ret;
+    }
 
-	public InputStream getHttpStream(String urlString) throws IOException {
-		InputStream in = null;
-		int response = -1;
+    public InputStream getHttpStream(String urlString) throws IOException {
+        InputStream in = null;
+        int response = -1;
 
-		URL url = new URL(urlString);
-		URLConnection conn = url.openConnection();
+        URL url = new URL(urlString);
+        URLConnection conn = url.openConnection();
 
-		if (!(conn instanceof HttpURLConnection))
-			throw new IOException("Not an HTTP connection");
+        if (!(conn instanceof HttpURLConnection))
+            throw new IOException("Not an HTTP connection");
 
-		try {
-			HttpURLConnection httpConn = (HttpURLConnection) conn;
-			httpConn.setAllowUserInteraction(false);
-			httpConn.setInstanceFollowRedirects(true);
-			httpConn.setRequestMethod("GET");
-			httpConn.connect();
+        try {
+            HttpURLConnection httpConn = (HttpURLConnection) conn;
+            httpConn.setAllowUserInteraction(false);
+            httpConn.setInstanceFollowRedirects(true);
+            httpConn.setRequestMethod("GET");
+            httpConn.connect();
 
-			response = httpConn.getResponseCode();
+            response = httpConn.getResponseCode();
 
-			if (response == HttpURLConnection.HTTP_OK) {
-				in = httpConn.getInputStream();
-			}
-		} catch (Exception e) {
-			throw new IOException("Error connecting");
-		} // end try-catch
+            if (response == HttpURLConnection.HTTP_OK) {
+                in = httpConn.getInputStream();
+            }
+        } catch (Exception e) {
+            throw new IOException("Error connecting");
+        } // end try-catch
 
-		return in;
-	}
+        return in;
+    }
 }
