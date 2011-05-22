@@ -54,6 +54,7 @@ public class HttpRequest {
 
         HttpConnectionParams.setConnectionTimeout(httpParams, ACRA.getConfig().socketTimeout());
         HttpConnectionParams.setSoTimeout(httpParams, ACRA.getConfig().socketTimeout());
+        HttpConnectionParams.setSocketBufferSize(httpParams, 8192);
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", new PlainSocketFactory(), 80));
         registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
