@@ -24,7 +24,6 @@ import java.util.Map;
 import org.acra.ACRA;
 import org.acra.CrashReportData;
 import org.acra.ReportField;
-import org.acra.annotation.ReportsCrashes;
 import org.acra.util.HttpUtils;
 
 import android.net.Uri;
@@ -73,7 +72,7 @@ public class GoogleFormSender implements ReportSender {
         int inputId = 0;
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if(fields.length == 0) {
-            fields = ReportsCrashes.DEFAULT_REPORT_FIELDS;
+            fields = ACRA.DEFAULT_REPORT_FIELDS;
         }
         for (Object originalKey : fields) {
             switch ((ReportField) originalKey) {

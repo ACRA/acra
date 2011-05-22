@@ -422,9 +422,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             ReportField[] fields = config.customReportContent();
             if (fields.length == 0) {
                 if (config.mailTo() == null || "".equals(config.mailTo())) {
-                    fields = ReportsCrashes.DEFAULT_REPORT_FIELDS;
+                    fields = ACRA.DEFAULT_REPORT_FIELDS;
                 } else if (!"".equals(config.mailTo())) {
-                    fields = ReportsCrashes.DEFAULT_MAIL_REPORT_FIELDS;
+                    fields = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
                 }
             }
             List<ReportField> fieldsList = Arrays.asList(fields);

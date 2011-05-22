@@ -15,6 +15,40 @@
  */
 package org.acra;
 
+import static org.acra.ReportField.ANDROID_VERSION;
+import static org.acra.ReportField.APP_VERSION_CODE;
+import static org.acra.ReportField.APP_VERSION_NAME;
+import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
+import static org.acra.ReportField.BRAND;
+import static org.acra.ReportField.BUILD;
+import static org.acra.ReportField.CRASH_CONFIGURATION;
+import static org.acra.ReportField.CUSTOM_DATA;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DEVICE_ID;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.DROPBOX;
+import static org.acra.ReportField.DUMPSYS_MEMINFO;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.EVENTSLOG;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.INSTALLATION_ID;
+import static org.acra.ReportField.IS_SILENT;
+import static org.acra.ReportField.LOGCAT;
+import static org.acra.ReportField.PACKAGE_NAME;
+import static org.acra.ReportField.PHONE_MODEL;
+import static org.acra.ReportField.PRODUCT;
+import static org.acra.ReportField.RADIOLOG;
+import static org.acra.ReportField.REPORT_ID;
+import static org.acra.ReportField.SETTINGS_SECURE;
+import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.STACK_TRACE;
+import static org.acra.ReportField.TOTAL_MEM_SIZE;
+import static org.acra.ReportField.USER_APP_START_DATE;
+import static org.acra.ReportField.USER_COMMENT;
+import static org.acra.ReportField.USER_CRASH_DATE;
+import static org.acra.ReportField.USER_EMAIL;
+
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.EmailIntentSender;
 import org.acra.sender.GoogleFormSender;
@@ -309,5 +343,28 @@ public class ACRA {
     public static ReportsCrashes getConfig() {
         return mReportsCrashes;
     }
+
+    /**
+     * Default list of {@link ReportField}s to be sent in email reports {@see #mailTo()}. You can set your own list with
+     * {@link #reportFields()}.
+     */
+    public final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION,
+            ReportField.APP_VERSION_NAME, ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA,
+            ReportField.STACK_TRACE };
+
+    /**
+     * Default list of {@link ReportField}s to be sent in reports. You can set your own list with
+     * {@link ReportsCrashes#reportFields()}.
+     */
+    public static final ReportField[] DEFAULT_REPORT_FIELDS = { REPORT_ID, APP_VERSION_CODE, APP_VERSION_NAME, PACKAGE_NAME,
+    FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE, AVAILABLE_MEM_SIZE,
+    CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION, DISPLAY, USER_COMMENT,
+    USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, DROPBOX, LOGCAT, EVENTSLOG, RADIOLOG,
+    DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SETTINGS_SYSTEM, SETTINGS_SECURE };
+
+    /**
+     * A special String value to allow the usage of a pseudo-null default value in annotation parameters.
+     */
+    public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
 }

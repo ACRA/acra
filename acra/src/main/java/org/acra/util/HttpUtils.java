@@ -20,7 +20,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import org.acra.annotation.ReportsCrashes;
+import org.acra.ACRA;
 import org.apache.http.client.ClientProtocolException;
 
 /**
@@ -60,7 +60,7 @@ public class HttpUtils {
 	}
 
 	private static boolean isNull(String aString) {
-		return aString == null || aString == ReportsCrashes.NULL_VALUE;
+		return aString == null || aString == ACRA.NULL_VALUE;
 	}
 
 }

@@ -112,7 +112,7 @@ public class HttpPostSender implements ReportSender {
         Map<String, String> finalReport = new HashMap<String, String>(report.size());
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if(fields.length == 0) {
-            fields = ReportsCrashes.DEFAULT_REPORT_FIELDS;
+            fields = ACRA.DEFAULT_REPORT_FIELDS;
         }
         for (ReportField field : fields) {
             if (mMapping == null || mMapping.get(field) == null) {
