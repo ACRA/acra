@@ -15,7 +15,6 @@
  */
 package org.acra.annotation;
 
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -244,4 +243,12 @@ public @interface ReportsCrashes {
      * Value in milliseconds for network operations timeout (default 3000ms).
      */
     int socketTimeout() default 3000;
+
+    /**
+     * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you prefer displaying the native Force Close
+     * dialog after the Toast.
+     * 
+     * @return true if the Force Close dialog has to be displayed.
+     */
+    boolean forceCloseDialogAfterToast() default false;
 }

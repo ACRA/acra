@@ -97,22 +97,18 @@ import android.widget.Toast;
 
 /**
  * <p>
- * The ErrorReporter is a Singleton object in charge of collecting crash context
- * data and sending crash reports. It registers itself as the Application's
- * Thread default {@link UncaughtExceptionHandler}.
+ * The ErrorReporter is a Singleton object in charge of collecting crash context data and sending crash reports. It
+ * registers itself as the Application's Thread default {@link UncaughtExceptionHandler}.
  * </p>
  * <p>
- * When a crash occurs, it collects data of the crash context (device, system,
- * stack trace...) and writes a report file in the application private
- * directory. This report file is then sent :
+ * When a crash occurs, it collects data of the crash context (device, system, stack trace...) and writes a report file
+ * in the application private directory. This report file is then sent :
  * <ul>
- * <li>immediately if {@link #mReportingInteractionMode} is set to
- * {@link ReportingInteractionMode#SILENT} or
+ * <li>immediately if {@link #mReportingInteractionMode} is set to {@link ReportingInteractionMode#SILENT} or
  * {@link ReportingInteractionMode#TOAST},</li>
- * <li>on application start if in the previous case the transmission could not
- * technically be made,</li>
- * <li>when the user accepts to send it if {@link #mReportingInteractionMode} is
- * set to {@link ReportingInteractionMode#NOTIFICATION}.</li>
+ * <li>on application start if in the previous case the transmission could not technically be made,</li>
+ * <li>when the user accepts to send it if {@link #mReportingInteractionMode} is set to
+ * {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </ul>
  * </p>
  * <p>
@@ -141,21 +137,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         private boolean mApprovePendingReports = false;
 
         /**
-         * Creates a new {@link ReportsSenderWorker} to try sending pending
-         * reports.
+         * Creates a new {@link ReportsSenderWorker} to try sending pending reports.
          * 
          * @param sendOnlySilentReports
-         *            If set to true, will send only reports which have been
-         *            explicitly declared as silent by the application
-         *            developer.
+         *            If set to true, will send only reports which have been explicitly declared as silent by the
+         *            application developer.
          */
         public ReportsSenderWorker(boolean sendOnlySilentReports) {
             mSendOnlySilentReports = sendOnlySilentReports;
         }
 
         /**
-         * Creates a new {@link ReportsSenderWorker} which will try to send ALL
-         * pending reports.
+         * Creates a new {@link ReportsSenderWorker} which will try to send ALL pending reports.
          */
         public ReportsSenderWorker() {
         }
@@ -211,9 +204,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * This is the number of previously stored reports that we send in
-     * {@link #checkAndSendReports(Context, boolean)}. The number of reports is
-     * limited to avoid ANR on application start.
+     * This is the number of previously stored reports that we send in {@link #checkAndSendReports(Context, boolean)}.
+     * The number of reports is limited to avoid ANR on application start.
      */
     private static final int MAX_SEND_REPORTS = 5;
 
@@ -253,8 +245,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
     /**
-     * Flag all pending reports as "approved" by the user. These reports can be
-     * sent.
+     * Flag all pending reports as "approved" by the user. These reports can be sent.
      */
     public void approvePendingReports() {
         Log.d(LOG_TAG, "Mark all pending reports as approved.");
@@ -283,15 +274,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * <p>
-     * Use this method to provide the ErrorReporter with data of your running
-     * application. You should call this at several key places in your code the
-     * same way as you would output important debug data in a log file. Only the
-     * latest value is kept for each key (no history of the values is sent in
-     * the report).
+     * Use this method to provide the ErrorReporter with data of your running application. You should call this at
+     * several key places in your code the same way as you would output important debug data in a log file. Only the
+     * latest value is kept for each key (no history of the values is sent in the report).
      * </p>
      * <p>
-     * The key/value pairs will be stored in the GoogleDoc spreadsheet in the
-     * "custom" column, as a text containing a 'key = value' pair on each line.
+     * The key/value pairs will be stored in the GoogleDoc spreadsheet in the "custom" column, as a text containing a
+     * 'key = value' pair on each line.
      * </p>
      * 
      * @param key
@@ -333,8 +322,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Generates the string which is posted in the single custom data field in
-     * the GoogleDocs Form.
+     * Generates the string which is posted in the single custom data field in the GoogleDocs Form.
      * 
      * @return A string with a 'key = value' pair on each line.
      */
@@ -363,8 +351,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * <p>
-     * This is where the ErrorReporter replaces the default
-     * {@link UncaughtExceptionHandler}.
+     * This is where the ErrorReporter replaces the default {@link UncaughtExceptionHandler}.
      * </p>
      * 
      * @param context
@@ -383,8 +370,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Calculates the free memory of the device. This is based on an inspection
-     * of the filesystem, which in android devices is stored in RAM.
+     * Calculates the free memory of the device. This is based on an inspection of the filesystem, which in android
+     * devices is stored in RAM.
      * 
      * @return Number of bytes available.
      */
@@ -397,8 +384,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Calculates the total memory of the device. This is based on an inspection
-     * of the filesystem, which in android devices is stored in RAM.
+     * Calculates the total memory of the device. This is based on an inspection of the filesystem, which in android
+     * devices is stored in RAM.
      * 
      * @return Total number of bytes.
      */
@@ -595,14 +582,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Returns a String representation of the content of a {@link Display}
-     * object. It might be interesting in a future release to replace this with
-     * a reflection-based collector like {@link ConfigurationInspector}.
+     * Returns a String representation of the content of a {@link Display} object. It might be interesting in a future
+     * release to replace this with a reflection-based collector like {@link ConfigurationInspector}.
      * 
      * @param display
      *            A Display instance to be inspected.
-     * @return A String representation of the content of the given
-     *         {@link Display} object.
+     * @return A String representation of the content of the given {@link Display} object.
      */
     private static String toString(Display display) {
         DisplayMetrics metrics = new DisplayMetrics();
@@ -622,9 +607,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang
-     * .Thread, java.lang.Throwable)
+     * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
         Log.e(ACRA.LOG_TAG,
@@ -654,12 +637,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
         }
 
-        if (mReportingInteractionMode == ReportingInteractionMode.SILENT) {
+        if (mReportingInteractionMode == ReportingInteractionMode.SILENT
+                || (mReportingInteractionMode == ReportingInteractionMode.TOAST && ACRA.getConfig()
+                        .forceCloseDialogAfterToast())) {
             // If using silent mode, let the system default handler do it's job
             // and display the force close dialog.
             mDfltExceptionHandler.uncaughtException(t, e);
         } else {
-            // If ACRA handles user notifications whit a Toast or a Notification
+            // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
             // We choose to close the process ourselves using the same actions.
             CharSequence appName = "Application";
@@ -677,14 +662,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Try to send a report, if an error occurs stores a report file for a later
-     * attempt. You can set the {@link ReportingInteractionMode} for this
-     * specific report. Use {@link #handleException(Throwable)} to use the
+     * Try to send a report, if an error occurs stores a report file for a later attempt. You can set the
+     * {@link ReportingInteractionMode} for this specific report. Use {@link #handleException(Throwable)} to use the
      * Application default interaction mode.
      * 
      * @param e
-     *            The Throwable to be reported. If null the report will contain
-     *            a new Exception("Report requested by developer").
+     *            The Throwable to be reported. If null the report will contain a new
+     *            Exception("Report requested by developer").
      * @param reportingInteractionMode
      *            The desired interaction mode.
      */
@@ -766,25 +750,24 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Send a report for this {@link Throwable} with the reporting interaction
-     * mode set on the Application level by the developer.
+     * Send a report for this {@link Throwable} with the reporting interaction mode set on the Application level by the
+     * developer.
      * 
      * @param e
-     *            The {@link Throwable} to be reported. If null the report will
-     *            contain a new Exception("Report requested by developer").
+     *            The {@link Throwable} to be reported. If null the report will contain a new
+     *            Exception("Report requested by developer").
      */
     public ReportsSenderWorker handleException(Throwable e) {
         return handleException(e, mReportingInteractionMode);
     }
 
     /**
-     * Send a report for this {@link Throwable} silently (forces the use of
-     * {@link ReportingInteractionMode#SILENT} for this report, whatever is the
-     * mode set for the application. Very useful for tracking difficult defects.
+     * Send a report for this {@link Throwable} silently (forces the use of {@link ReportingInteractionMode#SILENT} for
+     * this report, whatever is the mode set for the application. Very useful for tracking difficult defects.
      * 
      * @param e
-     *            The {@link Throwable} to be reported. If null the report will
-     *            contain a new Exception("Report requested by developer").
+     *            The {@link Throwable} to be reported. If null the report will contain a new
+     *            Exception("Report requested by developer").
      */
     public ReportsSenderWorker handleSilentException(Throwable e) {
         // Mark this report as silent.
@@ -793,9 +776,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Send a status bar notification. The action triggered when the
-     * notification is selected is to start the {@link CrashReportDialog}
-     * Activity.
+     * Send a status bar notification. The action triggered when the notification is selected is to start the
+     * {@link CrashReportDialog} Activity.
      */
     void notifySendReport(String reportFileName) {
         // This notification can't be set to AUTO_CANCEL because after a crash,
@@ -832,9 +814,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Sends the report with all configured ReportSenders. If at least one
-     * sender completed its job, the report is considered as sent and will not
-     * be sent again for failing senders.
+     * Sends the report with all configured ReportSenders. If at least one sender completed its job, the report is
+     * considered as sent and will not be sent again for failing senders.
      * 
      * @param context
      *            The application context.
@@ -865,19 +846,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * When a report can't be sent, it is saved here in a file in the root of
-     * the application private directory.
+     * When a report can't be sent, it is saved here in a file in the root of the application private directory.
      * 
      * @param fileName
-     *            In a few rare cases, we write the report again with additional
-     *            data (user comment for example). In such cases, you can
-     *            provide the already existing file name here to overwrite the
-     *            report file. If null, a new file report will be generated
+     *            In a few rare cases, we write the report again with additional data (user comment for example). In
+     *            such cases, you can provide the already existing file name here to overwrite the report file. If null,
+     *            a new file report will be generated
      * @param crashData
-     *            Can be used to save an alternative (or previously generated)
-     *            report data. Used to store again a report with the addition of
-     *            user comment. If null, the default current crash data are
-     *            used.
+     *            Can be used to save an alternative (or previously generated) report data. Used to store again a report
+     *            with the addition of user comment. If null, the default current crash data are used.
      */
     private static String saveCrashReportFile(String fileName, CrashReportData crashData) {
         try {
@@ -932,8 +909,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param context
      *            The application context.
      * @param sendOnlySilentReports
-     *            Send only reports explicitly declared as SILENT by the
-     *            developer (sent via {@link #handleSilentException(Throwable)}.
+     *            Send only reports explicitly declared as SILENT by the developer (sent via
+     *            {@link #handleSilentException(Throwable)}.
      */
     synchronized void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
         File curFile = null;
@@ -987,8 +964,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * This method looks for pending reports and does the action required
-     * depending on the interaction mode set.
+     * This method looks for pending reports and does the action required depending on the interaction mode set.
      */
     public void checkReportsOnApplicationStart() {
         String[] filesList = getCrashReportFilesList();
@@ -1027,9 +1003,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Retrieve the most recently created "non silent" report from an array of
-     * report file names. A non silent is any report which has not been created
-     * with {@link #handleSilentException(Throwable)}.
+     * Retrieve the most recently created "non silent" report from an array of report file names. A non silent is any
+     * report which has not been created with {@link #handleSilentException(Throwable)}.
      * 
      * @param filesList
      *            An array of report file names.
@@ -1057,8 +1032,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Delete all pending SILENT reports. These are the reports created with
-     * {@link #handleSilentException(Throwable)}.
+     * Delete all pending SILENT reports. These are the reports created with {@link #handleSilentException(Throwable)}.
      */
     public void deletePendingSilentReports() {
         deletePendingReports(true, false, 0);
@@ -1100,8 +1074,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Disable ACRA : sets this Thread's {@link UncaughtExceptionHandler} back
-     * to the system default.
+     * Disable ACRA : sets this Thread's {@link UncaughtExceptionHandler} back to the system default.
      */
     public void disable() {
         if (mContext != null) {
@@ -1115,14 +1088,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Checks if an array of reports files names contains only silent or
-     * approved reports.
+     * Checks if an array of reports files names contains only silent or approved reports.
      * 
      * @param reportFileNames
-     *            the list of reports (as provided by
-     *            {@link #getCrashReportFilesList()})
-     * @return True if there are only silent or approved reports. False if there
-     *         is at least one non-approved report.
+     *            the list of reports (as provided by {@link #getCrashReportFilesList()})
+     * @return True if there are only silent or approved reports. False if there is at least one non-approved report.
      */
     private boolean containsOnlySilentOrApprovedReports(String[] reportFileNames) {
         for (String reportFileName : reportFileNames) {
@@ -1137,8 +1107,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Guess that a report is silent from its file name.
      * 
      * @param reportFileName
-     * @return True if the report has been declared explicitly silent using
-     *         {@link #handleSilentException(Throwable)}.
+     * @return True if the report has been declared explicitly silent using {@link #handleSilentException(Throwable)}.
      */
     private boolean isSilent(String reportFileName) {
         return reportFileName.contains(SILENT_SUFFIX);
@@ -1149,8 +1118,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Returns true if the report is considered as approved. This includes:
      * </p>
      * <ul>
-     * <li>Reports which were pending when the user agreed to send a report in
-     * the NOTIFICATION mode Dialog.</li>
+     * <li>Reports which were pending when the user agreed to send a report in the NOTIFICATION mode Dialog.</li>
      * <li>Explicit silent reports</li>
      * </ul>
      * 
@@ -1162,12 +1130,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Sets the user comment value in an existing report file. User comments are
-     * ALWAYS entered by the user in a Dialog which is displayed after
-     * application restart. This means that the report file has already been
-     * generated and saved to the filesystem. Associating the comment to the
-     * report requires to reopen an existing report, insert the comment value
-     * and save the report back.
+     * Sets the user comment value in an existing report file. User comments are ALWAYS entered by the user in a Dialog
+     * which is displayed after application restart. This means that the report file has already been generated and
+     * saved to the filesystem. Associating the comment to the report requires to reopen an existing report, insert the
+     * comment value and save the report back.
      * 
      * @param context
      *            The application context.
@@ -1212,8 +1178,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Remove a specific instance of {@link ReportSender} from the list of
-     * active {@link ReportSender}s.
+     * Remove a specific instance of {@link ReportSender} from the list of active {@link ReportSender}s.
      * 
      * @param sender
      *            The {@link ReportSender} instance to be removed.
@@ -1238,17 +1203,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Clears the list of active {@link ReportSender}s. You should then call
-     * {@link #addReportSender(ReportSender)} or ACRA will not send any report
-     * anymore.
+     * Clears the list of active {@link ReportSender}s. You should then call {@link #addReportSender(ReportSender)} or
+     * ACRA will not send any report anymore.
      */
     public void removeAllReportSenders() {
         mReportSenders.clear();
     }
 
     /**
-     * Removes all previously set {@link ReportSender}s and set the given one as
-     * the new {@link ReportSender}.
+     * Removes all previously set {@link ReportSender}s and set the given one as the new {@link ReportSender}.
      * 
      * @param sender
      */
@@ -1258,8 +1221,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Sets the application start date. This will be included in the reports,
-     * will be helpfull compared to user_crash date.
+     * Sets the application start date. This will be included in the reports, will be helpfull compared to user_crash
+     * date.
      * 
      * @param appStartDate
      */
