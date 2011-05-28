@@ -165,6 +165,10 @@ public enum ReportField {
     /**
      * Secure settings (applications can't modify them).
      */
-    SETTINGS_SECURE
+    SETTINGS_SECURE,
+    /**
+     * SharedPreferences contents
+     */
+    SHARED_PREFERENCES
     ;
 }

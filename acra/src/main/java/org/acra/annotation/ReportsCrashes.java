@@ -26,6 +26,7 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 /**
@@ -251,4 +252,12 @@ public @interface ReportsCrashes {
      * @return true if the Force Close dialog has to be displayed.
      */
     boolean forceCloseDialogAfterToast() default false;
+
+    /**
+     * Add here your {@link SharedPreferences} identifier Strings if you use others than your application's default.
+     * They will be added to the {@link ReportField#SHARED_PREFERENCES} field.
+     * 
+     * @return
+     */
+    String[] additionalSharedPreferences() default {};
 }

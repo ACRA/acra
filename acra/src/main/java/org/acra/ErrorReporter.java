@@ -43,6 +43,7 @@ import static org.acra.ReportField.RADIOLOG;
 import static org.acra.ReportField.REPORT_ID;
 import static org.acra.ReportField.SETTINGS_SECURE;
 import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SHARED_PREFERENCES;
 import static org.acra.ReportField.STACK_TRACE;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
 import static org.acra.ReportField.USER_COMMENT;
@@ -576,6 +577,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (fieldsList.contains(SETTINGS_SECURE)) {
                 mCrashProperties.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(mContext));
             }
+
+            // SharedPreferences
+            if (fieldsList.contains(SHARED_PREFERENCES)) {
+                mCrashProperties.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(mContext));
+            }
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         }

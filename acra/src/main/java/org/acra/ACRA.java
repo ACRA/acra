@@ -42,6 +42,7 @@ import static org.acra.ReportField.RADIOLOG;
 import static org.acra.ReportField.REPORT_ID;
 import static org.acra.ReportField.SETTINGS_SECURE;
 import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SHARED_PREFERENCES;
 import static org.acra.ReportField.STACK_TRACE;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
 import static org.acra.ReportField.USER_APP_START_DATE;
@@ -360,7 +361,8 @@ public class ACRA {
     FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE, AVAILABLE_MEM_SIZE,
     CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION, DISPLAY, USER_COMMENT,
     USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, DROPBOX, LOGCAT, EVENTSLOG, RADIOLOG,
-    DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SETTINGS_SYSTEM, SETTINGS_SECURE };
+ DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES,
+            SETTINGS_SYSTEM, SETTINGS_SECURE };
 
     /**
      * A special String value to allow the usage of a pseudo-null default value in annotation parameters.
