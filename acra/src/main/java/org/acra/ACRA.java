@@ -231,7 +231,6 @@ public class ACRA {
 
             if (disableAcra) {
                 Log.d(LOG_TAG, "ACRA is disabled for " + mApplication.getPackageName() + ".");
-                return;
             } else {
                 try {
                     initAcra();

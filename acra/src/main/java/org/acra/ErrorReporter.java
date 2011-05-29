@@ -120,6 +120,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     public static final String REPORTFILE_EXTENSION = ".stacktrace";
 
+    private static boolean enabled = false;
+
     /**
      * Contains the active {@link ReportSender}s.
      */
@@ -363,6 +365,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Don't do it twice to avoid losing the original handler.
         if (mDfltExceptionHandler == null) {
             mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+            enabled = true;
             Thread.setDefaultUncaughtExceptionHandler(this);
             mContext = context;
             // Store the initial Configuration state.
@@ -775,11 +778,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param e
      *            The {@link Throwable} to be reported. If null the report will contain a new
      *            Exception("Report requested by developer").
+     * @return The Thread which has been created to send the report or null if ACRA is disabled.
      */
-    public ReportsSenderWorker handleSilentException(Throwable e) {
+    public Thread handleSilentException(Throwable e) {
         // Mark this report as silent.
-        mCrashProperties.put(IS_SILENT, "true");
-        return handleException(e, ReportingInteractionMode.SILENT);
+        if (enabled) {
+            mCrashProperties.put(IS_SILENT, "true");
+            return handleException(e, ReportingInteractionMode.SILENT);
+        } else {
+            Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
+            return null;
+        }
     }
 
     /**
@@ -1091,6 +1100,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
         if (mDfltExceptionHandler != null) {
             Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
+            enabled = false;
         }
     }
 
