@@ -1171,7 +1171,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 commentedCrashReport.load(input);
                 input.close();
                 commentedCrashReport.put(USER_COMMENT, userComment);
-                commentedCrashReport.put(USER_EMAIL, userEmail);
+                commentedCrashReport.put(USER_EMAIL, userEmail == null ? "" : userEmail);
                 saveCrashReportFile(commentedReportFileName, commentedCrashReport);
             } catch (FileNotFoundException e) {
                 Log.w(LOG_TAG, "User comment not added: ", e);
