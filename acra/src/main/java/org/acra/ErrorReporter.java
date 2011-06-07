@@ -623,6 +623,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         Log.e(ACRA.LOG_TAG,
                 "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
                         + ". Building report.");
+
+        // This is a real exception, clear the IS_SILENT field from any previous silent exception
+        mCrashProperties.remove(IS_SILENT);
+
         // Generate and send crash report
         ReportsSenderWorker worker = handleException(e);
 
@@ -785,7 +789,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (enabled) {
             mCrashProperties.put(IS_SILENT, "true");
             Thread result = handleException(e, ReportingInteractionMode.SILENT);
-            mCrashProperties.remove(IS_SILENT);
             return result;
         } else {
             Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
