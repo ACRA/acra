@@ -784,7 +784,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Mark this report as silent.
         if (enabled) {
             mCrashProperties.put(IS_SILENT, "true");
-            return handleException(e, ReportingInteractionMode.SILENT);
+            Thread result = handleException(e, ReportingInteractionMode.SILENT);
+            mCrashProperties.remove(IS_SILENT);
+            return result;
         } else {
             Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
             return null;
