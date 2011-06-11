@@ -748,6 +748,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Always write the report file
         String reportFileName = saveCrashReportFile(null, null);
 
+        // Remove IS_SILENT if it was set, or it will persist in the next non-silent report
+        mCrashProperties.remove(IS_SILENT);
+
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST
                 || ACRA.getACRASharedPreferences().getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
