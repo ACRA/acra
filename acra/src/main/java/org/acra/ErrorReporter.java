@@ -945,12 +945,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 CrashReportData previousCrashReport = new CrashReportData();
                 // send only a few reports to avoid overloading the network
                 int reportsSentCount = 0;
+                String prevFileName = null;
                 for (String curFileName : reportFiles) {
                     curFile = null;
                     if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
-                        if (reportsSentCount < MAX_SEND_REPORTS) {
+                        curFile = new File(context.getFilesDir(), curFileName);
+                        if (curFileName.equals(prevFileName)) {
+                            // For unknown reasons, sometimes some reports are sent multiple times... this is a
+                            // wrokaround. not a fix.
+                            curFile.delete();
+                        } else if (reportsSentCount < MAX_SEND_REPORTS) {
                             Log.i(LOG_TAG, "Sending file " + curFileName);
-                            curFile = new File(context.getFilesDir(), curFileName);
                             FileInputStream input = context.openFileInput(curFileName);
                             previousCrashReport.load(input);
                             input.close();
@@ -961,6 +966,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         }
                         reportsSentCount++;
                     }
+                    prevFileName = curFileName;
                 }
             }
         } catch (RuntimeException e) {
