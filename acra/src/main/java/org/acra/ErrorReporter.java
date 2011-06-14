@@ -750,6 +750,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         // Remove IS_SILENT if it was set, or it will persist in the next non-silent report
         mCrashProperties.remove(IS_SILENT);
+        mCrashProperties.remove(USER_COMMENT);
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST
@@ -952,7 +953,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         curFile = new File(context.getFilesDir(), curFileName);
                         if (curFileName.equals(prevFileName)) {
                             // For unknown reasons, sometimes some reports are sent multiple times... this is a
-                            // wrokaround. not a fix.
+                            // workaround. not a fix.
                             curFile.delete();
                         } else if (reportsSentCount < MAX_SEND_REPORTS) {
                             Log.i(LOG_TAG, "Sending file " + curFileName);
