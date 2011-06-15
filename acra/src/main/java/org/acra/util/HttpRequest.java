@@ -113,10 +113,18 @@ public class HttpRequest {
         response = httpClient.execute(httpPost, localContext);
 
         if (response != null) {
+            if (response.getStatusLine() != null) {
+                String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
+                if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
+                    throw new IOException("Host returned error code " + statusCode);
+                }
+            }
             ret = EntityUtils.toString(response.getEntity());
         }
 
-        Log.d(ACRA.LOG_TAG, "Returning value:" + ret.substring(0, Math.min(ret.length(), 200)));
+        Log.d(ACRA.LOG_TAG,
+                "HTTP " + response.getStatusLine().getStatusCode() + " - Returning value:"
+                        + ret.substring(0, Math.min(ret.length(), 200)));
 
         return ret;
     }

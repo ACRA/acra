@@ -910,6 +910,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @return an array containing the names of pending crash report files.
      */
     String[] getCrashReportFilesList() {
+        if (mContext == null) {
+            Log.e(LOG_TAG, "Trying to get ACRA reports but ACRA is not initialized.");
+            String[] result = {};
+            return result;
+        }
+
         File dir = mContext.getFilesDir();
         if (dir != null) {
             Log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
@@ -958,6 +964,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         } else if (reportsSentCount < MAX_SEND_REPORTS) {
                             Log.i(LOG_TAG, "Sending file " + curFileName);
                             FileInputStream input = context.openFileInput(curFileName);
+                            previousCrashReport.clear();
                             previousCrashReport.load(input);
                             input.close();
                             sendCrashReport(context, previousCrashReport);
