@@ -120,11 +120,13 @@ public class HttpRequest {
                 }
             }
             ret = EntityUtils.toString(response.getEntity());
+            Log.d(ACRA.LOG_TAG,
+                    "HTTP " + response.getStatusLine().getStatusCode() + " - Returning value:"
+                            + ret.substring(0, Math.min(ret.length(), 200)));
+        } else {
+            Log.w(ACRA.LOG_TAG, "HTTP Response is null!");
         }
 
-        Log.d(ACRA.LOG_TAG,
-                "HTTP " + response.getStatusLine().getStatusCode() + " - Returning value:"
-                        + ret.substring(0, Math.min(ret.length(), 200)));
 
         return ret;
     }
