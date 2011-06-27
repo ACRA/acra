@@ -158,9 +158,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:https://acra.googlecode.com/svn/trunk/acra</connection>
-		<developerConnection>scm:svn:https://acra.googlecode.com/svn/trunk/acra</developerConnection>
-		<url>https://acra.googlecode.com/svn/trunk/acra</url>
+		<connection>scm:svn:https://acra.googlecode.com/svn/tags/acra-4.2.3RC</connection>
+		<developerConnection>scm:svn:https://acra.googlecode.com/svn/tags/acra-4.2.3RC</developerConnection>
+		<url>https://acra.googlecode.com/svn/tags/acra-4.2.3RC</url>
 	</scm>
 
 </project>
