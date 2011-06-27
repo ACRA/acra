@@ -42,17 +42,23 @@ public class Installation {
     }
 
     private static String readInstallationFile(File installation) throws IOException {
-        RandomAccessFile f = new RandomAccessFile(installation, "r");
+        final RandomAccessFile f = new RandomAccessFile(installation, "r");
         byte[] bytes = new byte[(int) f.length()];
-        f.readFully(bytes);
-        f.close();
+        try {
+            f.readFully(bytes);
+        } finally {
+            f.close();
+        }
         return new String(bytes);
     }
 
     private static void writeInstallationFile(File installation) throws IOException {
-        FileOutputStream out = new FileOutputStream(installation);
-        String id = UUID.randomUUID().toString();
-        out.write(id.getBytes());
-        out.close();
+        final FileOutputStream out = new FileOutputStream(installation);
+        try {
+            final String id = UUID.randomUUID().toString();
+            out.write(id.getBytes());
+        } finally {
+            out.close();
+        }
     }
 }

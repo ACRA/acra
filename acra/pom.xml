@@ -3,7 +3,7 @@
 
 	<groupId>org.acra</groupId>
 	<artifactId>acra</artifactId>
-	<version>4.3-SNAPSHOT</version>
+	<version>4.2.3</version>
 
 	<name>Application Crash Report for Android</name>
 
@@ -50,7 +50,7 @@
 			<artifactId>android</artifactId>
 			<version>1.5_r4</version>
 			<type>jar</type>
-			<optional>true</optional>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -58,7 +58,6 @@
 			<version>4.8.1</version>
 			<type>jar</type>
 			<scope>test</scope>
-			<optional>false</optional>
 		</dependency>
 	</dependencies>
 

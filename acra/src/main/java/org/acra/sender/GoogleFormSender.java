@@ -17,6 +17,7 @@ package org.acra.sender;
 
 import static org.acra.ACRA.LOG_TAG;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,12 +56,11 @@ public class GoogleFormSender implements ReportSender {
         formParams.put("submit", "Envoyer");
 
         try {
-            URL reportUrl;
-            reportUrl = new URL(mFormUri.toString());
+            final URL reportUrl = new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Sending report " + report.get(ReportField.REPORT_ID));
-            Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
+            Log.d(LOG_TAG, "Connect to " + reportUrl);
             HttpUtils.doPost(formParams, reportUrl, null, null);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ReportSenderException("Error while sending report to Google Form.", e);
         }
 

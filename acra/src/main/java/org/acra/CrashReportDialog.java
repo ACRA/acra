@@ -148,6 +148,7 @@ public class CrashReportDialog extends Activity {
                     worker.setUserEmail(mReportFileName, usrEmail);
                 }
 
+                Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from CrashReportDialog");
                 worker.start();
 
 

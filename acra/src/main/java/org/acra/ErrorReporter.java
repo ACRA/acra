@@ -16,39 +16,7 @@
 package org.acra;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.ANDROID_VERSION;
-import static org.acra.ReportField.APP_VERSION_CODE;
-import static org.acra.ReportField.APP_VERSION_NAME;
-import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
-import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.BUILD;
-import static org.acra.ReportField.CRASH_CONFIGURATION;
-import static org.acra.ReportField.CUSTOM_DATA;
-import static org.acra.ReportField.DEVICE_FEATURES;
-import static org.acra.ReportField.DEVICE_ID;
-import static org.acra.ReportField.DISPLAY;
-import static org.acra.ReportField.DROPBOX;
-import static org.acra.ReportField.DUMPSYS_MEMINFO;
-import static org.acra.ReportField.ENVIRONMENT;
-import static org.acra.ReportField.EVENTSLOG;
-import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.INITIAL_CONFIGURATION;
-import static org.acra.ReportField.INSTALLATION_ID;
-import static org.acra.ReportField.IS_SILENT;
-import static org.acra.ReportField.LOGCAT;
-import static org.acra.ReportField.PACKAGE_NAME;
-import static org.acra.ReportField.PHONE_MODEL;
-import static org.acra.ReportField.PRODUCT;
-import static org.acra.ReportField.RADIOLOG;
-import static org.acra.ReportField.REPORT_ID;
-import static org.acra.ReportField.SETTINGS_SECURE;
-import static org.acra.ReportField.SETTINGS_SYSTEM;
-import static org.acra.ReportField.SHARED_PREFERENCES;
-import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_CRASH_DATE;
-import static org.acra.ReportField.USER_EMAIL;
+import static org.acra.ReportField.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,6 +55,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.Environment;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
@@ -163,13 +132,35 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          */
         @Override
         public void run() {
-            if (mApprovePendingReports) {
-                approvePendingReports();
-                mCommentedReportFileName = mCommentedReportFileName.replace(REPORTFILE_EXTENSION, APPROVED_SUFFIX
-                        + REPORTFILE_EXTENSION);
+            final PowerManager.WakeLock wakeLock = acquireWakeLock();
+            try {
+                if (mApprovePendingReports) {
+                    approvePendingReports();
+                    mCommentedReportFileName = mCommentedReportFileName.replace(REPORTFILE_EXTENSION, APPROVED_SUFFIX + REPORTFILE_EXTENSION);
+                }
+                addUserDataToReport(mContext, mCommentedReportFileName, mUserComment, mUserEmail);
+                checkAndSendReports(mContext, mSendOnlySilentReports);
+            } finally {
+                if (wakeLock != null) {
+                    wakeLock.release();
+                }
             }
-            addUserDataToReport(mContext, mCommentedReportFileName, mUserComment, mUserEmail);
-            checkAndSendReports(mContext, mSendOnlySilentReports);
+        }
+
+        /**
+         * @return an acquired (partial) WakeLock if the app has the WAKE_LOCK permission, otherwise returns null.
+         */
+        private PowerManager.WakeLock acquireWakeLock() {
+            final PackageManager pm = mContext.getPackageManager();
+            final boolean hasPermission = (pm != null) ? (pm.checkPermission(permission.WAKE_LOCK, mContext.getPackageName()) == PackageManager.PERMISSION_GRANTED) : false;
+            if (!hasPermission) {
+                return null;
+            }
+
+            final PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+            final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ACRA wakelock");
+            wakeLock.acquire();
+            return wakeLock;
         }
 
         /**
@@ -757,8 +748,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 || ACRA.getACRASharedPreferences().getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
             // Send reports now
             approvePendingReports();
+
             ReportsSenderWorker wk = new ReportsSenderWorker(sendOnlySilentReports);
+            Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");
             wk.start();
+
             return wk;
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             // Send reports when user accepts
@@ -858,10 +852,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 // later.
                 sentAtLeastOnce = true;
             } catch (ReportSenderException e) {
-                Log.w(LOG_TAG, "An exception occured while executing a ReportSender.", e);
                 if (!sentAtLeastOnce) {
-                    Log.e(LOG_TAG, "The first sender failed, ACRA will try all senders again later.");
-                    throw e;
+                    throw e; // Don't log here because we aren't dealing with the Exception here.
                 } else {
                     Log.w(LOG_TAG, "ReportSender of class " + sender.getClass().getName()
                             + " failed but other senders completed their task. ACRA will not send this report again.");
@@ -894,9 +886,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 String isSilent = crashData.getProperty(IS_SILENT);
                 fileName = "" + timestamp + (isSilent != null ? SILENT_SUFFIX : "") + REPORTFILE_EXTENSION;
             }
-            FileOutputStream reportFile = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
-            crashData.store(reportFile, "");
-            reportFile.close();
+            final FileOutputStream reportFile = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+            try {
+                crashData.store(reportFile, "");
+            } finally {
+                reportFile.close();
+            }
             return fileName;
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occured while writing the report file...", e);
@@ -912,8 +907,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     String[] getCrashReportFilesList() {
         if (mContext == null) {
             Log.e(LOG_TAG, "Trying to get ACRA reports but ACRA is not initialized.");
-            String[] result = {};
-            return result;
+            return new String[0];
         }
 
         File dir = mContext.getFilesDir();
@@ -926,7 +920,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     return name.endsWith(REPORTFILE_EXTENSION);
                 }
             };
-            return dir.list(filter);
+            final String[] result = dir.list(filter);
+            return (result == null) ? new String[0] : result;
         } else {
             Log.w(LOG_TAG,
                     "Application files directory does not exist! The application may not be installed correctly. Please try reinstalling.");
@@ -944,53 +939,62 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            {@link #handleSilentException(Throwable)}.
      */
     synchronized void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
-        File curFile = null;
-        try {
-            String[] reportFiles = getCrashReportFilesList();
-            if (reportFiles != null && reportFiles.length > 0) {
-                Arrays.sort(reportFiles);
-                CrashReportData previousCrashReport = new CrashReportData();
-                // send only a few reports to avoid overloading the network
-                int reportsSentCount = 0;
-                String prevFileName = null;
-                for (String curFileName : reportFiles) {
-                    curFile = null;
-                    if (!sendOnlySilentReports || (sendOnlySilentReports && isSilent(curFileName))) {
-                        curFile = new File(context.getFilesDir(), curFileName);
-                        if (curFileName.equals(prevFileName)) {
-                            // For unknown reasons, sometimes some reports are sent multiple times... this is a
-                            // workaround. not a fix.
-                            curFile.delete();
-                        } else if (reportsSentCount < MAX_SEND_REPORTS) {
-                            Log.i(LOG_TAG, "Sending file " + curFileName);
-                            FileInputStream input = context.openFileInput(curFileName);
-                            previousCrashReport.clear();
-                            previousCrashReport.load(input);
-                            input.close();
-                            sendCrashReport(context, previousCrashReport);
+        Log.d(LOG_TAG, "#checkAndSendReports - start");
+        final String[] reportFiles = getCrashReportFilesList();
+        Arrays.sort(reportFiles);
 
-                            // DELETE FILES !!!!
-                            curFile.delete();
-                        }
-                        reportsSentCount++;
-                    }
-                    prevFileName = curFileName;
-                }
+        int reportsSentCount = 0;
+
+        for (String curFileName : reportFiles) {
+            if (sendOnlySilentReports && !isSilent(curFileName)) {
+                continue;
             }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            if (curFile != null) {
-                curFile.delete();
+
+            if (reportsSentCount >= MAX_SEND_REPORTS) {
+                break; // send only a few reports to avoid overloading the network
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            if (curFile != null) {
-                curFile.delete();
+
+            Log.i(LOG_TAG, "Sending file " + curFileName);
+            try {
+                final CrashReportData previousCrashReport = loadCrashReport(context, curFileName);
+                sendCrashReport(context, previousCrashReport);
+                deleteFile(context, curFileName);
+            } catch (RuntimeException e) {
+                Log.e(ACRA.LOG_TAG, "Failed to send crash reports", e);
+                deleteFile(context, curFileName);
+                break; // Something really unexpected happened. Don't try to send any more reports now.
+            } catch (IOException e) {
+                Log.e(ACRA.LOG_TAG, "Failed to load crash report for " + curFileName, e);
+                deleteFile(context, curFileName);
+                break; // Something unexpected happened when reading the crash report. Don't try to send any more reports now.
+            } catch (ReportSenderException e) {
+                Log.e(ACRA.LOG_TAG, "Failed to send crash report for " + curFileName, e);
+                break; // Something stopped the report being sent. Don't try to send any more reports now.
             }
-        } catch (ReportSenderException e) {
-            e.printStackTrace();
+            reportsSentCount++;
+        }
+        Log.d(LOG_TAG, "#checkAndSendReports - finish");
+    }
+
+    private CrashReportData loadCrashReport(Context context, String fileName) throws IOException {
+        final CrashReportData crashReport = new CrashReportData();
+        final FileInputStream input = context.openFileInput(fileName);
+        try {
+            //crashReport.clear();
+            crashReport.load(input);
+        } finally {
+            input.close();
+        }
+        return crashReport;
+    }
+
+    private void deleteFile(Context context, String fileName) {
+        final boolean deleted = context.deleteFile(fileName);
+        if (!deleted) {
+            Log.w(ACRA.LOG_TAG, "Could not deleted error report : " + fileName);
         }
     }
+
 
     /**
      * Set the wanted user interaction mode for sending reports.
@@ -1021,6 +1025,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
                 }
 
+                Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
                 new ReportsSenderWorker().start();
             } else if (ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
                 // NOTIFICATION mode, and there are unapproved reports to send
@@ -1187,11 +1192,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         Log.d(LOG_TAG, "Add user comment to " + commentedReportFileName);
         if (commentedReportFileName != null && userComment != null) {
             try {
-                FileInputStream input = context.openFileInput(commentedReportFileName);
-                CrashReportData commentedCrashReport = new CrashReportData();
-                Log.d(LOG_TAG, "Loading Properties report to insert user comment.");
-                commentedCrashReport.load(input);
-                input.close();
+                final FileInputStream input = context.openFileInput(commentedReportFileName);
+                final CrashReportData commentedCrashReport = new CrashReportData();
+                try {
+                    Log.d(LOG_TAG, "Loading Properties report to insert user comment.");
+                    commentedCrashReport.load(input);
+                } finally {
+                    input.close();
+                }
                 commentedCrashReport.put(USER_COMMENT, userComment);
                 commentedCrashReport.put(USER_EMAIL, userEmail == null ? "" : userEmail);
                 saveCrashReportFile(commentedReportFileName, commentedCrashReport);

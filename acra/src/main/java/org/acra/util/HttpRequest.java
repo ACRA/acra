@@ -13,6 +13,7 @@ import java.net.URLConnection;
 
 import org.acra.ACRA;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -39,9 +40,7 @@ public class HttpRequest {
 
     DefaultHttpClient httpClient;
     HttpContext localContext;
-    private String ret;
 
-    HttpResponse response = null;
     HttpPost httpPost = null;
     HttpGet httpGet = null;
     UsernamePasswordCredentials creds = null;
@@ -82,14 +81,10 @@ public class HttpRequest {
     }
 
     public String sendPost(String url, String data, String contentType) throws ClientProtocolException, IOException {
-        ret = null;
 
         httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
         httpPost = new HttpPost(url);
-        response = null;
-
-        StringEntity tmp = null;
 
         Log.d(ACRA.LOG_TAG, "Setting httpPost headers");
         if (creds != null) {
@@ -105,28 +100,29 @@ public class HttpRequest {
             httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
         }
 
-        tmp = new StringEntity(data, "UTF-8");
+        final StringEntity tmp = new StringEntity(data, "UTF-8");
         httpPost.setEntity(tmp);
 
         Log.d(ACRA.LOG_TAG, "Sending request to " + url);
 
-        response = httpClient.execute(httpPost, localContext);
-
+        final String ret;
+        final HttpResponse response = httpClient.execute(httpPost, localContext);
         if (response != null) {
-            if (response.getStatusLine() != null) {
-                String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
+            final StatusLine statusLine = response.getStatusLine();
+            if (statusLine != null) {
+                final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
                 if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
                     throw new IOException("Host returned error code " + statusCode);
                 }
             }
             ret = EntityUtils.toString(response.getEntity());
-            Log.d(ACRA.LOG_TAG,
-                    "HTTP " + response.getStatusLine().getStatusCode() + " - Returning value:"
+            if (ACRA.DEV_LOGGING) Log.d(ACRA.LOG_TAG,
+                    "HTTP " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode") + " - Returning value:"
                             + ret.substring(0, Math.min(ret.length(), 200)));
         } else {
-            Log.w(ACRA.LOG_TAG, "HTTP Response is null!");
+            ret = null;
+            if (ACRA.DEV_LOGGING) Log.d(ACRA.LOG_TAG, "HTTP no Response!!");
         }
-
 
         return ret;
     }
@@ -134,19 +130,18 @@ public class HttpRequest {
     public String sendGet(String url) throws ClientProtocolException, IOException {
         httpGet = new HttpGet(url);
 
-        response = httpClient.execute(httpGet);
+        final HttpResponse response = httpClient.execute(httpGet);
 
         // int status = response.getStatusLine().getStatusCode();
 
         // we assume that the response body contains the error message
-        ret = EntityUtils.toString(response.getEntity());
+        final String ret = EntityUtils.toString(response.getEntity());
 
         return ret;
     }
 
     public InputStream getHttpStream(String urlString) throws IOException {
         InputStream in = null;
-        int response = -1;
 
         URL url = new URL(urlString);
         URLConnection conn = url.openConnection();
@@ -161,8 +156,7 @@ public class HttpRequest {
             httpConn.setRequestMethod("GET");
             httpConn.connect();
 
-            response = httpConn.getResponseCode();
-
+            final int response = httpConn.getResponseCode();
             if (response == HttpURLConnection.HTTP_OK) {
                 in = httpConn.getInputStream();
             }
