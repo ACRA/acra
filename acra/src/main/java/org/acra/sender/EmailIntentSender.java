@@ -26,11 +26,12 @@ import android.content.Intent;
 /**
  * Send reports through an email intent. The user will be asked to chose his
  * preferred email client. Included report fields can be defined using
- * {@link ReportsCrashes#mailReportFields()}. Crash receiving mailbox has to be
+ * {@link org.acra.annotation.ReportsCrashes#customReportContent()}. Crash receiving mailbox has to be
  * defined with {@link ReportsCrashes#mailTo()}.
  */
 public class EmailIntentSender implements ReportSender {
-    Context mContext = null;
+
+    private final Context mContext;
 
     public EmailIntentSender(Context ctx) {
         mContext = ctx;
@@ -38,24 +39,26 @@ public class EmailIntentSender implements ReportSender {
 
     @Override
     public void send(CrashReportData errorContent) throws ReportSenderException {
+
+        final String subject = errorContent.get(ReportField.PACKAGE_NAME) + " Crash Report";
+        final String body = buildBody(errorContent);
+
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         emailIntent.setType("text/plain");
-        String subject = errorContent.get(ReportField.PACKAGE_NAME) + " Crash Report";
-        String body = buildBody(errorContent);
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { ACRA.getConfig().mailTo() });
         mContext.startActivity(emailIntent);
-
     }
 
     private String buildBody(CrashReportData errorContent) {
-        StringBuilder builder = new StringBuilder();
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if(fields.length == 0) {
             fields = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
         }
+
+        final StringBuilder builder = new StringBuilder();
         for (ReportField field : fields) {
             builder.append(field.toString()).append("=");
             builder.append(errorContent.get(field));
@@ -63,5 +66,4 @@ public class EmailIntentSender implements ReportSender {
         }
         return builder.toString();
     }
-
 }

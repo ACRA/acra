@@ -75,9 +75,9 @@ public class ConfigurationInspector {
         mValueArrays.put(PREFIX_TOUCHSCREEN, mTouchScreenValues);
         mValueArrays.put(PREFIX_UI_MODE, mUiModeValues);
 
-        for (Field f : Configuration.class.getFields()) {
+        for (final Field f : Configuration.class.getFields()) {
             if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())) {
-                String fieldName = f.getName();
+                final String fieldName = f.getName();
                 try {
                     if (fieldName.startsWith(PREFIX_HARDKEYBOARDHIDDEN)) {
                         mHardKeyboardHiddenValues.put(f.getInt(null), fieldName);
@@ -117,11 +117,11 @@ public class ConfigurationInspector {
      *         with values replaced by constant names.
      */
     public static String toString(Configuration conf) {
-        StringBuilder result = new StringBuilder();
-        for (Field f : conf.getClass().getFields()) {
+        final StringBuilder result = new StringBuilder();
+        for (final Field f : conf.getClass().getFields()) {
             try {
                 if (!Modifier.isStatic(f.getModifiers())) {
-                    String fieldName = f.getName();
+                    final String fieldName = f.getName();
                     result.append(fieldName).append('=');
                     if (f.getType().equals(int.class)) {
                         result.append(getFieldValueName(conf, f));
@@ -155,9 +155,8 @@ public class ConfigurationInspector {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    private static String getFieldValueName(Configuration conf, Field f) throws IllegalArgumentException,
-            IllegalAccessException {
-        String fieldName = f.getName();
+    private static String getFieldValueName(Configuration conf, Field f) throws IllegalArgumentException , IllegalAccessException {
+        final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
             return Integer.toString(f.getInt(conf));
         } else if (fieldName.equals(FIELD_UIMODE)) {
@@ -165,12 +164,13 @@ public class ConfigurationInspector {
         } else if (fieldName.equals(FIELD_SCREENLAYOUT)) {
             return activeFlags(mValueArrays.get(PREFIX_SCREENLAYOUT), f.getInt(conf));
         } else {
-            SparseArray<String> values = mValueArrays.get(fieldName.toUpperCase() + '_');
+            final SparseArray<String> values = mValueArrays.get(fieldName.toUpperCase() + '_');
             if (values == null) {
                 // Unknown field, return the raw int as String
                 return Integer.toString(f.getInt(conf));
             }
-            String value = values.get(f.getInt(conf));
+
+            final String value = values.get(f.getInt(conf));
             if (value == null) {
                 // Unknown value, return the raw int as String
                 return Integer.toString(f.getInt(conf));
@@ -193,13 +193,13 @@ public class ConfigurationInspector {
      *         separated by '+'.
      */
     private static String activeFlags(SparseArray<String> valueNames, int bitfield) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value
         for (int i = 0; i < valueNames.size(); i++) {
-            int maskValue = valueNames.keyAt(i);
+            final int maskValue = valueNames.keyAt(i);
             if (valueNames.get(maskValue).endsWith(SUFFIX_MASK)) {
-                int value = bitfield & maskValue;
+                final int value = bitfield & maskValue;
                 if (value > 0) {
                     if (result.length() > 0) {
                         result.append('+');
@@ -210,5 +210,4 @@ public class ConfigurationInspector {
         }
         return result.toString();
     }
-
 }

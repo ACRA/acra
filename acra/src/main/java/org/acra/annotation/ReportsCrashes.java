@@ -41,10 +41,9 @@ import android.preference.PreferenceManager;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ReportsCrashes {
+
     /**
-     * The id of the Google Doc form.
-     * 
-     * @return
+     * @return The id of the Google Doc form.
      */
     String formKey();
 
@@ -52,7 +51,7 @@ public @interface ReportsCrashes {
      * The Uri of your own server-side script that will receive reports. This is to use if you don't want to send
      * reports to Google Docs but to your own script.
      * 
-     * @return
+     * @return URI of a custom server to which to post reports.
      */
     String formUri() default "";
 
@@ -71,71 +70,70 @@ public @interface ReportsCrashes {
      * </ul>
      * </p>
      * 
-     * @return
+     * @return the interaction mode that you want ACRA to implement.
      */
     ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
 
     /**
-     * Resource id for the user comment input label in the crash dialog. If not provided, disables the input field.
+     * @return Resource id for the user comment input label in the crash dialog. If not provided, disables the input field.
      */
     int resDialogCommentPrompt() default 0;
 
     /**
-     * Resource id for the user email address input label in the crash dialog. If not provided, disables the input
-     * field.
+     * @return Resource id for the user email address input label in the crash dialog.
+     * If not provided, disables the input field.
      */
     int resDialogEmailPrompt() default 0;
 
     /**
-     * Resource id for the icon in the crash dialog.
+     * @return Resource id for the icon in the crash dialog.
      */
     int resDialogIcon() default android.R.drawable.ic_dialog_alert;
 
     /**
-     * Resource id for the Toast text triggered when the user accepts to send a report in the crash dialog.
+     * @return Resource id for the Toast text triggered when the user accepts to send a report in the crash dialog.
      */
     int resDialogOkToast() default 0;
 
     /**
-     * Resource id for the text in the crash dialog.
+     * @return Resource id for the text in the crash dialog.
      */
     int resDialogText() default 0;
 
     /**
-     * Resource id for the title in the crash dialog.
+     * @return Resource id for the title in the crash dialog.
      */
     int resDialogTitle() default 0;
 
     /**
-     * Resource id for the icon in the status bar notification.
+     * @return Resource id for the icon in the status bar notification.
      */
     int resNotifIcon() default android.R.drawable.stat_notify_error;
 
     /**
-     * Resource id for the text in the status bar notification.
+     * @return Resource id for the text in the status bar notification.
      */
     int resNotifText() default 0;
 
     /**
-     * Resource id for the ticker text in the status bar notification.
+     * @return Resource id for the ticker text in the status bar notification.
      */
     int resNotifTickerText() default 0;
 
     /**
-     * Resource id for the title in the status bar notification.
+     * @return Resource id for the title in the status bar notification.
      */
     int resNotifTitle() default 0;
 
     /**
-     * Resource id for the Toast text triggered when the application crashes if the notification+dialog mode is not
+     * @return Resource id for the Toast text triggered when the application crashes if the notification+dialog mode is not
      * used.
      */
     int resToastText() default 0;
 
     /**
-     * Name of the SharedPreferences that will host the {@link ACRA#PREF_DISABLE_ACRA} or {@link ACRA#PREF_ENABLE_ACRA}
-     * preference. Default is to use the default SharedPreferences, as retrieved with
-     * {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
+     * @return Name of the SharedPreferences that will host the {@link ACRA#PREF_DISABLE_ACRA} or {@link ACRA#PREF_ENABLE_ACRA} preference.
+     * Default is to use the default SharedPreferences, as retrieved with {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
      */
     String sharedPreferencesName() default "";
 
@@ -143,7 +141,8 @@ public @interface ReportsCrashes {
      * If using a custom {@link ReportsCrashes#sharedPreferencesName()}, pass here the mode that you need for the
      * SharedPreference file creation: {@link Context#MODE_PRIVATE}, {@link Context#MODE_WORLD_READABLE} or
      * {@link Context#MODE_WORLD_WRITEABLE}. Default is {@link Context#MODE_PRIVATE}.
-     * 
+     *
+     * @return Mode to use with the SharedPreference creation.
      * @see Context#getSharedPreferences(String, int)
      */
     int sharedPreferencesMode() default Context.MODE_PRIVATE;
@@ -169,17 +168,17 @@ public @interface ReportsCrashes {
      * </ul>
      * Requires {@link #includeDropBox()} true.
      * 
-     * @return
+     * @return True if system tags are to be included as part of ropBox events.
      */
     boolean includeDropBoxSystemTags() default false;
 
     /**
-     * You can provide here a list of tags that will be fetched when collecting DropBox entries.
+     * @return Array of tags that will be fetched when collecting DropBox entries.
      */
     String[] additionalDropBoxTags() default {};
 
     /**
-     * How many minutes will be looked back when collecting events from DropBoxManager.
+     * @return Number of minutes to look back when collecting events from DropBoxManager.
      */
     int dropboxCollectionMinutes() default 5;
 
@@ -202,32 +201,40 @@ public @interface ReportsCrashes {
      * See <a href= "http://developer.android.com/intl/fr/guide/developing/tools/adb.html#logcatoptions" >Listing of
      * logcat Command Options</a>.
      * </p>
+     *
+     * @return Array of arguments to supply if retrieving the log as part of the report.
      */
     String[] logcatArguments() default { "-t", "200", "-v", "time" };
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom server-side script, you can set here and
      * in {@link #formUriBasicAuthPassword()} the credentials for a BASIC HTTP authentication.
+     *
+     * @return Login to use when posting reports to a custom server.
      */
     String formUriBasicAuthLogin() default ACRA.NULL_VALUE;
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom server-side script, you can set here and
      * in {@link #formUriBasicAuthLogin()} the credentials for a BASIC HTTP authentication.
+     *
+     * @return Password to use when posting reports to a custom server.
      */
     String formUriBasicAuthPassword() default ACRA.NULL_VALUE;
 
     /**
-     * Specifies the list of fields to be included in reports with their order.
+     * @return ReportField Array listing the fields to be included in the report.
      */
     ReportField[] customReportContent() default {};
 
     /**
      * Add your crash reports mailbox here if you want to send reports via email. This allows to get rid of the INTERNET
-     * permission. Reports content can be customized with {@link #reportFields()}. Default fields are:
+     * permission. Reports content can be customized with {@link #customReportContent()}}. Default fields are:
      * {@link ReportField#USER_COMMENT}, {@link ReportField#ANDROID_VERSION}, {@link ReportField#APP_VERSION_NAME} ,
      * {@link ReportField#BRAND}, {@link ReportField#PHONE_MODEL}, {@link ReportField#CUSTOM_DATA},
      * {@link ReportField#STACK_TRACE}
+     *
+     * @return email address to which to send reports.
      */
     String mailTo() default "";
 
@@ -237,11 +244,13 @@ public @interface ReportsCrashes {
      * opens the Notification dialog AND choose to send or discard the report. Until then, on application restart, ACRA
      * was issuing a new crash notification for previous reports pending for approval. This could be misunderstood by
      * the user with a new crash, resulting in bad appreciation of the application.
+     *
+     * @return true if ACRA should delete unapproved reports on application start.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
     /**
-     * Value in milliseconds for network operations timeout (default 3000ms).
+     * @return Value in milliseconds for network operations timeout (default 3000ms).
      */
     int socketTimeout() default 3000;
 
@@ -257,7 +266,7 @@ public @interface ReportsCrashes {
      * Add here your {@link SharedPreferences} identifier Strings if you use others than your application's default.
      * They will be added to the {@link ReportField#SHARED_PREFERENCES} field.
      * 
-     * @return
+     * @return String Array containing the names of the additional preferences.
      */
     String[] additionalSharedPreferences() default {};
 }

@@ -37,7 +37,8 @@ import android.util.Log;
  * 
  */
 public class GoogleFormSender implements ReportSender {
-    private Uri mFormUri = null;
+
+    private final Uri mFormUri;
 
     /**
      * Creates a new GoogleFormSender which will send data to a Form identified by its key.
@@ -49,7 +50,7 @@ public class GoogleFormSender implements ReportSender {
 
     @Override
     public void send(CrashReportData report) throws ReportSenderException {
-        Map<String, String> formParams = remap(report);
+        final Map<String, String> formParams = remap(report);
         // values observed in the GoogleDocs original html form
         formParams.put("pageNumber", "0");
         formParams.put("backupCache", "");
@@ -63,19 +64,19 @@ public class GoogleFormSender implements ReportSender {
         } catch (IOException e) {
             throw new ReportSenderException("Error while sending report to Google Form.", e);
         }
-
     }
 
     private Map<String, String> remap(Map<ReportField, String> report) {
-        Map<String, String> result = new HashMap<String, String>();
 
-        int inputId = 0;
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if(fields.length == 0) {
             fields = ACRA.DEFAULT_REPORT_FIELDS;
         }
-        for (Object originalKey : fields) {
-            switch ((ReportField) originalKey) {
+
+        int inputId = 0;
+        final Map<String, String> result = new HashMap<String, String>();
+        for (ReportField originalKey : fields) {
+            switch (originalKey) {
             case APP_VERSION_NAME:
                 result.put("entry." + inputId + ".single", "'" + report.get(originalKey));
                 break;
@@ -90,5 +91,4 @@ public class GoogleFormSender implements ReportSender {
         }
         return result;
     }
-
 }

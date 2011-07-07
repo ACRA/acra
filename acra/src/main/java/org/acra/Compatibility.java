@@ -37,7 +37,7 @@ public class Compatibility {
         int apiLevel;
         try {
             // This field has been added in Android 1.6
-            Field SDK_INT = Build.VERSION.class.getField("SDK_INT");
+            final Field SDK_INT = Build.VERSION.class.getField("SDK_INT");
             apiLevel = SDK_INT.getInt(null);
         } catch (SecurityException e) {
             apiLevel = Integer.parseInt(Build.VERSION.SDK);
@@ -54,16 +54,10 @@ public class Compatibility {
 
     /**
      * Retrieve the DropBoxManager service name using reflection API.
-     * 
-     * @throws NoSuchFieldException
-     * @throws SecurityException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     * 
      */
     static String getDropBoxServiceName() throws SecurityException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException {
-        Field serviceName = Context.class.getField("DROPBOX_SERVICE");
+        final Field serviceName = Context.class.getField("DROPBOX_SERVICE");
         if (serviceName != null) {
             return (String) serviceName.get(null);
         }

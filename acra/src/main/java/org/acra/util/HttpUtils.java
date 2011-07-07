@@ -21,7 +21,6 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 import org.acra.ACRA;
-import org.apache.http.client.ClientProtocolException;
 
 /**
  * Helper class to send POST data over HTTP/HTTPS.
@@ -31,36 +30,35 @@ public class HttpUtils {
 	/**
 	 * Send an HTTP(s) request with POST parameters.
 	 * 
-	 * @param parameters
-	 * @param url
-	 * @throws ClientProtocolException
-	 * @throws IOException
+	 * @param parameters    Map of parameters to post to a URL.
+	 * @param url           URL to which to post to.
+     * @param login         Username to supply as credentials in the post. May be null.
+     * @param password      Password to supply as credentials in the post. May be null.
+	 * @throws IOException if the data cannot be posted.
 	 */
-	public static void doPost(Map<?, ?> parameters, URL url, String login,
-			String password) throws ClientProtocolException, IOException {
+	public static void doPost(Map<?, ?> parameters, URL url, String login, String password) throws IOException {
 
 		// Construct data
-		StringBuilder dataBfr = new StringBuilder();
-		for (Object key : parameters.keySet()) {
+		final StringBuilder dataBfr = new StringBuilder();
+		for (final Object key : parameters.keySet()) {
 			if (dataBfr.length() != 0) {
 				dataBfr.append('&');
 			}
-			Object value = parameters.get(key);
-			if (value == null) {
-				value = "";
-			}
-			dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"))
-					.append('=')
-					.append(URLEncoder.encode(value.toString(), "UTF-8"));
+			final Object preliminaryValue = parameters.get(key);
+            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
+			dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"));
+            dataBfr.append('=');
+            dataBfr.append(URLEncoder.encode(value.toString(), "UTF-8"));
 		}
 
-		HttpRequest req = new HttpRequest(isNull(login) ? null : login,
-				isNull(password) ? null : password);
+        final String vettedLogin = isNull(login) ? null : login;
+        final String vettedPassword = isNull(password) ? null : password;
+
+		final HttpRequest req = new HttpRequest(vettedLogin, vettedPassword);
 		req.sendPost(url.toString(), dataBfr.toString());
 	}
 
 	private static boolean isNull(String aString) {
-		return aString == null || aString == ACRA.NULL_VALUE;
+		return aString == null || ACRA.NULL_VALUE.equals(aString);
 	}
-
 }

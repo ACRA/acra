@@ -47,10 +47,10 @@ import android.widget.Toast;
  */
 public class CrashReportDialog extends Activity {
 
-    private SharedPreferences prefs = null;
-    private EditText userComment = null;
-    private EditText userEmail = null;
-    String mReportFileName = null;
+    private SharedPreferences prefs;
+    private EditText userComment;
+    private EditText userEmail;
+    String mReportFileName;
 
     /*
      * (non-Javadoc)
@@ -68,40 +68,38 @@ public class CrashReportDialog extends Activity {
         }
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
 
-        LinearLayout root = new LinearLayout(this);
+        final LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
         root.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
-        ScrollView scroll = new ScrollView(this);
+        final ScrollView scroll = new ScrollView(this);
         root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
 
-        TextView text = new TextView(this);
+        final TextView text = new TextView(this);
 
         text.setText(getText(ACRA.getConfig().resDialogText()));
         scroll.addView(text, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 
         // Add an optional prompt for user comments
-        int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
+        final int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
         if (commentPromptId != 0) {
-            TextView label = new TextView(this);
+            final TextView label = new TextView(this);
             label.setText(getText(commentPromptId));
 
             label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
             root.addView(label, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
             userComment = new EditText(this);
-
             userComment.setLines(2);
-            // userComment.setText("User comment");
             root.addView(userComment,
                     new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         }
 
         // Add an optional user email field
-        int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
+        final int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
         if (emailPromptId != 0) {
-            TextView label = new TextView(this);
+            final TextView label = new TextView(this);
             label.setText(getText(emailPromptId));
 
             label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
@@ -118,20 +116,20 @@ public class CrashReportDialog extends Activity {
             root.addView(userEmail, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         }
 
-        LinearLayout buttons = new LinearLayout(this);
+        final LinearLayout buttons = new LinearLayout(this);
         buttons.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         buttons.setPadding(buttons.getPaddingLeft(), 10, buttons.getPaddingRight(), buttons.getPaddingBottom());
 
-        Button yes = new Button(this);
+        final Button yes = new Button(this);
         yes.setText(android.R.string.yes);
         yes.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                ErrorReporter err = ErrorReporter.getInstance();
+                final ErrorReporter err = ErrorReporter.getInstance();
 
                 // Start the report sending task
-                ReportsSenderWorker worker = err.new ReportsSenderWorker();
+                final ReportsSenderWorker worker = err.new ReportsSenderWorker();
                 worker.setApprovePendingReports();
 
                 // Retrieve user comment
@@ -141,8 +139,8 @@ public class CrashReportDialog extends Activity {
                 
                 // Store the user email
                 if (prefs != null && userEmail != null) {
-                    String usrEmail = userEmail.getText().toString();
-                    Editor prefEditor = prefs.edit();
+                    final String usrEmail = userEmail.getText().toString();
+                    final Editor prefEditor = prefs.edit();
                     prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
                     prefEditor.commit();
                     worker.setUserEmail(mReportFileName, usrEmail);
@@ -153,7 +151,7 @@ public class CrashReportDialog extends Activity {
 
 
                 // Optional Toast to thank the user
-                int toastId = ACRA.getConfig().resDialogOkToast();
+                final int toastId = ACRA.getConfig().resDialogOkToast();
                 if (toastId != 0) {
                     Toast.makeText(getApplicationContext(), toastId, Toast.LENGTH_LONG).show();
                 }
@@ -162,7 +160,7 @@ public class CrashReportDialog extends Activity {
 
         });
         buttons.addView(yes, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
-        Button no = new Button(this);
+        final Button no = new Button(this);
         no.setText(android.R.string.no);
         no.setOnClickListener(new View.OnClickListener() {
 
@@ -178,7 +176,7 @@ public class CrashReportDialog extends Activity {
 
         setContentView(root);
 
-        int resTitle = ACRA.getConfig().resDialogTitle();
+        final int resTitle = ACRA.getConfig().resDialogTitle();
         if (resTitle != 0) {
             setTitle(resTitle);
         }
@@ -192,8 +190,7 @@ public class CrashReportDialog extends Activity {
      * Disable the notification in the Status Bar.
      */
     protected void cancelNotification() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(ACRA.NOTIF_CRASH_ID);
     }
-
 }

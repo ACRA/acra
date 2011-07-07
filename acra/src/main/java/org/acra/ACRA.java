@@ -15,40 +15,7 @@
  */
 package org.acra;
 
-import static org.acra.ReportField.ANDROID_VERSION;
-import static org.acra.ReportField.APP_VERSION_CODE;
-import static org.acra.ReportField.APP_VERSION_NAME;
-import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
-import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.BUILD;
-import static org.acra.ReportField.CRASH_CONFIGURATION;
-import static org.acra.ReportField.CUSTOM_DATA;
-import static org.acra.ReportField.DEVICE_FEATURES;
-import static org.acra.ReportField.DEVICE_ID;
-import static org.acra.ReportField.DISPLAY;
-import static org.acra.ReportField.DROPBOX;
-import static org.acra.ReportField.DUMPSYS_MEMINFO;
-import static org.acra.ReportField.ENVIRONMENT;
-import static org.acra.ReportField.EVENTSLOG;
-import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.INITIAL_CONFIGURATION;
-import static org.acra.ReportField.INSTALLATION_ID;
-import static org.acra.ReportField.IS_SILENT;
-import static org.acra.ReportField.LOGCAT;
-import static org.acra.ReportField.PACKAGE_NAME;
-import static org.acra.ReportField.PHONE_MODEL;
-import static org.acra.ReportField.PRODUCT;
-import static org.acra.ReportField.RADIOLOG;
-import static org.acra.ReportField.REPORT_ID;
-import static org.acra.ReportField.SETTINGS_SECURE;
-import static org.acra.ReportField.SETTINGS_SYSTEM;
-import static org.acra.ReportField.SHARED_PREFERENCES;
-import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.USER_APP_START_DATE;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_CRASH_DATE;
-import static org.acra.ReportField.USER_EMAIL;
+import static org.acra.ReportField.*;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.EmailIntentSender;
@@ -79,49 +46,6 @@ public class ACRA {
     public static final boolean DEV_LOGGING = false; // Should be false for release.
     public static final String LOG_TAG = ACRA.class.getSimpleName();
 
-    /**
-     * Bundle key for the icon in the status bar notification.
-     */
-    static final String RES_NOTIF_ICON = "RES_NOTIF_ICON";
-    /**
-     * Bundle key for the ticker text in the status bar notification.
-     */
-    static final String RES_NOTIF_TICKER_TEXT = "RES_NOTIF_TICKER_TEXT";
-    /**
-     * Bundle key for the title in the status bar notification.
-     */
-    static final String RES_NOTIF_TITLE = "RES_NOTIF_TITLE";
-    /**
-     * Bundle key for the text in the status bar notification.
-     */
-    static final String RES_NOTIF_TEXT = "RES_NOTIF_TEXT";
-    /**
-     * Bundle key for the icon in the crash dialog.
-     */
-    static final String RES_DIALOG_ICON = "RES_DIALOG_ICON";
-    /**
-     * Bundle key for the title in the crash dialog.
-     */
-    static final String RES_DIALOG_TITLE = "RES_DIALOG_TITLE";
-    /**
-     * Bundle key for the text in the crash dialog.
-     */
-    static final String RES_DIALOG_TEXT = "RES_DIALOG_TEXT";
-    /**
-     * Bundle key for the user comment input label in the crash dialog. If not
-     * provided, disables the input field.
-     */
-    static final String RES_DIALOG_COMMENT_PROMPT = "RES_DIALOG_COMMENT_PROMPT";
-    /**
-     * Bundle key for the Toast text triggered when the user accepts to send a
-     * report in the crash dialog.
-     */
-    static final String RES_DIALOG_OK_TOAST = "RES_DIALOG_OK_TOAST";
-    /**
-     * Bundle key for the Toast text triggered when the application crashes if
-     * the notification+dialog mode is not used.
-     */
-    static final String RES_TOAST_TEXT = "RES_TOAST_TEXT";
     /**
      * This is the identifier (value = 666) use for the status bar notification
      * issued when crashes occur.
@@ -189,7 +113,7 @@ public class ACRA {
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
         if (mReportsCrashes != null) {
 
-            SharedPreferences prefs = getACRASharedPreferences();
+            final SharedPreferences prefs = getACRASharedPreferences();
             Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
             // We HAVE to keep a reference otherwise the listener could be
             // garbage collected:
@@ -199,13 +123,14 @@ public class ACRA {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                     if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
-                        Boolean disableAcra = false;
+                        boolean disableAcra = false;
                         try {
-                            disableAcra = sharedPreferences.getBoolean(PREF_DISABLE_ACRA,
-                                    !sharedPreferences.getBoolean(PREF_ENABLE_ACRA, true));
+                            final boolean enableAcra = sharedPreferences.getBoolean(PREF_ENABLE_ACRA, true);
+                            disableAcra = sharedPreferences.getBoolean(PREF_DISABLE_ACRA, !enableAcra);
                         } catch (Exception e) {
                             // In case of a ClassCastException
                         }
+
                         if (disableAcra) {
                             ErrorReporter.getInstance().disable();
                         } else {
@@ -216,7 +141,6 @@ public class ACRA {
                             }
                         }
                     }
-
                 }
             };
 
@@ -226,7 +150,8 @@ public class ACRA {
             // not found.
             boolean disableAcra = false;
             try {
-                disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, !prefs.getBoolean(PREF_ENABLE_ACRA, true));
+                final boolean enableAcra = prefs.getBoolean(PREF_ENABLE_ACRA, true);
+                disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, !enableAcra);
             } catch (Exception e) {
                 // In case of a ClassCastException
             }
@@ -251,14 +176,14 @@ public class ACRA {
     /**
      * Activate ACRA.
      * 
-     * @throws ACRAConfigurationException
+     * @throws ACRAConfigurationException if ACRA is not properly configured.
      */
     private static void initAcra() throws ACRAConfigurationException {
         checkCrashResources();
         Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
 
         // Initialize ErrorReporter with all required data
-        ErrorReporter errorReporter = ErrorReporter.getInstance();
+        final ErrorReporter errorReporter = ErrorReporter.getInstance();
         errorReporter.setReportingInteractionMode(mReportsCrashes.mode());
         errorReporter.setAppStartDate(mAppStartDate);
 
@@ -266,19 +191,16 @@ public class ACRA {
             Log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");
             errorReporter.addReportSender(new EmailIntentSender(mApplication));
         } else {
-            // Check for Internet permission, if not granted fallback to email
-            // report
-            PackageManager pm = mApplication.getPackageManager();
+            // Check for Internet permission, if not granted fallback to email report
+            final PackageManager pm = mApplication.getPackageManager();
             if (pm != null) {
                 if (pm.checkPermission(permission.INTERNET, mApplication.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
 
-                    // If formUri is set, instantiate a sender for a generic
-                    // HTTP POST form
+                    // If formUri is set, instantiate a sender for a generic HTTP POST form
                     if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
                         errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
                     } else {
-                        // The default behavior is to us the formKey for a
-                        // Google Docs Form.
+                        // The default behavior is to us the formKey for a Google Docs Form.
                         if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
                             errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
                         }
@@ -348,7 +270,7 @@ public class ACRA {
 
     /**
      * Default list of {@link ReportField}s to be sent in email reports {@see #mailTo()}. You can set your own list with
-     * {@link #reportFields()}.
+     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
      */
     public final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION,
             ReportField.APP_VERSION_NAME, ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA,
@@ -356,7 +278,7 @@ public class ACRA {
 
     /**
      * Default list of {@link ReportField}s to be sent in reports. You can set your own list with
-     * {@link ReportsCrashes#reportFields()}.
+     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
      */
     public static final ReportField[] DEFAULT_REPORT_FIELDS = { REPORT_ID, APP_VERSION_CODE, APP_VERSION_NAME, PACKAGE_NAME,
     FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE, AVAILABLE_MEM_SIZE,

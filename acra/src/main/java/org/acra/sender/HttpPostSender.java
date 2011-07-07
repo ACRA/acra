@@ -71,8 +71,9 @@ import android.util.Log;
  * 
  */
 public class HttpPostSender implements ReportSender {
-    private Uri mFormUri = null;
-    private Map<ReportField, String> mMapping = null;
+
+    private final Uri mFormUri;
+    private final Map<ReportField, String> mMapping;
 
     /**
      * <p>
@@ -96,24 +97,25 @@ public class HttpPostSender implements ReportSender {
     public void send(CrashReportData report) throws ReportSenderException {
 
         try {
-            URL reportUrl;
-            Map<String, String> finalReport = remap(report);
-            reportUrl = new URL(mFormUri.toString());
+            final Map<String, String> finalReport = remap(report);
+            final URL reportUrl = new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-            HttpUtils.doPost(finalReport, reportUrl, ACRA.getConfig().formUriBasicAuthLogin(), ACRA.getConfig()
-                    .formUriBasicAuthPassword());
+            HttpUtils.doPost(finalReport, reportUrl,
+                    ACRA.getConfig().formUriBasicAuthLogin(),
+                    ACRA.getConfig().formUriBasicAuthPassword());
         } catch (Exception e) {
             throw new ReportSenderException("Error while sending report to Http Post Form.", e);
         }
-
     }
 
     private Map<String, String> remap(Map<ReportField, String> report) {
-        Map<String, String> finalReport = new HashMap<String, String>(report.size());
+
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if(fields.length == 0) {
             fields = ACRA.DEFAULT_REPORT_FIELDS;
         }
+
+        final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), report.get(field));
@@ -123,5 +125,4 @@ public class HttpPostSender implements ReportSender {
         }
         return finalReport;
     }
-
 }

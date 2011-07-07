@@ -29,10 +29,10 @@ import java.util.LinkedList;
  */
 @SuppressWarnings("serial")
 public class BoundedLinkedList<E> extends LinkedList<E> {
-    private int maxSize = -1;
+
+    private final int maxSize;
 
     public BoundedLinkedList(int maxSize) {
-        super();
         this.maxSize = maxSize;
     }
 
@@ -69,8 +69,8 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
      */
     @Override
     public boolean addAll(Collection<? extends E> collection) {
-        int totalNeededSize = size() + collection.size();
-        int overhead = totalNeededSize - maxSize;
+        final int totalNeededSize = size() + collection.size();
+        final int overhead = totalNeededSize - maxSize;
         if (overhead > 0) {
             removeRange(0, overhead);
         }
@@ -121,13 +121,10 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
      */
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-
+        final StringBuilder result = new StringBuilder();
         for (E object : this) {
             result.append(object.toString());
         }
-
         return result.toString();
     }
-
 }

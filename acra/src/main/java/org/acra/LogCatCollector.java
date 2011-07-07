@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.acra.annotation.ReportsCrashes;
@@ -55,39 +56,46 @@ class LogCatCollector {
      *         report generation time and a bigger footprint on the device data
      *         plan consumption.
      */
-    protected static String collectLogCat(String bufferName) {
-        BoundedLinkedList<String> logcatBuf = null;
+    public static String collectLogCat(String bufferName) {
+
+        final List<String> commandLine = new ArrayList<String>();
+        commandLine.add("logcat");
+        if (bufferName != null) {
+            commandLine.add("-b");
+            commandLine.add(bufferName);
+        }
+
+        // "-t n" argument has been introduced in FroYo (API level 8). For
+        // devices with lower API level, we will have to emulate its job.
+        final int tailCount;
+        final List<String> logcatArgumentsList = new ArrayList<String>(Arrays.asList(ACRA.getConfig().logcatArguments()));
+
+        final int tailIndex = logcatArgumentsList.indexOf("-t");
+        if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
+            tailCount = Integer.parseInt(logcatArgumentsList.get(tailIndex + 1));
+            if (Compatibility.getAPILevel() < 8) {
+                logcatArgumentsList.remove(tailIndex + 1);
+                logcatArgumentsList.remove(tailIndex);
+                logcatArgumentsList.add("-d");
+            }
+        } else {
+            tailCount = -1;
+        }
+
+        final LinkedList<String> logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
+        commandLine.addAll(logcatArgumentsList);
+
         try {
-            ArrayList<String> commandLine = new ArrayList<String>();
-            commandLine.add("logcat");
-            if (bufferName != null) {
-                commandLine.add("-b");
-                commandLine.add(bufferName);
-            }
-            // "-t n" argument has been introduced in FroYo (API level 8). For
-            // devices with lower API level, we will have to emulate its job.
-            int tailCount = -1;
-            List<String> logcatArgumentsList = new ArrayList<String>(Arrays.asList(ACRA.getConfig().logcatArguments()));
-
-            int tailIndex = logcatArgumentsList.indexOf("-t");
-            if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
-                tailCount = Integer.parseInt(logcatArgumentsList.get(tailIndex + 1));
-                if (Compatibility.getAPILevel() < 8) {
-                    logcatArgumentsList.remove(tailIndex + 1);
-                    logcatArgumentsList.remove(tailIndex);
-                    logcatArgumentsList.add("-d");
-                }
-            }
-            logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
-            commandLine.addAll(logcatArgumentsList);
-
-            Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
+            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             Log.d(LOG_TAG, "Retrieving logcat output...");
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                logcatBuf.add(line+"\n");
+            while (true) {
+                final String line = bufferedReader.readLine();
+                if (line == null) {
+                    break;
+                }
+                logcatBuf.add(line + "\n");
             }
 
         } catch (IOException e) {

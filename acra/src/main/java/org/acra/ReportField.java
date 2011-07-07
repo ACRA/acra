@@ -170,5 +170,4 @@ public enum ReportField {
      * SharedPreferences contents
      */
     SHARED_PREFERENCES
-    ;
 }
