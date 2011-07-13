@@ -17,8 +17,10 @@
 package org.acra;
 
 import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ReportField.USER_COMMENT;
+import static org.acra.ReportField.USER_EMAIL;
 
-import org.acra.ErrorReporter.ReportsSenderWorker;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -61,7 +63,7 @@ public class CrashReportDialog extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mReportFileName = getIntent().getStringExtra(ErrorReporter.EXTRA_REPORT_FILE_NAME);
+        mReportFileName = getIntent().getStringExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME);
         Log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
         if (mReportFileName == null) {
             finish();
@@ -126,29 +128,34 @@ public class CrashReportDialog extends Activity {
 
             @Override
             public void onClick(View v) {
-                final ErrorReporter err = ErrorReporter.getInstance();
-
-                // Start the report sending task
-                final ReportsSenderWorker worker = err.new ReportsSenderWorker();
-                worker.setApprovePendingReports();
-
                 // Retrieve user comment
-                if(userComment != null) {
-                    worker.setUserComment(mReportFileName, userComment.getText().toString());
-                }
-                
+                final String comment = userComment != null ? userComment.getText().toString() : null;
+
                 // Store the user email
+                final String usrEmail;
                 if (prefs != null && userEmail != null) {
-                    final String usrEmail = userEmail.getText().toString();
+                    usrEmail = userEmail.getText().toString();
                     final Editor prefEditor = prefs.edit();
                     prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
                     prefEditor.commit();
-                    worker.setUserEmail(mReportFileName, usrEmail);
+                } else {
+                    usrEmail = "";
                 }
 
-                Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from CrashReportDialog");
-                worker.start();
+                final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
+                try {
+                    Log.d(LOG_TAG, "Add user comment to " + mReportFileName);
+                    final CrashReportData crashData = persister.load(mReportFileName);
+                    crashData.put(USER_COMMENT, comment);
+                    crashData.put(USER_EMAIL, usrEmail);
+                    persister.store(crashData, mReportFileName);
+                } catch (IOException e) {
+                    Log.w(LOG_TAG, "User comment not added: ", e);
+                }
 
+                // Start the report sending task
+                Log.v(ACRA.LOG_TAG, "About to start SenderWorker from CrashReportDialog");
+                ErrorReporter.getInstance().startSendingReports(false, true);
 
                 // Optional Toast to thank the user
                 final int toastId = ACRA.getConfig().resDialogOkToast();

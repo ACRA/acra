@@ -93,6 +93,8 @@ public class ACRA {
 
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
+
+    // NB don't convert to a local field because then it could be garbage collected and then we would have no PreferenceListener.
     private static OnSharedPreferenceChangeListener mPrefListener;
     private static Time mAppStartDate;
 
@@ -135,7 +137,7 @@ public class ACRA {
                             ErrorReporter.getInstance().disable();
                         } else {
                             try {
-                                initAcra();
+                                initAcra(); // TODO if PREF_DISABLE_ACRA or PREF_ENABLE_ACRA is changed the we might call #initAcra again which could be disastrous.
                             } catch (ACRAConfigurationException e) {
                                 Log.w(LOG_TAG, "Error : ", e);
                             }
