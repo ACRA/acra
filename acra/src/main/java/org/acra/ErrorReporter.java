@@ -106,8 +106,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private final List<ReportField> crashReportFields;
 
     // A reference to the system's previous default UncaughtExceptionHandler
-    // kept in order to execute the default exception handling after sending
-    // the report.
+    // kept in order to execute the default exception handling after sending the report.
     private Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
     // The Configuration obtained on application start.
@@ -116,6 +115,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // User interaction mode defined by the application developer.
     private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
 
+
+    /**
+     * Can only be constructed from within this class.
+     */
     private ErrorReporter() {
         final ReportsCrashes config = ACRA.getConfig();
         final ReportField[] customReportFields = config.customReportContent();
@@ -133,6 +136,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         crashReportFields = Arrays.asList(fieldsList);
+    }
+
+    /**
+     * Create or return the singleton instance.
+     *
+     * @return the current instance of ErrorReporter.
+     */
+    public static synchronized ErrorReporter getInstance() {
+        if (mInstanceSingleton == null) {
+            mInstanceSingleton = new ErrorReporter();
+        }
+        return mInstanceSingleton;
     }
 
     /**
@@ -192,32 +207,73 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Generates the string which is posted in the single custom data field in the GoogleDocs Form.
-     * 
-     * @return A string with a 'key = value' pair on each line.
+     * Set the wanted user interaction mode for sending reports.
+     *
+     * @param reportingInteractionMode  ReportingInteractionMode to use with this ErrorReporter.
      */
-    private String createCustomInfoString() {
-        final StringBuilder customInfo = new StringBuilder();
-        for (final String currentKey : mCustomParameters.keySet()) {
-            final String currentVal = mCustomParameters.get(currentKey);
-            customInfo.append(currentKey);
-            customInfo.append(" = ");
-            customInfo.append(currentVal);
-            customInfo.append("\n");
-        }
-        return customInfo.toString();
+    void setReportingInteractionMode(ReportingInteractionMode reportingInteractionMode) {
+        mReportingInteractionMode = reportingInteractionMode;
     }
 
     /**
-     * Create or return the singleton instance.
-     * 
-     * @return the current instance of ErrorReporter.
+     * Sets the application start date.
+     * This will be included in the reports, will be helpful compared to user_crash date.
+     *
+     * @param appStartDate  Time at which the application started.
      */
-    public static synchronized ErrorReporter getInstance() {
-        if (mInstanceSingleton == null) {
-            mInstanceSingleton = new ErrorReporter();
+    public void setAppStartDate(Time appStartDate) {
+        mCrashProperties.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
+    }
+
+    /**
+     * Add a {@link ReportSender} to the list of active {@link ReportSender}s.
+     *
+     * @param sender    The {@link ReportSender} to be added.
+     */
+    public void addReportSender(ReportSender sender) {
+        mReportSenders.add(sender);
+    }
+
+    /**
+     * Remove a specific instance of {@link ReportSender} from the list of active {@link ReportSender}s.
+     *
+     * @param sender    The {@link ReportSender} instance to be removed.
+     */
+    public void removeReportSender(ReportSender sender) {
+        mReportSenders.remove(sender);
+    }
+
+    /**
+     * Remove all {@link ReportSender} instances from a specific class.
+     *
+     * @param senderClass   ReportSender class whose instances should be removed.
+     */
+    public void removeReportSenders(Class<?> senderClass) {
+        if (ReportSender.class.isAssignableFrom(senderClass)) {
+            for (ReportSender sender : mReportSenders) {
+                if (senderClass.isInstance(sender)) {
+                    mReportSenders.remove(sender);
+                }
+            }
         }
-        return mInstanceSingleton;
+    }
+
+    /**
+     * Clears the list of active {@link ReportSender}s.
+     * You should then call {@link #addReportSender(ReportSender)} or ACRA will not send any report anymore.
+     */
+    public void removeAllReportSenders() {
+        mReportSenders.clear();
+    }
+
+    /**
+     * Removes all previously set {@link ReportSender}s and set the given one as the new {@link ReportSender}.
+     *
+     * @param sender    ReportSender to set as the sole sender for this ErrorReporter.
+     */
+    public void setReportSender(ReportSender sender) {
+        removeAllReportSenders();
+        addReportSender(sender);
     }
 
     /**
@@ -241,9 +297,166 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang .Thread, java.lang.Throwable)
+     */
+    public void uncaughtException(Thread t, Throwable e) {
+        Log.e(ACRA.LOG_TAG,
+                "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
+                        + ". Building report.");
+
+        // This is a real exception, clear the IS_SILENT field from any previous silent exception
+        mCrashProperties.remove(IS_SILENT);
+
+        // Generate and send crash report
+        final Thread worker = handleException(e, mReportingInteractionMode);
+
+        if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
+            try {
+                // Wait a bit to let the user read the toast
+                Thread.sleep(4000);
+            } catch (InterruptedException e1) {
+                Log.e(LOG_TAG, "Error : ", e1);
+            }
+        }
+
+        if (worker != null) {
+            while (worker.isAlive()) { // TODO replace with worker.join();
+                try {
+                    // Wait for the report sender to finish it's task before
+                    // killing the process
+                    Thread.sleep(100);
+                } catch (InterruptedException e1) {
+                    Log.e(LOG_TAG, "Error : ", e1);
+                }
+            }
+        }
+
+        if (mReportingInteractionMode == ReportingInteractionMode.SILENT
+                || (mReportingInteractionMode == ReportingInteractionMode.TOAST && ACRA.getConfig()
+                        .forceCloseDialogAfterToast())) {
+            // If using silent mode, let the system default handler do it's job
+            // and display the force close dialog.
+            mDfltExceptionHandler.uncaughtException(t, e);
+        } else {
+            // If ACRA handles user notifications with a Toast or a Notification
+            // the Force Close dialog is one more notification to the user...
+            // We choose to close the process ourselves using the same actions.
+            try {
+                final PackageManager pm = mContext.getPackageManager();
+                final CharSequence appName = pm.getApplicationInfo(mContext.getPackageName(), 0).loadLabel(mContext.getPackageManager());
+                Log.e(LOG_TAG, appName + " fatal error : " + e.getMessage(), e);
+            } catch (NameNotFoundException e2) {
+                Log.e(LOG_TAG, "Error : ", e2);
+            } finally {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(10);
+            }
+        }
+    }
+
+    public SendWorker startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
+        final SendWorker worker = new SendWorker(mContext, mReportSenders, onlySendSilentReports, approveReportsFirst);
+        worker.start();
+        return worker;
+    }
+
+    /**
+     * Send a report for this {@link Throwable} silently (forces the use of {@link ReportingInteractionMode#SILENT} for
+     * this report, whatever is the mode set for the application. Very useful for tracking difficult defects.
+     *
+     * @param e The {@link Throwable} to be reported.
+     *          If null the report will contain a new Exception("Report requested by developer").
+     * @return The Thread which has been created to send the report or null if ACRA is disabled.
+     */
+    public Thread handleSilentException(Throwable e) {
+        // Mark this report as silent.
+        if (enabled) {
+            mCrashProperties.put(IS_SILENT, "true");
+            return handleException(e, ReportingInteractionMode.SILENT);
+        } else {
+            Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
+            return null;
+        }
+    }
+
+    /**
+     * Disable ACRA : sets this Thread's {@link UncaughtExceptionHandler} back to the system default.
+     */
+    public void disable() {
+        if (mContext != null) {
+            Log.d(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName());
+        } else {
+            Log.d(ACRA.LOG_TAG, "ACRA is disabled.");
+        }
+        if (mDfltExceptionHandler != null) {
+            Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
+            enabled = false;
+        }
+    }
+
+    /**
+     * This method looks for pending reports and does the action required depending on the interaction mode set.
+     */
+    public void checkReportsOnApplicationStart() {
+        final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
+        final String[] filesList = reportFinder.getCrashReportFiles();
+        if (filesList != null && filesList.length > 0) {
+            final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
+            // Immediately send reports for SILENT and TOAST modes.
+            // Immediately send reports in NOTIFICATION mode only if they are
+            // all silent or approved.
+            if (mReportingInteractionMode == ReportingInteractionMode.SILENT
+                    || mReportingInteractionMode == ReportingInteractionMode.TOAST
+                    || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentOrApprovedReports)) {
+
+                if (mReportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentOrApprovedReports) {
+                    // Display the Toast in TOAST mode only if there are
+                    // non-silent reports.
+                    Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
+                }
+
+                Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
+                startSendingReports(false, false);
+            } else if (ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
+                // NOTIFICATION mode, and there are unapproved reports to send
+                // (latest notification has been ignored: neither accepted nor
+                // refused). The application developer has decided that these
+                // reports should not be renotified ==> destroy them.
+                deletePendingNonApprovedReports();
+            } else {
+                // NOTIFICATION mode, and there are unapproved reports to send
+                // (latest notification has been ignored: neither accepted nor
+                // refused).
+                // Display the notification.
+                // The user comment will be associated to the latest report
+                notifySendReport(getLatestNonSilentReport(filesList));
+            }
+        }
+    }
+
+    /**
+     * Delete all report files stored.
+     */
+    public void deletePendingReports() {
+        deletePendingReports(true, true, 0);
+    }
+
+    /**
+     * Delete all pending non approved reports.
+     */
+    private void deletePendingNonApprovedReports() {
+        // In NOTIFICATION mode, we have to keep the latest report which could
+        // be needed for an existing not yet discarded notification.
+        final int nbReportsToKeep = mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION ? 1 : 0;
+        deletePendingReports(false, true, nbReportsToKeep);
+    }
+
     /**
      * Collects crash data.
-     * 
+     *
      * @param context   The application context.
      */
     private void retrieveCrashData(Context context) {
@@ -417,64 +630,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang .Thread, java.lang.Throwable)
+    /**
+     * Generates the string which is posted in the single custom data field in the GoogleDocs Form.
+     *
+     * @return A string with a 'key = value' pair on each line.
      */
-    public void uncaughtException(Thread t, Throwable e) {
-        Log.e(ACRA.LOG_TAG,
-                "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
-                        + ". Building report.");
-
-        // This is a real exception, clear the IS_SILENT field from any previous silent exception
-        mCrashProperties.remove(IS_SILENT);
-
-        // Generate and send crash report
-        final Thread worker = handleException(e, mReportingInteractionMode);
-
-        if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
-            try {
-                // Wait a bit to let the user read the toast
-                Thread.sleep(4000);
-            } catch (InterruptedException e1) {
-                Log.e(LOG_TAG, "Error : ", e1);
-            }
+    private String createCustomInfoString() {
+        final StringBuilder customInfo = new StringBuilder();
+        for (final String currentKey : mCustomParameters.keySet()) {
+            final String currentVal = mCustomParameters.get(currentKey);
+            customInfo.append(currentKey);
+            customInfo.append(" = ");
+            customInfo.append(currentVal);
+            customInfo.append("\n");
         }
-
-        if (worker != null) {
-            while (worker.isAlive()) { // TODO replace with worker.join();
-                try {
-                    // Wait for the report sender to finish it's task before
-                    // killing the process
-                    Thread.sleep(100);
-                } catch (InterruptedException e1) {
-                    Log.e(LOG_TAG, "Error : ", e1);
-                }
-            }
-        }
-
-        if (mReportingInteractionMode == ReportingInteractionMode.SILENT
-                || (mReportingInteractionMode == ReportingInteractionMode.TOAST && ACRA.getConfig()
-                        .forceCloseDialogAfterToast())) {
-            // If using silent mode, let the system default handler do it's job
-            // and display the force close dialog.
-            mDfltExceptionHandler.uncaughtException(t, e);
-        } else {
-            // If ACRA handles user notifications with a Toast or a Notification
-            // the Force Close dialog is one more notification to the user...
-            // We choose to close the process ourselves using the same actions.
-            try {
-                final PackageManager pm = mContext.getPackageManager();
-                final CharSequence appName = pm.getApplicationInfo(mContext.getPackageName(), 0).loadLabel(mContext.getPackageManager());
-                Log.e(LOG_TAG, appName + " fatal error : " + e.getMessage(), e);
-            } catch (NameNotFoundException e2) {
-                Log.e(LOG_TAG, "Error : ", e2);
-            } finally {
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(10);
-            }
-        }
+        return customInfo.toString();
     }
 
     /**
@@ -567,38 +737,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         return null;
     }
 
-    public SendWorker startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
-        final SendWorker worker = new SendWorker(mContext, mReportSenders, onlySendSilentReports, approveReportsFirst);
-        worker.start();
-        return worker;
-    }
-
-    /**
-     * Send a report for this {@link Throwable} silently (forces the use of {@link ReportingInteractionMode#SILENT} for
-     * this report, whatever is the mode set for the application. Very useful for tracking difficult defects.
-     * 
-     * @param e The {@link Throwable} to be reported.
-     *          If null the report will contain a new Exception("Report requested by developer").
-     * @return The Thread which has been created to send the report or null if ACRA is disabled.
-     */
-    public Thread handleSilentException(Throwable e) {
-        // Mark this report as silent.
-        if (enabled) {
-            mCrashProperties.put(IS_SILENT, "true");
-            return handleException(e, ReportingInteractionMode.SILENT);
-        } else {
-            Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
-            return null;
-        }
-    }
-
     /**
      * Send a status bar notification. The action triggered when the notification is selected is to start the
      * {@link CrashReportDialog} Activity.
      *
      * @param reportFileName    Name of the report file to send.
      */
-    void notifySendReport(String reportFileName) {
+    private void notifySendReport(String reportFileName) {
         // This notification can't be set to AUTO_CANCEL because after a crash,
         // clicking on it restarts the application and this triggers a check
         // for pending reports which issues the notification back.
@@ -659,56 +804,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
-
-    /**
-     * Set the wanted user interaction mode for sending reports.
-     * 
-     * @param reportingInteractionMode  ReportingInteractionMode to use with this ErrorReporter.
-     */
-    void setReportingInteractionMode(ReportingInteractionMode reportingInteractionMode) {
-        mReportingInteractionMode = reportingInteractionMode;
-    }
-
-    /**
-     * This method looks for pending reports and does the action required depending on the interaction mode set.
-     */
-    public void checkReportsOnApplicationStart() {
-        final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
-        final String[] filesList = reportFinder.getCrashReportFiles();
-        if (filesList != null && filesList.length > 0) {
-            final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
-            // Immediately send reports for SILENT and TOAST modes.
-            // Immediately send reports in NOTIFICATION mode only if they are
-            // all silent or approved.
-            if (mReportingInteractionMode == ReportingInteractionMode.SILENT
-                    || mReportingInteractionMode == ReportingInteractionMode.TOAST
-                    || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentOrApprovedReports)) {
-
-                if (mReportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentOrApprovedReports) {
-                    // Display the Toast in TOAST mode only if there are
-                    // non-silent reports.
-                    Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
-                }
-
-                Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
-                startSendingReports(false, false);
-            } else if (ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
-                // NOTIFICATION mode, and there are unapproved reports to send
-                // (latest notification has been ignored: neither accepted nor
-                // refused). The application developer has decided that these
-                // reports should not be renotified ==> destroy them.
-                deletePendingNonApprovedReports();
-            } else {
-                // NOTIFICATION mode, and there are unapproved reports to send
-                // (latest notification has been ignored: neither accepted nor
-                // refused).
-                // Display the notification.
-                // The user comment will be associated to the latest report
-                notifySendReport(getLatestNonSilentReport(filesList));
-            }
-        }
-    }
-
     /**
      * Retrieve the most recently created "non silent" report from an array of report file names. A non silent is any
      * report which has not been created with {@link #handleSilentException(Throwable)}.
@@ -729,30 +824,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         } else {
             return null;
         }
-    }
-
-    /**
-     * Delete all report files stored.
-     */
-    public void deletePendingReports() {
-        deletePendingReports(true, true, 0);
-    }
-
-    /**
-     * Delete all pending SILENT reports. These are the reports created with {@link #handleSilentException(Throwable)}.
-     */
-    public void deletePendingSilentReports() {
-        deletePendingReports(true, false, 0);
-    }
-
-    /**
-     * Delete all pending non approved reports.
-     */
-    public void deletePendingNonApprovedReports() {
-        // In NOTIFICATION mode, we have to keep the latest report which could
-        // be needed for an existing not yet discarded notification.
-        final int nbReportsToKeep = mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION ? 1 : 0;
-        deletePendingReports(false, true, nbReportsToKeep);
     }
 
     /**
@@ -782,21 +853,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Disable ACRA : sets this Thread's {@link UncaughtExceptionHandler} back to the system default.
-     */
-    public void disable() {
-        if (mContext != null) {
-            Log.d(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName());
-        } else {
-            Log.d(ACRA.LOG_TAG, "ACRA is disabled.");
-        }
-        if (mDfltExceptionHandler != null) {
-            Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
-            enabled = false;
-        }
-    }
-
-    /**
      * Checks if an array of reports files names contains only silent or approved reports.
      * 
      * @param reportFileNames   Array of report locations to check.
@@ -809,66 +865,5 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
         }
         return true;
-    }
-
-    /**
-     * Add a {@link ReportSender} to the list of active {@link ReportSender}s.
-     * 
-     * @param sender    The {@link ReportSender} to be added.
-     */
-    public void addReportSender(ReportSender sender) {
-        mReportSenders.add(sender);
-    }
-
-    /**
-     * Remove a specific instance of {@link ReportSender} from the list of active {@link ReportSender}s.
-     * 
-     * @param sender    The {@link ReportSender} instance to be removed.
-     */
-    public void removeReportSender(ReportSender sender) {
-        mReportSenders.remove(sender);
-    }
-
-    /**
-     * Remove all {@link ReportSender} instances from a specific class.
-     * 
-     * @param senderClass   ReportSender class whose instances should be removed.
-     */
-    public void removeReportSenders(Class<?> senderClass) {
-        if (ReportSender.class.isAssignableFrom(senderClass)) {
-            for (ReportSender sender : mReportSenders) {
-                if (senderClass.isInstance(sender)) {
-                    mReportSenders.remove(sender);
-                }
-            }
-        }
-    }
-
-    /**
-     * Clears the list of active {@link ReportSender}s.
-     * You should then call {@link #addReportSender(ReportSender)} or ACRA will not send any report anymore.
-     */
-    public void removeAllReportSenders() {
-        mReportSenders.clear();
-    }
-
-    /**
-     * Removes all previously set {@link ReportSender}s and set the given one as the new {@link ReportSender}.
-     * 
-     * @param sender    ReportSender to set as the sole sender for this ErrorReporter.
-     */
-    public void setReportSender(ReportSender sender) {
-        removeAllReportSenders();
-        addReportSender(sender);
-    }
-
-    /**
-     * Sets the application start date.
-     * This will be included in the reports, will be helpful compared to user_crash date.
-     * 
-     * @param appStartDate  Time at which the application started.
-     */
-    public void setAppStartDate(Time appStartDate) {
-        mCrashProperties.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
     }
 }
