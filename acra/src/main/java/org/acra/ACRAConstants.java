@@ -28,4 +28,9 @@ final class ACRAConstants {
     // latest generated report file in order to be able to associate the user
     // comment.
     static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
+    /**
+     * This is the identifier (value = 666) use for the status bar notification
+     * issued when crashes occur.
+     */
+    static final int NOTIF_CRASH_ID = 666;
 }

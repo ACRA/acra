@@ -77,16 +77,10 @@ import android.widget.Toast;
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
-    // TODO Consider making the ACRA class the owner of the ErrorReporter singleton as then we can tightly control its configuration.
-    // Accessible via ACRA#getErrorReporter().
-    // Our singleton instance.
-    private static ErrorReporter mInstanceSingleton;
-
+    private boolean enabled = false;
 
     // The application context
-    private Context mContext;
-
-    private boolean enabled = false;
+    private final Context mContext;
 
     // TODO Separate out global crash report data from instance data. Don't want to pollute the data of 2 instances.
     // This is where we collect crash data
@@ -107,7 +101,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending the report.
-    private Thread.UncaughtExceptionHandler mDfltExceptionHandler;
+    private final Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
     // The Configuration obtained on application start.
     private String mInitialConfiguration;
@@ -118,8 +112,18 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * Can only be constructed from within this class.
+     *
+     * @param context   Context for the application in which ACRA is running.
+     * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      */
-    private ErrorReporter() {
+    ErrorReporter(Context context, boolean enabled) {
+
+        this.enabled = enabled;
+        this.mContext = context;
+
+        // Store the initial Configuration state.
+        this.mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
+
         final ReportsCrashes config = ACRA.getConfig();
         final ReportField[] customReportFields = config.customReportContent();
 
@@ -134,6 +138,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.d(LOG_TAG, "Using default Mail Report Fields");
             fieldsList = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
         }
+        crashReportFields = Arrays.asList(fieldsList);
 
         // Sets the application start date.
         // This will be included in the reports, will be helpful compared to user_crash date.
@@ -144,19 +149,23 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // The way in which UncaughtExceptions are to be presented to the user.
         mReportingInteractionMode = config.mode();
 
-        crashReportFields = Arrays.asList(fieldsList);
+        // If mDfltExceptionHandler is not null, initialization is already done.
+        // Don't do it twice to avoid losing the original handler.
+        mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
+
+        // Check for pending reports
+        checkReportsOnApplicationStart();
     }
 
+
     /**
-     * Create or return the singleton instance.
-     *
      * @return the current instance of ErrorReporter.
+     * @throws IllegalStateException if {@link ACRA#init(android.app.Application)} has not yet been called.
+     * @deprecated since 4.3.0 Use {@link org.acra.ACRA#getErrorReporter()} instead.
      */
     public static synchronized ErrorReporter getInstance() {
-        if (mInstanceSingleton == null) {
-            mInstanceSingleton = new ErrorReporter();
-        }
-        return mInstanceSingleton;
+        return ACRA.getErrorReporter();
     }
 
     /**
@@ -266,33 +275,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         addReportSender(sender);
     }
 
-    /**
-     * <p>
-     * This is where the ErrorReporter replaces the default {@link UncaughtExceptionHandler}.
-     * </p>
-     * 
-     * @param context   The android application context.
-     * @param enabled   Whether this ErrorReporter should catch Exception and forward them as crash reports.
-     */
-    void init(Context context, boolean enabled) {
-
-        this.enabled = enabled;
-        this.mContext = context;
-
-        // Store the initial Configuration state.
-        this.mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
-
-        // If mDfltExceptionHandler is not null, initialization is already done.
-        // Don't do it twice to avoid losing the original handler.
-        if (mDfltExceptionHandler == null) {
-            mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-            Thread.setDefaultUncaughtExceptionHandler(this);
-        }
-
-        // Check for pending reports
-        checkReportsOnApplicationStart();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -395,11 +377,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void setEnabled(boolean enabled) {
         Log.i(ACRA.LOG_TAG, "ACRA is " + (enabled ? "enabled" : "disabled") + " for " + mContext.getPackageName());
         this.enabled = enabled;
-
-        // If we have just been enabled check for any reports needing to be sent.
-        if (this.enabled) {
-            checkReportsOnApplicationStart();
-        }
     }
 
     /**
@@ -777,7 +754,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         // Send new notification
         notificationManager.cancelAll();
-        notificationManager.notify(ACRA.NOTIF_CRASH_ID, notification);
+        notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification);
     }
 
     private String getReportFileName(CrashReportData crashData) {

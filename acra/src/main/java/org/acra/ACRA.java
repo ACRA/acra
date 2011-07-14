@@ -46,12 +46,6 @@ public class ACRA {
     public static final String LOG_TAG = ACRA.class.getSimpleName();
 
     /**
-     * This is the identifier (value = 666) use for the status bar notification
-     * issued when crashes occur.
-     */
-    static final int NOTIF_CRASH_ID = 666;
-
-    /**
      * The key of the application default SharedPreference where you can put a
      * 'true' Boolean value to disable ACRA.
      */
@@ -93,6 +87,9 @@ public class ACRA {
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
 
+    // Accessible via ACRA#getErrorReporter().
+    private static ErrorReporter errorReporterSingleton;
+
     // NB don't convert to a local field because then it could be garbage collected and then we would have no PreferenceListener.
     private static OnSharedPreferenceChangeListener mPrefListener;
 
@@ -103,71 +100,74 @@ public class ACRA {
      * method.
      * </p>
      * 
-     * @param app
-     *            Your Application class.
+     * @param app   Your Application class.
+     * @throws IllegalStateException if it is called more than once.
      */
     public static void init(Application app) {
+
+        if (mApplication != null) {
+            throw new IllegalStateException("ACRA#init called more than once");
+        }
+
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
-        if (mReportsCrashes != null) {
-
-            final SharedPreferences prefs = getACRASharedPreferences();
-            Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
-
-            // We HAVE to keep a reference otherwise the listener could be garbage collected:
-            // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
-            mPrefListener = new OnSharedPreferenceChangeListener() {
-
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
-                        boolean disableAcra = false;
-                        try {
-                            final boolean enableAcra = sharedPreferences.getBoolean(PREF_ENABLE_ACRA, true);
-                            disableAcra = sharedPreferences.getBoolean(PREF_DISABLE_ACRA, !enableAcra);
-                        } catch (Exception e) {
-                            // In case of a ClassCastException
-                        }
-
-                        ErrorReporter.getInstance().setEnabled(!disableAcra);
-                    }
-                }
-            };
-
-            // If the application default shared preferences contains true for
-            // the key "acra.disable", do not activate ACRA. Also checks the
-            // alternative opposite setting "acra.enable" if "acra.disable" is
-            // not found.
-            boolean disableAcra = false;
-            try {
-                final boolean enableAcra = prefs.getBoolean(PREF_ENABLE_ACRA, true);
-                disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, !enableAcra);
-            } catch (Exception e) {
-                // In case of a ClassCastException
-            }
-
-            try {
-                checkCrashResources();
-
-                Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
-
-                // Initialize ErrorReporter with all required data
-                final ErrorReporter errorReporter = ErrorReporter.getInstance();
-
-                // Append ReportSenders.
-                addReportSenders(errorReporter);
-
-                errorReporter.init(mApplication.getApplicationContext(), !disableAcra);
-            } catch (ACRAConfigurationException e) {
-                Log.w(LOG_TAG, "Error : ", e);
-            }
-
-            // This listener has to be set after initAcra is called to avoid a
-            // NPE in ErrorReporter.disable() because
-            // the context could be null at this moment.
-            prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+        if (mReportsCrashes == null) {
+            Log.e(LOG_TAG, "ACRA#init called but no ReportsCrashes annotation on Application " + mApplication.getPackageName());
+            return;
         }
+
+        final SharedPreferences prefs = getACRASharedPreferences();
+        Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
+
+        try {
+            checkCrashResources();
+
+            Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+
+            // Initialize ErrorReporter with all required data
+            final boolean enableAcra = !shouldDisableACRA(prefs);
+            final ErrorReporter errorReporter = new ErrorReporter(mApplication.getApplicationContext(), enableAcra);
+
+            // Append ReportSenders.
+            addReportSenders(errorReporter);
+
+            errorReporterSingleton = errorReporter;
+
+        } catch (ACRAConfigurationException e) {
+            Log.w(LOG_TAG, "Error : ", e);
+        }
+
+        // We HAVE to keep a reference otherwise the listener could be garbage collected:
+        // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
+        mPrefListener = new OnSharedPreferenceChangeListener() {
+
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
+                    final boolean enableAcra = !shouldDisableACRA(sharedPreferences);
+                    getErrorReporter().setEnabled(enableAcra);
+                }
+            }
+        };
+
+        // This listener has to be set after initAcra is called to avoid a
+        // NPE in ErrorReporter.disable() because
+        // the context could be null at this moment.
+        prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
     }
+
+    /**
+     * @return the current instance of ErrorReporter.
+     * @throws IllegalStateException if {@link ACRA#init(android.app.Application)} has not yet been called.
+     */
+    public static ErrorReporter getErrorReporter() {
+        if (errorReporterSingleton == null) {
+            throw  new IllegalStateException("Cannot access ErrorReporter before ACRA#init");
+        }
+        return errorReporterSingleton;
+    }
+
+
 
     /**
      * Adds any relevant ReportSenders to the ErrorReporter.
@@ -209,6 +209,25 @@ public class ACRA {
         if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
             errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
         }
+    }
+
+    /**
+     * Check if the application default shared preferences contains true for
+     * the key "acra.disable", do not activate ACRA. Also checks the
+     * alternative opposite setting "acra.enable" if "acra.disable" is not found.
+     *
+     * @param prefs SharedPreferences to check to see whether ACRA should be disabled.
+     * @return true if prefs indicate that ACRA should be disabled.
+     */
+    private static boolean shouldDisableACRA(SharedPreferences prefs) {
+        boolean disableAcra = false;
+        try {
+            final boolean enableAcra = prefs.getBoolean(PREF_ENABLE_ACRA, true);
+            disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, !enableAcra);
+        } catch (Exception e) {
+            // In case of a ClassCastException
+        }
+        return disableAcra;
     }
 
     private static void checkCrashResources() throws ACRAConfigurationException {

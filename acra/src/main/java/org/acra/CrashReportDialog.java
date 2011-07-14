@@ -155,7 +155,7 @@ public class CrashReportDialog extends Activity {
 
                 // Start the report sending task
                 Log.v(ACRA.LOG_TAG, "About to start SenderWorker from CrashReportDialog");
-                ErrorReporter.getInstance().startSendingReports(false, true);
+                ACRA.getErrorReporter().startSendingReports(false, true);
 
                 // Optional Toast to thank the user
                 final int toastId = ACRA.getConfig().resDialogOkToast();
@@ -174,7 +174,7 @@ public class CrashReportDialog extends Activity {
             @Override
             public void onClick(View v) {
                 // TODO Shouldn't this just delete the report that has been refused by the user, otherwise we might delete other unsent reports.
-                ErrorReporter.getInstance().deletePendingReports();
+                ACRA.getErrorReporter().deletePendingReports();
                 finish();
             }
 
@@ -199,6 +199,6 @@ public class CrashReportDialog extends Activity {
      */
     protected void cancelNotification() {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(ACRA.NOTIF_CRASH_ID);
+        notificationManager.cancel(ACRAConstants.NOTIF_CRASH_ID);
     }
 }
