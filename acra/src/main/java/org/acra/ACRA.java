@@ -28,7 +28,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
-import android.text.format.Time;
 import android.util.Log;
 
 /**
@@ -96,7 +95,6 @@ public class ACRA {
 
     // NB don't convert to a local field because then it could be garbage collected and then we would have no PreferenceListener.
     private static OnSharedPreferenceChangeListener mPrefListener;
-    private static Time mAppStartDate;
 
     /**
      * <p>
@@ -109,16 +107,14 @@ public class ACRA {
      *            Your Application class.
      */
     public static void init(Application app) {
-        mAppStartDate = new Time();
-        mAppStartDate.setToNow();
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
         if (mReportsCrashes != null) {
 
             final SharedPreferences prefs = getACRASharedPreferences();
             Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
-            // We HAVE to keep a reference otherwise the listener could be
-            // garbage collected:
+
+            // We HAVE to keep a reference otherwise the listener could be garbage collected:
             // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
             mPrefListener = new OnSharedPreferenceChangeListener() {
 
@@ -133,15 +129,7 @@ public class ACRA {
                             // In case of a ClassCastException
                         }
 
-                        if (disableAcra) {
-                            ErrorReporter.getInstance().disable();
-                        } else {
-                            try {
-                                initAcra(); // TODO if PREF_DISABLE_ACRA or PREF_ENABLE_ACRA is changed the we might call #initAcra again which could be disastrous.
-                            } catch (ACRAConfigurationException e) {
-                                Log.w(LOG_TAG, "Error : ", e);
-                            }
-                        }
+                        ErrorReporter.getInstance().setEnabled(!disableAcra);
                     }
                 }
             };
@@ -158,14 +146,20 @@ public class ACRA {
                 // In case of a ClassCastException
             }
 
-            if (disableAcra) {
-                Log.d(LOG_TAG, "ACRA is disabled for " + mApplication.getPackageName() + ".");
-            } else {
-                try {
-                    initAcra();
-                } catch (ACRAConfigurationException e) {
-                    Log.w(LOG_TAG, "Error : ", e);
-                }
+            try {
+                checkCrashResources();
+
+                Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+
+                // Initialize ErrorReporter with all required data
+                final ErrorReporter errorReporter = ErrorReporter.getInstance();
+
+                // Append ReportSenders.
+                addReportSenders(errorReporter);
+
+                errorReporter.init(mApplication.getApplicationContext(), !disableAcra);
+            } catch (ACRAConfigurationException e) {
+                Log.w(LOG_TAG, "Error : ", e);
             }
 
             // This listener has to be set after initAcra is called to avoid a
@@ -176,55 +170,48 @@ public class ACRA {
     }
 
     /**
-     * Activate ACRA.
-     * 
-     * @throws ACRAConfigurationException if ACRA is not properly configured.
+     * Adds any relevant ReportSenders to the ErrorReporter.
+     *
+     * @param errorReporter ErrorReporter to which to add appropriate ReportSenders.
      */
-    private static void initAcra() throws ACRAConfigurationException {
-        checkCrashResources();
-        Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+    private static void addReportSenders(ErrorReporter errorReporter) {
 
-        // Initialize ErrorReporter with all required data
-        final ErrorReporter errorReporter = ErrorReporter.getInstance();
-        errorReporter.setReportingInteractionMode(mReportsCrashes.mode());
-        errorReporter.setAppStartDate(mAppStartDate);
-
+        // Try to send by mail.
         if (!"".equals(mReportsCrashes.mailTo())) {
             Log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");
             errorReporter.addReportSender(new EmailIntentSender(mApplication));
-        } else {
-            // Check for Internet permission, if not granted fallback to email report
-            final PackageManager pm = mApplication.getPackageManager();
-            if (pm != null) {
-                if (pm.checkPermission(permission.INTERNET, mApplication.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-
-                    // If formUri is set, instantiate a sender for a generic HTTP POST form
-                    if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
-                        errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
-                    } else {
-                        // The default behavior is to us the formKey for a Google Docs Form.
-                        if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
-                            errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
-                        }
-                    }
-                } else {
-                    Log.e(LOG_TAG,
-                            mApplication.getPackageName()
-                                    + " should be granted permission "
-                                    + permission.INTERNET
-                                    + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
-                }
-            }
+            return;
         }
 
-        // Activate the ErrorReporter
-        errorReporter.init(mApplication.getApplicationContext());
+        // TODO if we REALLY want the behaviour below then we need to change the logic.
+        // Check for Internet permission, if not granted fallback to email report
+        final PackageManager pm = mApplication.getPackageManager();
+        if (pm == null) {
+            return;
+        }
 
-        // Check for pending reports
-        errorReporter.checkReportsOnApplicationStart();
+        if (pm.checkPermission(permission.INTERNET, mApplication.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(LOG_TAG,
+                    mApplication.getPackageName()
+                            + " should be granted permission "
+                            + permission.INTERNET
+                            + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
+            return;
+        }
+
+        // If formUri is set, instantiate a sender for a generic HTTP POST form
+        if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
+            errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
+            return;
+        }
+
+        // The default behavior is to us the formKey for a Google Docs Form.
+        if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
+            errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
+        }
     }
 
-    static void checkCrashResources() throws ACRAConfigurationException {
+    private static void checkCrashResources() throws ACRAConfigurationException {
         switch (mReportsCrashes.mode()) {
         case TOAST:
             if (mReportsCrashes.resToastText() == 0) {

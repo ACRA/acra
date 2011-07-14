@@ -173,6 +173,7 @@ public class CrashReportDialog extends Activity {
 
             @Override
             public void onClick(View v) {
+                // TODO Shouldn't this just delete the report that has been refused by the user, otherwise we might delete other unsent reports.
                 ErrorReporter.getInstance().deletePendingReports();
                 finish();
             }

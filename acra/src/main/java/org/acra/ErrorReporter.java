@@ -77,20 +77,20 @@ import android.widget.Toast;
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
+    // TODO Consider making the ACRA class the owner of the ErrorReporter singleton as then we can tightly control its configuration.
+    // Accessible via ACRA#getErrorReporter().
     // Our singleton instance.
     private static ErrorReporter mInstanceSingleton;
-
-
-    // TODO Separate out global crash report data from instance data. Don't want to pollute the data of 2 instances.
-    // This is where we collect crash data
-    private static CrashReportData mCrashProperties = new CrashReportData();
-
 
 
     // The application context
     private Context mContext;
 
     private boolean enabled = false;
+
+    // TODO Separate out global crash report data from instance data. Don't want to pollute the data of 2 instances.
+    // This is where we collect crash data
+    private final CrashReportData mCrashProperties = new CrashReportData();
 
     /**
      * Contains the active {@link ReportSender}s.
@@ -113,7 +113,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private String mInitialConfiguration;
 
     // User interaction mode defined by the application developer.
-    private ReportingInteractionMode mReportingInteractionMode = ReportingInteractionMode.SILENT;
+    private final ReportingInteractionMode mReportingInteractionMode;
 
 
     /**
@@ -134,6 +134,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.d(LOG_TAG, "Using default Mail Report Fields");
             fieldsList = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
         }
+
+        // Sets the application start date.
+        // This will be included in the reports, will be helpful compared to user_crash date.
+        final Time appStartDate = new Time();
+        appStartDate.setToNow();
+        mCrashProperties.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
+
+        // The way in which UncaughtExceptions are to be presented to the user.
+        mReportingInteractionMode = config.mode();
 
         crashReportFields = Arrays.asList(fieldsList);
     }
@@ -207,25 +216,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Set the wanted user interaction mode for sending reports.
-     *
-     * @param reportingInteractionMode  ReportingInteractionMode to use with this ErrorReporter.
-     */
-    void setReportingInteractionMode(ReportingInteractionMode reportingInteractionMode) {
-        mReportingInteractionMode = reportingInteractionMode;
-    }
-
-    /**
-     * Sets the application start date.
-     * This will be included in the reports, will be helpful compared to user_crash date.
-     *
-     * @param appStartDate  Time at which the application started.
-     */
-    public void setAppStartDate(Time appStartDate) {
-        mCrashProperties.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
-    }
-
-    /**
      * Add a {@link ReportSender} to the list of active {@link ReportSender}s.
      *
      * @param sender    The {@link ReportSender} to be added.
@@ -281,20 +271,26 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * This is where the ErrorReporter replaces the default {@link UncaughtExceptionHandler}.
      * </p>
      * 
-     * @param context
-     *            The android application context.
+     * @param context   The android application context.
+     * @param enabled   Whether this ErrorReporter should catch Exception and forward them as crash reports.
      */
-    public void init(Context context) {
+    void init(Context context, boolean enabled) {
+
+        this.enabled = enabled;
+        this.mContext = context;
+
+        // Store the initial Configuration state.
+        this.mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
+
         // If mDfltExceptionHandler is not null, initialization is already done.
         // Don't do it twice to avoid losing the original handler.
         if (mDfltExceptionHandler == null) {
             mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-            enabled = true;
             Thread.setDefaultUncaughtExceptionHandler(this);
-            mContext = context;
-            // Store the initial Configuration state.
-            mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
         }
+
+        // Check for pending reports
+        checkReportsOnApplicationStart();
     }
 
     /*
@@ -303,9 +299,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
-        Log.e(ACRA.LOG_TAG,
-                "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
-                        + ". Building report.");
+
+        // If we're not enabled then just pass the Exception on to any defaultExceptionHandler.
+        if (!enabled) {
+            if (mDfltExceptionHandler != null) {
+                Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName() + " - forwarding uncaught Exception on to default ExceptionHandler");
+                mDfltExceptionHandler.uncaughtException(t, e);
+            } else {
+                Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName() + " - no default ExceptionHandler");
+            }
+            return;
+        }
+
+
+        Log.e(ACRA.LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName() + ". Building report.");
 
         // This is a real exception, clear the IS_SILENT field from any previous silent exception
         mCrashProperties.remove(IS_SILENT);
@@ -376,31 +383,36 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (enabled) {
             mCrashProperties.put(IS_SILENT, "true");
             return handleException(e, ReportingInteractionMode.SILENT);
-        } else {
-            Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
-            return null;
+        }
+
+        Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
+        return null;
+    }
+
+    /**
+     * @param enabled   Whether this ErrorReporter should capture Exceptions and forward them as crash reports.
+     */
+    public void setEnabled(boolean enabled) {
+        Log.i(ACRA.LOG_TAG, "ACRA is " + (enabled ? "enabled" : "disabled") + " for " + mContext.getPackageName());
+        this.enabled = enabled;
+
+        // If we have just been enabled check for any reports needing to be sent.
+        if (this.enabled) {
+            checkReportsOnApplicationStart();
         }
     }
 
     /**
-     * Disable ACRA : sets this Thread's {@link UncaughtExceptionHandler} back to the system default.
+     * Delete all report files stored.
      */
-    public void disable() {
-        if (mContext != null) {
-            Log.d(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName());
-        } else {
-            Log.d(ACRA.LOG_TAG, "ACRA is disabled.");
-        }
-        if (mDfltExceptionHandler != null) {
-            Thread.setDefaultUncaughtExceptionHandler(mDfltExceptionHandler);
-            enabled = false;
-        }
+    public void deletePendingReports() {
+        deletePendingReports(true, true, 0);
     }
 
     /**
      * This method looks for pending reports and does the action required depending on the interaction mode set.
      */
-    public void checkReportsOnApplicationStart() {
+    private void checkReportsOnApplicationStart() {
         final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
         final String[] filesList = reportFinder.getCrashReportFiles();
         if (filesList != null && filesList.length > 0) {
@@ -435,13 +447,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 notifySendReport(getLatestNonSilentReport(filesList));
             }
         }
-    }
-
-    /**
-     * Delete all report files stored.
-     */
-    public void deletePendingReports() {
-        deletePendingReports(true, true, 0);
     }
 
     /**
