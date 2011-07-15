@@ -81,6 +81,9 @@ public class HttpRequest {
 
         Log.d(ACRA.LOG_TAG, "Sending request to " + url);
 
+        // TODO Consider using a RequestRetryHandler and if its a SocketTimeoutException to up the SocketTimeout and try again.
+        // See http://stackoverflow.com/questions/693997/how-to-set-httpresponse-timeout-for-android-in-java
+        // I think SocketTimeOut while waiting for response may be the cause of the multiple crash reports () - I
         final HttpResponse response = httpClient.execute(httpPost, localContext);
         if (response != null) {
             final StatusLine statusLine = response.getStatusLine();
