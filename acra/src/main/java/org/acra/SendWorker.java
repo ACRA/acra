@@ -122,7 +122,7 @@ final class SendWorker extends Thread {
                 sendCrashReport(previousCrashReport);
                 deleteFile(context, curFileName);
             } catch (RuntimeException e) {
-                Log.e(ACRA.LOG_TAG, "Failed to send crash reports", e);
+                Log.e(ACRA.LOG_TAG, "Failed to send crash reports for " + curFileName, e);
                 deleteFile(context, curFileName);
                 break; // Something really unexpected happened. Don't try to send any more reports now.
             } catch (IOException e) {

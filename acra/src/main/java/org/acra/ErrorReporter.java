@@ -16,43 +16,27 @@
 package org.acra;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.*;
+import static org.acra.ReportField.IS_SILENT;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.ReportSender;
-import org.acra.util.Installation;
-import org.acra.util.ReportUtils;
 
-import android.Manifest.permission;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
-import android.os.Environment;
 import android.os.Looper;
-import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 /**
@@ -82,33 +66,21 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // The application context
     private final Context mContext;
 
-    // TODO Separate out global crash report data from instance data. Don't want to pollute the data of 2 instances.
-    // This is where we collect crash data
-    private final CrashReportData mCrashProperties = new CrashReportData();
-
     /**
      * Contains the active {@link ReportSender}s.
      */
     private final List<ReportSender> mReportSenders = new ArrayList<ReportSender>();
 
-    // Some custom parameters can be added by the application developer. These
-    // parameters are stored here.
-    private final Map<String, String> mCustomParameters = new HashMap<String, String>();
+    private final CrashReportDataFactory crashReportDataFactory;
 
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
-
-    private final List<ReportField> crashReportFields;
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending the report.
     private final Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
-    // The Configuration obtained on application start.
-    private String mInitialConfiguration;
-
     // User interaction mode defined by the application developer.
     private final ReportingInteractionMode mReportingInteractionMode;
-
 
     /**
      * Can only be constructed from within this class.
@@ -122,7 +94,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.mContext = context;
 
         // Store the initial Configuration state.
-        this.mInitialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
+        final String initialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
 
         final ReportsCrashes config = ACRA.getConfig();
         final ReportField[] customReportFields = config.customReportContent();
@@ -138,13 +110,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.d(LOG_TAG, "Using default Mail Report Fields");
             fieldsList = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
         }
-        crashReportFields = Arrays.asList(fieldsList);
+
+        final List<ReportField> crashReportFields = Arrays.asList(fieldsList);
 
         // Sets the application start date.
         // This will be included in the reports, will be helpful compared to user_crash date.
         final Time appStartDate = new Time();
         appStartDate.setToNow();
-        mCrashProperties.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
+
+        crashReportDataFactory = new CrashReportDataFactory(mContext, crashReportFields, appStartDate, initialConfiguration);
 
         // The way in which UncaughtExceptions are to be presented to the user.
         mReportingInteractionMode = config.mode();
@@ -176,7 +150,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @Deprecated
     public void addCustomData(String key, String value) {
-        mCustomParameters.put(key, value);
+        crashReportDataFactory.putCustomData(key, value);
     }
 
     /**
@@ -197,7 +171,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #getCustomData(String)
      */
     public String putCustomData(String key, String value) {
-        return mCustomParameters.put(key, value);
+        return crashReportDataFactory.putCustomData(key, value);
     }
 
     /**
@@ -209,7 +183,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #getCustomData(String)
      */
     public String removeCustomData(String key) {
-        return mCustomParameters.remove(key);
+        return crashReportDataFactory.removeCustomData(key);
     }
 
     /**
@@ -221,7 +195,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #removeCustomData(String)
      */
     public String getCustomData(String key) {
-        return mCustomParameters.get(key);
+        return crashReportDataFactory.getCustomData(key);
     }
 
     /**
@@ -296,11 +270,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         Log.e(ACRA.LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName() + ". Building report.");
 
-        // This is a real exception, clear the IS_SILENT field from any previous silent exception
-        mCrashProperties.remove(IS_SILENT);
-
         // Generate and send crash report
-        final Thread worker = handleException(e, mReportingInteractionMode);
+        final Thread worker = handleException(e, mReportingInteractionMode, false);
 
         if (mReportingInteractionMode == ReportingInteractionMode.TOAST) {
             try {
@@ -363,8 +334,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public Thread handleSilentException(Throwable e) {
         // Mark this report as silent.
         if (enabled) {
-            mCrashProperties.put(IS_SILENT, "true");
-            return handleException(e, ReportingInteractionMode.SILENT);
+            return handleException(e, ReportingInteractionMode.SILENT, true);
         }
 
         Log.d(LOG_TAG, "ACRA is disabled. Silent report not sent.");
@@ -437,208 +407,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Collects crash data.
-     *
-     * @param context   The application context.
-     */
-    private void retrieveCrashData(Context context) {
-        try {
-            final SharedPreferences prefs = ACRA.getACRASharedPreferences();
-
-            // Generate report uuid
-            if (crashReportFields.contains(REPORT_ID)) {
-                mCrashProperties.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
-            }
-
-            // Collect meminfo
-            if (crashReportFields.contains(DUMPSYS_MEMINFO)) {
-                mCrashProperties.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
-            }
-
-            final PackageManager pm = context.getPackageManager();
-
-            // Collect DropBox and logcat
-            if (pm != null) {
-                if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
-                        && pm.checkPermission(permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
-                    if (crashReportFields.contains(LOGCAT)) {
-                        mCrashProperties.put(LOGCAT, LogCatCollector.collectLogCat(null));
-                    }
-                    if (crashReportFields.contains(EVENTSLOG)) {
-                        mCrashProperties.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
-                    }
-                    if (crashReportFields.contains(RADIOLOG)) {
-                        mCrashProperties.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
-                    }
-                    if (crashReportFields.contains(DROPBOX)) {
-                        mCrashProperties.put(DROPBOX,
-                                DropBoxCollector.read(mContext, ACRA.getConfig().additionalDropBoxTags()));
-                    }
-                } else {
-                    Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
-                }
-
-                // Retrieve UDID(IMEI) if permission is available
-                if (crashReportFields.contains(DEVICE_ID)
-                        && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
-                        && pm.checkPermission(permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                    final String deviceId = tm.getDeviceId();
-                    if (deviceId != null) {
-                        mCrashProperties.put(DEVICE_ID, deviceId);
-                    }
-                }
-            }
-
-            // Installation unique ID
-            if (crashReportFields.contains(INSTALLATION_ID)) {
-                mCrashProperties.put(INSTALLATION_ID, Installation.id(mContext));
-            }
-
-            // Device Configuration when crashing
-            if (crashReportFields.contains(INITIAL_CONFIGURATION)) {
-                mCrashProperties.put(INITIAL_CONFIGURATION, mInitialConfiguration);
-            }
-            if (crashReportFields.contains(CRASH_CONFIGURATION)) {
-                Configuration crashConf = context.getResources().getConfiguration();
-                mCrashProperties.put(CRASH_CONFIGURATION, ConfigurationInspector.toString(crashConf));
-            }
-
-            final PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
-            if (pi != null) {
-                // Application Version
-                if (crashReportFields.contains(APP_VERSION_CODE)) {
-                    mCrashProperties.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
-                }
-                if (crashReportFields.contains(APP_VERSION_NAME)) {
-                    mCrashProperties.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
-                }
-            } else {
-                // Could not retrieve package info...
-                mCrashProperties.put(APP_VERSION_NAME, "Package info unavailable");
-            }
-
-            // Application Package name
-            if (crashReportFields.contains(PACKAGE_NAME)) {
-                mCrashProperties.put(PACKAGE_NAME, context.getPackageName());
-            }
-
-            // Android OS Build details
-            if (crashReportFields.contains(BUILD)) {
-                mCrashProperties.put(BUILD, ReflectionCollector.collectConstants(android.os.Build.class));
-            }
-
-            // Device model
-            if (crashReportFields.contains(PHONE_MODEL)) {
-                mCrashProperties.put(PHONE_MODEL, android.os.Build.MODEL);
-            }
-            // Android version
-            if (crashReportFields.contains(ANDROID_VERSION)) {
-                mCrashProperties.put(ANDROID_VERSION, android.os.Build.VERSION.RELEASE);
-            }
-
-            // Device Brand (manufacturer)
-            if (crashReportFields.contains(BRAND)) {
-                mCrashProperties.put(BRAND, android.os.Build.BRAND);
-            }
-            if (crashReportFields.contains(PRODUCT)) {
-                mCrashProperties.put(PRODUCT, android.os.Build.PRODUCT);
-            }
-
-            // Device Memory
-            if (crashReportFields.contains(TOTAL_MEM_SIZE)) {
-                mCrashProperties.put(TOTAL_MEM_SIZE, Long.toString(ReportUtils.getTotalInternalMemorySize()));
-            }
-            if (crashReportFields.contains(AVAILABLE_MEM_SIZE)) {
-                mCrashProperties.put(AVAILABLE_MEM_SIZE, Long.toString(ReportUtils.getAvailableInternalMemorySize()));
-            }
-
-            // Application file path
-            if (crashReportFields.contains(FILE_PATH)) {
-                mCrashProperties.put(FILE_PATH, context.getFilesDir().getAbsolutePath());
-            }
-
-            // Main display details
-            if (crashReportFields.contains(DISPLAY)) {
-                final Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                mCrashProperties.put(DISPLAY, ReportUtils.getDisplayAsString(display));
-            }
-
-            // User crash date with local timezone
-            if (crashReportFields.contains(USER_CRASH_DATE)) {
-                final Time curDate = new Time();
-                curDate.setToNow();
-                mCrashProperties.put(USER_CRASH_DATE, curDate.format3339(false));
-            }
-
-            // Add custom info, they are all stored in a single field
-            if (crashReportFields.contains(CUSTOM_DATA)) {
-                mCrashProperties.put(CUSTOM_DATA, createCustomInfoString());
-            }
-
-            // Add user email address, if set in the app's preferences
-            if (crashReportFields.contains(USER_EMAIL)) {
-                mCrashProperties.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
-            }
-
-            // Device features
-            if (crashReportFields.contains(DEVICE_FEATURES)) {
-                mCrashProperties.put(DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
-            }
-
-            // Environment (External storage state)
-            if (crashReportFields.contains(ENVIRONMENT)) {
-                mCrashProperties.put(ENVIRONMENT, ReflectionCollector.collectStaticGettersResults(Environment.class));
-            }
-
-            // System settings
-            if (crashReportFields.contains(SETTINGS_SYSTEM)) {
-                mCrashProperties.put(SETTINGS_SYSTEM, SettingsCollector.collectSystemSettings(mContext));
-            }
-
-            // Secure settings
-            if (crashReportFields.contains(SETTINGS_SECURE)) {
-                mCrashProperties.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(mContext));
-            }
-
-            // SharedPreferences
-            if (crashReportFields.contains(SHARED_PREFERENCES)) {
-                mCrashProperties.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(mContext));
-            }
-
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error while retrieving crash data", e);
-        }
-    }
-
-    /**
-     * Generates the string which is posted in the single custom data field in the GoogleDocs Form.
-     *
-     * @return A string with a 'key = value' pair on each line.
-     */
-    private String createCustomInfoString() {
-        final StringBuilder customInfo = new StringBuilder();
-        for (final String currentKey : mCustomParameters.keySet()) {
-            final String currentVal = mCustomParameters.get(currentKey);
-            customInfo.append(currentKey);
-            customInfo.append(" = ");
-            customInfo.append(currentVal);
-            customInfo.append("\n");
-        }
-        return customInfo.toString();
-    }
-
-    /**
      * Try to send a report, if an error occurs stores a report file for a later attempt.
      *
      * @param e                         Throwable to be reported.
      *                                  If null the report will contain a new Exception("Report requested by developer").
      * @param reportingInteractionMode  The desired interaction mode.
+     * @param isSilentReport            This report is to be sent silently.
      * @return A running ReportsSenderWorker that is sending the reports if the interaction mode is silent, toast
      *  or the always accept preference is true, otherwise returns null.
      */
-    private SendWorker handleException(Throwable e, ReportingInteractionMode reportingInteractionMode) {
+    private SendWorker handleException(Throwable e, ReportingInteractionMode reportingInteractionMode, boolean isSilentReport) {
 
         boolean sendOnlySilentReports = false;
         if (reportingInteractionMode == null) {
@@ -679,31 +457,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
 
-        retrieveCrashData(mContext);
-
-        // Build stack trace
-        final Writer result = new StringWriter();
-        final PrintWriter printWriter = new PrintWriter(result);
-        e.printStackTrace(printWriter);
-        Log.getStackTraceString(e);
-        // If the exception was thrown in a background thread inside
-        // AsyncTask, then the actual exception can be found with getCause
-        Throwable cause = e.getCause();
-        while (cause != null) {
-            cause.printStackTrace(printWriter);
-            cause = cause.getCause();
-        }
-        mCrashProperties.put(STACK_TRACE, result.toString());
-        printWriter.close();
+        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, isSilentReport);
 
         // Always write the report file
 
-        final String reportFileName = getReportFileName(mCrashProperties);
-        saveCrashReportFile(reportFileName, mCrashProperties);
-
-        // Remove IS_SILENT if it was set, or it will persist in the next non-silent report
-        mCrashProperties.remove(IS_SILENT);
-        mCrashProperties.remove(USER_COMMENT);
+        final String reportFileName = getReportFileName(crashReportData);
+        saveCrashReportFile(reportFileName, crashReportData);
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST
