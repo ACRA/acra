@@ -29,7 +29,7 @@ import android.util.Log;
  * @author Kevin Gaudin
  * 
  */
-class DumpSysCollector {
+final class DumpSysCollector {
 
     /**
      * Collect results of the <code>dumpsys meminfo</code> command restricted to

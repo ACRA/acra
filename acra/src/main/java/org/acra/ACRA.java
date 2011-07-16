@@ -21,12 +21,12 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.EmailIntentSender;
 import org.acra.sender.GoogleFormSender;
 import org.acra.sender.HttpPostSender;
+import org.acra.util.PackageManagerWrapper;
 
 import android.Manifest.permission;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -183,16 +183,14 @@ public class ACRA {
             return;
         }
 
-        // TODO if we REALLY want the behaviour below then we need to change the logic.
-        // Check for Internet permission, if not granted fallback to email report
-        final PackageManager pm = mApplication.getPackageManager();
-        if (pm == null) {
-            return;
-        }
+        // TODO if we REALLY want the behaviour below then we need to change the logic. Because at present it is not falling back to email report.
+        // Check for Internet permission, if not granted fallback to email report.
 
-        if (pm.checkPermission(permission.INTERNET, mApplication.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
-            Log.e(LOG_TAG,
-                    mApplication.getPackageName()
+        final PackageManagerWrapper pm = new PackageManagerWrapper(mApplication);
+        if (!pm.hasPermission(permission.INTERNET)) {
+            // NB If the PackageManager has died then this will erroneously log the error that the App doesn't have Internet (even though it does).
+            // I think that is a small price to pay to ensure that ACRA doesn't crash if the PackageManager has died.
+            Log.e(LOG_TAG, mApplication.getPackageName()
                             + " should be granted permission "
                             + permission.INTERNET
                             + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");

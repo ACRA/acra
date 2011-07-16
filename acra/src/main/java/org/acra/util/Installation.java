@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.UUID;
 
+import org.acra.ACRA;
+
 import android.content.Context;
+import android.util.Log;
 
 /**
  * <p>
@@ -37,7 +40,11 @@ public class Installation {
                 }
                 sID = readInstallationFile(installation);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Log.w(ACRA.LOG_TAG, "Couldn't retrieve InstallationId for " + context.getPackageName(), e);
+                return "Couldn't retrieve InstallationId";
+            } catch (RuntimeException e) {
+                Log.w(ACRA.LOG_TAG, "Couldn't retrieve InstallationId for " + context.getPackageName(), e);
+                return "Couldn't retrieve InstallationId";
             }
         }
         return sID;

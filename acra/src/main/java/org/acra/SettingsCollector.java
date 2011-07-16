@@ -32,6 +32,7 @@ import android.util.Log;
  * 
  */
 public class SettingsCollector {
+
     /**
      * Collect data from {@link android.provider.Settings.System}. This
      * collector uses reflection to be sure to always get the most accurate data

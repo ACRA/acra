@@ -35,7 +35,7 @@ import android.util.Log;
  * @author Kevin Gaudin
  * 
  */
-class DropBoxCollector {
+final class DropBoxCollector {
 
     private static final String[] SYSTEM_TAGS = { "system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",

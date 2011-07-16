@@ -22,6 +22,8 @@ import static org.acra.ReportField.USER_EMAIL;
 
 import java.io.IOException;
 
+import org.acra.util.ToastSender;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
@@ -160,7 +162,7 @@ public class CrashReportDialog extends Activity {
                 // Optional Toast to thank the user
                 final int toastId = ACRA.getConfig().resDialogOkToast();
                 if (toastId != 0) {
-                    Toast.makeText(getApplicationContext(), toastId, Toast.LENGTH_LONG).show();
+                    ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
                 }
                 finish();
             }

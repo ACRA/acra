@@ -10,10 +10,7 @@ import java.util.List;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.PowerManager;
 import android.util.Log;
 
 /**
@@ -54,17 +51,10 @@ final class SendWorker extends Thread {
      */
     @Override
     public void run() {
-        final PowerManager.WakeLock wakeLock = acquireWakeLock();
-        try {
-            if (approvePendingReports) {
-                approvePendingReports();
-            }
-            checkAndSendReports(context, sendOnlySilentReports);
-        } finally {
-            if (wakeLock != null) {
-                wakeLock.release();
-            }
+        if (approvePendingReports) {
+            approvePendingReports();
         }
+        checkAndSendReports(context, sendOnlySilentReports);
     }
 
     /**
@@ -170,22 +160,5 @@ final class SendWorker extends Thread {
         if (!deleted) {
             Log.w(ACRA.LOG_TAG, "Could not deleted error report : " + fileName);
         }
-    }
-
-
-    /**
-     * @return an acquired (partial) WakeLock if the app has the WAKE_LOCK permission, otherwise returns null.
-     */
-    private PowerManager.WakeLock acquireWakeLock() {
-        final PackageManager pm = context.getPackageManager();
-        final boolean hasPermission = (pm != null) && (pm.checkPermission(Manifest.permission.WAKE_LOCK, context.getPackageName()) == PackageManager.PERMISSION_GRANTED);
-        if (!hasPermission) {
-            return null;
-        }
-
-        final PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ACRA wakelock");
-        wakeLock.acquire();
-        return wakeLock;
     }
 }

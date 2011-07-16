@@ -99,7 +99,7 @@ class LogCatCollector {
             }
 
         } catch (IOException e) {
-            Log.e(ACRA.LOG_TAG, "LogCatCollector.collectLogcat could not retrieve data.", e);
+            Log.e(ACRA.LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
         }
 
         return logcatBuf.toString();

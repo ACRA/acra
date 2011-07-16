@@ -12,20 +12,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.acra.util.Installation;
+import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ReportUtils;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Environment;
-import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
 /**
  * Responsible for creating the CrashReportData for an Exception.
@@ -101,54 +97,19 @@ final class CrashReportDataFactory {
         try {
             final SharedPreferences prefs = ACRA.getACRASharedPreferences();
 
+            // Make every entry here bullet proof and move any slightly dodgy ones to the end.
+            // This ensures that we collect as much info as possible before something crashes the collection process.
+
+            crashReportData.put(STACK_TRACE, getStackTrace(th));
             crashReportData.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
 
             if (isSilentReport) {
                 crashReportData.put(IS_SILENT, "true");
             }
+
             // Generate report uuid
             if (crashReportFields.contains(REPORT_ID)) {
                 crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
-            }
-
-            // Collect meminfo
-            if (crashReportFields.contains(DUMPSYS_MEMINFO)) {
-                crashReportData.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
-            }
-
-            final PackageManager pm = context.getPackageManager();
-
-            // Collect DropBox and logcat
-            if (pm != null) {
-                if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
-                        && pm.checkPermission(Manifest.permission.READ_LOGS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
-                    if (crashReportFields.contains(LOGCAT)) {
-                        crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
-                    }
-                    if (crashReportFields.contains(EVENTSLOG)) {
-                        crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
-                    }
-                    if (crashReportFields.contains(RADIOLOG)) {
-                        crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
-                    }
-                    if (crashReportFields.contains(DROPBOX)) {
-                        crashReportData.put(DROPBOX, DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
-                    }
-                } else {
-                    Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
-                }
-
-                // Retrieve UDID(IMEI) if permission is available
-                if (crashReportFields.contains(DEVICE_ID)
-                        && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
-                        && pm.checkPermission(Manifest.permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                    final String deviceId = tm.getDeviceId();
-                    if (deviceId != null) {
-                        crashReportData.put(DEVICE_ID, deviceId);
-                    }
-                }
             }
 
             // Installation unique ID
@@ -161,22 +122,12 @@ final class CrashReportDataFactory {
                 crashReportData.put(INITIAL_CONFIGURATION, initialConfiguration);
             }
             if (crashReportFields.contains(CRASH_CONFIGURATION)) {
-                final Configuration crashConf = context.getResources().getConfiguration();
-                crashReportData.put(CRASH_CONFIGURATION, ConfigurationInspector.toString(crashConf));
+                crashReportData.put(CRASH_CONFIGURATION, ReportUtils.getCrashConfiguration(context));
             }
 
-            final PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
-            if (pi != null) {
-                // Application Version
-                if (crashReportFields.contains(APP_VERSION_CODE)) {
-                    crashReportData.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
-                }
-                if (crashReportFields.contains(APP_VERSION_NAME)) {
-                    crashReportData.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
-                }
-            } else {
-                // Could not retrieve package info...
-                crashReportData.put(APP_VERSION_NAME, "Package info unavailable");
+            // Collect meminfo
+            if (crashReportFields.contains(DUMPSYS_MEMINFO)) {
+                crashReportData.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
             }
 
             // Application Package name
@@ -216,13 +167,12 @@ final class CrashReportDataFactory {
 
             // Application file path
             if (crashReportFields.contains(FILE_PATH)) {
-                crashReportData.put(FILE_PATH, context.getFilesDir().getAbsolutePath());
+                crashReportData.put(FILE_PATH, ReportUtils.getApplicationFilePath(context));
             }
 
             // Main display details
             if (crashReportFields.contains(DISPLAY)) {
-                final Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                crashReportData.put(DISPLAY, ReportUtils.getDisplayAsString(display));
+                crashReportData.put(DISPLAY, ReportUtils.getDisplayDetails(context));
             }
 
             // User crash date with local timezone
@@ -267,9 +217,51 @@ final class CrashReportDataFactory {
                 crashReportData.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(context));
             }
 
-            crashReportData.put(STACK_TRACE, getStackTrace(th));
+            // Now get all the crash data that relies on the PackageManager (which may or may not be here).
+            final PackageManagerWrapper pm = new PackageManagerWrapper(context);
 
-        } catch (Exception e) {
+            final PackageInfo pi = pm.getPackageInfo();
+            if (pi != null) {
+                // Application Version
+                if (crashReportFields.contains(APP_VERSION_CODE)) {
+                    crashReportData.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
+                }
+                if (crashReportFields.contains(APP_VERSION_NAME)) {
+                    crashReportData.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
+                }
+            } else {
+                // Could not retrieve package info...
+                crashReportData.put(APP_VERSION_NAME, "Package info unavailable");
+            }
+
+            // Retrieve UDID(IMEI) if permission is available
+            if (crashReportFields.contains(DEVICE_ID) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true) && pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
+                final String deviceId = ReportUtils.getDeviceId(context);
+                if (deviceId != null) {
+                    crashReportData.put(DEVICE_ID, deviceId);
+                }
+            }
+
+            // Collect DropBox and logcat
+            if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && pm.hasPermission(Manifest.permission.READ_LOGS)) {
+                Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                if (crashReportFields.contains(LOGCAT)) {
+                    crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
+                }
+                if (crashReportFields.contains(EVENTSLOG)) {
+                    crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
+                }
+                if (crashReportFields.contains(RADIOLOG)) {
+                    crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
+                }
+                if (crashReportFields.contains(DROPBOX)) {
+                    crashReportData.put(DROPBOX, DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
+                }
+            } else {
+                Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
+            }
+
+        } catch (RuntimeException e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         }
 
@@ -297,11 +289,10 @@ final class CrashReportDataFactory {
 
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
-        th.printStackTrace(printWriter);
 
         // If the exception was thrown in a background thread inside
         // AsyncTask, then the actual exception can be found with getCause
-        Throwable cause = th.getCause();
+        Throwable cause = th;
         while (cause != null) {
             cause.printStackTrace(printWriter);
             cause = cause.getCause();

@@ -26,14 +26,14 @@ import java.util.List;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.ReportSender;
+import org.acra.util.PackageManagerWrapper;
+import org.acra.util.ToastSender;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Looper;
 import android.text.format.Time;
 import android.util.Log;
@@ -304,16 +304,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
             // We choose to close the process ourselves using the same actions.
-            try {
-                final PackageManager pm = mContext.getPackageManager();
-                final CharSequence appName = pm.getApplicationInfo(mContext.getPackageName(), 0).loadLabel(mContext.getPackageManager());
-                Log.e(LOG_TAG, appName + " fatal error : " + e.getMessage(), e);
-            } catch (NameNotFoundException e2) {
-                Log.e(LOG_TAG, "Error : ", e2);
-            } finally {
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(10);
-            }
+            Log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + e.getMessage(), e);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(10);
         }
     }
 
@@ -372,9 +365,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     || (mReportingInteractionMode == ReportingInteractionMode.NOTIFICATION && onlySilentOrApprovedReports)) {
 
                 if (mReportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentOrApprovedReports) {
-                    // Display the Toast in TOAST mode only if there are
-                    // non-silent reports.
-                    Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
+                    // Display the Toast in TOAST mode only if there are non-silent reports.
+                    ToastSender.sendToast(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG);
                 }
 
                 Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
@@ -450,7 +442,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    Toast.makeText(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG).show();
+                    ToastSender.sendToast(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG);
                     Looper.loop();
                 }
 

@@ -2,10 +2,18 @@ package org.acra.util;
 
 import java.io.File;
 
+import org.acra.ACRA;
+import org.acra.ConfigurationInspector;
+
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Environment;
 import android.os.StatFs;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
+import android.view.WindowManager;
 
 /**
  * Responsible for providing base utilities used when constructing the report.
@@ -45,24 +53,76 @@ public final class ReportUtils {
     }
 
     /**
-     * Returns a String representation of the content of a {@link android.view.Display} object. It might be interesting in a future
-     * release to replace this with a reflection-based collector like {@link org.acra.ConfigurationInspector}.
+     * Returns the DeviceId according to the TelephonyManager.
      *
-     * @param display   Display to be inspected.
-     * @return A String representation of the content of the given {@link android.view.Display} object.
+     * @param context   Context for the application being reported.
+     * @return Returns the DeviceId according to the TelephonyManager or null if there is no TelephonyManager.
      */
-    public static String getDisplayAsString(Display display) {
-        final DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        final StringBuilder result = new StringBuilder();
-        result.append("width=").append(display.getWidth()).append('\n').append("height=").append(display.getHeight())
-                .append('\n').append("pixelFormat=").append(display.getPixelFormat()).append('\n')
-                .append("refreshRate=").append(display.getRefreshRate()).append("fps").append('\n')
-                .append("metrics.density=x").append(metrics.density).append('\n').append("metrics.scaledDensity=x")
-                .append(metrics.scaledDensity).append('\n').append("metrics.widthPixels=").append(metrics.widthPixels)
-                .append('\n').append("metrics.heightPixels=").append(metrics.heightPixels).append('\n')
-                .append("metrics.xdpi=").append(metrics.xdpi).append('\n').append("metrics.ydpi=").append(metrics.ydpi);
+    public static String getDeviceId(Context context) {
+        try {
+            final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            return tm.getDeviceId();
+        } catch (RuntimeException e) {
+            Log.w(ACRA.LOG_TAG, "Couldn't retrieve DeviceId for : " + context.getPackageName(), e);
+            return null;
+        }
+    }
 
-        return result.toString();
+    public static String getApplicationFilePath(Context context) {
+        final File filesDir = context.getFilesDir();
+        if (filesDir != null) {
+            return filesDir.getAbsolutePath();
+        }
+
+        Log.w(ACRA.LOG_TAG, "Couldn't retrieve ApplicationFilePath for : " + context.getPackageName());
+        return "Couldn't retrieve ApplicationFilePath";
+    }
+
+    /**
+     * Returns a String representation of the content of a {@link android.view.Display} object.
+     *
+     * @param context   Context for the application being reported.
+     * @return A String representation of the content of the default Display of the Window Service.
+     */
+    public static String getDisplayDetails(Context context) {
+        try {
+            final WindowManager windowManager = (WindowManager) context.getSystemService(android.content.Context.WINDOW_SERVICE);
+            final Display display = windowManager.getDefaultDisplay();
+            final DisplayMetrics metrics = new DisplayMetrics();
+            display.getMetrics(metrics);
+
+            final StringBuilder result = new StringBuilder();
+            result.append("width=").                    append(display.getWidth()).append('\n');
+            result.append("height=").                   append(display.getHeight()).append('\n');
+            result.append("pixelFormat=").              append(display.getPixelFormat()).append('\n');
+            result.append("refreshRate=").              append(display.getRefreshRate()).append("fps").append('\n');
+            result.append("metrics.density=x").         append(metrics.density).append('\n');
+            result.append("metrics.scaledDensity=x").   append(metrics.scaledDensity).append('\n');
+            result.append("metrics.widthPixels=").      append(metrics.widthPixels).append('\n');
+            result.append("metrics.heightPixels=").     append(metrics.heightPixels).append('\n');
+            result.append("metrics.xdpi=").             append(metrics.xdpi).append('\n');
+            result.append("metrics.ydpi=").             append(metrics.ydpi);
+            return result.toString();
+
+        } catch (RuntimeException e) {
+            Log.w(ACRA.LOG_TAG, "Couldn't retrieve DisplayDetails for : " + context.getPackageName(), e);
+            return "Couldn't retrieve Display Details";
+        }
+    }
+
+    /**
+     * Returns the current Configuration for this application.
+     *
+     * @param context   Context for the application being reported.
+     * @return A String representation of the current configuration for the application.
+     */
+    public static String getCrashConfiguration(Context context) {
+        try {
+            final Configuration crashConf = context.getResources().getConfiguration();
+            return ConfigurationInspector.toString(crashConf);
+        } catch (RuntimeException e) {
+            Log.w(ACRA.LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
+            return "Couldn't retrieve crash config";
+        }
     }
 }
