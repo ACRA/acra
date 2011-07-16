@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.ReportSender;
-import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 
 import android.app.Notification;
@@ -96,32 +95,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Store the initial Configuration state.
         final String initialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
 
-        final ReportsCrashes config = ACRA.getConfig();
-        final ReportField[] customReportFields = config.customReportContent();
-
-        final ReportField[] fieldsList;
-        if (customReportFields.length != 0) {
-            Log.d(LOG_TAG, "Using custom Report Fields");
-            fieldsList = customReportFields;
-        } else if (config.mailTo() == null || "".equals(config.mailTo())) {
-            Log.d(LOG_TAG, "Using default Report Fields");
-            fieldsList = ACRA.DEFAULT_REPORT_FIELDS;
-        } else {
-            Log.d(LOG_TAG, "Using default Mail Report Fields");
-            fieldsList = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
-        }
-
-        final List<ReportField> crashReportFields = Arrays.asList(fieldsList);
-
         // Sets the application start date.
         // This will be included in the reports, will be helpful compared to user_crash date.
         final Time appStartDate = new Time();
         appStartDate.setToNow();
 
-        crashReportDataFactory = new CrashReportDataFactory(mContext, crashReportFields, appStartDate, initialConfiguration);
+        crashReportDataFactory = new CrashReportDataFactory(mContext, appStartDate, initialConfiguration);
 
         // The way in which UncaughtExceptions are to be presented to the user.
-        mReportingInteractionMode = config.mode();
+        mReportingInteractionMode = ACRA.getConfig().mode();
 
         // If mDfltExceptionHandler is not null, initialization is already done.
         // Don't do it twice to avoid losing the original handler.

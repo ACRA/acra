@@ -6,11 +6,13 @@ import static org.acra.ReportField.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.acra.annotation.ReportsCrashes;
 import org.acra.util.Installation;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ReportUtils;
@@ -40,11 +42,27 @@ final class CrashReportDataFactory {
     private final Time appStartDate;
     private final String initialConfiguration;
 
-    CrashReportDataFactory(Context context, List<ReportField> crashReportFields, Time appStartDate, String initialConfiguration) {
+    CrashReportDataFactory(Context context, Time appStartDate, String initialConfiguration) {
         this.context = context;
-        this.crashReportFields = crashReportFields;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
+
+        final ReportsCrashes config = ACRA.getConfig();
+        final ReportField[] customReportFields = config.customReportContent();
+
+        final ReportField[] fieldsList;
+        if (customReportFields.length != 0) {
+            Log.d(LOG_TAG, "Using custom Report Fields");
+            fieldsList = customReportFields;
+        } else if (config.mailTo() == null || "".equals(config.mailTo())) {
+            Log.d(LOG_TAG, "Using default Report Fields");
+            fieldsList = ACRA.DEFAULT_REPORT_FIELDS;
+        } else {
+            Log.d(LOG_TAG, "Using default Mail Report Fields");
+            fieldsList = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
+        }
+
+        this.crashReportFields = Arrays.asList(fieldsList);
     }
 
     /**
