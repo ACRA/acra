@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.acra.ACRA;
-import org.acra.CrashReportData;
+import org.acra.collector.CrashReportData;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.util.HttpRequest;

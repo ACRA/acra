@@ -29,6 +29,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.Map;
 
+import org.acra.collector.CrashReportData;
+
 import android.content.Context;
 
 /**

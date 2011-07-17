@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra;
+package org.acra.util;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -36,7 +36,8 @@ import android.util.SparseArray;
  * @author Kevin Gaudin
  * 
  */
-public class ConfigurationInspector {
+final class ConfigurationInspector {
+
     private static final String SUFFIX_MASK = "_MASK";
     private static final String FIELD_SCREENLAYOUT = "screenLayout";
     private static final String FIELD_UIMODE = "uiMode";
@@ -152,10 +153,9 @@ public class ConfigurationInspector {
      *            instance.
      * @return The value of the field f in instance conf translated to its
      *         constant name.
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
+     * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private static String getFieldValueName(Configuration conf, Field f) throws IllegalArgumentException , IllegalAccessException {
+    private static String getFieldValueName(Configuration conf, Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
             return Integer.toString(f.getInt(conf));

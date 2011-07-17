@@ -17,13 +17,15 @@
  *  limitations under the License.
  */
 
-package org.acra;
+package org.acra.collector;
 
 import java.util.EnumMap;
 import java.util.Properties;
 
+import org.acra.ReportField;
+
 /**
- * Stores a crash reports data with {@link ReportField} enum values as keys.
+ * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
  * This is basically the source of {@link Properties} adapted to extend an
  * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
  * amounts of android time in the generation of a date comment when storing to

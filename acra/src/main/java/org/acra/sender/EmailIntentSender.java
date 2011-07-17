@@ -16,7 +16,7 @@
 package org.acra.sender;
 
 import org.acra.ACRA;
-import org.acra.CrashReportData;
+import org.acra.collector.CrashReportData;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 

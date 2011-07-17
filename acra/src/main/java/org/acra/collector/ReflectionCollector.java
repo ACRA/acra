@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.acra;
+package org.acra.collector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

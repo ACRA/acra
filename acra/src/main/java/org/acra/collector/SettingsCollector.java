@@ -14,9 +14,11 @@
  *  limitations under the License.
  */
 
-package org.acra;
+package org.acra.collector;
 
 import java.lang.reflect.Field;
+
+import org.acra.ACRA;
 
 import android.content.Context;
 import android.provider.Settings;

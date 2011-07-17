@@ -25,7 +25,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.collector.CrashReportData;
+import org.acra.collector.CrashReportDataFactory;
 import org.acra.sender.ReportSender;
+import org.acra.util.ReportUtils;
 import org.acra.util.ToastSender;
 
 import android.app.Notification;
@@ -93,7 +96,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.mContext = context;
 
         // Store the initial Configuration state.
-        final String initialConfiguration = ConfigurationInspector.toString(mContext.getResources().getConfiguration());
+        final String initialConfiguration = ReportUtils.getCrashConfiguration(mContext);
 
         // Sets the application start date.
         // This will be included in the reports, will be helpful compared to user_crash date.

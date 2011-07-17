@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra;
+package org.acra.collector;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.util.BoundedLinkedList;
 

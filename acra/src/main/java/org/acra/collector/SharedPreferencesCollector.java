@@ -1,7 +1,9 @@
-package org.acra;
+package org.acra.collector;
 
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.acra.ACRA;
 
 import android.content.Context;
 import android.content.SharedPreferences;

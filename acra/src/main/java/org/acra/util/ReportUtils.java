@@ -3,7 +3,6 @@ package org.acra.util;
 import java.io.File;
 
 import org.acra.ACRA;
-import org.acra.ConfigurationInspector;
 
 import android.content.Context;
 import android.content.res.Configuration;

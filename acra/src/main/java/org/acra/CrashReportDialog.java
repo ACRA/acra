@@ -22,6 +22,7 @@ import static org.acra.ReportField.USER_EMAIL;
 
 import java.io.IOException;
 
+import org.acra.collector.CrashReportData;
 import org.acra.util.ToastSender;
 
 import android.app.Activity;

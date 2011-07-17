@@ -1,4 +1,4 @@
-package org.acra;
+package org.acra.collector;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.*;
@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.acra.ACRA;
+import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.util.Installation;
 import org.acra.util.PackageManagerWrapper;
@@ -34,7 +36,7 @@ import android.util.Log;
  * Date: 15/07/11
  * Time: 10:41 PM
  */
-final class CrashReportDataFactory {
+public final class CrashReportDataFactory {
 
     private final Context context;
     private final List<ReportField> crashReportFields;
@@ -42,7 +44,7 @@ final class CrashReportDataFactory {
     private final Time appStartDate;
     private final String initialConfiguration;
 
-    CrashReportDataFactory(Context context, Time appStartDate, String initialConfiguration) {
+    public CrashReportDataFactory(Context context, Time appStartDate, String initialConfiguration) {
         this.context = context;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;

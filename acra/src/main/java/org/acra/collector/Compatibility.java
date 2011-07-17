@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra;
+package org.acra.collector;
 
 import java.lang.reflect.Field;
 
@@ -26,14 +26,14 @@ import android.os.Build;
  * @author Normal
  * 
  */
-public class Compatibility {
+class Compatibility {
 
     /**
      * Retrieves Android SDK API level using the best possible method.
      * 
      * @return The Android SDK API int level.
      */
-    static int getAPILevel() {
+    public static int getAPILevel() {
         int apiLevel;
         try {
             // This field has been added in Android 1.6
@@ -54,9 +54,12 @@ public class Compatibility {
 
     /**
      * Retrieve the DropBoxManager service name using reflection API.
+     *
+     * @return Name of the DropBox service regardless of Android version.
+     * @throws NoSuchFieldException if the field DROPBOX_SERVICE doesn't exist.
+     * @throws IllegalAccessException if the DROPBOX_SERVICE field is inaccessible.
      */
-    static String getDropBoxServiceName() throws SecurityException, NoSuchFieldException,
-            IllegalArgumentException, IllegalAccessException {
+    public static String getDropBoxServiceName() throws NoSuchFieldException, IllegalAccessException {
         final Field serviceName = Context.class.getField("DROPBOX_SERVICE");
         if (serviceName != null) {
             return (String) serviceName.get(null);
