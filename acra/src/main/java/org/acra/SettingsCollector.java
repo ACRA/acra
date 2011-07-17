@@ -31,7 +31,7 @@ import android.util.Log;
  * @author Kevin Gaudin
  * 
  */
-public class SettingsCollector {
+final class SettingsCollector {
 
     /**
      * Collect data from {@link android.provider.Settings.System}. This

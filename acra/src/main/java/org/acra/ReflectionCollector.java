@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * @author Kevin Gaudin
  * 
  */
-public class ReflectionCollector {
+final class ReflectionCollector {
 
     /**
      * Retrieves key/value pairs from static fields of a class.

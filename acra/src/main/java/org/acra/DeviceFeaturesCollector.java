@@ -29,7 +29,7 @@ import android.util.Log;
  * @author Kevin Gaudin
  * 
  */
-public class DeviceFeaturesCollector {
+final class DeviceFeaturesCollector {
 
     public static String getFeatures(Context ctx) {
 

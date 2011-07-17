@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-public class SharedPreferencesCollector {
+final class SharedPreferencesCollector {
 
     public static String collect(Context context) {
         final StringBuilder result = new StringBuilder();
