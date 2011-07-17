@@ -30,41 +30,48 @@ public enum ReportField {
     REPORT_ID,
     /**
      * Application version code. This is the incremental integer version code
-     * used to differentiate versions on the android market. {@see
-     * PackageInfo#versionCode}
+     * used to differentiate versions on the android market.
+     * @see android.content.pm.PackageInfo#versionCode
      */
     APP_VERSION_CODE,
     /**
-     * Application version name. {@see PackageInfo#versionName}
+     * Application version name.
+     * @see android.content.pm.PackageInfo#versionName
      */
     APP_VERSION_NAME,
     /**
-     * Application package name. {@see Context#getPackageName()}
+     * Application package name.
+     * @see android.content.Context#getPackageName()
      */
     PACKAGE_NAME,
     /**
-     * Base path of the application's private file folder. {@see
-     * Context#getFilesDir()}
+     * Base path of the application's private file folder.
+     * @see android.content.Context#getFilesDir()
      */
     FILE_PATH,
     /**
-     * Device model name. {@see Build#MODEL}
+     * Device model name.
+     * @see android.os.Build#MODEL
      */
     PHONE_MODEL,
     /**
-     * Device android version name. {@see VERSION#RELEASE}
+     * Device android version name.
+     * @see android.os.Build.VERSION#RELEASE
      */
     ANDROID_VERSION,
     /**
-     * Android Build details. {@see Build}
+     * Android Build details.
+     * @see android.os.Build
      */
     BUILD,
     /**
-     * Device brand (manufacturer or carrier). {@see Build#BRAND}
+     * Device brand (manufacturer or carrier).
+     * @see android.os.Build#BRAND
      */
     BRAND,
     /**
-     * Device overall product code. {@see Build#PRODUCT}
+     * Device overall product code.
+     * @see android.os.Build#PRODUCT
      */
     PRODUCT,
     /**
@@ -85,17 +92,18 @@ public enum ReportField {
      */
     STACK_TRACE,
     /**
-     * {@link Configuration} fields state on the application start. {@see
-     * Configuration}
+     * {@link Configuration} fields state on the application start.
+     * @see Configuration
      */
     INITIAL_CONFIGURATION,
     /**
-     * {@link Configuration} fields state on the application crash. {@see
-     * Configuration}
+     * {@link Configuration} fields state on the application crash.
+     * @see Configuration
      */
     CRASH_CONFIGURATION,
     /**
-     * Device display specifications. {@see WindowManager#getDefaultDisplay()}
+     * Device display specifications.
+     * @see android.view.WindowManager#getDefaultDisplay()
      */
     DISPLAY,
     /**
@@ -147,7 +155,7 @@ public enum ReportField {
     INSTALLATION_ID,
     /**
      * User email address. Can be provided by the user in the
-     * {@value ACRA#PREF_USER_EMAIL_ADDRESS} SharedPreference.
+     * {@link ACRA#PREF_USER_EMAIL_ADDRESS} SharedPreference.
      */
     USER_EMAIL,
     /**

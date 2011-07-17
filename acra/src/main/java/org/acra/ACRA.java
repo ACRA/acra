@@ -275,8 +275,10 @@ public class ACRA {
     }
 
     /**
-     * Default list of {@link ReportField}s to be sent in email reports {@see #mailTo()}. You can set your own list with
-     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
+     * Default list of {@link ReportField}s to be sent in email reports.
+     * You can set your own list with {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
+     *
+     * @see org.acra.annotation.ReportsCrashes#mailTo()
      */
     public final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION,
             ReportField.APP_VERSION_NAME, ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA,
