@@ -25,7 +25,7 @@ import java.util.Map;
 import org.acra.ACRA;
 import org.acra.CrashReportData;
 import org.acra.ReportField;
-import org.acra.util.HttpUtils;
+import org.acra.util.HttpRequest;
 
 import android.net.Uri;
 import android.util.Log;
@@ -60,7 +60,13 @@ public class GoogleFormSender implements ReportSender {
             final URL reportUrl = new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Sending report " + report.get(ReportField.REPORT_ID));
             Log.d(LOG_TAG, "Connect to " + reportUrl);
-            HttpUtils.doPost(formParams, reportUrl, null, null);
+
+            final HttpRequest request = new HttpRequest();
+            request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
+            request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
+            request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
+            request.sendPost(reportUrl, formParams);
+
         } catch (IOException e) {
             throw new ReportSenderException("Error while sending report to Google Form.", e);
         }

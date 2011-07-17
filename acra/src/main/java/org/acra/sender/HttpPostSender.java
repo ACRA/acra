@@ -17,6 +17,7 @@ package org.acra.sender;
 
 import static org.acra.ACRA.LOG_TAG;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ import org.acra.ACRA;
 import org.acra.CrashReportData;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.util.HttpUtils;
+import org.acra.util.HttpRequest;
 
 import android.net.Uri;
 import android.util.Log;
@@ -100,12 +101,25 @@ public class HttpPostSender implements ReportSender {
             final Map<String, String> finalReport = remap(report);
             final URL reportUrl = new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-            HttpUtils.doPost(finalReport, reportUrl,
-                    ACRA.getConfig().formUriBasicAuthLogin(),
-                    ACRA.getConfig().formUriBasicAuthPassword());
-        } catch (Exception e) {
+
+            final String login = isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA.getConfig().formUriBasicAuthLogin();
+            final String password = isNull(ACRA.getConfig().formUriBasicAuthPassword()) ? null : ACRA.getConfig().formUriBasicAuthPassword();
+
+            final HttpRequest request = new HttpRequest();
+            request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
+            request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
+            request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
+            request.setLogin(login);
+            request.setPassword(password);
+            request.sendPost(reportUrl, finalReport);
+
+        } catch (IOException e) {
             throw new ReportSenderException("Error while sending report to Http Post Form.", e);
         }
+    }
+
+    private static boolean isNull(String aString) {
+        return aString == null || ACRA.NULL_VALUE.equals(aString);
     }
 
     private Map<String, String> remap(Map<ReportField, String> report) {

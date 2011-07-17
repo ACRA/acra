@@ -250,9 +250,23 @@ public @interface ReportsCrashes {
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
     /**
-     * @return Value in milliseconds for network operations timeout (default 3000ms).
+     * @return Value in milliseconds for timeout attempting to connect to a network (default 3000ms).
+     */
+    int connectionTimeout() default 3000;
+
+    /**
+     * If the request is retried due to timeout, the socketTimeout will double before retrying the request.
+     *
+     * @return Value in milliseconds for timeout receiving a response to a network request (default 3000ms).
+     * @see #maxNumberOfRequestRetries()
      */
     int socketTimeout() default 3000;
+
+    /**
+     * @return Maximum number of times a network request will be retried when receiving the response times out (default 3).
+     * @see #socketTimeout()
+     */
+    int maxNumberOfRequestRetries() default 3;
 
     /**
      * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you prefer displaying the native Force Close
