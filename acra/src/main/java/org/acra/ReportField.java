@@ -107,7 +107,7 @@ public enum ReportField {
      */
     DISPLAY,
     /**
-     * Comment added by the user in the {@link CrashReportDialog} displayed in
+     * Comment added by the user in the CrashReportDialog displayed in
      * {@link ReportingInteractionMode#NOTIFICATION} mode.
      */
     USER_COMMENT,

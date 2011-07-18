@@ -456,8 +456,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Send a status bar notification. The action triggered when the notification is selected is to start the
-     * {@link CrashReportDialog} Activity.
+     * Send a status bar notification.
+     *
+     * The action triggered when the notification is selected is to start the {@link CrashReportDialog} Activity.
      *
      * @param reportFileName    Name of the report file to send.
      */

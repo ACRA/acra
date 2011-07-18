@@ -48,9 +48,8 @@ import android.widget.Toast;
  * android:launchMode="singleInstance" in your AndroidManifest to work properly.
  * 
  * @author Kevin Gaudin
- * 
  */
-public class CrashReportDialog extends Activity {
+final class CrashReportDialog extends Activity {
 
     private SharedPreferences prefs;
     private EditText userComment;
