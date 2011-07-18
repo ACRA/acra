@@ -17,9 +17,8 @@ import android.view.WindowManager;
 /**
  * Responsible for providing base utilities used when constructing the report.
  * <p/>
- * User: William
- * Date: 13/07/11
- * Time: 8:36 PM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 public final class ReportUtils {
 

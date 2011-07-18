@@ -5,9 +5,8 @@ import static org.acra.ReportField.IS_SILENT;
 /**
  * Responsible for collating those constants shared among the ACRA components.
  * <p/>
- * User: William
- * Date: 10/07/11
- * Time: 11:00 AM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 final class ACRAConstants {
 

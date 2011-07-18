@@ -6,9 +6,8 @@ import android.util.Log;
 /**
  * Responsible for delegating calls to the Android logging system.
  * <p/>
- * User: William
- * Date: 17/07/11
- * Time: 11:06 AM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 public final class AndroidLogDelegate implements ACRALog {
     public int v(String tag, String msg) {

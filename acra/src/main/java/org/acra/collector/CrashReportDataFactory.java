@@ -32,9 +32,8 @@ import android.util.Log;
  * <p>
  *     Also responsible for holding the custom data to send with each report.
  * </p>
- * User: William
- * Date: 15/07/11
- * Time: 10:41 PM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 public final class CrashReportDataFactory {
 

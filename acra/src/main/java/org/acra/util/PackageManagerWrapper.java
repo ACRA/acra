@@ -20,9 +20,8 @@ import android.util.Log;
  *     I suspect that PackageManager death is caused during app installation.
  *     But we need to make ACRA bullet proof, so it's better to handle the condition safely so that the error report itself doesn't fail.
  * </p>
- * User: William
- * Date: 16/07/11
- * Time: 12:07 PM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 public final class PackageManagerWrapper {
 

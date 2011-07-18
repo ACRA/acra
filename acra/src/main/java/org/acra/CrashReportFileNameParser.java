@@ -3,9 +3,8 @@ package org.acra;
 /**
  * Responsible for determining the state of a Crash Report based on its file name.
  * <p/>
- * User: William
- * Date: 13/07/11
- * Time: 4:36 PM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 final class CrashReportFileNameParser {
 

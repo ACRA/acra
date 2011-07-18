@@ -31,7 +31,7 @@ import org.acra.ReportField;
  * amounts of android time in the generation of a date comment when storing to
  * file.
  */
-public class CrashReportData extends EnumMap<ReportField, String> {
+public final class CrashReportData extends EnumMap<ReportField, String> {
 
     private static final long serialVersionUID = 4112578634029874840L;
 

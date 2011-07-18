@@ -9,9 +9,8 @@ import android.widget.Toast;
 /**
  * Responsible for sending Toasts under all circumstances.
  * <p/>
- * User: William
- * Date: 16/07/11
- * Time: 4:29 PM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 public final class ToastSender {
 

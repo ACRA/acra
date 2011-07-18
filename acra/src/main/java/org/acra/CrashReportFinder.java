@@ -11,9 +11,8 @@ import android.util.Log;
 /**
  * Responsible for retrieving the location of Crash Report files.
  * <p/>
- * User: William
- * Date: 13/07/11
- * Time: 4:26 PM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 final class CrashReportFinder {
 

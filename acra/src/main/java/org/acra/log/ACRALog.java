@@ -6,9 +6,8 @@ package org.acra.log;
  *     One reason for using this mechanism is to allow ACRA classes to use a logging system,
  *     but be able to execute in a test environment outside of an Android JVM.
  * </p>
- * User: William
- * Date: 17/07/11
- * Time: 11:06 AM
+ * @author William Ferguson
+ * @since 4.3.0
  */
 public interface ACRALog {
     public int v(java.lang.String tag, java.lang.String msg);
