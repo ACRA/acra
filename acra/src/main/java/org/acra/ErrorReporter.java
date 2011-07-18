@@ -295,12 +295,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    public SendWorker startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
-        final SendWorker worker = new SendWorker(mContext, mReportSenders, onlySendSilentReports, approveReportsFirst);
-        worker.start();
-        return worker;
-    }
-
     /**
      * Send a report for this {@link Throwable} silently (forces the use of {@link ReportingInteractionMode#SILENT} for
      * this report, whatever is the mode set for the application. Very useful for tracking difficult defects.
@@ -320,6 +314,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
+     * Enable or disable this ErrorReporter.
+     * By default it is enabled.
+     *
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward them as crash reports.
      */
     public void setEnabled(boolean enabled) {
@@ -328,9 +325,22 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
+     * Starts a Thread to start sending outstanding error reports.
+     *
+     * @param onlySendSilentReports If true then only send silent reports.
+     * @param approveReportsFirst   If true then approve unapproved reports first.
+     * @return SendWorker that will be sending the report.s
+     */
+    SendWorker startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
+        final SendWorker worker = new SendWorker(mContext, mReportSenders, onlySendSilentReports, approveReportsFirst);
+        worker.start();
+        return worker;
+    }
+
+    /**
      * Delete all report files stored.
      */
-    public void deletePendingReports() {
+    void deletePendingReports() {
         deletePendingReports(true, true, 0);
     }
 
