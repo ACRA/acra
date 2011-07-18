@@ -38,13 +38,15 @@ import android.util.Log;
 public final class CrashReportDataFactory {
 
     private final Context context;
+    private final SharedPreferences prefs;
     private final List<ReportField> crashReportFields;
     private final Map<String, String> customParameters = new HashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
 
-    public CrashReportDataFactory(Context context, Time appStartDate, String initialConfiguration) {
+    public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate, String initialConfiguration) {
         this.context = context;
+        this.prefs = prefs;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
 
@@ -114,8 +116,6 @@ public final class CrashReportDataFactory {
 
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            final SharedPreferences prefs = ACRA.getACRASharedPreferences();
-
             // Make every entry here bullet proof and move any slightly dodgy ones to the end.
             // This ensures that we collect as much info as possible before something crashes the collection process.
 

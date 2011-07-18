@@ -36,6 +36,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Looper;
 import android.text.format.Time;
 import android.util.Log;
@@ -65,8 +66,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     private boolean enabled = false;
 
-    // The application context
     private final Context mContext;
+    private final SharedPreferences prefs;
 
     /**
      * Contains the active {@link ReportSender}s.
@@ -88,12 +89,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Can only be constructed from within this class.
      *
      * @param context   Context for the application in which ACRA is running.
+     * @param prefs     SharedPreferences used by ACRA.
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      */
-    ErrorReporter(Context context, boolean enabled) {
+    ErrorReporter(Context context, SharedPreferences prefs, boolean enabled) {
 
-        this.enabled = enabled;
         this.mContext = context;
+        this.prefs = prefs;
+        this.enabled = enabled;
 
         // Store the initial Configuration state.
         final String initialConfiguration = ReportUtils.getCrashConfiguration(mContext);
@@ -103,7 +106,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Time appStartDate = new Time();
         appStartDate.setToNow();
 
-        crashReportDataFactory = new CrashReportDataFactory(mContext, appStartDate, initialConfiguration);
+        crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration);
 
         // The way in which UncaughtExceptions are to be presented to the user.
         mReportingInteractionMode = ACRA.getConfig().mode();
@@ -123,7 +126,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @throws IllegalStateException if {@link ACRA#init(android.app.Application)} has not yet been called.
      * @deprecated since 4.3.0 Use {@link org.acra.ACRA#getErrorReporter()} instead.
      */
-    public static synchronized ErrorReporter getInstance() {
+    public static ErrorReporter getInstance() {
         return ACRA.getErrorReporter();
     }
 
@@ -453,7 +456,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST
-                || ACRA.getACRASharedPreferences().getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
+                || prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
 
             // Approve and then send reports now
             Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");

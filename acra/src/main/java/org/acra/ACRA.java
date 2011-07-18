@@ -126,7 +126,7 @@ public class ACRA {
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = !shouldDisableACRA(prefs);
-            final ErrorReporter errorReporter = new ErrorReporter(mApplication.getApplicationContext(), enableAcra);
+            final ErrorReporter errorReporter = new ErrorReporter(mApplication.getApplicationContext(), prefs, enableAcra);
 
             // Append ReportSenders.
             addReportSenders(errorReporter);
@@ -252,10 +252,10 @@ public class ACRA {
      * SharedPreferences, but you can provide another SharedPreferences name
      * with {@link ReportsCrashes#sharedPreferencesName()}.
      * 
-     * @return The Shared Preferences where ACRA will retrieve its user
-     *         adjustable setting.
+     * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
      */
     public static SharedPreferences getACRASharedPreferences() {
+        // TODO is there any reason to keep this method public? If we can hide it, we should. Do clients ever need to access it?
         if (!"".equals(mReportsCrashes.sharedPreferencesName())) {
             Log.d(ACRA.LOG_TAG, "Retrieve SharedPreferences " + mReportsCrashes.sharedPreferencesName());
             return mApplication.getSharedPreferences(mReportsCrashes.sharedPreferencesName(),
