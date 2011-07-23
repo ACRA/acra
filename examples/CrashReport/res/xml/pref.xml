@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+ <CheckBoxPreference android:key="acra.enable" android:title="@string/pref_enable_acra"
+  android:summaryOn="@string/pref_acra_enabled" android:summaryOff="@string/pref_acra_disabled" android:defaultValue="true" />
+ <CheckBoxPreference android:key="acra.syslog.enable" android:summaryOn="@string/pref_acra_syslog_enabled"
+  android:summaryOff="@string/pref_acra_syslog_disabled" android:title="@string/pref_acra_syslog" android:summary="Privacy issue"
+  android:defaultValue="true"></CheckBoxPreference>
+ <CheckBoxPreference android:summaryOff="@string/pref_acra_deviceid_disabled" android:key="acra.deviceid.enable"
+  android:summaryOn="@string/pref_acra_deviceid_enabled" android:title="@string/pref_acra_deviceid"
+  android:defaultValue="true"></CheckBoxPreference>
+ <EditTextPreference android:key="acra.user.email" android:title="@string/pref_acra_user_email"
+  android:summary="@string/pref_acra_user_email_summary"></EditTextPreference>
+ <CheckBoxPreference android:defaultValue="false" android:summaryOff="@string/pref_acra_alwaysaccept_disabled"
+  android:title="@string/pref_acra_alwaysaccept" android:key="acra.alwaysaccept" android:summaryOn="@string/pref_acra_alwaysaccept_enabled"></CheckBoxPreference>
+</PreferenceScreen>

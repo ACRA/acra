@@ -21,6 +21,7 @@
     <string name="hello">Ready to crash ?</string>
     <string name="btn_crash">CRASH !</string>
     <string name="btn_silent_report">Send silent report</string>
+    <string name="btn_prefs">Preferences</string>
 	
 	<string name="crash_toast_text">Ooooops ! I crashed, but a report has been
 		sent to my developer to help him fix the issue !</string>
@@ -34,5 +35,20 @@
 		application to stop. Please help us fix this by sending us error data,
 		all you have to do is click \'OK\'.</string>
 	<string name="crash_dialog_comment_prompt">Your comments (optional):</string>
+    <string name="crash_dialog_email_prompt">Your email (optional):</string>
 	<string name="crash_dialog_ok_toast">Thank you !</string>
+    <string name="pref_enable_acra">Enable ACRA?</string>
+    <string name="pref_acra_enabled">ACRA enabled</string>
+    <string name="pref_acra_disabled">ACRA disabled</string>
+    <string name="pref_acra_syslog_enabled">Sending system logs is enabled</string>
+    <string name="pref_acra_syslog_disabled">Seinding system logs is disabled</string>
+    <string name="pref_acra_syslog">Send system logs (may contain private data) ?</string>
+    <string name="pref_acra_deviceid_enabled">Send device id is enabled</string>
+    <string name="pref_acra_deviceid_disabled">Do not send device id</string>
+    <string name="pref_acra_user_email">Add your email address</string>
+    <string name="pref_acra_deviceid">Send device unique id ?</string>
+    <string name="pref_acra_user_email_summary">Developers may contact you to solve issues.</string>
+    <string name="pref_acra_alwaysaccept">Always send crash reports?</string>
+    <string name="pref_acra_alwaysaccept_enabled">Reports are sent without asking.</string>
+    <string name="pref_acra_alwaysaccept_disabled">Each report needs acknowledgement.</string>
 </resources>

@@ -7,4 +7,6 @@
 <TextView android:text="@string/hello" android:id="@+id/txt_hello" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 <Button android:text="@string/btn_crash" android:id="@+id/btn_crash" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 <Button android:text="@string/btn_silent_report" android:id="@+id/btn_silent_report" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+<Button android:text="@string/btn_prefs" android:id="@+id/btn_prefs" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+<Button android:text="ghost" android:id="@+id/btn_ghost" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 </LinearLayout>

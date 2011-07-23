@@ -37,6 +37,15 @@ public class CrashTestLauncher extends Activity {
             }
         });
 
+        btn = (Button) findViewById(R.id.btn_prefs);
+        btn.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),Preferences.class));
+            }
+        });
+
     }
 
 }
