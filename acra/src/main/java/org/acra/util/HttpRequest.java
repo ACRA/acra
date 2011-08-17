@@ -133,6 +133,10 @@ public final class HttpRequest {
         final HttpPost httpPost = getHttpPost(url, parameters);
 
         log.d(ACRA.LOG_TAG, "Sending request to " + url);
+        if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HttpPost params : ");
+        for (final Object key : parameters.keySet()) {
+            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, " key : '" + key + "'    value: '" + parameters.get(key) + "'");
+        }
 
         // TODO Consider using a RequestRetryHandler and if its a SocketTimeoutException to up the SocketTimeout and try again.
         // See http://stackoverflow.com/questions/693997/how-to-set-httpresponse-timeout-for-android-in-java
@@ -143,13 +147,15 @@ public final class HttpRequest {
             if (statusLine != null) {
                 final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
                 if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
+                    if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpPost);
                     throw new IOException("Host returned error code " + statusCode);
                 }
             }
-            final String ret = EntityUtils.toString(response.getEntity());
-            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG,
-                    "HTTP " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode") + " - Returning value:"
-                            + ret.substring(0, Math.min(ret.length(), 200)));
+
+            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
+            final String content = EntityUtils.toString(response.getEntity());
+            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HttpResponse Content : " + content.substring(0, Math.min(content.length(), 200)));
+
         } else {
             if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HTTP no Response!!");
         }

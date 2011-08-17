@@ -159,7 +159,7 @@ final class SendWorker extends Thread {
     private void deleteFile(Context context, String fileName) {
         final boolean deleted = context.deleteFile(fileName);
         if (!deleted) {
-            Log.w(ACRA.LOG_TAG, "Could not deleted error report : " + fileName);
+            Log.w(ACRA.LOG_TAG, "Could not delete error report : " + fileName);
         }
     }
 }
