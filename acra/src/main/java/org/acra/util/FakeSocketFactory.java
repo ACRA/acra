@@ -28,7 +28,7 @@ public class FakeSocketFactory implements SocketFactory, LayeredSocketFactory {
             context.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
             return context;
         } catch (GeneralSecurityException e) {
-            throw new IOException(e);
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -40,8 +40,7 @@ public class FakeSocketFactory implements SocketFactory, LayeredSocketFactory {
     }
 
     @Override
-    public Socket connectSocket(Socket sock, String host, int port, InetAddress localAddress, int localPort,
-            HttpParams params) throws IOException {
+    public Socket connectSocket(Socket sock, String host, int port, InetAddress localAddress, int localPort, HttpParams params) throws IOException {
         final int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
         final int soTimeout = HttpConnectionParams.getSoTimeout(params);
 
