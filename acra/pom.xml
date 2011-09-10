@@ -42,16 +42,17 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <android.version>3</android.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.google.android</groupId>
-			<artifactId>android</artifactId>
-			<version>1.5_r4</version>
-			<type>jar</type>
-            <scope>provided</scope>
-		</dependency>
+        <!---
+            To get this library to compile in your IDE, you need to point your IDE project SDK to your Android SDK and
+            choose an Android version. This library has been designed to run in Android-3 and newer versions.
+
+            To get this library to compile in Maven you need to have an Android SDK installed and pointed to
+            by an ANDROID_HOME environment variable.
+        -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -94,6 +95,9 @@
 					<source>1.6</source>
 					<target>1.6</target>
 					<showWarnings>true</showWarnings>
+                    <compilerArguments>
+                        <bootclasspath>${env.ANDROID_HOME}/platforms/android-${android.version}/android.jar</bootclasspath>
+                    </compilerArguments>
 				</configuration>
 			</plugin>
 			<plugin>
