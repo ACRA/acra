@@ -15,9 +15,40 @@
  */
 package org.acra;
 
-import static org.acra.ReportField.*;
-
-import java.lang.annotation.Annotation;
+import static org.acra.ReportField.ANDROID_VERSION;
+import static org.acra.ReportField.APP_VERSION_CODE;
+import static org.acra.ReportField.APP_VERSION_NAME;
+import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
+import static org.acra.ReportField.BRAND;
+import static org.acra.ReportField.BUILD;
+import static org.acra.ReportField.CRASH_CONFIGURATION;
+import static org.acra.ReportField.CUSTOM_DATA;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DEVICE_ID;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.DROPBOX;
+import static org.acra.ReportField.DUMPSYS_MEMINFO;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.EVENTSLOG;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.INSTALLATION_ID;
+import static org.acra.ReportField.IS_SILENT;
+import static org.acra.ReportField.LOGCAT;
+import static org.acra.ReportField.PACKAGE_NAME;
+import static org.acra.ReportField.PHONE_MODEL;
+import static org.acra.ReportField.PRODUCT;
+import static org.acra.ReportField.RADIOLOG;
+import static org.acra.ReportField.REPORT_ID;
+import static org.acra.ReportField.SETTINGS_SECURE;
+import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SHARED_PREFERENCES;
+import static org.acra.ReportField.STACK_TRACE;
+import static org.acra.ReportField.TOTAL_MEM_SIZE;
+import static org.acra.ReportField.USER_APP_START_DATE;
+import static org.acra.ReportField.USER_COMMENT;
+import static org.acra.ReportField.USER_CRASH_DATE;
+import static org.acra.ReportField.USER_EMAIL;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.EmailIntentSender;
@@ -177,9 +208,10 @@ public class ACRA {
      * @param errorReporter ErrorReporter to which to add appropriate ReportSenders.
      */
     private static void addReportSenders(ErrorReporter errorReporter) {
+        ReportsCrashes conf = getConfig();
 
         // Try to send by mail.
-        if (!"".equals(mReportsCrashes.mailTo())) {
+        if (!"".equals(conf.mailTo())) {
             Log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");
             errorReporter.addReportSender(new EmailIntentSender(mApplication));
             return;
@@ -197,14 +229,14 @@ public class ACRA {
         }
 
         // If formUri is set, instantiate a sender for a generic HTTP POST form
-        if (mReportsCrashes.formUri() != null && !"".equals(mReportsCrashes.formUri())) {
-            errorReporter.addReportSender(new HttpPostSender(mReportsCrashes.formUri(), null));
+        if (conf.formUri() != null && !"".equals(conf.formUri())) {
+            errorReporter.addReportSender(new HttpPostSender(conf.formUri(), null));
             return;
         }
 
         // The default behavior is to use the formKey for a Google Docs Form.
-        if (mReportsCrashes.formKey() != null && !"".equals(mReportsCrashes.formKey().trim())) {
-            errorReporter.addReportSender(new GoogleFormSender(mReportsCrashes.formKey()));
+        if (conf.formKey() != null && !"".equals(conf.formKey().trim())) {
+            errorReporter.addReportSender(new GoogleFormSender(conf.formKey()));
         }
     }
 
@@ -228,16 +260,17 @@ public class ACRA {
     }
 
     private static void checkCrashResources() throws ACRAConfigurationException {
-        switch (mReportsCrashes.mode()) {
+        ReportsCrashes conf = getConfig();
+        switch (conf.mode()) {
         case TOAST:
-            if (mReportsCrashes.resToastText() == 0) {
+            if (conf.resToastText() == 0) {
                 throw new ACRAConfigurationException(
                         "TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
             }
             break;
         case NOTIFICATION:
-            if (mReportsCrashes.resNotifTickerText() == 0 || mReportsCrashes.resNotifTitle() == 0
-                    || mReportsCrashes.resNotifText() == 0 || mReportsCrashes.resDialogText() == 0) {
+            if (conf.resNotifTickerText() == 0 || conf.resNotifTitle() == 0
+                    || conf.resNotifText() == 0 || conf.resDialogText() == 0) {
                 throw new ACRAConfigurationException(
                         "NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText, resDialogText parameters in your application @ReportsCrashes() annotation.");
             }
@@ -255,10 +288,11 @@ public class ACRA {
      */
     public static SharedPreferences getACRASharedPreferences() {
         // TODO is there any reason to keep this method public? If we can hide it, we should. Do clients ever need to access it?
-        if (!"".equals(mReportsCrashes.sharedPreferencesName())) {
-            Log.d(ACRA.LOG_TAG, "Retrieve SharedPreferences " + mReportsCrashes.sharedPreferencesName());
-            return mApplication.getSharedPreferences(mReportsCrashes.sharedPreferencesName(),
-                    mReportsCrashes.sharedPreferencesMode());
+        ReportsCrashes conf = getConfig();
+        if (!"".equals(conf.sharedPreferencesName())) {
+            Log.d(ACRA.LOG_TAG, "Retrieve SharedPreferences " + conf.sharedPreferencesName());
+            return mApplication.getSharedPreferences(conf.sharedPreferencesName(),
+                    conf.sharedPreferencesMode());
         } else {
             Log.d(ACRA.LOG_TAG, "Retrieve application default SharedPreferences.");
             return PreferenceManager.getDefaultSharedPreferences(mApplication);
@@ -271,207 +305,7 @@ public class ACRA {
      */
     public static ReportsCrashes getConfig() {
         if(configProxy == null) {
-            configProxy = new ReportsCrashes() {
-                
-                @Override
-                public Class<? extends Annotation> annotationType() {
-                    return mReportsCrashes.annotationType();
-                }
-                
-                @Override
-                public int socketTimeout() {
-                    return mReportsCrashes.socketTimeout();
-                }
-                
-                @Override
-                public String sharedPreferencesName() {
-                    return mReportsCrashes.sharedPreferencesName();
-                }
-                
-                @Override
-                public int sharedPreferencesMode() {
-                    return mReportsCrashes.sharedPreferencesMode();
-                }
-                
-                @Override
-                public int resToastText() {
-                    if(RES_TOAST_TEXT != null) { 
-                        return RES_TOAST_TEXT;
-                    } else {
-                        return mReportsCrashes.resToastText();
-                    }
-                }
-                
-                @Override
-                public int resNotifTitle() {
-                    if(RES_NOTIF_TITLE != null) { 
-                        return RES_NOTIF_TITLE;
-                    } else {
-                        return mReportsCrashes.resNotifTitle();
-                    }
-                }
-                
-                @Override
-                public int resNotifTickerText() {
-                    if(RES_NOTIF_TICKER_TEXT != null) { 
-                        return RES_NOTIF_TICKER_TEXT;
-                    } else {
-                        return mReportsCrashes.resNotifTickerText();
-                    }
-                }
-                
-                @Override
-                public int resNotifText() {
-                    if(RES_NOTIF_TEXT != null) { 
-                        return RES_NOTIF_TEXT;
-                    } else {
-                        return mReportsCrashes.resNotifText();
-                    }
-                }
-                
-                @Override
-                public int resNotifIcon() {
-                    if(RES_NOTIF_ICON != null) { 
-                        return RES_NOTIF_ICON;
-                    } else {
-                        return mReportsCrashes.resNotifIcon();
-                    }
-                }
-                
-                @Override
-                public int resDialogTitle() {
-                    if(RES_DIALOG_TITLE != null) { 
-                        return RES_DIALOG_TITLE;
-                    } else {
-                        return mReportsCrashes.resDialogTitle();
-                    }
-                }
-                
-                @Override
-                public int resDialogText() {
-                    if(RES_DIALOG_TEXT != null) { 
-                        return RES_DIALOG_TEXT;
-                    } else {
-                        return mReportsCrashes.resDialogText();
-                    }
-                }
-                
-                @Override
-                public int resDialogOkToast() {
-                    if(RES_DIALOG_OK_TOAST != null) { 
-                        return RES_DIALOG_OK_TOAST;
-                    } else {
-                        return mReportsCrashes.resDialogOkToast();
-                    }
-                }
-                
-                @Override
-                public int resDialogIcon() {
-                    if(RES_DIALOG_ICON != null) { 
-                        return RES_DIALOG_ICON;
-                    } else {
-                        return mReportsCrashes.resDialogIcon();
-                    }
-                }
-                
-                @Override
-                public int resDialogEmailPrompt() {
-                    if(RES_DIALOG_EMAIL_PROMPT != null) { 
-                        return RES_DIALOG_EMAIL_PROMPT;
-                    } else {
-                        return mReportsCrashes.resDialogEmailPrompt();
-                    }
-                }
-                
-                @Override
-                public int resDialogCommentPrompt() {
-                    if(RES_DIALOG_COMMENT_PROMPT != null) { 
-                        return RES_DIALOG_COMMENT_PROMPT;
-                    } else {
-                        return mReportsCrashes.resDialogCommentPrompt();
-                    }
-                }
-                
-                @Override
-                public ReportingInteractionMode mode() {
-                    return mReportsCrashes.mode();
-                }
-                
-                @Override
-                public int maxNumberOfRequestRetries() {
-                    return mReportsCrashes.maxNumberOfRequestRetries();
-                }
-                
-                @Override
-                public String mailTo() {
-                    return mReportsCrashes.mailTo();
-                }
-                
-                @Override
-                public String[] logcatArguments() {
-                    return mReportsCrashes.logcatArguments();
-                }
-                
-                @Override
-                public boolean includeDropBoxSystemTags() {
-                    return mReportsCrashes.includeDropBoxSystemTags();
-                }
-                
-                @Override
-                public String formUriBasicAuthPassword() {
-                    return mReportsCrashes.formUriBasicAuthPassword();
-                }
-                
-                @Override
-                public String formUriBasicAuthLogin() {
-                    return mReportsCrashes.formUriBasicAuthLogin();
-                }
-                
-                @Override
-                public String formUri() {
-                    return mReportsCrashes.formUri();
-                }
-                
-                @Override
-                public String formKey() {
-                    return mReportsCrashes.formKey();
-                }
-                
-                @Override
-                public boolean forceCloseDialogAfterToast() {
-                    return mReportsCrashes.forceCloseDialogAfterToast();
-                }
-                
-                @Override
-                public int dropboxCollectionMinutes() {
-                    return mReportsCrashes.dropboxCollectionMinutes();
-                }
-                
-                @Override
-                public boolean deleteUnapprovedReportsOnApplicationStart() {
-                    return mReportsCrashes.deleteUnapprovedReportsOnApplicationStart();
-                }
-                
-                @Override
-                public ReportField[] customReportContent() {
-                    return mReportsCrashes.customReportContent();
-                }
-                
-                @Override
-                public int connectionTimeout() {
-                    return mReportsCrashes.connectionTimeout();
-                }
-                
-                @Override
-                public String[] additionalSharedPreferences() {
-                    return mReportsCrashes.additionalSharedPreferences();
-                }
-                
-                @Override
-                public String[] additionalDropBoxTags() {
-                    return mReportsCrashes.additionalDropBoxTags();
-                }
-            };
+            configProxy = new ACRAConfiguration(mReportsCrashes);
         }
         return configProxy;
     }
@@ -502,167 +336,6 @@ public class ACRA {
      */
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
-    
-    /**
-     * Since ADT v14, when using Android Library Projects, resource Ids can't be passed as annotation parameter values anymore.
-     * In this case, devs can use setters to pass their Ids. These setters have to be called before {@link ACRA#init(Application)}.
-     * This method is called early in {@link ACRA#init(Application)} to initialize the {@link ReportsCrashes} annotation with values
-     * passed in the setters.
-     */
-    private static Integer RES_DIALOG_COMMENT_PROMPT = null;
-    private static Integer RES_DIALOG_EMAIL_PROMPT = null;
-    private static Integer RES_DIALOG_ICON = null;
-    private static Integer RES_DIALOG_OK_TOAST = null;
-    private static Integer RES_DIALOG_TEXT = null;
-    private static Integer RES_DIALOG_TITLE = null;
-    private static Integer RES_NOTIF_ICON = null;
-    private static Integer RES_NOTIF_TEXT = null;
-    private static Integer RES_NOTIF_TICKER_TEXT = null;
-    private static Integer RES_NOTIF_TITLE = null;
-    private static Integer RES_TOAST_TEXT = null;
     private static ReportsCrashes configProxy;
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resDialogCommentPrompt()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resDialogCommentPrompt()}
-     */
-    public static void setResDialogCommentPrompt(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResDialogCommentPrompt(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_DIALOG_COMMENT_PROMPT = resId;
-    }
-
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resDialogEmailPrompt()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resDialogEmailPrompt()}
-     */
-    public static void setResDialogEmailPrompt(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResDialogEmailPrompt(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_DIALOG_EMAIL_PROMPT = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resDialogIcon()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resDialogIcon()}
-     */
-    public static void setResDialogIcon(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResDialogIcon(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_DIALOG_ICON = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resDialogOkToast()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resDialogOkToast()}
-     */
-    public static void setResDialogOkToast(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResDialogOkToast(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_DIALOG_OK_TOAST = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resDialogText()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resDialogText()}
-     */
-    public static void setResDialogText(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResDialogText(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_DIALOG_TEXT = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resDialogTitle()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resDialogTitle()}
-     */
-    public static void setResDialogTitle(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResDialogTitle(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_DIALOG_TITLE = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resNotifIcon()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resNotifIcon()}
-     */
-    public static void setResNotifIcon(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResNotifIcon(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_NOTIF_ICON = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resNotifText()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resNotifText()}
-     */
-    public static void setResNotifText(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResNotifText(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_NOTIF_TEXT = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resNotifTickerText()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resNotifTickerText()}
-     */
-    public static void setResNotifTickerText(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResNotifTickerText(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_NOTIF_TICKER_TEXT = resId;
-    }
-    
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resNotifTitle()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resNotifTitle()}
-     */
-    public static void setResNotifTitle(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResNotifTitle(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_NOTIF_TITLE = resId;
-    }
-
-    /**
-     * Use this method BEFORE calling {@link ACRA#init(Application)} if the id you wanted to give to {@link ReportsCrashes#resToastText()}
-     * comes from an Android Library Project.
-     * @param resId The resource id, see {@link ReportsCrashes#resToastText()}
-     */
-    public static void setResToastText(int resId) {
-        if(mApplication != null) {
-            Log.e(LOG_TAG, "ACRA has already been initialized. You should call setResToastText(int) before ACRA.init(Application).");
-            return;
-        }
-        RES_TOAST_TEXT = resId;
-    }
 
 }
