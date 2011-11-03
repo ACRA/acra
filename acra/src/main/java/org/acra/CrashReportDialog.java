@@ -49,7 +49,7 @@ import android.widget.Toast;
  * 
  * @author Kevin Gaudin
  */
-final class CrashReportDialog extends Activity {
+public final class CrashReportDialog extends Activity {
 
     private SharedPreferences prefs;
     private EditText userComment;
