@@ -38,11 +38,17 @@ public enum ReportingInteractionMode {
      * Force close dialog is not displayed. When the user selects the
      * notification, a dialog is displayed asking him if he is ok to send a
      * report.
+     * @deprecated
      */
     NOTIFICATION,
     /**
      * A simple Toast is triggered when the application crashes, the Force close
      * dialog is not displayed.
      */
-    TOAST
+    TOAST,
+    /**
+     * Direct dialog: a report confirmation dialog is displayed right after the crash.
+     * Will replace {@link #NOTIFICATION} mode.
+     */
+    DIALOG
 }

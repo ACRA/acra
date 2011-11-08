@@ -184,7 +184,7 @@ public @interface ReportsCrashes {
 
     /**
      * <p>
-     * Arguments to be passed to the logcat command line. Default is { "-t", "200", "-v", "time" } for:
+     * Arguments to be passed to the logcat command line. Default is { "-t", "100", "-v", "time" } for:
      * </p>
      * 
      * <pre>
@@ -204,7 +204,7 @@ public @interface ReportsCrashes {
      *
      * @return Array of arguments to supply if retrieving the log as part of the report.
      */
-    String[] logcatArguments() default { "-t", "200", "-v", "time" };
+    String[] logcatArguments() default { "-t", "100", "-v", "time" };
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom server-side script, you can set here and
