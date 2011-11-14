@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 
@@ -46,14 +47,14 @@ public @interface ReportsCrashes {
      * @return The id of the Google Doc form.
      */
     String formKey();
-
+    
     /**
      * The Uri of your own server-side script that will receive reports. This is to use if you don't want to send
      * reports to Google Docs but to your own script.
      * 
      * @return URI of a custom server to which to post reports.
      */
-    String formUri() default "";
+    String formUri() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * <p>
@@ -77,65 +78,65 @@ public @interface ReportsCrashes {
     /**
      * @return Resource id for the user comment input label in the crash dialog. If not provided, disables the input field.
      */
-    int resDialogCommentPrompt() default 0;
+    int resDialogCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the user email address input label in the crash dialog.
      * If not provided, disables the input field.
      */
-    int resDialogEmailPrompt() default 0;
+    int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the crash dialog.
      */
-    int resDialogIcon() default android.R.drawable.ic_dialog_alert;
+    int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
 
     /**
      * @return Resource id for the Toast text triggered when the user accepts to send a report in the crash dialog.
      */
-    int resDialogOkToast() default 0;
+    int resDialogOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the text in the crash dialog.
      */
-    int resDialogText() default 0;
+    int resDialogText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the crash dialog.
      */
-    int resDialogTitle() default 0;
+    int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the status bar notification.
      */
-    int resNotifIcon() default android.R.drawable.stat_notify_error;
+    int resNotifIcon() default ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 
     /**
      * @return Resource id for the text in the status bar notification.
      */
-    int resNotifText() default 0;
+    int resNotifText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the ticker text in the status bar notification.
      */
-    int resNotifTickerText() default 0;
+    int resNotifTickerText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the status bar notification.
      */
-    int resNotifTitle() default 0;
+    int resNotifTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the Toast text triggered when the application crashes if the notification+dialog mode is not
      * used.
      */
-    int resToastText() default 0;
+    int resToastText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Name of the SharedPreferences that will host the {@link ACRA#PREF_DISABLE_ACRA} or {@link ACRA#PREF_ENABLE_ACRA} preference.
      * Default is to use the default SharedPreferences, as retrieved with {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
      */
-    String sharedPreferencesName() default "";
+    String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * If using a custom {@link ReportsCrashes#sharedPreferencesName()}, pass here the mode that you need for the
@@ -145,7 +146,7 @@ public @interface ReportsCrashes {
      * @return Mode to use with the SharedPreference creation.
      * @see Context#getSharedPreferences(String, int)
      */
-    int sharedPreferencesMode() default Context.MODE_PRIVATE;
+    int sharedPreferencesMode() default ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 
     /**
      * If enabled, DropBox events collection will include system tags:
@@ -170,7 +171,7 @@ public @interface ReportsCrashes {
      * 
      * @return True if system tags are to be included as part of ropBox events.
      */
-    boolean includeDropBoxSystemTags() default false;
+    boolean includeDropBoxSystemTags() default ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
 
     /**
      * @return Array of tags that will be fetched when collecting DropBox entries.
@@ -180,7 +181,7 @@ public @interface ReportsCrashes {
     /**
      * @return Number of minutes to look back when collecting events from DropBoxManager.
      */
-    int dropboxCollectionMinutes() default 5;
+    int dropboxCollectionMinutes() default ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
 
     /**
      * <p>
@@ -188,7 +189,7 @@ public @interface ReportsCrashes {
      * </p>
      * 
      * <pre>
-     * logcat -t 200 -v time
+     * logcat -t 100 -v time
      * </pre>
      * 
      * <p>
@@ -204,7 +205,7 @@ public @interface ReportsCrashes {
      *
      * @return Array of arguments to supply if retrieving the log as part of the report.
      */
-    String[] logcatArguments() default { "-t", "100", "-v", "time" };
+    String[] logcatArguments() default { "-t", ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom server-side script, you can set here and
@@ -212,7 +213,7 @@ public @interface ReportsCrashes {
      *
      * @return Login to use when posting reports to a custom server.
      */
-    String formUriBasicAuthLogin() default ACRA.NULL_VALUE;
+    String formUriBasicAuthLogin() default ACRAConstants.NULL_VALUE;
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom server-side script, you can set here and
@@ -220,7 +221,7 @@ public @interface ReportsCrashes {
      *
      * @return Password to use when posting reports to a custom server.
      */
-    String formUriBasicAuthPassword() default ACRA.NULL_VALUE;
+    String formUriBasicAuthPassword() default ACRAConstants.NULL_VALUE;
 
     /**
      * @return ReportField Array listing the fields to be included in the report.
@@ -236,7 +237,7 @@ public @interface ReportsCrashes {
      *
      * @return email address to which to send reports.
      */
-    String mailTo() default "";
+    String mailTo() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * Controls whether unapproved reports are deleted on application start or not. Default is true. This is a change
@@ -247,12 +248,12 @@ public @interface ReportsCrashes {
      *
      * @return true if ACRA should delete unapproved reports on application start.
      */
-    boolean deleteUnapprovedReportsOnApplicationStart() default true;
+    boolean deleteUnapprovedReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
 
     /**
      * @return Value in milliseconds for timeout attempting to connect to a network (default 3000ms).
      */
-    int connectionTimeout() default 3000;
+    int connectionTimeout() default ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
 
     /**
      * If the request is retried due to timeout, the socketTimeout will double before retrying the request.
@@ -260,13 +261,13 @@ public @interface ReportsCrashes {
      * @return Value in milliseconds for timeout receiving a response to a network request (default 3000ms).
      * @see #maxNumberOfRequestRetries()
      */
-    int socketTimeout() default 3000;
+    int socketTimeout() default ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 
     /**
      * @return Maximum number of times a network request will be retried when receiving the response times out (default 3).
      * @see #socketTimeout()
      */
-    int maxNumberOfRequestRetries() default 3;
+    int maxNumberOfRequestRetries() default ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
 
     /**
      * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you prefer displaying the native Force Close
@@ -274,7 +275,7 @@ public @interface ReportsCrashes {
      * 
      * @return true if the Force Close dialog has to be displayed.
      */
-    boolean forceCloseDialogAfterToast() default false;
+    boolean forceCloseDialogAfterToast() default ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
 
     /**
      * Add here your {@link SharedPreferences} identifier Strings if you use others than your application's default.

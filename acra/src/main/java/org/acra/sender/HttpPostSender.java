@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
@@ -119,7 +120,7 @@ public class HttpPostSender implements ReportSender {
     }
 
     private static boolean isNull(String aString) {
-        return aString == null || ACRA.NULL_VALUE.equals(aString);
+        return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
 
     private Map<String, String> remap(Map<ReportField, String> report) {
