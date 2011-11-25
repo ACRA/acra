@@ -167,7 +167,6 @@ public @interface ReportsCrashes {
      * <li>SYSTEM_TOMBSTONE</li>
      * <li>data_app_strictmode</li>
      * </ul>
-     * Requires {@link #includeDropBox()} true.
      * 
      * @return True if system tags are to be included as part of ropBox events.
      */
@@ -193,9 +192,9 @@ public @interface ReportsCrashes {
      * </pre>
      * 
      * <p>
-     * Do not include -b arguments for buffer selection, use {@link #includeEventsLogcat()} and
-     * {@link #includeRadioLogcat()} to activate alternative logcat buffers reporting. They will use the same other
-     * arguments as those provided here.
+     * Do not include -b arguments for buffer selection, include {@link ReportField#EVENTSLOG} and
+     * {@link ReportField#RADIOLOG} in {@link ReportsCrashes#customReportContent()} to activate alternative
+     * logcat buffers reporting. They will use the same other arguments as those provided here.
      * </p>
      * 
      * <p>
