@@ -40,7 +40,7 @@ public class EmailIntentSender implements ReportSender {
     @Override
     public void send(CrashReportData errorContent) throws ReportSenderException {
 
-        final String subject = errorContent.get(ReportField.PACKAGE_NAME) + " Crash Report";
+        final String subject = mContext.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);
 
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
