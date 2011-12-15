@@ -527,19 +527,25 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 || prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
 
             // Approve and then send reports now
-            Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");
+            Log.d(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");
             sender = startSendingReports(sendOnlySilentReports, true);
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             // Send reports when user accepts
+            Log.d(ACRA.LOG_TAG, "About to send status bar notification from #handleException");
             notifySendReport(reportFileName);
         } else if (reportingInteractionMode == ReportingInteractionMode.DIALOG) {
             // Create a new activity task with the confirmation dialog.
             // This new task will be persisted on application restart right
             // after its death.
+            Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
             notifyDialog(reportFileName);
         }
 
         if (shouldDisplayToast) {
+            // A toast is being displayed, we have to wait for its end before
+            // doing anything else.
+            // The toastWaitEnded flag will be checked before any other
+            // operation.
             toastWaitEnded = false;
             new AsyncTask<Void, Void, Void>() {
 
@@ -555,7 +561,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                             // Wait a bit to let the user read the toast
                             Thread.sleep(ACRAConstants.TOAST_WAIT_DURATION);
                         } catch (InterruptedException e1) {
-                            Log.e(LOG_TAG, "Error : ", e1);
+                            Log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                         }
                         currentTime.setToNow();
                         elapsedTimeInMillis = currentTime.toMillis(false) - beforeWaitInMillis;
@@ -563,48 +569,53 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     toastWaitEnded = true;
                     return null;
                 }
-            };
+            }.execute();
         }
 
-        // start a sender waiting AsyncTask
-        // call endApplication() un onPostExecute(), only when (toastWaitEnded
+        // start an AsyncTask waiting for the end of the sender
+        // call endApplication() in onPostExecute(), only when (toastWaitEnded
         // == true)
-        if (sender != null) {
-            final SendWorker worker = sender;
-            new AsyncTask<Void, Void, Void>() {
+        final SendWorker worker = sender;
+        
+        new AsyncTask<Void, Void, Void>() {
 
-                @Override
-                protected Void doInBackground(Void... arg0) {
-                    if (worker != null) {
-                        // We have to wait for BOTH the toast display wait AND
-                        // the worker job to be completed.
-                        while (!toastWaitEnded && worker.isAlive()) {
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e1) {
-                                Log.e(LOG_TAG, "Error : ", e1);
-                            }
-                        }
-                    }
-
-                    return null;
-                }
-
-                /*
-                 * (non-Javadoc)
-                 * 
-                 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-                 */
-                @Override
-                protected void onPostExecute(Void result) {
-                    super.onPostExecute(result);
-                    if (endApplication) {
-                        endApplication();
+            @Override
+            protected Void doInBackground(Void... unused) {
+                // We have to wait for BOTH the toast display wait AND
+                // the worker job to be completed.
+                Log.d(LOG_TAG, "Waiting for Toast + worker...");
+                while (!toastWaitEnded || (worker != null && worker.isAlive())) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e1) {
+                        Log.e(LOG_TAG, "Error : ", e1);
                     }
                 }
+                Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + endApplication);
 
-            };
-        }
+                if (endApplication) {
+                    endApplication();
+                }
+
+                return null;
+            }
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+             */
+            @Override
+            protected void onPostExecute(Void unused) {
+                Log.d(LOG_TAG, "Going to kill app: " + endApplication);
+
+                super.onPostExecute(unused);
+                if (endApplication) {
+                    endApplication();
+                }
+            }
+
+        }.execute();
         return null;
     }
 

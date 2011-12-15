@@ -207,14 +207,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * @param resDialogCommentPrompt
-     *            the resDialogCommentPrompt to set
-     */
-    public static void setResDialogCommentPrompt(Integer resDialogCommentPrompt) {
-        ACRAConfiguration.mResDialogCommentPrompt = resDialogCommentPrompt;
-    }
-
-    /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogEmailPrompt()} comes from an Android
      * Library Project.
@@ -227,13 +219,6 @@ public class ACRAConfiguration implements ReportsCrashes {
         mResDialogEmailPrompt = resId;
     }
 
-    /**
-     * @param resDialogEmailPrompt
-     *            the resDialogEmailPrompt to set
-     */
-    public static void setResDialogEmailPrompt(Integer resDialogEmailPrompt) {
-        ACRAConfiguration.mResDialogEmailPrompt = resDialogEmailPrompt;
-    }
 
     /**
      * Use this method if the id you wanted to give to
@@ -245,14 +230,6 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public static void setResDialogIcon(int resId) {
         mResDialogIcon = resId;
-    }
-
-    /**
-     * @param resDialogIcon
-     *            the resDialogIcon to set
-     */
-    public static void setResDialogIcon(Integer resDialogIcon) {
-        ACRAConfiguration.mResDialogIcon = resDialogIcon;
     }
 
     /**
@@ -268,14 +245,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * @param resDialogOkToast
-     *            the resDialogOkToast to set
-     */
-    public static void setResDialogOkToast(Integer resDialogOkToast) {
-        ACRAConfiguration.mResDialogOkToast = resDialogOkToast;
-    }
-
-    /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogText()} comes from an Android Library
      * Project.
@@ -285,14 +254,6 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public static void setResDialogText(int resId) {
         mResDialogText = resId;
-    }
-
-    /**
-     * @param resDialogText
-     *            the resDialogText to set
-     */
-    public static void setResDialogText(Integer resDialogText) {
-        ACRAConfiguration.mResDialogText = resDialogText;
     }
 
     /**
@@ -308,14 +269,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * @param resDialogTitle
-     *            the resDialogTitle to set
-     */
-    public static void setResDialogTitle(Integer resDialogTitle) {
-        ACRAConfiguration.mResDialogTitle = resDialogTitle;
-    }
-
-    /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifIcon()} comes from an Android Library
      * Project.
@@ -328,14 +281,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * @param resNotifIcon
-     *            the resNotifIcon to set
-     */
-    public static void setResNotifIcon(Integer resNotifIcon) {
-        ACRAConfiguration.mResNotifIcon = resNotifIcon;
-    }
-
-    /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifText()} comes from an Android Library
      * Project.
@@ -345,14 +290,6 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public static void setResNotifText(int resId) {
         mResNotifText = resId;
-    }
-
-    /**
-     * @param resNotifText
-     *            the resNotifText to set
-     */
-    public static void setResNotifText(Integer resNotifText) {
-        ACRAConfiguration.mResNotifText = resNotifText;
     }
 
     /**
@@ -369,14 +306,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * @param resNotifTickerText
-     *            the resNotifTickerText to set
-     */
-    public static void setResNotifTickerText(Integer resNotifTickerText) {
-        ACRAConfiguration.mResNotifTickerText = resNotifTickerText;
-    }
-
-    /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifTitle()} comes from an Android Library
      * Project.
@@ -389,14 +318,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * @param resNotifTitle
-     *            the resNotifTitle to set
-     */
-    public static void setResNotifTitle(Integer resNotifTitle) {
-        ACRAConfiguration.mResNotifTitle = resNotifTitle;
-    }
-
-    /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resToastText()} comes from an Android Library
      * Project.
@@ -406,14 +327,6 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public static void setResToastText(int resId) {
         mResToastText = resId;
-    }
-
-    /**
-     * @param resToastText
-     *            the resToastText to set
-     */
-    public static void setResToastText(Integer resToastText) {
-        ACRAConfiguration.mResToastText = resToastText;
     }
 
     /**
