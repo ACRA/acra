@@ -175,8 +175,8 @@ public final class CrashReportDialog extends Activity {
 
             @Override
             public void onClick(View v) {
-                // TODO Shouldn't this just delete the report that has been refused by the user, otherwise we might delete other unsent reports.
-                ACRA.getErrorReporter().deletePendingReports();
+                // Let's delete all non approved reports. We keep approved and silent reports.
+                ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
                 finish();
             }
 

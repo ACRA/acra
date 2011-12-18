@@ -383,14 +383,34 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * depending on the interaction mode set.
      */
     private void checkReportsOnApplicationStart() {
+
+        if ((ACRA.getConfig().mode() == ReportingInteractionMode.NOTIFICATION || ACRA.getConfig().mode() == ReportingInteractionMode.DIALOG)
+                && ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
+            // NOTIFICATION or DIALOG mode, and there are unapproved reports to
+            // send (latest notification/dialog has been ignored: neither
+            // accepted
+            // nor refused). The application developer has decided that
+            // these reports should not be renotified ==> destroy them all but
+            // one.
+            deletePendingNonApprovedReports(true);
+        }
+
         final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
-        final String[] filesList = reportFinder.getCrashReportFiles();
+        String[] filesList = reportFinder.getCrashReportFiles();
+
         if (filesList != null && filesList.length > 0) {
-            final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
             // Immediately send reports for SILENT and TOAST modes.
             // Immediately send reports in NOTIFICATION mode only if they are
             // all silent or approved.
+            // If there is still one unapproved report in NOTIFICATION mode,
+            // notify it.
+            // If there are unapproved reports in DIALOG mode, show the dialog
+
             ReportingInteractionMode reportingInteractionMode = ACRA.getConfig().mode();
+
+            filesList = reportFinder.getCrashReportFiles();
+            final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
+
             if (reportingInteractionMode == ReportingInteractionMode.SILENT
                     || reportingInteractionMode == ReportingInteractionMode.TOAST
                     || (onlySilentOrApprovedReports && (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG))) {
@@ -403,35 +423,33 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
                 Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
                 startSendingReports(false, false);
-            } else if (ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
-                // NOTIFICATION mode, and there are unapproved reports to send
-                // (latest notification has been ignored: neither accepted nor
-                // refused). The application developer has decided that these
-                // reports should not be renotified ==> destroy them.
-                deletePendingNonApprovedReports();
-            } else {
-                if (ACRA.getConfig().mode() == ReportingInteractionMode.NOTIFICATION) {
-                    // NOTIFICATION mode there are unapproved reports to send
-                    // (latest notification has been ignored: neither accepted
-                    // nor refused).
-                    // Display the notification.
-                    // The user comment will be associated to the latest report
-                    notifySendReport(getLatestNonSilentReport(filesList));
-                } else if (ACRA.getConfig().mode() == ReportingInteractionMode.DIALOG) {
-                    notifyDialog(getLatestNonSilentReport(filesList));
-                }
-
+            } else if (ACRA.getConfig().mode() == ReportingInteractionMode.NOTIFICATION) {
+                // NOTIFICATION mode there are unapproved reports to send
+                // Display the notification.
+                // The user comment will be associated to the latest report
+                notifySendReport(getLatestNonSilentReport(filesList));
+            } else if (ACRA.getConfig().mode() == ReportingInteractionMode.DIALOG) {
+                // DIALOG mode: the dialog is always displayed because it has
+                // been put on the task stack before killing the app.
+                // The user can explicitly say Yes or No... or ignore the dialog
+                // with the back button.
+                // As there are unapproved reports to send, display the dialog.
+                // The user comment will be associated to the latest report
+                notifyDialog(getLatestNonSilentReport(filesList));
             }
+
         }
     }
 
     /**
      * Delete all pending non approved reports.
+     * 
+     * @param keepOne   If you need to keep the latest report, set this to true.
      */
-    private void deletePendingNonApprovedReports() {
-        // In NOTIFICATION mode, we have to keep the latest report which could
-        // be needed for an existing not yet discarded notification.
-        final int nbReportsToKeep = (ACRA.getConfig().mode() == ReportingInteractionMode.NOTIFICATION ? 1 : 0);
+    void deletePendingNonApprovedReports(boolean keepOne) {
+        // In NOTIFICATION AND DIALOG mode, we have to keep the latest report which
+        // has been writtent before killing the app.
+        final int nbReportsToKeep = keepOne ? 1 : 0;
         deletePendingReports(false, true, nbReportsToKeep);
     }
 
@@ -533,13 +551,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Send reports when user accepts
             Log.d(ACRA.LOG_TAG, "About to send status bar notification from #handleException");
             notifySendReport(reportFileName);
-        } else if (reportingInteractionMode == ReportingInteractionMode.DIALOG) {
-            // Create a new activity task with the confirmation dialog.
-            // This new task will be persisted on application restart right
-            // after its death.
-            Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
-            notifyDialog(reportFileName);
         }
+        // } else if (reportingInteractionMode ==
+        // ReportingInteractionMode.DIALOG) {
+        // // Create a new activity task with the confirmation dialog.
+        // // This new task will be persisted on application restart right
+        // // after its death.
+        // Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
+        // notifyDialog(reportFileName);
+        // }
 
         if (shouldDisplayToast) {
             // A toast is being displayed, we have to wait for its end before
@@ -576,7 +596,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // call endApplication() in onPostExecute(), only when (toastWaitEnded
         // == true)
         final SendWorker worker = sender;
-        
+        final boolean showDirectDialog = reportingInteractionMode == ReportingInteractionMode.DIALOG;
+
         new AsyncTask<Void, Void, Void>() {
 
             @Override
@@ -591,6 +612,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         Log.e(LOG_TAG, "Error : ", e1);
                     }
                 }
+
+                if (showDirectDialog) {
+                    // Create a new activity task with the confirmation dialog.
+                    // This new task will be persisted on application restart
+                    // right
+                    // after its death.
+                    Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
+                    notifyDialog(reportFileName);
+                }
+
                 Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + endApplication);
 
                 if (endApplication) {
@@ -598,21 +629,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 }
 
                 return null;
-            }
-
-            /*
-             * (non-Javadoc)
-             * 
-             * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-             */
-            @Override
-            protected void onPostExecute(Void unused) {
-                Log.d(LOG_TAG, "Going to kill app: " + endApplication);
-
-                super.onPostExecute(unused);
-                if (endApplication) {
-                    endApplication();
-                }
             }
 
         }.execute();
@@ -700,7 +716,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void saveCrashReportFile(String fileName, CrashReportData crashData) {
         try {
-            Log.d(LOG_TAG, "Writing crash report file.");
+            Log.d(LOG_TAG, "Writing crash report file " + fileName + ".");
             final CrashReportPersister persister = new CrashReportPersister(mContext);
             persister.store(crashData, fileName);
         } catch (Exception e) {
@@ -754,6 +770,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 final boolean isReportApproved = fileNameParser.isApproved(fileName);
                 if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
                     final File fileToDelete = new File(mContext.getFilesDir(), fileName);
+                    Log.d(LOG_TAG, "Deleting file " + fileName);
                     if (!fileToDelete.delete()) {
                         Log.e(ACRA.LOG_TAG, "Could not delete report : " + fileToDelete);
                     }
