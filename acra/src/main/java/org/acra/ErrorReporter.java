@@ -276,30 +276,35 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     public void uncaughtException(Thread t, Throwable e) {
-
-        // If we're not enabled then just pass the Exception on to any
-        // defaultExceptionHandler.
-        if (!enabled) {
-            if (mDfltExceptionHandler != null) {
-                Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName()
-                        + " - forwarding uncaught Exception on to default ExceptionHandler");
-                mDfltExceptionHandler.uncaughtException(t, e);
-            } else {
-                Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName()
-                        + " - no default ExceptionHandler");
+        try {
+            // If we're not enabled then just pass the Exception on to any
+            // defaultExceptionHandler.
+            if (!enabled) {
+                if (mDfltExceptionHandler != null) {
+                    Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName()
+                            + " - forwarding uncaught Exception on to default ExceptionHandler");
+                    mDfltExceptionHandler.uncaughtException(t, e);
+                } else {
+                    Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName()
+                            + " - no default ExceptionHandler");
+                }
+                return;
             }
-            return;
+
+            brokenThread = t;
+            unhandledThrowable = e;
+
+            Log.e(ACRA.LOG_TAG,
+                    "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
+                            + ". Building report.");
+
+            // Generate and send crash report
+            handleException(e, ACRA.getConfig().mode(), false, true);
+        } catch (Throwable fatality) {
+            // ACRA failed. Prevent any recursive call to
+            // ACRA.uncaughtException(), let the native reporter do its job.
+            mDfltExceptionHandler.uncaughtException(t, e);
         }
-
-        brokenThread = t;
-        unhandledThrowable = e;
-
-        Log.e(ACRA.LOG_TAG,
-                "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
-                        + ". Building report.");
-
-        // Generate and send crash report
-        handleException(e, ACRA.getConfig().mode(), false, true);
     }
 
     /**
@@ -444,10 +449,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Delete all pending non approved reports.
      * 
-     * @param keepOne   If you need to keep the latest report, set this to true.
+     * @param keepOne
+     *            If you need to keep the latest report, set this to true.
      */
     void deletePendingNonApprovedReports(boolean keepOne) {
-        // In NOTIFICATION AND DIALOG mode, we have to keep the latest report which
+        // In NOTIFICATION AND DIALOG mode, we have to keep the latest report
+        // which
         // has been writtent before killing the app.
         final int nbReportsToKeep = keepOne ? 1 : 0;
         deletePendingReports(false, true, nbReportsToKeep);

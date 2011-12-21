@@ -145,7 +145,7 @@ public final class CrashReportDataFactory {
             }
 
             // Collect meminfo
-            if (crashReportFields.contains(DUMPSYS_MEMINFO)) {
+            if (!(th instanceof OutOfMemoryError) && crashReportFields.contains(DUMPSYS_MEMINFO)) {
                 crashReportData.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
             }
 
