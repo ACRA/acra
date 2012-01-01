@@ -19,6 +19,9 @@
 
 package org.acra;
 
+import android.content.Context;
+import org.acra.collector.CrashReportData;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -28,10 +31,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.Map;
-
-import org.acra.collector.CrashReportData;
-
-import android.content.Context;
 
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
@@ -67,7 +66,7 @@ final class CrashReportPersister {
         }
 
         try {
-            final BufferedInputStream bis = new BufferedInputStream(in);
+            final BufferedInputStream bis = new BufferedInputStream(in, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
             bis.mark(Integer.MAX_VALUE);
             final boolean isEbcdic = isEbcdic(bis);
             bis.reset();
@@ -166,7 +165,7 @@ final class CrashReportPersister {
         boolean firstChar = true;
 
         final CrashReportData crashData = new CrashReportData();
-        final BufferedReader br = new BufferedReader(reader);
+        final BufferedReader br = new BufferedReader(reader, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
 
         while (true) {
             intVal = br.read();

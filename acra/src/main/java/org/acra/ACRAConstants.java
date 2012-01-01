@@ -1,7 +1,8 @@
 package org.acra;
 
-import static org.acra.ReportField.IS_SILENT;
 import android.content.Context;
+
+import static org.acra.ReportField.IS_SILENT;
 
 /**
  * Responsible for collating those constants shared among the ACRA components.
@@ -75,5 +76,5 @@ public final class ACRAConstants {
     
     public static final String DEFAULT_LOGCAT_LINES = "100";
 
-
+    public static final int DEFAULT_BUFFER_SIZE_IN_BYTES = 8192;
 }
