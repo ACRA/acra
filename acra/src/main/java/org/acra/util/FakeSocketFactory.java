@@ -3,20 +3,18 @@
  */
 package org.acra.util;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.security.GeneralSecurityException;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManager;
-
 import org.apache.http.conn.scheme.LayeredSocketFactory;
 import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 public class FakeSocketFactory implements SocketFactory, LayeredSocketFactory {
 
@@ -27,7 +25,7 @@ public class FakeSocketFactory implements SocketFactory, LayeredSocketFactory {
             final SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
             return context;
-        } catch (GeneralSecurityException e) {
+        } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
     }

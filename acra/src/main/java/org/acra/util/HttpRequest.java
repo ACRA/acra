@@ -5,13 +5,6 @@
  */
 package org.acra.util;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Map;
-
 import org.acra.ACRA;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
@@ -37,6 +30,13 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Map;
 
 public final class HttpRequest {
 
@@ -138,9 +138,6 @@ public final class HttpRequest {
             if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, " key : '" + key + "'    value: '" + parameters.get(key) + "'");
         }
 
-        // TODO Consider using a RequestRetryHandler and if its a SocketTimeoutException to up the SocketTimeout and try again.
-        // See http://stackoverflow.com/questions/693997/how-to-set-httpresponse-timeout-for-android-in-java
-        // I think SocketTimeOut while waiting for response may be the cause of the multiple crash reports () - I
         final HttpResponse response = httpClient.execute(httpPost, new BasicHttpContext());
         if (response != null) {
             final StatusLine statusLine = response.getStatusLine();
