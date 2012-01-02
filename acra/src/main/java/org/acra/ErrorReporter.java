@@ -471,8 +471,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            Set this to true if you want the applicationto be ended after
      *            sending the report.
      */
-    public SendWorker handleException(Throwable e, boolean endApplication) {
-        return handleException(e, ACRA.getConfig().mode(), false, endApplication);
+    public void handleException(Throwable e, boolean endApplication) {
+        handleException(e, ACRA.getConfig().mode(), false, endApplication);
     }
 
     /**
@@ -491,9 +491,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *         interaction mode is silent, toast or the always accept preference
      *         is true, otherwise returns null.
      */
-    private SendWorker handleException(Throwable e, ReportingInteractionMode reportingInteractionMode,
+    private void handleException(Throwable e, ReportingInteractionMode reportingInteractionMode,
             final boolean forceSilentReport, final boolean endApplication) {
 
+        if(!enabled) {
+            return;
+        }
+        
         boolean sendOnlySilentReports = false;
         if (reportingInteractionMode == null) {
             // No interaction mode defined, we assume it has been set during
@@ -639,7 +643,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
 
         }.execute();
-        return null;
+        return;
     }
 
     /**
