@@ -131,7 +131,7 @@ public final class CrashReportDialog extends Activity {
             @Override
             public void onClick(View v) {
                 // Retrieve user comment
-                final String comment = userComment != null ? userComment.getText().toString() : null;
+                final String comment = userComment != null ? userComment.getText().toString() : "";
 
                 // Store the user email
                 final String usrEmail;
