@@ -64,6 +64,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private static Integer mSharedPreferenceMode = null;
     private static String mSharedPreferenceName = null;
     private static Integer mSocketTimeout = null;
+    private static Boolean mLogcatFilterByPid = null;
 
     /**
      * @param additionalDropboxTags
@@ -758,5 +759,18 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_SOCKET_TIMEOUT;
+    }
+
+    @Override
+    public boolean logcatFilterByPid() {
+        if(mLogcatFilterByPid != null) {
+            return mLogcatFilterByPid;
+        }
+        
+        if(mReportsCrashes != null) {
+            return mReportsCrashes.logcatFilterByPid();
+        }
+        
+        return DEFAULT_LOGCAT_FILTER_BY_PID;
     }
 }

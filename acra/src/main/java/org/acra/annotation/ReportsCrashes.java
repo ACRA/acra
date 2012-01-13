@@ -285,4 +285,11 @@ public @interface ReportsCrashes {
      * @return String Array containing the names of the additional preferences.
      */
     String[] additionalSharedPreferences() default {};
+    
+    /**
+     * Set this to true if you want to include only logcat lines related to your Application process.
+     * 
+     * @return true if you want to filter logcat with your process id.
+     */
+    boolean logcatFilterByPid() default ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
 }

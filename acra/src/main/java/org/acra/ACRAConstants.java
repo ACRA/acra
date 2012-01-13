@@ -77,4 +77,6 @@ public final class ACRAConstants {
     public static final String DEFAULT_LOGCAT_LINES = "100";
 
     public static final int DEFAULT_BUFFER_SIZE_IN_BYTES = 8192;
+
+    public static final boolean DEFAULT_LOGCAT_FILTER_BY_PID = false;
 }

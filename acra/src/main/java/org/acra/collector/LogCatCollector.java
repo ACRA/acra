@@ -33,8 +33,9 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Executes logcat commands and collects it's output.
+ * 
  * @author Kevin Gaudin
- *
+ * 
  */
 class LogCatCollector {
 
@@ -58,6 +59,11 @@ class LogCatCollector {
      *         plan consumption.
      */
     public static String collectLogCat(String bufferName) {
+        final int myPid = android.os.Process.myPid();
+        String myPidStr = null;
+        if (ACRA.getConfig().logcatFilterByPid() && myPid > 0) {
+            myPidStr = Integer.toString(myPid) +"):";
+        }
 
         final List<String> commandLine = new ArrayList<String>();
         commandLine.add("logcat");
@@ -69,7 +75,8 @@ class LogCatCollector {
         // "-t n" argument has been introduced in FroYo (API level 8). For
         // devices with lower API level, we will have to emulate its job.
         final int tailCount;
-        final List<String> logcatArgumentsList = new ArrayList<String>(Arrays.asList(ACRA.getConfig().logcatArguments()));
+        final List<String> logcatArgumentsList = new ArrayList<String>(
+                Arrays.asList(ACRA.getConfig().logcatArguments()));
 
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
@@ -83,7 +90,8 @@ class LogCatCollector {
             tailCount = -1;
         }
 
-        final LinkedList<String> logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
+        final LinkedList<String> logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount
+                : DEFAULT_TAIL_COUNT);
         commandLine.addAll(logcatArgumentsList);
 
         try {
@@ -96,7 +104,9 @@ class LogCatCollector {
                 if (line == null) {
                     break;
                 }
-                logcatBuf.add(line + "\n");
+                if (myPidStr == null || line.contains(myPidStr)) {
+                    logcatBuf.add(line + "\n");
+                }
             }
 
         } catch (IOException e) {
