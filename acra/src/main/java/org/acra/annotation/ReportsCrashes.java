@@ -292,4 +292,10 @@ public @interface ReportsCrashes {
      * @return true if you want to filter logcat with your process id.
      */
     boolean logcatFilterByPid() default ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
+    
+    /**
+     * Set this to false if you want to disable sending reports in development mode. Only signed application packages will send reports.
+     * @return false if reports should not be sent.
+     */
+    boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 }

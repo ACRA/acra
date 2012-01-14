@@ -49,7 +49,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     private static ReportingInteractionMode mMode = null;
     private static ReportsCrashes mReportsCrashes = null;
 
-
     private static Integer mResDialogCommentPrompt = null;
     private static Integer mResDialogEmailPrompt = null;
     private static Integer mResDialogIcon = null;
@@ -65,6 +64,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private static String mSharedPreferenceName = null;
     private static Integer mSocketTimeout = null;
     private static Boolean mLogcatFilterByPid = null;
+    private static Boolean mSendReportsInDevMode = null;
 
     /**
      * @param additionalDropboxTags
@@ -220,7 +220,6 @@ public class ACRAConfiguration implements ReportsCrashes {
         mResDialogEmailPrompt = resId;
     }
 
-
     /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogIcon()} comes from an Android Library
@@ -352,6 +351,25 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public static void setSocketTimeout(Integer socketTimeout) {
         ACRAConfiguration.mSocketTimeout = socketTimeout;
+    }
+
+    /**
+     * 
+     * @param filterByPid
+     *            true if you want to collect only logcat lines related to your
+     *            application process.
+     */
+    public static void setLogcatFilterByPid(Boolean filterByPid) {
+        mLogcatFilterByPid = filterByPid;
+    }
+
+    /**
+     * 
+     * @param true false if you want to disable sending reports in development
+     *        mode. Reports will be sent only on signed applications.
+     */
+    public static void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
+        mSendReportsInDevMode = sendReportsInDevMode;
     }
 
     /**
@@ -763,14 +781,27 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     @Override
     public boolean logcatFilterByPid() {
-        if(mLogcatFilterByPid != null) {
+        if (mLogcatFilterByPid != null) {
             return mLogcatFilterByPid;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.logcatFilterByPid();
+        }
+
+        return DEFAULT_LOGCAT_FILTER_BY_PID;
+    }
+
+    @Override
+    public boolean sendReportsInDevMode() {
+        if(mSendReportsInDevMode != null) {
+            return mSendReportsInDevMode;
         }
         
         if(mReportsCrashes != null) {
-            return mReportsCrashes.logcatFilterByPid();
+            return mReportsCrashes.sendReportsInDevMode();
         }
         
-        return DEFAULT_LOGCAT_FILTER_BY_PID;
+        return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
     }
 }

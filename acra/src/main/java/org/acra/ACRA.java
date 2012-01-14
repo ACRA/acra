@@ -60,6 +60,9 @@ import android.Manifest.permission;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -352,9 +355,21 @@ public class ACRA {
             PACKAGE_NAME, FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE,
             AVAILABLE_MEM_SIZE, CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION,
             DISPLAY, USER_COMMENT, USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT,
-            DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES,
-            SETTINGS_SYSTEM, SETTINGS_SECURE };
+            DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM,
+            SETTINGS_SECURE };
 
     private static ReportsCrashes configProxy;
 
+    /**
+     * Returns true if the application is in debuggable.
+     * @return true if the application is in debuggable.
+     */
+    static boolean isDebuggable() {
+        PackageManager pm = mApplication.getPackageManager();
+        try {
+            return ((pm.getApplicationInfo(mApplication.getPackageName(), 0).flags & ApplicationInfo.FLAG_DEBUGGABLE) > 0);
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+    }
 }

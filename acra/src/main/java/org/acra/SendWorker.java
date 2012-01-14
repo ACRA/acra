@@ -16,7 +16,7 @@ import android.util.Log;
 
 /**
  * Checks and send reports on a separate Thread.
- *
+ * 
  * @author Kevin Gaudin
  */
 final class SendWorker extends Thread {
@@ -27,18 +27,22 @@ final class SendWorker extends Thread {
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
     private final List<ReportSender> reportSenders;
 
-
     /**
      * Creates a new {@link SendWorker} to try sending pending reports.
-     *
-     * @param context       ApplicationContext in which the reports are being sent.
-     * @param reportSenders List of ReportSender to use to send the crash reports.
+     * 
+     * @param context
+     *            ApplicationContext in which the reports are being sent.
+     * @param reportSenders
+     *            List of ReportSender to use to send the crash reports.
      * @param sendOnlySilentReports
-     *            If set to true, will send only reports which have been explicitly declared as silent by the
-     *            application developer.
-     * @param approvePendingReports if this endWorker should approve pending reports before sending any reports.
+     *            If set to true, will send only reports which have been
+     *            explicitly declared as silent by the application developer.
+     * @param approvePendingReports
+     *            if this endWorker should approve pending reports before
+     *            sending any reports.
      */
-    public SendWorker(Context context, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
+    public SendWorker(Context context, List<ReportSender> reportSenders, boolean sendOnlySilentReports,
+            boolean approvePendingReports) {
         this.context = context;
         this.reportSenders = reportSenders;
         this.sendOnlySilentReports = sendOnlySilentReports;
@@ -47,7 +51,7 @@ final class SendWorker extends Thread {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Thread#run()
      */
     @Override
@@ -59,7 +63,8 @@ final class SendWorker extends Thread {
     }
 
     /**
-     * Flag all pending reports as "approved" by the user. These reports can be sent.
+     * Flag all pending reports as "approved" by the user. These reports can be
+     * sent.
      */
     private void approvePendingReports() {
         Log.d(LOG_TAG, "Mark all pending reports as approved.");
@@ -71,10 +76,13 @@ final class SendWorker extends Thread {
             if (!fileNameParser.isApproved(reportFileName)) {
                 final File reportFile = new File(context.getFilesDir(), reportFileName);
 
-                // TODO look into how this could cause a file to go from -approved.stacktrace to -approved-approved.stacktrace
-                final String newName = reportFileName.replace(ACRAConstants.REPORTFILE_EXTENSION, ACRAConstants.APPROVED_SUFFIX + ACRAConstants.REPORTFILE_EXTENSION);
+                // TODO look into how this could cause a file to go from
+                // -approved.stacktrace to -approved-approved.stacktrace
+                final String newName = reportFileName.replace(ACRAConstants.REPORTFILE_EXTENSION,
+                        ACRAConstants.APPROVED_SUFFIX + ACRAConstants.REPORTFILE_EXTENSION);
 
-                // TODO Look into whether rename is atomic. Is there a better option?
+                // TODO Look into whether rename is atomic. Is there a better
+                // option?
                 final File newFile = new File(context.getFilesDir(), newName);
                 if (!reportFile.renameTo(newFile)) {
                     Log.e(LOG_TAG, "Could not rename approved report from " + reportFile + " to " + newFile);
@@ -85,9 +93,13 @@ final class SendWorker extends Thread {
 
     /**
      * Send pending reports.
-     *
-     * @param context               The application context.
-     * @param sendOnlySilentReports Send only reports explicitly declared as SILENT by the developer (sent via {@link ErrorReporter#handleSilentException(Throwable)}.
+     * 
+     * @param context
+     *            The application context.
+     * @param sendOnlySilentReports
+     *            Send only reports explicitly declared as SILENT by the
+     *            developer (sent via
+     *            {@link ErrorReporter#handleSilentException(Throwable)}.
      */
     private void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
         Log.d(LOG_TAG, "#checkAndSendReports - start");
@@ -103,7 +115,8 @@ final class SendWorker extends Thread {
             }
 
             if (reportsSentCount >= ACRAConstants.MAX_SEND_REPORTS) {
-                break; // send only a few reports to avoid overloading the network
+                break; // send only a few reports to avoid overloading the
+                       // network
             }
 
             Log.i(LOG_TAG, "Sending file " + curFileName);
@@ -115,42 +128,52 @@ final class SendWorker extends Thread {
             } catch (RuntimeException e) {
                 Log.e(ACRA.LOG_TAG, "Failed to send crash reports for " + curFileName, e);
                 deleteFile(context, curFileName);
-                break; // Something really unexpected happened. Don't try to send any more reports now.
+                break; // Something really unexpected happened. Don't try to
+                       // send any more reports now.
             } catch (IOException e) {
                 Log.e(ACRA.LOG_TAG, "Failed to load crash report for " + curFileName, e);
                 deleteFile(context, curFileName);
-                break; // Something unexpected happened when reading the crash report. Don't try to send any more reports now.
+                break; // Something unexpected happened when reading the crash
+                       // report. Don't try to send any more reports now.
             } catch (ReportSenderException e) {
                 Log.e(ACRA.LOG_TAG, "Failed to send crash report for " + curFileName, e);
-                break; // Something stopped the report being sent. Don't try to send any more reports now.
+                break; // Something stopped the report being sent. Don't try to
+                       // send any more reports now.
             }
             reportsSentCount++;
         }
         Log.d(LOG_TAG, "#checkAndSendReports - finish");
     }
 
-
     /**
-     * Sends the report with all configured ReportSenders. If at least one sender completed its job, the report is
-     * considered as sent and will not be sent again for failing senders.
-     *
-     * @param errorContent  Crash data.
-     * @throws ReportSenderException if unable to send the crash report.
+     * Sends the report with all configured ReportSenders. If at least one
+     * sender completed its job, the report is considered as sent and will not
+     * be sent again for failing senders.
+     * 
+     * @param errorContent
+     *            Crash data.
+     * @throws ReportSenderException
+     *             if unable to send the crash report.
      */
     private void sendCrashReport(CrashReportData errorContent) throws ReportSenderException {
-        boolean sentAtLeastOnce = false;
-        for (ReportSender sender : reportSenders) {
-            try {
-                sender.send(errorContent);
-                // If at least one sender worked, don't re-send the report
-                // later.
-                sentAtLeastOnce = true;
-            } catch (ReportSenderException e) {
-                if (!sentAtLeastOnce) {
-                    throw e; // Don't log here because we aren't dealing with the Exception here.
-                } else {
-                    Log.w(LOG_TAG, "ReportSender of class " + sender.getClass().getName()
-                            + " failed but other senders completed their task. ACRA will not send this report again.");
+        if (!ACRA.isDebuggable() || ACRA.getConfig().sendReportsInDevMode()) {
+            boolean sentAtLeastOnce = false;
+            for (ReportSender sender : reportSenders) {
+                try {
+                    sender.send(errorContent);
+                    // If at least one sender worked, don't re-send the report
+                    // later.
+                    sentAtLeastOnce = true;
+                } catch (ReportSenderException e) {
+                    if (!sentAtLeastOnce) {
+                        throw e; // Don't log here because we aren't dealing
+                                 // with the Exception here.
+                    } else {
+                        Log.w(LOG_TAG,
+                                "ReportSender of class "
+                                        + sender.getClass().getName()
+                                        + " failed but other senders completed their task. ACRA will not send this report again.");
+                    }
                 }
             }
         }
