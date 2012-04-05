@@ -29,7 +29,11 @@ final class SharedPreferencesCollector {
                 final Map<String, ?> kv = prefs.getAll();
                 if (kv != null && kv.size() > 0) {
                     for (final String key : kv.keySet()) {
-                        result.append(key).append("=").append(kv.get(key).toString()).append("\n");
+                        if(kv.get(key) != null) {
+                            result.append(key).append("=").append(kv.get(key).toString()).append("\n");
+                        } else {
+                            result.append(key).append("=").append("null\n");
+                        }
                     }
                 } else {
                     result.append("empty\n");
