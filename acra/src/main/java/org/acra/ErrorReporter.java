@@ -15,15 +15,16 @@
  */
 package org.acra;
 
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.IS_SILENT;
-
-import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Looper;
+import android.text.format.Time;
+import android.util.Log;
+import android.widget.Toast;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
@@ -31,17 +32,14 @@ import org.acra.sender.ReportSender;
 import org.acra.util.ReportUtils;
 import org.acra.util.ToastSender;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Looper;
-import android.text.format.Time;
-import android.util.Log;
-import android.widget.Toast;
+import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ReportField.IS_SILENT;
 
 /**
  * <p>
@@ -54,12 +52,12 @@ import android.widget.Toast;
  * stack trace...) and writes a report file in the application private
  * directory. This report file is then sent :
  * <ul>
- * <li>immediately if {@link #mReportingInteractionMode} is set to
+ * <li>immediately if {@link ReportsCrashes#mode} is set to
  * {@link ReportingInteractionMode#SILENT} or
  * {@link ReportingInteractionMode#TOAST},</li>
  * <li>on application start if in the previous case the transmission could not
  * technically be made,</li>
- * <li>when the user accepts to send it if {@link #mReportingInteractionMode} is
+ * <li>when the user accepts to send it if {@link ReportsCrashes#mode()} is
  * set to {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </ul>
  * </p>
@@ -303,7 +301,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         } catch (Throwable fatality) {
             // ACRA failed. Prevent any recursive call to
             // ACRA.uncaughtException(), let the native reporter do its job.
-            mDfltExceptionHandler.uncaughtException(t, e);
+            if (mDfltExceptionHandler != null) {
+                mDfltExceptionHandler.uncaughtException(t, e);
+            }
         }
     }
 
@@ -336,13 +336,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param e
      *            The {@link Throwable} to be reported. If null the report will
      *            contain a new Exception("Report requested by developer").
-     * @return The Thread which has been created to send the report or null if
-     *         ACRA is disabled.
      */
     public void handleSilentException(Throwable e) {
         // Mark this report as silent.
         if (enabled) {
             handleException(e, ReportingInteractionMode.SILENT, true, false);
+            Log.d(LOG_TAG, "ACRA sent Silent report.");
             return;
         }
 
@@ -487,9 +486,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param forceSilentReport
      *            This report is to be sent silently, whatever mode has been
      *            configured.
-     * @return A running ReportsSenderWorker that is sending the reports if the
-     *         interaction mode is silent, toast or the always accept preference
-     *         is true, otherwise returns null.
+     * @param endApplication
+     *            Whether to end the application once the error has been handled.
      */
     private void handleException(Throwable e, ReportingInteractionMode reportingInteractionMode,
             final boolean forceSilentReport, final boolean endApplication) {
@@ -578,10 +576,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // The toastWaitEnded flag will be checked before any other
             // operation.
             toastWaitEnded = false;
-            new AsyncTask<Void, Void, Void>() {
+            new Thread() {
 
                 @Override
-                protected Void doInBackground(Void... arg0) {
+                public void run() {
                     final Time beforeWait = new Time();
                     final Time currentTime = new Time();
                     beforeWait.setToNow();
@@ -598,9 +596,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         elapsedTimeInMillis = currentTime.toMillis(false) - beforeWaitInMillis;
                     }
                     toastWaitEnded = true;
-                    return null;
                 }
-            }.execute();
+            }.start();
         }
 
         // start an AsyncTask waiting for the end of the sender
@@ -609,10 +606,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final SendWorker worker = sender;
         final boolean showDirectDialog = reportingInteractionMode == ReportingInteractionMode.DIALOG;
 
-        new AsyncTask<Void, Void, Void>() {
+        new Thread() {
 
             @Override
-            protected Void doInBackground(Void... unused) {
+            public void run() {
                 // We have to wait for BOTH the toast display wait AND
                 // the worker job to be completed.
                 Log.d(LOG_TAG, "Waiting for Toast + worker...");
@@ -638,17 +635,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 if (endApplication) {
                     endApplication();
                 }
-
-                return null;
             }
-
-        }.execute();
-        return;
+        }.start();
     }
 
     /**
      * -------- Function added----- Notify user with a dialog the app has
      * crashed, ask permission to send it. {@link CrashReportDialog} Activity.
+     *
+     * @param reportFileName    Name fo the error report to display in the crash report dialog.
      */
     void notifyDialog(String reportFileName) {
         Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
