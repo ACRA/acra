@@ -65,7 +65,10 @@ public class ACRAConfiguration implements ReportsCrashes {
     private static Integer mSocketTimeout = null;
     private static Boolean mLogcatFilterByPid = null;
     private static Boolean mSendReportsInDevMode = null;
+
     private static String[] mExcludeMatchingSharedPreferencesKeys = null;
+    private static String mApplicationLogFile = null;
+    private static Integer mApplicationLogFileLines = null;
 
     /**
      * @param additionalDropboxTags
@@ -372,9 +375,36 @@ public class ACRAConfiguration implements ReportsCrashes {
     public static void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         mSendReportsInDevMode = sendReportsInDevMode;
     }
-    
+
+    /**
+     * 
+     * @param excludeMatchingSharedPreferencesKeys
+     *            an array of Strings containing regexp defining
+     *            SharedPreferences keys that should be excluded from the data
+     *            collection.
+     */
     public static void setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
         mExcludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
+    }
+
+    /**
+     * 
+     * @param applicationLogFile
+     *            The path and file name of your application log file, to be
+     *            used with {@link ReportField#APPLICATION_LOG}.
+     */
+    public static void setApplicationLogFile(String applicationLogFile) {
+        mApplicationLogFile = applicationLogFile;
+    }
+
+    /**
+     * 
+     * @param applicationLogFile
+     *            The number of lines of your application log to be collected, to be
+     *            used with {@link ReportField#APPLICATION_LOG} and {@link ReportsCrashes#applicationLogFile()}.
+     */
+    public static void setApplicationLogFileLines(int applicationLogFileLines) {
+        mApplicationLogFileLines = applicationLogFileLines;
     }
 
     /**
@@ -559,7 +589,7 @@ public class ACRAConfiguration implements ReportsCrashes {
             return mReportsCrashes.logcatArguments();
         }
 
-        String[] defaultValues = { "-t", DEFAULT_LOGCAT_LINES, "-v", "time" };
+        String[] defaultValues = { "-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time" };
         return defaultValues;
     }
 
@@ -799,29 +829,55 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     @Override
     public boolean sendReportsInDevMode() {
-        if(mSendReportsInDevMode != null) {
+        if (mSendReportsInDevMode != null) {
             return mSendReportsInDevMode;
         }
-        
-        if(mReportsCrashes != null) {
+
+        if (mReportsCrashes != null) {
             return mReportsCrashes.sendReportsInDevMode();
         }
-        
+
         return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
     }
 
     @Override
     public String[] excludeMatchingSharedPreferencesKeys() {
-        if(mExcludeMatchingSharedPreferencesKeys != null) {
+        if (mExcludeMatchingSharedPreferencesKeys != null) {
             return mExcludeMatchingSharedPreferencesKeys;
         }
-        
-        if(mReportsCrashes != null) {
+
+        if (mReportsCrashes != null) {
             return mReportsCrashes.excludeMatchingSharedPreferencesKeys();
         }
-        
+
         String[] defaultValue = {};
-        
+
         return defaultValue;
+    }
+
+    @Override
+    public String applicationLogFile() {
+        if (mApplicationLogFile != null) {
+            return mApplicationLogFile;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.applicationLogFile();
+        }
+
+        return DEFAULT_APPLICATION_LOGFILE;
+    }
+
+    @Override
+    public int applicationLogFileLines() {
+        if (mApplicationLogFileLines != null) {
+            return mApplicationLogFileLines;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.applicationLogFileLines();
+        }
+
+        return DEFAULT_APPLICATION_LOGFILE_LINES;
     }
 }

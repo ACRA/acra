@@ -3,6 +3,9 @@ package org.acra.collector;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -30,8 +33,9 @@ import android.util.Log;
 /**
  * Responsible for creating the CrashReportData for an Exception.
  * <p>
- *     Also responsible for holding the custom data to send with each report.
+ * Also responsible for holding the custom data to send with each report.
  * </p>
+ * 
  * @author William Ferguson
  * @since 4.3.0
  */
@@ -44,7 +48,8 @@ public final class CrashReportDataFactory {
     private final Time appStartDate;
     private final String initialConfiguration;
 
-    public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate, String initialConfiguration) {
+    public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate,
+            String initialConfiguration) {
         this.context = context;
         this.prefs = prefs;
         this.appStartDate = appStartDate;
@@ -70,15 +75,18 @@ public final class CrashReportDataFactory {
 
     /**
      * <p>
-     * Adds a custom key and value to be reported with the generated CashReportData.
+     * Adds a custom key and value to be reported with the generated
+     * CashReportData.
      * </p>
      * <p>
-     * The key/value pairs will be stored in the "custom" column,
-     * as a text containing one 'key = value' pair on each line.
+     * The key/value pairs will be stored in the "custom" column, as a text
+     * containing one 'key = value' pair on each line.
      * </p>
-     *
-     * @param key   A key for your custom data.
-     * @param value The value associated to your key.
+     * 
+     * @param key
+     *            A key for your custom data.
+     * @param value
+     *            The value associated to your key.
      * @return The previous value for this key if there was one, or null.
      */
     public String putCustomData(String key, String value) {
@@ -87,8 +95,9 @@ public final class CrashReportDataFactory {
 
     /**
      * Removes a key/value pair from the custom data field.
-     *
-     * @param key   The key of the data to be removed.
+     * 
+     * @param key
+     *            The key of the data to be removed.
      * @return The value for this key before removal.
      */
     public String removeCustomData(String key) {
@@ -97,8 +106,9 @@ public final class CrashReportDataFactory {
 
     /**
      * Gets the current value for a key in the custom data field.
-     *
-     * @param key   The key of the data to be retrieved.
+     * 
+     * @param key
+     *            The key of the data to be retrieved.
      * @return The value for this key.
      */
     public String getCustomData(String key) {
@@ -107,17 +117,22 @@ public final class CrashReportDataFactory {
 
     /**
      * Collects crash data.
-     *
-     * @param th                Throwable that caused the crash.
-     * @param isSilentReport    Whether to report this report as being sent silently.
-     * @return CrashReportData representing the current state of the application at the instant of the Exception.
+     * 
+     * @param th
+     *            Throwable that caused the crash.
+     * @param isSilentReport
+     *            Whether to report this report as being sent silently.
+     * @return CrashReportData representing the current state of the application
+     *         at the instant of the Exception.
      */
     public CrashReportData createCrashData(Throwable th, boolean isSilentReport) {
 
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            // Make every entry here bullet proof and move any slightly dodgy ones to the end.
-            // This ensures that we collect as much info as possible before something crashes the collection process.
+            // Make every entry here bullet proof and move any slightly dodgy
+            // ones to the end.
+            // This ensures that we collect as much info as possible before
+            // something crashes the collection process.
 
             crashReportData.put(STACK_TRACE, getStackTrace(th));
             crashReportData.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
@@ -236,7 +251,8 @@ public final class CrashReportDataFactory {
                 crashReportData.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(context));
             }
 
-            // Now get all the crash data that relies on the PackageManager (which may or may not be here).
+            // Now get all the crash data that relies on the PackageManager
+            // (which may or may not be here).
             final PackageManagerWrapper pm = new PackageManagerWrapper(context);
 
             final PackageInfo pi = pm.getPackageInfo();
@@ -254,7 +270,8 @@ public final class CrashReportDataFactory {
             }
 
             // Retrieve UDID(IMEI) if permission is available
-            if (crashReportFields.contains(DEVICE_ID) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true) && pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
+            if (crashReportFields.contains(DEVICE_ID) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
+                    && pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
                 final String deviceId = ReportUtils.getDeviceId(context);
                 if (deviceId != null) {
                     crashReportData.put(DEVICE_ID, deviceId);
@@ -274,22 +291,33 @@ public final class CrashReportDataFactory {
                     crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
                 }
                 if (crashReportFields.contains(DROPBOX)) {
-                    crashReportData.put(DROPBOX, DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
+                    crashReportData.put(DROPBOX,
+                            DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
                 }
             } else {
                 Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
             }
 
+            // Application specific log file
+            if (crashReportFields.contains(APPLICATION_LOG)) {
+                crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(new FileInputStream(ACRA
+                        .getConfig().applicationLogFile()), ACRA.getConfig().applicationLogFileLines()));
+            }
         } catch (RuntimeException e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
+        } catch (FileNotFoundException e) {
+            Log.e(LOG_TAG, "Error : application log file " + ACRA.getConfig().applicationLogFile() + " not found.", e);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile() + ".", e);
         }
 
         return crashReportData;
     }
 
     /**
-     * Generates the string which is posted in the single custom data field in the GoogleDocs Form.
-     *
+     * Generates the string which is posted in the single custom data field in
+     * the GoogleDocs Form.
+     * 
      * @return A string with a 'key = value' pair on each line.
      */
     private String createCustomInfoString() {

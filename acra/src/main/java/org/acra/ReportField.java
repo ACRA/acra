@@ -15,6 +15,8 @@
  */
 package org.acra;
 
+import org.acra.annotation.ReportsCrashes;
+
 import android.content.res.Configuration;
 
 /**
@@ -31,46 +33,55 @@ public enum ReportField {
     /**
      * Application version code. This is the incremental integer version code
      * used to differentiate versions on the android market.
+     * 
      * @see android.content.pm.PackageInfo#versionCode
      */
     APP_VERSION_CODE,
     /**
      * Application version name.
+     * 
      * @see android.content.pm.PackageInfo#versionName
      */
     APP_VERSION_NAME,
     /**
      * Application package name.
+     * 
      * @see android.content.Context#getPackageName()
      */
     PACKAGE_NAME,
     /**
      * Base path of the application's private file folder.
+     * 
      * @see android.content.Context#getFilesDir()
      */
     FILE_PATH,
     /**
      * Device model name.
+     * 
      * @see android.os.Build#MODEL
      */
     PHONE_MODEL,
     /**
      * Device android version name.
+     * 
      * @see android.os.Build.VERSION#RELEASE
      */
     ANDROID_VERSION,
     /**
      * Android Build details.
+     * 
      * @see android.os.Build
      */
     BUILD,
     /**
      * Device brand (manufacturer or carrier).
+     * 
      * @see android.os.Build#BRAND
      */
     BRAND,
     /**
      * Device overall product code.
+     * 
      * @see android.os.Build#PRODUCT
      */
     PRODUCT,
@@ -93,16 +104,19 @@ public enum ReportField {
     STACK_TRACE,
     /**
      * {@link Configuration} fields state on the application start.
+     * 
      * @see Configuration
      */
     INITIAL_CONFIGURATION,
     /**
      * {@link Configuration} fields state on the application crash.
+     * 
      * @see Configuration
      */
     CRASH_CONFIGURATION,
     /**
      * Device display specifications.
+     * 
      * @see android.view.WindowManager#getDefaultDisplay()
      */
     DISPLAY,
@@ -177,5 +191,12 @@ public enum ReportField {
     /**
      * SharedPreferences contents
      */
-    SHARED_PREFERENCES
+    SHARED_PREFERENCES,
+    /**
+     * Content of your own application log file. To be configured with
+     * {@link ReportsCrashes#applicationLogFile()} to define the path/name of
+     * the log file and {@link ReportsCrashes#applicationLogFileLines()} to set
+     * the number of lines you want to be retrieved.
+     */
+    APPLICATION_LOG
 }

@@ -225,7 +225,7 @@ public @interface ReportsCrashes {
      * @return Array of arguments to supply if retrieving the log as part of the
      *         report.
      */
-    String[] logcatArguments() default { "-t", ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
+    String[] logcatArguments() default { "-t", "" + ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom
@@ -341,7 +341,25 @@ public @interface ReportsCrashes {
      * Contains regex patterns to be evaluated on each SharedPreference key to
      * exclude KV pairs from the collected SharedPreferences. This allows you to
      * exclude sensitive user data like passwords to be collected.
+     * 
      * @return an array of regex patterns, every matching key is not collected.
      */
     String[] excludeMatchingSharedPreferencesKeys() default {};
+
+    /**
+     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
+     * path/name of your application log file.
+     * 
+     * @return a String containing the path/name of your application log file,
+     *         relative to your application directory.
+     */
+    String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
+
+    /**
+     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
+     * number of latest lines of your application log file to be collected.
+     * 
+     * @return number of lines to collect.
+     */
+    int applicationLogFileLines() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 }
