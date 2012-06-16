@@ -65,6 +65,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private static Integer mSocketTimeout = null;
     private static Boolean mLogcatFilterByPid = null;
     private static Boolean mSendReportsInDevMode = null;
+    private static String[] mExcludeMatchingSharedPreferencesKeys = null;
 
     /**
      * @param additionalDropboxTags
@@ -370,6 +371,10 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public static void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         mSendReportsInDevMode = sendReportsInDevMode;
+    }
+    
+    public static void setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
+        mExcludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
     }
 
     /**
@@ -803,5 +808,20 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
         
         return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+    }
+
+    @Override
+    public String[] excludeMatchingSharedPreferencesKeys() {
+        if(mExcludeMatchingSharedPreferencesKeys != null) {
+            return mExcludeMatchingSharedPreferencesKeys;
+        }
+        
+        if(mReportsCrashes != null) {
+            return mReportsCrashes.excludeMatchingSharedPreferencesKeys();
+        }
+        
+        String[] defaultValue = {};
+        
+        return defaultValue;
     }
 }

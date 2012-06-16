@@ -39,8 +39,11 @@ final class SharedPreferencesCollector {
      * names in the {@link ReportsCrashes#additionalSharedPreferences()}
      * configuration item.
      * 
-     * @param context the application context.
-     * @return A readable formatted String containing all key/value pairs. 
+     * 
+     * 
+     * @param context
+     *            the application context.
+     * @return A readable formatted String containing all key/value pairs.
      */
     public static String collect(Context context) {
         final StringBuilder result = new StringBuilder();
@@ -60,10 +63,12 @@ final class SharedPreferencesCollector {
                 final Map<String, ?> kv = prefs.getAll();
                 if (kv != null && kv.size() > 0) {
                     for (final String key : kv.keySet()) {
-                        if (kv.get(key) != null) {
-                            result.append(key).append("=").append(kv.get(key).toString()).append("\n");
-                        } else {
-                            result.append(key).append("=").append("null\n");
+                        if (!filteredKey(key)) {
+                            if (kv.get(key) != null) {
+                                result.append(key).append("=").append(kv.get(key).toString()).append("\n");
+                            } else {
+                                result.append(key).append("=").append("null\n");
+                            }
                         }
                     }
                 } else {
@@ -76,5 +81,12 @@ final class SharedPreferencesCollector {
         }
 
         return result.toString();
+    }
+
+    private static boolean filteredKey(String key) {
+        for(String regex : ACRA.getConfig().excludeMatchingSharedPreferencesKeys()) {
+            return key.matches(regex);
+        }
+        return false;
     }
 }
