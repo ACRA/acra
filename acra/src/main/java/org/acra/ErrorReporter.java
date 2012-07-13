@@ -57,8 +57,8 @@ import static org.acra.ReportField.IS_SILENT;
  * {@link ReportingInteractionMode#TOAST},</li>
  * <li>on application start if in the previous case the transmission could not
  * technically be made,</li>
- * <li>when the user accepts to send it if {@link ReportsCrashes#mode()} is
- * set to {@link ReportingInteractionMode#NOTIFICATION}.</li>
+ * <li>when the user accepts to send it if {@link ReportsCrashes#mode()} is set
+ * to {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </ul>
  * </p>
  * <p>
@@ -467,11 +467,24 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The {@link Throwable} to be reported. If null the report will
      *            contain a new Exception("Report requested by developer").
      * @param endApplication
-     *            Set this to true if you want the applicationto be ended after
+     *            Set this to true if you want the application to be ended after
      *            sending the report.
      */
     public void handleException(Throwable e, boolean endApplication) {
         handleException(e, ACRA.getConfig().mode(), false, endApplication);
+    }
+
+    /**
+     * Send a report for a {@link Throwable} with the reporting interaction mode
+     * configured by the developer, the application is then killed and restarted
+     * by the system.
+     * 
+     * @param e
+     *            The {@link Throwable} to be reported. If null the report will
+     *            contain a new Exception("Report requested by developer").
+     */
+    public void handleException(Throwable e) {
+        handleException(e, ACRA.getConfig().mode(), false, false);
     }
 
     /**
@@ -487,15 +500,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            This report is to be sent silently, whatever mode has been
      *            configured.
      * @param endApplication
-     *            Whether to end the application once the error has been handled.
+     *            Whether to end the application once the error has been
+     *            handled.
      */
     private void handleException(Throwable e, ReportingInteractionMode reportingInteractionMode,
             final boolean forceSilentReport, final boolean endApplication) {
 
-        if(!enabled) {
+        if (!enabled) {
             return;
         }
-        
+
         boolean sendOnlySilentReports = false;
         if (reportingInteractionMode == null) {
             // No interaction mode defined, we assume it has been set during
@@ -642,8 +656,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * -------- Function added----- Notify user with a dialog the app has
      * crashed, ask permission to send it. {@link CrashReportDialog} Activity.
-     *
-     * @param reportFileName    Name fo the error report to display in the crash report dialog.
+     * 
+     * @param reportFileName
+     *            Name fo the error report to display in the crash report
+     *            dialog.
      */
     void notifyDialog(String reportFileName) {
         Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
