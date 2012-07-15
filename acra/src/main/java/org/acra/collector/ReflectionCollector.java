@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 /**
  * Tools to retrieve key/value pairs from static fields and getters of any
  * class. Reflection API usage allows to retrieve data without having to
- * implement a class for each android version of each intersting class.
+ * implement a class for each android version of each interesting class.
  * It can also help find hidden properties.
  * 
  * @author Kevin Gaudin

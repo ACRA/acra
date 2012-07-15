@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.util;
+package org.acra.collector;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -21,6 +21,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
+import org.acra.ACRA;
+
+import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
 import android.util.SparseArray;
@@ -36,7 +39,7 @@ import android.util.SparseArray;
  * @author Kevin Gaudin
  * 
  */
-final class ConfigurationInspector {
+public final class ConfigurationCollector {
 
     private static final String SUFFIX_MASK = "_MASK";
     private static final String FIELD_SCREENLAYOUT = "screenLayout";
@@ -209,5 +212,21 @@ final class ConfigurationInspector {
             }
         }
         return result.toString();
+    }
+    
+    /**
+     * Returns the current Configuration for this application.
+     *
+     * @param context   Context for the application being reported.
+     * @return A String representation of the current configuration for the application.
+     */
+    public static String collectConfiguration(Context context) {
+        try {
+            final Configuration crashConf = context.getResources().getConfiguration();
+            return ConfigurationCollector.toString(crashConf);
+        } catch (RuntimeException e) {
+            Log.w(ACRA.LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
+            return "Couldn't retrieve crash config";
+        }
     }
 }

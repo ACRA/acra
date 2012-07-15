@@ -107,20 +107,4 @@ public final class ReportUtils {
             return "Couldn't retrieve Display Details";
         }
     }
-
-    /**
-     * Returns the current Configuration for this application.
-     *
-     * @param context   Context for the application being reported.
-     * @return A String representation of the current configuration for the application.
-     */
-    public static String getCrashConfiguration(Context context) {
-        try {
-            final Configuration crashConf = context.getResources().getConfiguration();
-            return ConfigurationInspector.toString(crashConf);
-        } catch (RuntimeException e) {
-            Log.w(ACRA.LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
-            return "Couldn't retrieve crash config";
-        }
-    }
 }
