@@ -198,5 +198,13 @@ public enum ReportField {
      * the log file and {@link ReportsCrashes#applicationLogFileLines()} to set
      * the number of lines you want to be retrieved.
      */
-    APPLICATION_LOG
+    APPLICATION_LOG,
+    /**
+     * Since Android API Level 16 (Android 4.1 - Jelly Beans), retrieve the list of supported Media codecs and their capabilities (color format, profile and level).
+     */
+    MEDIA_CODEC_LIST,
+    /**
+     * Retrieves details of the failing thread (id, name, group name).
+     */
+    THREAD_DETAILS
 }

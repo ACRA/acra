@@ -47,13 +47,15 @@ public final class CrashReportDataFactory {
     private final Map<String, String> customParameters = new HashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
+    private final Thread brokenThread;
 
     public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate,
-            String initialConfiguration) {
+            String initialConfiguration, Thread brokenThread) {
         this.context = context;
         this.prefs = prefs;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
+        this.brokenThread = brokenThread;
 
         final ReportsCrashes config = ACRA.getConfig();
         final ReportField[] customReportFields = config.customReportContent();
@@ -156,7 +158,7 @@ public final class CrashReportDataFactory {
                 crashReportData.put(INITIAL_CONFIGURATION, initialConfiguration);
             }
             if (crashReportFields.contains(CRASH_CONFIGURATION)) {
-                crashReportData.put(CRASH_CONFIGURATION, ReportUtils.getCrashConfiguration(context));
+                crashReportData.put(CRASH_CONFIGURATION, ConfigurationCollector.collectConfiguration(context));
             }
 
             // Collect meminfo
@@ -303,6 +305,17 @@ public final class CrashReportDataFactory {
                 crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(new FileInputStream(ACRA
                         .getConfig().applicationLogFile()), ACRA.getConfig().applicationLogFileLines()));
             }
+            
+            // Media Codecs list
+            if (crashReportFields.contains(MEDIA_CODEC_LIST)) {
+                crashReportData.put(MEDIA_CODEC_LIST, MediaCodecListCollector.collecMediaCodecList());
+            }
+            
+            // Failing thread details
+            if(crashReportFields.contains(THREAD_DETAILS)) {
+                crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(brokenThread));
+            }
+            
         } catch (RuntimeException e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         } catch (FileNotFoundException e) {

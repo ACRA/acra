@@ -122,7 +122,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Time appStartDate = new Time();
         appStartDate.setToNow();
 
-        crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration);
+        crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration, brokenThread);
 
         // If mDfltExceptionHandler is not null, initialization is already done.
         // Don't do it twice to avoid losing the original handler.
