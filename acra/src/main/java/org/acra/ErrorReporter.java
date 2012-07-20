@@ -122,7 +122,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Time appStartDate = new Time();
         appStartDate.setToNow();
 
-        crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration, brokenThread);
+        crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration);
 
         // If mDfltExceptionHandler is not null, initialization is already done.
         // Don't do it twice to avoid losing the original handler.
@@ -555,7 +555,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // that the Toast can be read by the user.
         }
 
-        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, forceSilentReport);
+        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, forceSilentReport, brokenThread);
 
         // Always write the report file
 

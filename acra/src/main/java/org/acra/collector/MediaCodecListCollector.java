@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 import android.util.SparseArray;
 
@@ -32,7 +33,7 @@ public class MediaCodecListCollector {
     private static Method isEncoderMethod = null;
     private static Method getSupportedTypesMethod = null;
     private static Method getCapabilitiesForTypeMethod = null;
-    private static Class<?> codecCapabilities = null;
+    private static Class<?> codecCapabilitiesClass = null;
     private static Field colorFormatsField = null;
     private static Field profileLevelsField = null;
     private static Field profile = null;
@@ -51,25 +52,24 @@ public class MediaCodecListCollector {
             isEncoderMethod = mediaCodecInfoClass.getMethod("isEncoder");
             getSupportedTypesMethod = mediaCodecInfoClass.getMethod("getSupportedTypes");
             getCapabilitiesForTypeMethod = mediaCodecInfoClass.getMethod("getCapabilitiesForType", String.class);
-            codecCapabilities = Class.forName("android.media.MediaCodecInfo.CodecCapabilities");
-            colorFormatsField = codecCapabilities.getField("colorFormats");
-            profileLevelsField = codecCapabilities.getField("profileLevels");
-            
-            Class<?> codecCapabilitiesClass = Class.forName("android.media.MediaCodecInfo.CodecCapabilities");
+            codecCapabilitiesClass = Class.forName("android.media.MediaCodecInfo$CodecCapabilities");
+            colorFormatsField = codecCapabilitiesClass.getField("colorFormats");
+            profileLevelsField = codecCapabilitiesClass.getField("profileLevels");
+
             for (Field f : codecCapabilitiesClass.getFields()) {
                 if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())
                         && f.getName().startsWith(COLOR_FORMAT_PREFIX)) {
-                    mColorFormatValues.setValueAt(f.getInt(null), f.getName());
+                    mColorFormatValues.put(f.getInt(null), f.getName());
                 }
             }
 
-            Class<?> codecProfileLevelClass = Class.forName("android.media.MediaCodecInfo.CodecProfileLevel");
+            Class<?> codecProfileLevelClass = Class.forName("android.media.MediaCodecInfo$CodecProfileLevel");
             for (Field f : codecCapabilitiesClass.getFields()) {
                 if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())) {
-                    mColorProfileLevelValues.setValueAt(f.getInt(null), f.getName());
+                    mColorProfileLevelValues.put(f.getInt(null), f.getName());
                 }
             }
-            
+
             profile = codecProfileLevelClass.getField("profile");
             level = codecProfileLevelClass.getField("level");
 
@@ -104,7 +104,7 @@ public class MediaCodecListCollector {
                     result.append(codecIdx).append(": ").append(getNameMethod.invoke(codecInfo)).append("\n");
                     result.append("isEncoder: ").append(isEncoderMethod.invoke(codecInfo)).append("\n");
                     String[] supportedTypes = (String[]) getSupportedTypesMethod.invoke(codecInfo);
-                    result.append("Supported types: ").append(supportedTypes).append("\n");
+                    result.append("Supported types: ").append(Arrays.toString(supportedTypes)).append("\n");
                     for (String type : supportedTypes) {
                         result.append(collectCapabilitiesForType(codecInfo, type));
                     }
@@ -122,10 +122,13 @@ public class MediaCodecListCollector {
     }
 
     /**
-     * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a specific codec type.
+     * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a
+     * specific codec type.
+     * 
      * @param codecInfo
      * @param type
-     * @return A string describing the color formats and codec profile levels available for a specific codec type.
+     * @return A string describing the color formats and codec profile levels
+     *         available for a specific codec type.
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InvocationTargetException
@@ -135,28 +138,29 @@ public class MediaCodecListCollector {
         StringBuilder result = new StringBuilder();
         result.append(type).append(" color formats:");
         Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
-        
+
         // Color Formats
         int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
-        for(int i = 0 ; i < colorFormats.length; i++) {
+        for (int i = 0; i < colorFormats.length; i++) {
             result.append(mColorFormatValues.get(colorFormats[i]));
-            if (i < colorFormats.length -1) {
+            if (i < colorFormats.length - 1) {
                 result.append(',');
             }
         }
         result.append("\n");
-        
+
         // Color Profile Levels
         result.append(type).append(" profile levels:");
         Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
-        for(int i = 0; i < codecProfileLevels.length; i++) {
-            result.append(profile.getInt(codecProfileLevels[i])).append('-').append(level.getInt(codecProfileLevels[i]));
-            if (i < codecProfileLevels.length -1) {
+        for (int i = 0; i < codecProfileLevels.length; i++) {
+            result.append(profile.getInt(codecProfileLevels[i])).append('-')
+                    .append(level.getInt(codecProfileLevels[i]));
+            if (i < codecProfileLevels.length - 1) {
                 result.append(',');
             }
         }
         result.append("\n");
-        
+
         return result.append("\n").toString();
     }
 }

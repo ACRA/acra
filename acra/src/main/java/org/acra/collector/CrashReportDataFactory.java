@@ -47,15 +47,14 @@ public final class CrashReportDataFactory {
     private final Map<String, String> customParameters = new HashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
-    private final Thread brokenThread;
+    private Thread brokenThread;
 
     public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate,
-            String initialConfiguration, Thread brokenThread) {
+            String initialConfiguration) {
         this.context = context;
         this.prefs = prefs;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
-        this.brokenThread = brokenThread;
 
         final ReportsCrashes config = ACRA.getConfig();
         final ReportField[] customReportFields = config.customReportContent();
@@ -124,11 +123,12 @@ public final class CrashReportDataFactory {
      *            Throwable that caused the crash.
      * @param isSilentReport
      *            Whether to report this report as being sent silently.
+     * @param brokenThread2 
      * @return CrashReportData representing the current state of the application
      *         at the instant of the Exception.
      */
-    public CrashReportData createCrashData(Throwable th, boolean isSilentReport) {
-
+    public CrashReportData createCrashData(Throwable th, boolean isSilentReport, Thread brokenThread) {
+        this.brokenThread = brokenThread;
         final CrashReportData crashReportData = new CrashReportData();
         try {
             // Make every entry here bullet proof and move any slightly dodgy

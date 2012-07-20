@@ -38,7 +38,6 @@ public enum ReportingInteractionMode {
      * Force close dialog is not displayed. When the user selects the
      * notification, a dialog is displayed asking him if he is ok to send a
      * report.
-     * @deprecated
      */
     NOTIFICATION,
     /**
