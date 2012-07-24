@@ -27,6 +27,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -348,10 +349,13 @@ public @interface ReportsCrashes {
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
-     * path/name of your application log file.
+     * path/name of your application log file. If the string does not containt
+     * any path separator, the file is assumed as being in
+     * {@link Context#getFilesDir()}.
      * 
-     * @return a String containing the path/name of your application log file,
-     *         relative to your application directory.
+     * @return a String containing the path/name of your application log file.
+     *         If the string does not containt any path separator, the file is
+     *         assumed as being in {@link Context#getFilesDir()}.
      */
     String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 

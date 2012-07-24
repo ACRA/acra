@@ -328,7 +328,7 @@ public class ACRA {
      * 
      * @return ACRA {@link ReportsCrashes} configuration instance.
      */
-    public static ReportsCrashes getConfig() {
+    public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
             configProxy = new ACRAConfiguration(mReportsCrashes);
         }
@@ -358,7 +358,7 @@ public class ACRA {
             DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM,
             SETTINGS_SECURE };
 
-    private static ReportsCrashes configProxy;
+    private static ACRAConfiguration configProxy;
 
     /**
      * Returns true if the application is in debuggable.

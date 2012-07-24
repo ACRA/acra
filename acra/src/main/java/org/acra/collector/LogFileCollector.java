@@ -17,11 +17,15 @@
 package org.acra.collector;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.acra.util.BoundedLinkedList;
+
+import android.app.Application;
+import android.content.Context;
 
 /**
  * Collects the N last lines of a text stream. Use this collector if your
@@ -38,12 +42,28 @@ class LogFileCollector {
     private LogFileCollector() {
     };
 
-    public static String collectLogFile(InputStream logStream, int numberOfLines) throws IOException {
+    /**
+     * Reads the last lines of a custom log file. The file name is assumed as
+     * located in the {@link Application#getFilesDir()} directory if it does not
+     * contain any path separator.
+     * 
+     * @param context
+     * @param fileName
+     * @param numberOfLines
+     * @return
+     * @throws IOException
+     */
+    public static String collectLogFile(Context context, String fileName, int numberOfLines) throws IOException {
         BoundedLinkedList<String> resultBuffer = new BoundedLinkedList<String>(numberOfLines);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(logStream), 1024);
+        final BufferedReader reader;
+        if (fileName.contains("/")) {
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)), 1024);
+        } else {
+            reader = new BufferedReader(new InputStreamReader(context.openFileInput(fileName)), 1024);
+        }
         String line = reader.readLine();
         while (line != null) {
-            resultBuffer.add(line);
+            resultBuffer.add(line + "\n");
             line = reader.readLine();
         }
         return resultBuffer.toString();

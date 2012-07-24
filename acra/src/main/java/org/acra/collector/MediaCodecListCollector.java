@@ -26,6 +26,11 @@ import android.util.SparseArray;
 
 public class MediaCodecListCollector {
     private static final String COLOR_FORMAT_PREFIX = "COLOR_";
+    private static final String VIDEO_TYPE_PREFIX = "video";
+    private static final String[] MPEG4_TYPES = { "mp4","mpeg4" };
+    private static final String[] AVC_TYPES = { "avc"};
+    private static final String[] H263_TYPES = { "h263"};
+
     private static Class<?> mediaCodecListClass = null;
     private static Method getCodecInfoAtMethod = null;
     private static Class<?> mediaCodecInfoClass = null;
@@ -136,31 +141,33 @@ public class MediaCodecListCollector {
     private static String collectCapabilitiesForType(Object codecInfo, String type) throws IllegalArgumentException,
             IllegalAccessException, InvocationTargetException {
         StringBuilder result = new StringBuilder();
-        result.append(type).append(" color formats:");
-        Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
+        if (type.startsWith(VIDEO_TYPE_PREFIX)) {
+            result.append(type).append(" color formats:");
+            Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
 
-        // Color Formats
-        int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
-        for (int i = 0; i < colorFormats.length; i++) {
-            result.append(mColorFormatValues.get(colorFormats[i]));
-            if (i < colorFormats.length - 1) {
-                result.append(',');
+            // Color Formats
+            int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
+            for (int i = 0; i < colorFormats.length; i++) {
+                result.append(mColorFormatValues.get(colorFormats[i]));
+                if (i < colorFormats.length - 1) {
+                    result.append(',');
+                }
             }
-        }
-        result.append("\n");
+            result.append("\n");
 
-        // Color Profile Levels
-        result.append(type).append(" profile levels:");
-        Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
-        for (int i = 0; i < codecProfileLevels.length; i++) {
-            result.append(profile.getInt(codecProfileLevels[i])).append('-')
-                    .append(level.getInt(codecProfileLevels[i]));
-            if (i < codecProfileLevels.length - 1) {
-                result.append(',');
+            // Color Profile Levels
+            result.append(type).append(" profile levels:");
+            Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
+            for (int i = 0; i < codecProfileLevels.length; i++) {
+                
+                result.append(profile.getInt(codecProfileLevels[i])).append('-')
+                        .append(level.getInt(codecProfileLevels[i]));
+                if (i < codecProfileLevels.length - 1) {
+                    result.append(',');
+                }
             }
+            result.append("\n");
         }
-        result.append("\n");
-
         return result.append("\n").toString();
     }
 }

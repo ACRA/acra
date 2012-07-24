@@ -123,7 +123,7 @@ public final class CrashReportDataFactory {
      *            Throwable that caused the crash.
      * @param isSilentReport
      *            Whether to report this report as being sent silently.
-     * @param brokenThread2 
+     * @param brokenThread2
      * @return CrashReportData representing the current state of the application
      *         at the instant of the Exception.
      */
@@ -302,20 +302,20 @@ public final class CrashReportDataFactory {
 
             // Application specific log file
             if (crashReportFields.contains(APPLICATION_LOG)) {
-                crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(new FileInputStream(ACRA
-                        .getConfig().applicationLogFile()), ACRA.getConfig().applicationLogFileLines()));
+                crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(context, ACRA.getConfig()
+                        .applicationLogFile(), ACRA.getConfig().applicationLogFileLines()));
             }
-            
+
             // Media Codecs list
             if (crashReportFields.contains(MEDIA_CODEC_LIST)) {
                 crashReportData.put(MEDIA_CODEC_LIST, MediaCodecListCollector.collecMediaCodecList());
             }
-            
+
             // Failing thread details
-            if(crashReportFields.contains(THREAD_DETAILS)) {
+            if (crashReportFields.contains(THREAD_DETAILS)) {
                 crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(brokenThread));
             }
-            
+
         } catch (RuntimeException e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
         } catch (FileNotFoundException e) {
