@@ -29,173 +29,173 @@ import org.acra.annotation.ReportsCrashes;
  */
 public class ACRAConfiguration implements ReportsCrashes {
 
-    private static String[] mAdditionalDropboxTags = null;
+    private String[] mAdditionalDropboxTags = null;
 
-    private static String[] mAdditionalSharedPreferences = null;
-    private static Integer mConnectionTimeout = null;
-    private static ReportField[] mCustomReportContent = null;
-    private static Boolean mDeleteUnapprovedReportsOnApplicationStart = null;
-    private static Integer mDropboxCollectionMinutes = null;
-    private static Boolean mForceCloseDialogAfterToast = null;
-    private static String mFormKey = null;
-    private static String mFormUri = null;
-    private static String mFormUriBasicAuthLogin = null;
-    private static String mFormUriBasicAuthPassword = null;
-    private static Boolean mIncludeDropboxSystemTags = null;
+    private String[] mAdditionalSharedPreferences = null;
+    private Integer mConnectionTimeout = null;
+    private ReportField[] mCustomReportContent = null;
+    private Boolean mDeleteUnapprovedReportsOnApplicationStart = null;
+    private Integer mDropboxCollectionMinutes = null;
+    private Boolean mForceCloseDialogAfterToast = null;
+    private String mFormKey = null;
+    private String mFormUri = null;
+    private String mFormUriBasicAuthLogin = null;
+    private String mFormUriBasicAuthPassword = null;
+    private Boolean mIncludeDropboxSystemTags = null;
 
-    private static String[] mLogcatArguments = null;
-    private static String mMailTo = null;
-    private static Integer mMaxNumberOfRequestRetries = null;
-    private static ReportingInteractionMode mMode = null;
-    private static ReportsCrashes mReportsCrashes = null;
+    private String[] mLogcatArguments = null;
+    private String mMailTo = null;
+    private Integer mMaxNumberOfRequestRetries = null;
+    private ReportingInteractionMode mMode = null;
+    private ReportsCrashes mReportsCrashes = null;
 
-    private static Integer mResDialogCommentPrompt = null;
-    private static Integer mResDialogEmailPrompt = null;
-    private static Integer mResDialogIcon = null;
-    private static Integer mResDialogOkToast = null;
-    private static Integer mResDialogText = null;
-    private static Integer mResDialogTitle = null;
-    private static Integer mResNotifIcon = null;
-    private static Integer mResNotifText = null;
-    private static Integer mResNotifTickerText = null;
-    private static Integer mResNotifTitle = null;
-    private static Integer mResToastText = null;
-    private static Integer mSharedPreferenceMode = null;
-    private static String mSharedPreferenceName = null;
-    private static Integer mSocketTimeout = null;
-    private static Boolean mLogcatFilterByPid = null;
-    private static Boolean mSendReportsInDevMode = null;
+    private Integer mResDialogCommentPrompt = null;
+    private Integer mResDialogEmailPrompt = null;
+    private Integer mResDialogIcon = null;
+    private Integer mResDialogOkToast = null;
+    private Integer mResDialogText = null;
+    private Integer mResDialogTitle = null;
+    private Integer mResNotifIcon = null;
+    private Integer mResNotifText = null;
+    private Integer mResNotifTickerText = null;
+    private Integer mResNotifTitle = null;
+    private Integer mResToastText = null;
+    private Integer mSharedPreferenceMode = null;
+    private String mSharedPreferenceName = null;
+    private Integer mSocketTimeout = null;
+    private Boolean mLogcatFilterByPid = null;
+    private Boolean mSendReportsInDevMode = null;
 
-    private static String[] mExcludeMatchingSharedPreferencesKeys = null;
-    private static String mApplicationLogFile = null;
-    private static Integer mApplicationLogFileLines = null;
+    private String[] mExcludeMatchingSharedPreferencesKeys = null;
+    private String mApplicationLogFile = null;
+    private Integer mApplicationLogFileLines = null;
 
     /**
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set
      */
-    public static void setAdditionalDropboxTags(String[] additionalDropboxTags) {
-        ACRAConfiguration.mAdditionalDropboxTags = additionalDropboxTags;
+    public void setAdditionalDropboxTags(String[] additionalDropboxTags) {
+        this.mAdditionalDropboxTags = additionalDropboxTags;
     }
 
     /**
      * @param additionalSharedPreferences
      *            the additionalSharedPreferences to set
      */
-    public static void setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
-        ACRAConfiguration.mAdditionalSharedPreferences = additionalSharedPreferences;
+    public void setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
+        this.mAdditionalSharedPreferences = additionalSharedPreferences;
     }
 
     /**
      * @param connectionTimeout
      *            the connectionTimeout to set
      */
-    public static void setConnectionTimeout(Integer connectionTimeout) {
-        ACRAConfiguration.mConnectionTimeout = connectionTimeout;
+    public void setConnectionTimeout(Integer connectionTimeout) {
+        this.mConnectionTimeout = connectionTimeout;
     }
 
     /**
      * @param customReportContent
      *            the customReportContent to set
      */
-    public static void setCustomReportContent(ReportField[] customReportContent) {
-        ACRAConfiguration.mCustomReportContent = customReportContent;
+    public void setCustomReportContent(ReportField[] customReportContent) {
+        this.mCustomReportContent = customReportContent;
     }
 
     /**
      * @param deleteUnapprovedReportsOnApplicationStart
      *            the deleteUnapprovedReportsOnApplicationStart to set
      */
-    public static void setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
-        ACRAConfiguration.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
+    public void setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
+        this.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
     }
 
     /**
      * @param dropboxCollectionMinutes
      *            the dropboxCollectionMinutes to set
      */
-    public static void setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
-        ACRAConfiguration.mDropboxCollectionMinutes = dropboxCollectionMinutes;
+    public void setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
+        this.mDropboxCollectionMinutes = dropboxCollectionMinutes;
     }
 
     /**
      * @param forceCloseDialogAfterToast
      *            the forceCloseDialogAfterToast to set
      */
-    public static void setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
-        ACRAConfiguration.mForceCloseDialogAfterToast = forceCloseDialogAfterToast;
+    public void setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
+        this.mForceCloseDialogAfterToast = forceCloseDialogAfterToast;
     }
 
     /**
      * @param formKey
      *            the formKey to set
      */
-    public static void setFormKey(String formKey) {
-        ACRAConfiguration.mFormKey = formKey;
+    public void setFormKey(String formKey) {
+        this.mFormKey = formKey;
     }
 
     /**
      * @param formUri
      *            the formUri to set
      */
-    public static void setFormUri(String formUri) {
-        ACRAConfiguration.mFormUri = formUri;
+    public void setFormUri(String formUri) {
+        this.mFormUri = formUri;
     }
 
     /**
      * @param formUriBasicAuthLogin
      *            the formUriBasicAuthLogin to set
      */
-    public static void setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
-        ACRAConfiguration.mFormUriBasicAuthLogin = formUriBasicAuthLogin;
+    public void setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
+        this.mFormUriBasicAuthLogin = formUriBasicAuthLogin;
     }
 
     /**
      * @param formUriBasicAuthPassword
      *            the formUriBasicAuthPassword to set
      */
-    public static void setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
-        ACRAConfiguration.mFormUriBasicAuthPassword = formUriBasicAuthPassword;
+    public void setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
+        this.mFormUriBasicAuthPassword = formUriBasicAuthPassword;
     }
 
     /**
      * @param includeDropboxSystemTags
      *            the includeDropboxSystemTags to set
      */
-    public static void setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
-        ACRAConfiguration.mIncludeDropboxSystemTags = includeDropboxSystemTags;
+    public void setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
+        this.mIncludeDropboxSystemTags = includeDropboxSystemTags;
     }
 
     /**
      * @param logcatArguments
      *            the logcatArguments to set
      */
-    public static void setLogcatArguments(String[] logcatArguments) {
-        ACRAConfiguration.mLogcatArguments = logcatArguments;
+    public void setLogcatArguments(String[] logcatArguments) {
+        this.mLogcatArguments = logcatArguments;
     }
 
     /**
      * @param mailTo
      *            the mailTo to set
      */
-    public static void setMailTo(String mailTo) {
-        ACRAConfiguration.mMailTo = mailTo;
+    public void setMailTo(String mailTo) {
+        this.mMailTo = mailTo;
     }
 
     /**
      * @param maxNumberOfRequestRetries
      *            the maxNumberOfRequestRetries to set
      */
-    public static void setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
-        ACRAConfiguration.mMaxNumberOfRequestRetries = maxNumberOfRequestRetries;
+    public void setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
+        this.mMaxNumberOfRequestRetries = maxNumberOfRequestRetries;
     }
 
     /**
      * @param mode
      *            the mode to set
      */
-    public static void setMode(ReportingInteractionMode mode) {
-        ACRAConfiguration.mMode = mode;
+    public void setMode(ReportingInteractionMode mode) {
+        this.mMode = mode;
     }
 
     /**
@@ -207,7 +207,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogCommentPrompt()}
      */
-    public static void setResDialogCommentPrompt(int resId) {
+    public void setResDialogCommentPrompt(int resId) {
         mResDialogCommentPrompt = resId;
     }
 
@@ -220,7 +220,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogEmailPrompt()}
      */
-    public static void setResDialogEmailPrompt(int resId) {
+    public void setResDialogEmailPrompt(int resId) {
         mResDialogEmailPrompt = resId;
     }
 
@@ -232,7 +232,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
      */
-    public static void setResDialogIcon(int resId) {
+    public void setResDialogIcon(int resId) {
         mResDialogIcon = resId;
     }
 
@@ -244,7 +244,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
      */
-    public static void setResDialogOkToast(int resId) {
+    public void setResDialogOkToast(int resId) {
         mResDialogOkToast = resId;
     }
 
@@ -256,7 +256,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogText()}
      */
-    public static void setResDialogText(int resId) {
+    public void setResDialogText(int resId) {
         mResDialogText = resId;
     }
 
@@ -268,7 +268,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
      */
-    public static void setResDialogTitle(int resId) {
+    public void setResDialogTitle(int resId) {
         mResDialogTitle = resId;
     }
 
@@ -280,7 +280,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
      */
-    public static void setResNotifIcon(int resId) {
+    public void setResNotifIcon(int resId) {
         mResNotifIcon = resId;
     }
 
@@ -292,7 +292,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifText()}
      */
-    public static void setResNotifText(int resId) {
+    public void setResNotifText(int resId) {
         mResNotifText = resId;
     }
 
@@ -305,7 +305,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The resource id, see
      *            {@link ReportsCrashes#resNotifTickerText()}
      */
-    public static void setResNotifTickerText(int resId) {
+    public void setResNotifTickerText(int resId) {
         mResNotifTickerText = resId;
     }
 
@@ -317,7 +317,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifTitle()}
      */
-    public static void setResNotifTitle(int resId) {
+    public void setResNotifTitle(int resId) {
         mResNotifTitle = resId;
     }
 
@@ -329,7 +329,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resToastText()}
      */
-    public static void setResToastText(int resId) {
+    public void setResToastText(int resId) {
         mResToastText = resId;
     }
 
@@ -337,24 +337,24 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param sharedPreferenceMode
      *            the sharedPreferenceMode to set
      */
-    public static void setSharedPreferenceMode(Integer sharedPreferenceMode) {
-        ACRAConfiguration.mSharedPreferenceMode = sharedPreferenceMode;
+    public void setSharedPreferenceMode(Integer sharedPreferenceMode) {
+        this.mSharedPreferenceMode = sharedPreferenceMode;
     }
 
     /**
      * @param sharedPreferenceName
      *            the sharedPreferenceName to set
      */
-    public static void setSharedPreferenceName(String sharedPreferenceName) {
-        ACRAConfiguration.mSharedPreferenceName = sharedPreferenceName;
+    public void setSharedPreferenceName(String sharedPreferenceName) {
+        this.mSharedPreferenceName = sharedPreferenceName;
     }
 
     /**
      * @param socketTimeout
      *            the socketTimeout to set
      */
-    public static void setSocketTimeout(Integer socketTimeout) {
-        ACRAConfiguration.mSocketTimeout = socketTimeout;
+    public void setSocketTimeout(Integer socketTimeout) {
+        this.mSocketTimeout = socketTimeout;
     }
 
     /**
@@ -363,7 +363,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            true if you want to collect only logcat lines related to your
      *            application process.
      */
-    public static void setLogcatFilterByPid(Boolean filterByPid) {
+    public void setLogcatFilterByPid(Boolean filterByPid) {
         mLogcatFilterByPid = filterByPid;
     }
 
@@ -372,7 +372,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param true false if you want to disable sending reports in development
      *        mode. Reports will be sent only on signed applications.
      */
-    public static void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
+    public void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         mSendReportsInDevMode = sendReportsInDevMode;
     }
 
@@ -383,7 +383,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            SharedPreferences keys that should be excluded from the data
      *            collection.
      */
-    public static void setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
+    public void setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
         mExcludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
     }
 
@@ -393,7 +393,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The path and file name of your application log file, to be
      *            used with {@link ReportField#APPLICATION_LOG}.
      */
-    public static void setApplicationLogFile(String applicationLogFile) {
+    public void setApplicationLogFile(String applicationLogFile) {
         mApplicationLogFile = applicationLogFile;
     }
 
@@ -403,7 +403,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The number of lines of your application log to be collected, to be
      *            used with {@link ReportField#APPLICATION_LOG} and {@link ReportsCrashes#applicationLogFile()}.
      */
-    public static void setApplicationLogFileLines(int applicationLogFileLines) {
+    public void setApplicationLogFileLines(int applicationLogFileLines) {
         mApplicationLogFileLines = applicationLogFileLines;
     }
 

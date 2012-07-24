@@ -324,15 +324,34 @@ public class ACRA {
     }
 
     /**
-     * Provides the configuration annotation instance.
+     * Provides the current ACRA configuration.
      * 
-     * @return ACRA {@link ReportsCrashes} configuration instance.
+     * @return Current ACRA {@link ReportsCrashes} configuration instance.
      */
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
-            configProxy = new ACRAConfiguration(mReportsCrashes);
+            configProxy = getNewDefaultConfig();
         }
         return configProxy;
+    }
+
+    /**
+     * Sets the whole ACRA configuration.
+     * 
+     * @return ACRA {@link ReportsCrashes} configuration instance.
+     */
+    public static void setConfig(ACRAConfiguration conf) {
+        configProxy = conf;
+    }
+
+    /**
+     * Creates a new {@link ACRAConfiguration} instance with values initialized
+     * from the {@link ReportsCrashes} annotation.
+     * 
+     * @return
+     */
+    public static ACRAConfiguration getNewDefaultConfig() {
+        return new ACRAConfiguration(mReportsCrashes);
     }
 
     /**
@@ -362,6 +381,7 @@ public class ACRA {
 
     /**
      * Returns true if the application is in debuggable.
+     * 
      * @return true if the application is in debuggable.
      */
     static boolean isDebuggable() {
