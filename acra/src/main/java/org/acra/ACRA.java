@@ -15,47 +15,6 @@
  */
 package org.acra;
 
-import static org.acra.ReportField.ANDROID_VERSION;
-import static org.acra.ReportField.APP_VERSION_CODE;
-import static org.acra.ReportField.APP_VERSION_NAME;
-import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
-import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.BUILD;
-import static org.acra.ReportField.CRASH_CONFIGURATION;
-import static org.acra.ReportField.CUSTOM_DATA;
-import static org.acra.ReportField.DEVICE_FEATURES;
-import static org.acra.ReportField.DEVICE_ID;
-import static org.acra.ReportField.DISPLAY;
-import static org.acra.ReportField.DROPBOX;
-import static org.acra.ReportField.DUMPSYS_MEMINFO;
-import static org.acra.ReportField.ENVIRONMENT;
-import static org.acra.ReportField.EVENTSLOG;
-import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.INITIAL_CONFIGURATION;
-import static org.acra.ReportField.INSTALLATION_ID;
-import static org.acra.ReportField.IS_SILENT;
-import static org.acra.ReportField.LOGCAT;
-import static org.acra.ReportField.PACKAGE_NAME;
-import static org.acra.ReportField.PHONE_MODEL;
-import static org.acra.ReportField.PRODUCT;
-import static org.acra.ReportField.RADIOLOG;
-import static org.acra.ReportField.REPORT_ID;
-import static org.acra.ReportField.SETTINGS_SECURE;
-import static org.acra.ReportField.SETTINGS_SYSTEM;
-import static org.acra.ReportField.SHARED_PREFERENCES;
-import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.USER_APP_START_DATE;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_CRASH_DATE;
-import static org.acra.ReportField.USER_EMAIL;
-
-import org.acra.annotation.ReportsCrashes;
-import org.acra.sender.EmailIntentSender;
-import org.acra.sender.GoogleFormSender;
-import org.acra.sender.HttpPostSender;
-import org.acra.util.PackageManagerWrapper;
-
 import android.Manifest.permission;
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -65,6 +24,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.EmailIntentSender;
+import org.acra.sender.GoogleFormSender;
+import org.acra.sender.HttpPostSender;
+import org.acra.util.PackageManagerWrapper;
+
+import static org.acra.ReportField.*;
 
 /**
  * Use this class to initialize the crash reporting feature using
@@ -121,6 +87,12 @@ public class ACRA {
      */
     public static final String PREF_ALWAYS_ACCEPT = "acra.alwaysaccept";
 
+    /**
+     * The version number of the application the last time ACRA was started.
+     * This is used to determine whether unsent reports should be discarded because they are old and out of date.
+     */
+    public static final String PREF_LAST_VERSION_NR= "acra.lastVersionNr";
+    
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
 
@@ -338,17 +310,15 @@ public class ACRA {
     /**
      * Sets the whole ACRA configuration.
      * 
-     * @return ACRA {@link ReportsCrashes} configuration instance.
+     * @param  conf     ACRAConfiguration to use as a proxy for config info.
      */
     public static void setConfig(ACRAConfiguration conf) {
         configProxy = conf;
     }
 
     /**
-     * Creates a new {@link ACRAConfiguration} instance with values initialized
+     * @return new {@link ACRAConfiguration} instance with values initialized
      * from the {@link ReportsCrashes} annotation.
-     * 
-     * @return
      */
     public static ACRAConfiguration getNewDefaultConfig() {
         return new ACRAConfiguration(mReportsCrashes);

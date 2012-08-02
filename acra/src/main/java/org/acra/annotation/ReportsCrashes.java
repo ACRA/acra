@@ -15,25 +15,18 @@
  */
 package org.acra.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import java.lang.annotation.*;
 
 /**
- * Provide configuration elemets to the
+ * Provide configuration elements to the
  * {@link ACRA#init(android.app.Application)} method. The only mandatory
  * configuration item is the {@link #formKey()} parameter which is the Id of
  * your Google Documents form which will receive reports.
@@ -282,6 +275,13 @@ public @interface ReportsCrashes {
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
 
+    /**
+     * This property can be used to determine whether old (out of date) reports should be sent or not. By default they are discarded.
+     * 
+     * @return true if ACRA should delete any unsent reports on startup if the application is newer than the last time the application was started. 
+     */
+    boolean deleteOldUnsentReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+    
     /**
      * @return Value in milliseconds for timeout attempting to connect to a
      *         network (default 3000ms).

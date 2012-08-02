@@ -15,10 +15,29 @@
  */
 package org.acra;
 
-import java.lang.annotation.Annotation;
-import static org.acra.ACRAConstants.*;
-
 import org.acra.annotation.ReportsCrashes;
+
+import java.lang.annotation.Annotation;
+
+import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
+import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
+import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
+import static org.acra.ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+import static org.acra.ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
+import static org.acra.ACRAConstants.DEFAULT_DIALOG_ICON;
+import static org.acra.ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
+import static org.acra.ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+import static org.acra.ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
+import static org.acra.ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
+import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
+import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
+import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
+import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
+import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
+import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
+import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
+import static org.acra.ACRAConstants.NULL_VALUE;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -35,6 +54,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Integer mConnectionTimeout = null;
     private ReportField[] mCustomReportContent = null;
     private Boolean mDeleteUnapprovedReportsOnApplicationStart = null;
+    private Boolean deleteOldUnsentReportsOnApplicationStart = null;
     private Integer mDropboxCollectionMinutes = null;
     private Boolean mForceCloseDialogAfterToast = null;
     private String mFormKey = null;
@@ -108,6 +128,10 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public void setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
         this.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
+    }
+
+    public void setDeleteOldUnsentReportsOnApplicationStart(Boolean value) {
+        this.deleteOldUnsentReportsOnApplicationStart = value;
     }
 
     /**
@@ -369,7 +393,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param true false if you want to disable sending reports in development
+     * @param sendReportsInDevMode false if you want to disable sending reports in development
      *        mode. Reports will be sent only on signed applications.
      */
     public void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
@@ -399,7 +423,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param applicationLogFile
+     * @param applicationLogFileLines
      *            The number of lines of your application log to be collected, to be
      *            used with {@link ReportField#APPLICATION_LOG} and {@link ReportsCrashes#applicationLogFile()}.
      */
@@ -488,6 +512,20 @@ public class ACRAConfiguration implements ReportsCrashes {
         return DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
     }
 
+    @Override
+    public boolean deleteOldUnsentReportsOnApplicationStart() {
+        if (deleteOldUnsentReportsOnApplicationStart != null) {
+            return deleteOldUnsentReportsOnApplicationStart;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.deleteOldUnsentReportsOnApplicationStart();
+        }
+
+        return DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+    }
+    
+    
     @Override
     public int dropboxCollectionMinutes() {
         if (mDropboxCollectionMinutes != null) {

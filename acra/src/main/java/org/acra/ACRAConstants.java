@@ -60,6 +60,8 @@ public final class ACRAConstants {
 
     public static final boolean DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START = true;
 
+    public static final boolean DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START = true;
+    
     public static final int DEFAULT_DROPBOX_COLLECTION_MINUTES = 5;
 
     public static final boolean DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS = false;
