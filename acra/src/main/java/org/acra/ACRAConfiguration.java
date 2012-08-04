@@ -54,7 +54,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Integer mConnectionTimeout = null;
     private ReportField[] mCustomReportContent = null;
     private Boolean mDeleteUnapprovedReportsOnApplicationStart = null;
-    private Boolean deleteOldUnsentReportsOnApplicationStart = null;
+    private Boolean mDeleteOldUnsentReportsOnApplicationStart = null;
     private Integer mDropboxCollectionMinutes = null;
     private Boolean mForceCloseDialogAfterToast = null;
     private String mFormKey = null;
@@ -130,8 +130,12 @@ public class ACRAConfiguration implements ReportsCrashes {
         this.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
     }
 
-    public void setDeleteOldUnsentReportsOnApplicationStart(Boolean value) {
-        this.deleteOldUnsentReportsOnApplicationStart = value;
+
+    /**
+     * @param deleteOldUnsetReportsOnApplicationStart
+     */
+    public void setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsetReportsOnApplicationStart) {
+        this.mDeleteOldUnsentReportsOnApplicationStart = deleteOldUnsetReportsOnApplicationStart;
     }
 
     /**
@@ -514,8 +518,8 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     @Override
     public boolean deleteOldUnsentReportsOnApplicationStart() {
-        if (deleteOldUnsentReportsOnApplicationStart != null) {
-            return deleteOldUnsentReportsOnApplicationStart;
+        if (mDeleteOldUnsentReportsOnApplicationStart != null) {
+            return mDeleteOldUnsentReportsOnApplicationStart;
         }
 
         if (mReportsCrashes != null) {
