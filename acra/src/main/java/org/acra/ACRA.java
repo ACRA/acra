@@ -89,10 +89,11 @@ public class ACRA {
 
     /**
      * The version number of the application the last time ACRA was started.
-     * This is used to determine whether unsent reports should be discarded because they are old and out of date.
+     * This is used to determine whether unsent reports should be discarded
+     * because they are old and out of date.
      */
-    public static final String PREF_LAST_VERSION_NR= "acra.lastVersionNr";
-    
+    public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
+
     private static Application mApplication;
     private static ReportsCrashes mReportsCrashes;
 
@@ -310,7 +311,8 @@ public class ACRA {
     /**
      * Sets the whole ACRA configuration.
      * 
-     * @param  conf     ACRAConfiguration to use as a proxy for config info.
+     * @param conf
+     *            ACRAConfiguration to use as a proxy for config info.
      */
     public static void setConfig(ACRAConfiguration conf) {
         configProxy = conf;
@@ -318,7 +320,7 @@ public class ACRA {
 
     /**
      * @return new {@link ACRAConfiguration} instance with values initialized
-     * from the {@link ReportsCrashes} annotation.
+     *         from the {@link ReportsCrashes} annotation.
      */
     public static ACRAConfiguration getNewDefaultConfig() {
         return new ACRAConfiguration(mReportsCrashes);
@@ -344,8 +346,7 @@ public class ACRA {
             PACKAGE_NAME, FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE,
             AVAILABLE_MEM_SIZE, CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION,
             DISPLAY, USER_COMMENT, USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT,
-            DEVICE_ID, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM,
-            SETTINGS_SECURE };
+            INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM, SETTINGS_SECURE };
 
     private static ACRAConfiguration configProxy;
 
