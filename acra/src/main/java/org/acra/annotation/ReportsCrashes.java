@@ -47,8 +47,8 @@ public @interface ReportsCrashes {
 
     /**
      * The Uri of your own server-side script that will receive reports. This is
-     * to use if you don't want to send reports to Google Docs but to your own
-     * script.
+     * to use if you don't want to send reports to Google Docs but to your own,
+     * self-hosted script.
      * 
      * @return URI of a custom server to which to post reports.
      */
@@ -68,7 +68,10 @@ public @interface ReportsCrashes {
      * to be displayed to the user when a report is being sent.</li>
      * <li>{@link ReportingInteractionMode#NOTIFICATION} requires
      * {@link #resNotifTickerText()}, {@link #resNotifTitle()},
-     * {@link #resNotifText()}, {@link #resDialogText()}</li>
+     * {@link #resNotifText()}, {@link #resDialogText()}.</li>
+     * <li>{@link ReportingInteractionMode#DIALOG} requires
+     * {@link #resDialogText()}</li>. Default is
+     * {@link ReportingInteractionMode#SILENT}
      * </ul>
      * </p>
      * 
@@ -89,7 +92,8 @@ public @interface ReportsCrashes {
     int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
-     * @return Resource id for the icon in the crash dialog.
+     * @return Resource id for the icon in the crash dialog. Default value is
+     *         the system alert icon.
      */
     int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
 
@@ -110,7 +114,8 @@ public @interface ReportsCrashes {
     int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
-     * @return Resource id for the icon in the status bar notification.
+     * @return Resource id for the icon in the status bar notification. Default
+     *         is the system error notification icon.
      */
     int resNotifIcon() default ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 
@@ -130,16 +135,34 @@ public @interface ReportsCrashes {
     int resNotifTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
+     * Resource id for the Toast text triggered when the application crashes if
+     * the {@link ReportingInteractionMode#TOAST} mode is used. Can also be used
+     * in {@link ReportingInteractionMode#NOTIFICATION} and
+     * {@link ReportingInteractionMode#DIALOG} modes to display a Toast message
+     * while the report is being created, before the dialog/notification
+     * appears. This allows the user to know what is happening just before the
+     * application is terminated.
+     * 
      * @return Resource id for the Toast text triggered when the application
-     *         crashes if the notification+dialog mode is not used.
+     *         crashes.
      */
     int resToastText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
-     * @return Name of the SharedPreferences that will host the
-     *         {@link ACRA#PREF_DISABLE_ACRA} or {@link ACRA#PREF_ENABLE_ACRA}
-     *         preference. Default is to use the default SharedPreferences, as
-     *         retrieved with
+     * @return Name of the SharedPreferences that will host ACRA settings you
+     *         can make accessible to your users through a preferences screen:
+     *         <ul>
+     *         <li>
+     *         {@link ACRA#PREF_DISABLE_ACRA} or {@link ACRA#PREF_ENABLE_ACRA}</li>
+     *         <li>
+     *         {@link ACRA#PREF_ALWAYS_ACCEPT}</li>
+     *         <li>
+     *         {@link ACRA#PREF_ENABLE_DEVICE_ID}</li>
+     *         <li>
+     *         {@link ACRA#PREF_ENABLE_SYSTEM_LOGS}</li>
+     *         </ul>
+     *         preference. Default is to use the application default
+     *         SharedPreferences, as retrieved with
      *         {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
      */
     String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
@@ -176,12 +199,12 @@ public @interface ReportsCrashes {
      * <li>data_app_strictmode</li>
      * </ul>
      * 
-     * @return True if system tags are to be included as part of ropBox events.
+     * @return True if system tags are to be included as part of DropBox events.
      */
     boolean includeDropBoxSystemTags() default ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
 
     /**
-     * @return Array of tags that will be fetched when collecting DropBox
+     * @return Array of tags that you want to be fetched when collecting DropBox
      *         entries.
      */
     String[] additionalDropBoxTags() default {};
@@ -242,19 +265,110 @@ public @interface ReportsCrashes {
     String formUriBasicAuthPassword() default ACRAConstants.NULL_VALUE;
 
     /**
+     * <p>
+     * Redefines the list of {@link ReportField}s collected and sent in your
+     * reports. If you modify this list, you have to create a new Google Drive
+     * Spreadsheet & Form which will be based on these fields as column headers.
+     * </p>
+     * <p>
+     * The fields order is significant. You can also use this property to modify
+     * fields order in your reports.
+     * </p>
+     * <p>
+     * The default list is the following, except if you send reports by mail
+     * using {@link #mailTo()}.
+     * <ul>
+     * <li>
+     * {@link ReportField#REPORT_ID}</li>
+     * <li>
+     * {@link ReportField#APP_VERSION_CODE}</li>
+     * <li>
+     * {@link ReportField#APP_VERSION_NAME}</li>
+     * <li>
+     * {@link ReportField#PACKAGE_NAME}</li>
+     * <li>
+     * {@link ReportField#FILE_PATH}</li>
+     * <li>
+     * {@link ReportField#PHONE_MODEL}</li>
+     * <li>
+     * {@link ReportField#BRAND}</li>
+     * <li>
+     * {@link ReportField#PRODUCT}</li>
+     * <li>
+     * {@link ReportField#ANDROID_VERSION}</li>
+     * <li>
+     * {@link ReportField#BUILD}</li>
+     * <li>
+     * {@link ReportField#TOTAL_MEM_SIZE}</li>
+     * <li>
+     * {@link ReportField#AVAILABLE_MEM_SIZE}</li>
+     * <li>
+     * {@link ReportField#CUSTOM_DATA}</li>
+     * <li>
+     * {@link ReportField#IS_SILENT}</li>
+     * <li>
+     * {@link ReportField#STACK_TRACE}</li>
+     * <li>
+     * {@link ReportField#INITIAL_CONFIGURATION}</li>
+     * <li>
+     * {@link ReportField#CRASH_CONFIGURATION}</li>
+     * <li>
+     * {@link ReportField#DISPLAY}</li>
+     * <li>
+     * {@link ReportField#USER_COMMENT}</li>
+     * <li>
+     * {@link ReportField#USER_EMAIL}</li>
+     * <li>
+     * {@link ReportField#USER_APP_START_DATE}</li>
+     * <li>
+     * {@link ReportField#USER_CRASH_DATE}</li>
+     * <li>
+     * {@link ReportField#DUMPSYS_MEMINFO}</li>
+     * <li>
+     * {@link ReportField#LOGCAT}</li>
+     * <li>
+     * {@link ReportField#INSTALLATION_ID}</li>
+     * <li>
+     * {@link ReportField#DEVICE_FEATURES}</li>
+     * <li>
+     * {@link ReportField#ENVIRONMENT}</li>
+     * <li>
+     * {@link ReportField#SHARED_PREFERENCES}</li>
+     * <li>
+     * {@link ReportField#SETTINGS_SYSTEM}</li>
+     * <li>
+     * {@link ReportField#SETTINGS_SECURE}</li>
+     * </ul>
+     * </p>
+     * 
      * @return ReportField Array listing the fields to be included in the
      *         report.
      */
     ReportField[] customReportContent() default {};
 
     /**
+     * <p>
      * Add your crash reports mailbox here if you want to send reports via
      * email. This allows to get rid of the INTERNET permission. Reports content
      * can be customized with {@link #customReportContent()} . Default fields
-     * are: {@link ReportField#USER_COMMENT},
-     * {@link ReportField#ANDROID_VERSION}, {@link ReportField#APP_VERSION_NAME}
-     * , {@link ReportField#BRAND}, {@link ReportField#PHONE_MODEL},
-     * {@link ReportField#CUSTOM_DATA}, {@link ReportField#STACK_TRACE}
+     * are:
+     * <ul>
+     * <li>
+     * {@link ReportField#USER_COMMENT}</li>
+     * <li>
+     * {@link ReportField#ANDROID_VERSION}</li>
+     * <li>
+     * {@link ReportField#APP_VERSION_NAME}</li>
+     * <li>
+     * {@link ReportField#BRAND}</li>
+     * <li>
+     * {@link ReportField#PHONE_MODEL}</li>
+     * <li>
+     * {@link ReportField#CUSTOM_DATA}</li>
+     * <li>
+     * {@link ReportField#STACK_TRACE}</li>
+     * </ul>
+     * </p>
      * 
      * @return email address to which to send reports.
      */
@@ -263,12 +377,12 @@ public @interface ReportsCrashes {
     /**
      * Controls whether unapproved reports are deleted on application start or
      * not. Default is true. This is a change from versions of ACRA before 3.2
-     * as in NOTIFICATION mode reports were previously kept until the user
-     * explicitly opens the Notification dialog AND choose to send or discard
-     * the report. Until then, on application restart, ACRA was issuing a new
-     * crash notification for previous reports pending for approval. This could
-     * be misunderstood by the user with a new crash, resulting in bad
-     * appreciation of the application.
+     * as in {@link ReportingInteractionMode#NOTIFICATION} mode reports were
+     * previously kept until the user explicitly opens the Notification dialog
+     * AND choose to send or discard the report. Until then, on application
+     * restart, ACRA was issuing a new crash notification for previous reports
+     * pending for approval. This could be misunderstood by the user with a new
+     * crash, resulting in bad appreciation of the application.
      * 
      * @return true if ACRA should delete unapproved reports on application
      *         start.
@@ -276,12 +390,15 @@ public @interface ReportsCrashes {
     boolean deleteUnapprovedReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
 
     /**
-     * This property can be used to determine whether old (out of date) reports should be sent or not. By default they are discarded.
+     * This property can be used to determine whether old (out of date) reports
+     * should be sent or not. By default they are discarded.
      * 
-     * @return true if ACRA should delete any unsent reports on startup if the application is newer than the last time the application was started. 
+     * @return true if ACRA should delete any unsent reports on startup if the
+     *         application has been updated since the last time the application
+     *         was started.
      */
     boolean deleteOldUnsentReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
-    
+
     /**
      * @return Value in milliseconds for timeout attempting to connect to a
      *         network (default 3000ms).
@@ -293,7 +410,7 @@ public @interface ReportsCrashes {
      * before retrying the request.
      * 
      * @return Value in milliseconds for timeout receiving a response to a
-     *         network request (default 3000ms).
+     *         network request (default 5000ms).
      * @see #maxNumberOfRequestRetries()
      */
     int socketTimeout() default ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
@@ -332,16 +449,17 @@ public @interface ReportsCrashes {
 
     /**
      * Set this to false if you want to disable sending reports in development
-     * mode. Only signed application packages will send reports.
+     * mode. Only signed application packages will send reports. Default value
+     * is true.
      * 
      * @return false if reports should not be sent.
      */
     boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 
     /**
-     * Contains regex patterns to be evaluated on each SharedPreference key to
-     * exclude KV pairs from the collected SharedPreferences. This allows you to
-     * exclude sensitive user data like passwords to be collected.
+     * Provide here regex patterns to be evaluated on each SharedPreference key
+     * to exclude KV pairs from the collected SharedPreferences. This allows you
+     * to exclude sensitive user data like passwords to be collected.
      * 
      * @return an array of regex patterns, every matching key is not collected.
      */
@@ -349,7 +467,7 @@ public @interface ReportsCrashes {
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
-     * path/name of your application log file. If the string does not containt
+     * path/name of your application log file. If the string does not contain
      * any path separator, the file is assumed as being in
      * {@link Context#getFilesDir()}.
      * 
@@ -362,6 +480,7 @@ public @interface ReportsCrashes {
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
      * number of latest lines of your application log file to be collected.
+     * Default value is 100.
      * 
      * @return number of lines to collect.
      */
