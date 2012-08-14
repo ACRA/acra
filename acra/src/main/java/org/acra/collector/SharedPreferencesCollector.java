@@ -83,8 +83,16 @@ final class SharedPreferencesCollector {
         return result.toString();
     }
 
+    /**
+     * Checks if the key matches one of the patterns provided by the developer
+     * to exclude some preferences from reports.
+     * 
+     * @param key
+     *            the name of the preference to be checked
+     * @return true if the key has to be excluded from reports.
+     */
     private static boolean filteredKey(String key) {
-        for(String regex : ACRA.getConfig().excludeMatchingSharedPreferencesKeys()) {
+        for (String regex : ACRA.getConfig().excludeMatchingSharedPreferencesKeys()) {
             return key.matches(regex);
         }
         return false;

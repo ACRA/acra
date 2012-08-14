@@ -16,7 +16,21 @@
 
 package org.acra.collector;
 
+/**
+ * Collects some data identifying a Thread, usually the Thread which crashed.
+ * 
+ * @author Kevin Gaudin
+ * 
+ */
 public class ThreadCollector {
+
+    /**
+     * Collects some data identifying a Thread, usually the Thread which
+     * crashed.
+     * 
+     * @param t
+     * @return
+     */
     public static String collect(Thread t) {
         StringBuilder result = new StringBuilder();
         if (t != null) {

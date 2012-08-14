@@ -5,7 +5,6 @@ import java.io.File;
 import org.acra.ACRA;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
