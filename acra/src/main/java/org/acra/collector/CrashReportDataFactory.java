@@ -1,9 +1,58 @@
+/*
+ *  Copyright 2012 Kevin Gaudin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package org.acra.collector;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.*;
+import static org.acra.ReportField.ANDROID_VERSION;
+import static org.acra.ReportField.APPLICATION_LOG;
+import static org.acra.ReportField.APP_VERSION_CODE;
+import static org.acra.ReportField.APP_VERSION_NAME;
+import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
+import static org.acra.ReportField.BRAND;
+import static org.acra.ReportField.BUILD;
+import static org.acra.ReportField.CRASH_CONFIGURATION;
+import static org.acra.ReportField.CUSTOM_DATA;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DEVICE_ID;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.DROPBOX;
+import static org.acra.ReportField.DUMPSYS_MEMINFO;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.EVENTSLOG;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.INSTALLATION_ID;
+import static org.acra.ReportField.IS_SILENT;
+import static org.acra.ReportField.LOGCAT;
+import static org.acra.ReportField.MEDIA_CODEC_LIST;
+import static org.acra.ReportField.PACKAGE_NAME;
+import static org.acra.ReportField.PHONE_MODEL;
+import static org.acra.ReportField.PRODUCT;
+import static org.acra.ReportField.RADIOLOG;
+import static org.acra.ReportField.REPORT_ID;
+import static org.acra.ReportField.SETTINGS_SECURE;
+import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SHARED_PREFERENCES;
+import static org.acra.ReportField.STACK_TRACE;
+import static org.acra.ReportField.THREAD_DETAILS;
+import static org.acra.ReportField.TOTAL_MEM_SIZE;
+import static org.acra.ReportField.USER_CRASH_DATE;
+import static org.acra.ReportField.USER_EMAIL;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,7 +96,6 @@ public final class CrashReportDataFactory {
     private final Map<String, String> customParameters = new HashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
-    private Thread brokenThread;
 
     public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate,
             String initialConfiguration) {
@@ -128,7 +176,6 @@ public final class CrashReportDataFactory {
      *         at the instant of the Exception.
      */
     public CrashReportData createCrashData(Throwable th, boolean isSilentReport, Thread brokenThread) {
-        this.brokenThread = brokenThread;
         final CrashReportData crashReportData = new CrashReportData();
         try {
             // Make every entry here bullet proof and move any slightly dodgy

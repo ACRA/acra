@@ -11,6 +11,7 @@ import android.os.StatFs;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -106,5 +107,33 @@ public final class ReportUtils {
             Log.w(ACRA.LOG_TAG, "Couldn't retrieve DisplayDetails for : " + context.getPackageName(), e);
             return "Couldn't retrieve Display Details";
         }
+    }
+    
+    /**
+     * Utility method used for debugging purposes, writes the content of a SparseArray to a String.
+     * @param sparseArray
+     * @return "{ key1 => value1, key2 => value2, ...}"
+     */
+    public static String sparseArrayToString(SparseArray<?> sparseArray) {
+        StringBuilder result = new StringBuilder();
+        if (sparseArray == null) {
+            return "null";
+        }
+
+        result.append('{');
+        for (int i = 0; i < sparseArray.size(); i++) {
+            result.append(sparseArray.keyAt(i));
+            result.append(" => ");
+            if (sparseArray.valueAt(i) == null) {
+                result.append("null");
+            } else {
+                result.append(sparseArray.valueAt(i).toString());
+            }
+            if(i < sparseArray.size() - 1) {
+                result.append(", ");
+            }
+        }
+        result.append('}');
+        return result.toString();
     }
 }

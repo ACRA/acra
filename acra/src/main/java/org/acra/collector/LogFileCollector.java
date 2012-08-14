@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Kevin Gaudin
+ *  Copyright 2012 Kevin Gaudin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.acra.collector;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.acra.util.BoundedLinkedList;

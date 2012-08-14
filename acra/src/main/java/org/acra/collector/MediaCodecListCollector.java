@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Kevin Gaudin
+ *  Copyright 2012 Kevin Gaudin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,14 +22,20 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 public class MediaCodecListCollector {
+    private enum CodecType {
+        AVC, H263, MPEG4, AAC
+
+    }
+
     private static final String COLOR_FORMAT_PREFIX = "COLOR_";
-    private static final String VIDEO_TYPE_PREFIX = "video";
-    private static final String[] MPEG4_TYPES = { "mp4","mpeg4" };
-    private static final String[] AVC_TYPES = { "avc"};
-    private static final String[] H263_TYPES = { "h263"};
+    private static final String[] MPEG4_TYPES = { "mp4", "mpeg4", "MP4", "MPEG4" };
+    private static final String[] AVC_TYPES = { "avc", "h264", "AVC", "H264" };
+    private static final String[] H263_TYPES = { "h263", "H263" };
+    private static final String[] AAC_TYPES = { "aac", "AAC" };
 
     private static Class<?> mediaCodecListClass = null;
     private static Method getCodecInfoAtMethod = null;
@@ -44,7 +50,13 @@ public class MediaCodecListCollector {
     private static Field profile = null;
     private static Field level = null;
     private static SparseArray<String> mColorFormatValues = new SparseArray<String>();
-    private static SparseArray<String> mColorProfileLevelValues = new SparseArray<String>();
+    private static SparseArray<String> mAVCLevelValues = new SparseArray<String>();
+    private static SparseArray<String> mAVCProfileValues = new SparseArray<String>();
+    private static SparseArray<String> mH263LevelValues = new SparseArray<String>();
+    private static SparseArray<String> mH263ProfileValues = new SparseArray<String>();
+    private static SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
+    private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
+    private static SparseArray<String> mAACProfileValues = new SparseArray<String>();
 
     // static init
     static {
@@ -69,12 +81,26 @@ public class MediaCodecListCollector {
             }
 
             Class<?> codecProfileLevelClass = Class.forName("android.media.MediaCodecInfo$CodecProfileLevel");
-            for (Field f : codecCapabilitiesClass.getFields()) {
+            for (Field f : codecProfileLevelClass.getFields()) {
                 if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())) {
-                    mColorProfileLevelValues.put(f.getInt(null), f.getName());
+                    if (f.getName().startsWith("AVCLevel")) {
+                        mAVCLevelValues.put(f.getInt(null), f.getName());
+                    } else if (f.getName().startsWith("AVCProfile")) {
+                        mAVCProfileValues.put(f.getInt(null), f.getName());
+                    } else if (f.getName().startsWith("H263Level")) {
+                        mH263LevelValues.put(f.getInt(null), f.getName());
+                    } else if (f.getName().startsWith("H263Profile")) {
+                        mH263ProfileValues.put(f.getInt(null), f.getName());
+                    } else if (f.getName().startsWith("MPEG4Level")) {
+                        mMPEG4LevelValues.put(f.getInt(null), f.getName());
+                    } else if (f.getName().startsWith("MPEG4Profile")) {
+                        mMPEG4ProfileValues.put(f.getInt(null), f.getName());
+                    } else if (f.getName().startsWith("AAC")) {
+                        mAACProfileValues.put(f.getInt(null), f.getName());
+                    }
                 }
             }
-
+            
             profile = codecProfileLevelClass.getField("profile");
             level = codecProfileLevelClass.getField("level");
 
@@ -126,6 +152,7 @@ public class MediaCodecListCollector {
         return result.toString();
     }
 
+
     /**
      * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a
      * specific codec type.
@@ -141,12 +168,13 @@ public class MediaCodecListCollector {
     private static String collectCapabilitiesForType(Object codecInfo, String type) throws IllegalArgumentException,
             IllegalAccessException, InvocationTargetException {
         StringBuilder result = new StringBuilder();
-        if (type.startsWith(VIDEO_TYPE_PREFIX)) {
-            result.append(type).append(" color formats:");
-            Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
 
-            // Color Formats
-            int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
+        Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
+
+        // Color Formats
+        int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
+        if (colorFormats.length > 0) {
+            result.append(type).append(" color formats:");
             for (int i = 0; i < colorFormats.length; i++) {
                 result.append(mColorFormatValues.get(colorFormats[i]));
                 if (i < colorFormats.length - 1) {
@@ -154,20 +182,78 @@ public class MediaCodecListCollector {
                 }
             }
             result.append("\n");
+        }
 
-            // Color Profile Levels
+        // Profile Levels
+        Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
+        if (codecProfileLevels.length > 0) {
             result.append(type).append(" profile levels:");
-            Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
             for (int i = 0; i < codecProfileLevels.length; i++) {
-                
-                result.append(profile.getInt(codecProfileLevels[i])).append('-')
-                        .append(level.getInt(codecProfileLevels[i]));
+
+                CodecType codecType = identifyCodecType(codecInfo);
+                int profileValue = profile.getInt(codecProfileLevels[i]);
+                int levelValue = level.getInt(codecProfileLevels[i]);
+
+                if (codecType == null) {
+                    // Unknown codec
+                    result.append(profileValue).append('-').append(levelValue);
+                }
+
+                switch (codecType) {
+                case AVC:
+                    result.append(profileValue).append(mAVCProfileValues.get(profileValue)).append('-')
+                            .append(mAVCLevelValues.get(levelValue));
+                    break;
+                case H263:
+                    result.append(mH263ProfileValues.get(profileValue)).append('-')
+                            .append(mH263LevelValues.get(levelValue));
+                    break;
+                case MPEG4:
+                    result.append(mMPEG4ProfileValues.get(profileValue)).append('-')
+                            .append(mMPEG4LevelValues.get(levelValue));
+                    break;
+                case AAC:
+                    result.append(mAACProfileValues.get(profileValue));
+                    break;
+                default:
+                    break;
+                }
+
                 if (i < codecProfileLevels.length - 1) {
                     result.append(',');
                 }
+
             }
             result.append("\n");
         }
         return result.append("\n").toString();
+    }
+
+    private static CodecType identifyCodecType(Object codecInfo) throws IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException {
+
+        String name = (String) getNameMethod.invoke(codecInfo);
+        for (String token : AVC_TYPES) {
+            if (name.contains(token)) {
+                return CodecType.AVC;
+            }
+        }
+        for (String token : H263_TYPES) {
+            if (name.contains(token)) {
+                return CodecType.H263;
+            }
+        }
+        for (String token : MPEG4_TYPES) {
+            if (name.contains(token)) {
+                return CodecType.MPEG4;
+            }
+        }
+        for (String token : AAC_TYPES) {
+            if (name.contains(token)) {
+                return CodecType.AAC;
+            }
+        }
+
+        return null;
     }
 }
