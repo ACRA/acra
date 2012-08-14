@@ -46,7 +46,7 @@
 	</properties>
 
 	<dependencies>
-        <!---
+        <!--
             To get this library to compile (with appropriate warnings) in your IDE, you need to point your IDE project SDK
             to your Android SDK and choose an Android version. This library has been designed to run in Android-3 and newer versions.
 
