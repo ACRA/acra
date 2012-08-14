@@ -249,7 +249,11 @@ public class ACRA {
         return disableAcra;
     }
 
-    private static void checkCrashResources() throws ACRAConfigurationException {
+    /**
+     * Checks that mandatory configuration items have been provided.
+     * @throws ACRAConfigurationException if required values are missing.
+     */
+    static void checkCrashResources() throws ACRAConfigurationException {
         ReportsCrashes conf = getConfig();
         switch (conf.mode()) {
         case TOAST:
@@ -351,9 +355,9 @@ public class ACRA {
     private static ACRAConfiguration configProxy;
 
     /**
-     * Returns true if the application is in debuggable.
+     * Returns true if the application is debuggable.
      * 
-     * @return true if the application is in debuggable.
+     * @return true if the application is debuggable.
      */
     static boolean isDebuggable() {
         PackageManager pm = mApplication.getPackageManager();
