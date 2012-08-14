@@ -130,7 +130,6 @@ public class ACRAConfiguration implements ReportsCrashes {
         this.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
     }
 
-
     /**
      * @param deleteOldUnsetReportsOnApplicationStart
      */
@@ -219,11 +218,17 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
+     * Change the current {@link ReportingInteractionMode}. You must set
+     * required configuration items first.
+     * 
      * @param mode
-     *            the mode to set
+     *            the new mode to set.
+     * @throws ACRAConfigurationException
+     *             if a configuration item is missing for this mode.
      */
-    public void setMode(ReportingInteractionMode mode) {
+    public void setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.mMode = mode;
+        ACRA.checkCrashResources();
     }
 
     /**
@@ -397,8 +402,9 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param sendReportsInDevMode false if you want to disable sending reports in development
-     *        mode. Reports will be sent only on signed applications.
+     * @param sendReportsInDevMode
+     *            false if you want to disable sending reports in development
+     *            mode. Reports will be sent only on signed applications.
      */
     public void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         mSendReportsInDevMode = sendReportsInDevMode;
@@ -428,8 +434,9 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * 
      * @param applicationLogFileLines
-     *            The number of lines of your application log to be collected, to be
-     *            used with {@link ReportField#APPLICATION_LOG} and {@link ReportsCrashes#applicationLogFile()}.
+     *            The number of lines of your application log to be collected,
+     *            to be used with {@link ReportField#APPLICATION_LOG} and
+     *            {@link ReportsCrashes#applicationLogFile()}.
      */
     public void setApplicationLogFileLines(int applicationLogFileLines) {
         mApplicationLogFileLines = applicationLogFileLines;
@@ -528,8 +535,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
         return DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
     }
-    
-    
+
     @Override
     public int dropboxCollectionMinutes() {
         if (mDropboxCollectionMinutes != null) {
