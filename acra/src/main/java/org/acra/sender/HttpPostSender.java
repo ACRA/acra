@@ -24,12 +24,11 @@ import java.util.Map;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.collector.CrashReportData;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.collector.CrashReportData;
 import org.acra.util.HttpRequest;
 
-import android.net.Uri;
 import android.util.Log;
 
 /**
@@ -74,7 +73,6 @@ import android.util.Log;
  */
 public class HttpPostSender implements ReportSender {
 
-    private final Uri mFormUri;
     private final Map<ReportField, String> mMapping;
 
     /**
@@ -90,8 +88,7 @@ public class HttpPostSender implements ReportSender {
      *            .toString(). If not null, POST parameters will be named with
      *            the result of mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpPostSender(String formUri, Map<ReportField, String> mapping) {
-        mFormUri = Uri.parse(formUri);
+    public HttpPostSender(Map<ReportField, String> mapping) {
         mMapping = mapping;
     }
 
@@ -100,7 +97,7 @@ public class HttpPostSender implements ReportSender {
 
         try {
             final Map<String, String> finalReport = remap(report);
-            final URL reportUrl = new URL(mFormUri.toString());
+            final URL reportUrl = new URL(ACRA.getConfig().formUri());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
             final String login = isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA.getConfig().formUriBasicAuthLogin();

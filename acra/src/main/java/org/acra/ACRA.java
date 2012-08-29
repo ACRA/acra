@@ -144,7 +144,7 @@ public class ACRA {
                     enableAcra);
 
             // Append ReportSenders.
-            addReportSenders(errorReporter);
+            errorReporter.setDefaultReportSenders();
 
             errorReporterSingleton = errorReporter;
 
@@ -185,48 +185,7 @@ public class ACRA {
         return errorReporterSingleton;
     }
 
-    /**
-     * Adds any relevant ReportSenders to the ErrorReporter.
-     * 
-     * @param errorReporter
-     *            ErrorReporter to which to add appropriate ReportSenders.
-     */
-    private static void addReportSenders(ErrorReporter errorReporter) {
-        ReportsCrashes conf = getConfig();
-
-        // Try to send by mail.
-        if (!"".equals(conf.mailTo())) {
-            Log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");
-            errorReporter.addReportSender(new EmailIntentSender(mApplication));
-            return;
-        }
-
-        final PackageManagerWrapper pm = new PackageManagerWrapper(mApplication);
-        if (!pm.hasPermission(permission.INTERNET)) {
-            // NB If the PackageManager has died then this will erroneously log
-            // the error that the App doesn't have Internet (even though it
-            // does).
-            // I think that is a small price to pay to ensure that ACRA doesn't
-            // crash if the PackageManager has died.
-            Log.e(LOG_TAG,
-                    mApplication.getPackageName()
-                            + " should be granted permission "
-                            + permission.INTERNET
-                            + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
-            return;
-        }
-
-        // If formUri is set, instantiate a sender for a generic HTTP POST form
-        if (conf.formUri() != null && !"".equals(conf.formUri())) {
-            errorReporter.addReportSender(new HttpPostSender(conf.formUri(), null));
-            return;
-        }
-
-        // The default behavior is to use the formKey for a Google Docs Form.
-        if (conf.formKey() != null && !"".equals(conf.formKey().trim())) {
-            errorReporter.addReportSender(new GoogleFormSender(conf.formKey()));
-        }
-    }
+    
 
     /**
      * Check if the application default shared preferences contains true for the
@@ -251,7 +210,9 @@ public class ACRA {
 
     /**
      * Checks that mandatory configuration items have been provided.
-     * @throws ACRAConfigurationException if required values are missing.
+     * 
+     * @throws ACRAConfigurationException
+     *             if required values are missing.
      */
     static void checkCrashResources() throws ACRAConfigurationException {
         ReportsCrashes conf = getConfig();
@@ -307,7 +268,11 @@ public class ACRA {
      */
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
-            configProxy = getNewDefaultConfig();
+            if (mApplication == null) {
+                Log.w(ACRA.LOG_TAG,
+                        "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
+            }
+            configProxy = getNewDefaultConfig(mApplication);
         }
         return configProxy;
     }
@@ -326,8 +291,8 @@ public class ACRA {
      * @return new {@link ACRAConfiguration} instance with values initialized
      *         from the {@link ReportsCrashes} annotation.
      */
-    public static ACRAConfiguration getNewDefaultConfig() {
-        return new ACRAConfiguration(mReportsCrashes);
+    public static ACRAConfiguration getNewDefaultConfig(Application app) {
+        return new ACRAConfiguration(app.getClass().getAnnotation(ReportsCrashes.class));
     }
 
     /**
@@ -367,4 +332,9 @@ public class ACRA {
             return false;
         }
     }
+    
+    static Application getApplication() {
+        return mApplication;
+    }
+    
 }

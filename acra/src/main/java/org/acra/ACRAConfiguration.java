@@ -15,10 +15,6 @@
  */
 package org.acra;
 
-import org.acra.annotation.ReportsCrashes;
-
-import java.lang.annotation.Annotation;
-
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
@@ -37,7 +33,12 @@ import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
+import static org.acra.ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
 import static org.acra.ACRAConstants.NULL_VALUE;
+
+import java.lang.annotation.Annotation;
+
+import org.acra.annotation.ReportsCrashes;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -89,6 +90,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String[] mExcludeMatchingSharedPreferencesKeys = null;
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
+    
+    private String mGoogleFormUrlFormat = null;
 
     /**
      * @param additionalDropboxTags
@@ -154,6 +157,11 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
+     * Modify the formKey of the Google Docs form receiving reports. You need to
+     * call {@link ErrorReporter#setDefaultReportSenders()} after modifying this
+     * value if you were not using a formKey before (a mailTo or formUri
+     * instead).
+     * 
      * @param formKey
      *            the formKey to set
      */
@@ -162,6 +170,11 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
+     * Modify the formUri of your backend server receiving reports. You need to
+     * call {@link ErrorReporter#setDefaultReportSenders()} after modifying this
+     * value if you were not using a formUri before (a mailTo or formKey
+     * instead).
+     * 
      * @param formUri
      *            the formUri to set
      */
@@ -202,6 +215,11 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
+     * Modify the mailTo of the mail account receiving reports. You need to call
+     * {@link ErrorReporter#setDefaultReportSenders()} after modifying this
+     * value if you were not using a formKey before (a formKey or formUri
+     * instead).
+     * 
      * @param mailTo
      *            the mailTo to set
      */
@@ -927,5 +945,18 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_APPLICATION_LOGFILE_LINES;
+    }
+
+    @Override
+    public String googleFormUrlFormat() {
+        if (mGoogleFormUrlFormat != null) {
+            return mGoogleFormUrlFormat;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.googleFormUrlFormat();
+        }
+
+        return DEFAULT_GOOGLE_FORM_URL_FORMAT;
     }
 }

@@ -15,6 +15,8 @@
  */
 package org.acra;
 
+import android.Manifest.permission;
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -30,6 +32,9 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
+import org.acra.sender.EmailIntentSender;
+import org.acra.sender.GoogleFormSender;
+import org.acra.sender.HttpPostSender;
 import org.acra.sender.ReportSender;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
@@ -390,8 +395,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private void checkReportsOnApplicationStart() {
 
-        // Delete any old unsent reports if this is a newer version of the app than when we last started.
-    	final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
+        // Delete any old unsent reports if this is a newer version of the app
+        // than when we last started.
+        final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
         final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
         final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
         final boolean newVersion = (packageInfo != null && packageInfo.versionCode > lastVersionNr);
@@ -570,7 +576,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // that the Toast can be read by the user.
         }
 
-        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, forceSilentReport, brokenThread);
+        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, forceSilentReport,
+                brokenThread);
 
         // Always write the report file
 
@@ -833,5 +840,51 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
         }
         return true;
+    }
+
+    /**
+     * Sets relevant ReportSenders to the ErrorReporter, replacing any
+     * previously set ReportSender.
+     */
+    public void setDefaultReportSenders() {
+        ReportsCrashes conf = ACRA.getConfig();
+        Application mApplication = ACRA.getApplication();
+        removeAllReportSenders();
+
+        // Try to send by mail. If a mailTo address is provided, do not add
+        // other senders.
+        if (!"".equals(conf.mailTo())) {
+            Log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");
+            setReportSender(new EmailIntentSender(mApplication));
+            return;
+        }
+
+        final PackageManagerWrapper pm = new PackageManagerWrapper(mApplication);
+        if (!pm.hasPermission(permission.INTERNET)) {
+            // NB If the PackageManager has died then this will erroneously log
+            // the error that the App doesn't have Internet (even though it
+            // does).
+            // I think that is a small price to pay to ensure that ACRA doesn't
+            // crash if the PackageManager has died.
+            Log.e(LOG_TAG,
+                    mApplication.getPackageName()
+                            + " should be granted permission "
+                            + permission.INTERNET
+                            + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
+            return;
+        }
+
+        // If formUri is set, instantiate a sender for a generic HTTP POST form
+        // with default mapping.
+        if (conf.formUri() != null && !"".equals(conf.formUri())) {
+            setReportSender(new HttpPostSender(null));
+            return;
+        }
+
+        // The default behavior is to use the formKey for a Google Docs Form. If
+        // a formUri was also provided, we keep its sender.
+        if (conf.formKey() != null && !"".equals(conf.formKey().trim())) {
+            addReportSender(new GoogleFormSender());
+        }
     }
 }

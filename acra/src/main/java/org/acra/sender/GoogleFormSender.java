@@ -19,6 +19,7 @@ import static org.acra.ACRA.LOG_TAG;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,18 +39,16 @@ import android.util.Log;
  */
 public class GoogleFormSender implements ReportSender {
 
-    private final Uri mFormUri;
-
     /**
-     * Creates a new GoogleFormSender which will send data to a Form identified by its key.
-     * @param formKey The key of the form. The key is the formKey parameter value in the Form Url: https://spreadsheets.google.com/viewform?formkey=<b>dDN6NDdnN2I2aWU1SW5XNmNyWVljWmc6MQ</b>
+     * Creates a new GoogleFormSender which will send data to a Form identified
+     * by its key. All parameters are retrieved from {@link ACRA#getConfig()}.
      */
-    public GoogleFormSender(String formKey) {
-        mFormUri = Uri.parse("https://spreadsheets.google.com/formResponse?formkey=" + formKey + "&amp;ifq");
+    public GoogleFormSender() {
     }
 
     @Override
     public void send(CrashReportData report) throws ReportSenderException {
+        Uri formUri = Uri.parse(String.format(ACRA.getConfig().googleFormUrlFormat(), ACRA.getConfig().formKey()));
         final Map<String, String> formParams = remap(report);
         // values observed in the GoogleDocs original html form
         formParams.put("pageNumber", "0");
@@ -57,7 +56,7 @@ public class GoogleFormSender implements ReportSender {
         formParams.put("submit", "Envoyer");
 
         try {
-            final URL reportUrl = new URL(mFormUri.toString());
+            final URL reportUrl = new URL(formUri.toString());
             Log.d(LOG_TAG, "Sending report " + report.get(ReportField.REPORT_ID));
             Log.d(LOG_TAG, "Connect to " + reportUrl);
 
@@ -75,7 +74,7 @@ public class GoogleFormSender implements ReportSender {
     private Map<String, String> remap(Map<ReportField, String> report) {
 
         ReportField[] fields = ACRA.getConfig().customReportContent();
-        if(fields.length == 0) {
+        if (fields.length == 0) {
             fields = ACRA.DEFAULT_REPORT_FIELDS;
         }
 
