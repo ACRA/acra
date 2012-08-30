@@ -196,7 +196,6 @@ public final class HttpRequest {
 
         final HttpPost httpPost = new HttpPost(url.toString());
 
-        log.d(ACRA.LOG_TAG, "Setting httpPost headers");
         final UsernamePasswordCredentials creds = getCredentials();
         if (creds != null) {
             httpPost.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));

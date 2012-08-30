@@ -15,7 +15,8 @@
  */
 package org.acra;
 
-import android.Manifest.permission;
+import org.acra.annotation.ReportsCrashes;
+
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -24,11 +25,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import org.acra.annotation.ReportsCrashes;
-import org.acra.sender.EmailIntentSender;
-import org.acra.sender.GoogleFormSender;
-import org.acra.sender.HttpPostSender;
-import org.acra.util.PackageManagerWrapper;
 
 import static org.acra.ReportField.*;
 
@@ -131,7 +127,6 @@ public class ACRA {
         }
 
         final SharedPreferences prefs = getACRASharedPreferences();
-        Log.d(ACRA.LOG_TAG, "Set OnSharedPreferenceChangeListener.");
 
         try {
             checkCrashResources();
@@ -236,6 +231,8 @@ public class ACRA {
                         "DIALOG mode: you have to define at least the resDialogText parameters in your application @ReportsCrashes() annotation.");
             }
             break;
+		default:
+			break;
         }
     }
 
@@ -249,14 +246,10 @@ public class ACRA {
      *         adjustable setting.
      */
     public static SharedPreferences getACRASharedPreferences() {
-        // TODO is there any reason to keep this method public? If we can hide
-        // it, we should. Do clients ever need to access it?
         ReportsCrashes conf = getConfig();
         if (!"".equals(conf.sharedPreferencesName())) {
-            Log.d(ACRA.LOG_TAG, "Retrieve SharedPreferences " + conf.sharedPreferencesName());
             return mApplication.getSharedPreferences(conf.sharedPreferencesName(), conf.sharedPreferencesMode());
         } else {
-            Log.d(ACRA.LOG_TAG, "Retrieve application default SharedPreferences.");
             return PreferenceManager.getDefaultSharedPreferences(mApplication);
         }
     }

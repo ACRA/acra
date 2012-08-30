@@ -815,7 +815,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 final boolean isReportApproved = fileNameParser.isApproved(fileName);
                 if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
                     final File fileToDelete = new File(mContext.getFilesDir(), fileName);
-                    Log.d(LOG_TAG, "Deleting file " + fileName);
                     if (!fileToDelete.delete()) {
                         Log.e(ACRA.LOG_TAG, "Could not delete report : " + fileToDelete);
                     }

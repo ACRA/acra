@@ -103,5 +103,5 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
     
-    public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://spreadsheets.google.com/formResponse?formkey=%s&amp;ifq";
+    public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
 }
