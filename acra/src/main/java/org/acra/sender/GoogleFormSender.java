@@ -19,13 +19,13 @@ import static org.acra.ACRA.LOG_TAG;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.acra.ACRA;
-import org.acra.collector.CrashReportData;
+import org.acra.ACRAConfiguration;
 import org.acra.ReportField;
+import org.acra.collector.CrashReportData;
 import org.acra.util.HttpRequest;
 
 import android.net.Uri;
@@ -39,16 +39,34 @@ import android.util.Log;
  */
 public class GoogleFormSender implements ReportSender {
 
+    private final Uri mFormUri;
+
     /**
-     * Creates a new GoogleFormSender which will send data to a Form identified
-     * by its key. All parameters are retrieved from {@link ACRA#getConfig()}.
+     * Creates a new dynamic GoogleFormSender which will send data to a Form
+     * identified by its key. All parameters are retrieved from
+     * {@link ACRA#getConfig()} and can thus be changed dynamically with
+     * {@link ACRAConfiguration#setFormKey(String)}
      */
     public GoogleFormSender() {
+        mFormUri = null;
+    }
+
+    /**
+     * Creates a new fixed GoogleFormSender which will send data to a Form
+     * identified by its key provided as a parameter. Once set, the destination
+     * form can not be changed dynamically.
+     * 
+     * @param formKey
+     *            The formKey of the destination Google Doc Form.
+     */
+    public GoogleFormSender(String formKey) {
+        mFormUri = Uri.parse(String.format(ACRA.getConfig().googleFormUrlFormat(), formKey));
     }
 
     @Override
     public void send(CrashReportData report) throws ReportSenderException {
-        Uri formUri = Uri.parse(String.format(ACRA.getConfig().googleFormUrlFormat(), ACRA.getConfig().formKey()));
+        Uri formUri = mFormUri == null ? Uri.parse(String.format(ACRA.getConfig().googleFormUrlFormat(), ACRA
+                .getConfig().formKey())) : mFormUri;
         final Map<String, String> formParams = remap(report);
         // values observed in the GoogleDocs original html form
         formParams.put("pageNumber", "0");

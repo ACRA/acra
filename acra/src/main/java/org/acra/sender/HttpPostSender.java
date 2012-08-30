@@ -29,6 +29,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
 import org.acra.util.HttpRequest;
 
+import android.net.Uri;
 import android.util.Log;
 
 /**
@@ -73,11 +74,31 @@ import android.util.Log;
  */
 public class HttpPostSender implements ReportSender {
 
+    private final Uri mFormUri;
     private final Map<ReportField, String> mMapping;
 
     /**
      * <p>
-     * Create a new HttpPostSender instance.
+     * Create a new HttpPostSender instance with its destination taken from
+     * {@link ACRA#getConfig()} dynamically. Configuration changes to the
+     * formUri are applied automatically.
+     * </p>
+     * 
+     * @param mapping
+     *            If null, POST parameters will be named with
+     *            {@link ReportField} values converted to String with
+     *            .toString(). If not null, POST parameters will be named with
+     *            the result of mapping.get(ReportField.SOME_FIELD);
+     */
+    public HttpPostSender(Map<ReportField, String> mapping) {
+        mFormUri = null;
+        mMapping = mapping;
+    }
+
+    /**
+     * <p>
+     * Create a new HttpPostSender instance with a fixed destination provided as
+     * a parameter. Configuration changes to the formUri are not applied.
      * </p>
      * 
      * @param formUri
@@ -88,7 +109,8 @@ public class HttpPostSender implements ReportSender {
      *            .toString(). If not null, POST parameters will be named with
      *            the result of mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpPostSender(Map<ReportField, String> mapping) {
+    public HttpPostSender(String formUri, Map<ReportField, String> mapping) {
+        mFormUri = Uri.parse(formUri);
         mMapping = mapping;
     }
 
@@ -97,11 +119,13 @@ public class HttpPostSender implements ReportSender {
 
         try {
             final Map<String, String> finalReport = remap(report);
-            final URL reportUrl = new URL(ACRA.getConfig().formUri());
+            final URL reportUrl = mFormUri == null ? new URL(ACRA.getConfig().formUri()) : new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
-            final String login = isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA.getConfig().formUriBasicAuthLogin();
-            final String password = isNull(ACRA.getConfig().formUriBasicAuthPassword()) ? null : ACRA.getConfig().formUriBasicAuthPassword();
+            final String login = isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA.getConfig()
+                    .formUriBasicAuthLogin();
+            final String password = isNull(ACRA.getConfig().formUriBasicAuthPassword()) ? null : ACRA.getConfig()
+                    .formUriBasicAuthPassword();
 
             final HttpRequest request = new HttpRequest();
             request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
@@ -123,7 +147,7 @@ public class HttpPostSender implements ReportSender {
     private Map<String, String> remap(Map<ReportField, String> report) {
 
         ReportField[] fields = ACRA.getConfig().customReportContent();
-        if(fields.length == 0) {
+        if (fields.length == 0) {
             fields = ACRA.DEFAULT_REPORT_FIELDS;
         }
 
