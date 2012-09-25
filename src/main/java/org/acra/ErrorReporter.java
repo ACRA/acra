@@ -598,14 +598,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.d(ACRA.LOG_TAG, "About to send status bar notification from #handleException");
             notifySendReport(reportFileName);
         }
-        // } else if (reportingInteractionMode ==
-        // ReportingInteractionMode.DIALOG) {
-        // // Create a new activity task with the confirmation dialog.
-        // // This new task will be persisted on application restart right
-        // // after its death.
-        // Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
-        // notifyDialog(reportFileName);
-        // }
 
         if (shouldDisplayToast) {
             // A toast is being displayed, we have to wait for its end before
@@ -641,7 +633,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // call endApplication() in onPostExecute(), only when (toastWaitEnded
         // == true)
         final SendWorker worker = sender;
-        final boolean showDirectDialog = reportingInteractionMode == ReportingInteractionMode.DIALOG;
+        final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
+                && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
         new Thread() {
 
