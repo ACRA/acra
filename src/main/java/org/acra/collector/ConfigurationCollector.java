@@ -129,7 +129,7 @@ public final class ConfigurationCollector {
                     result.append(fieldName).append('=');
                     if (f.getType().equals(int.class)) {
                         result.append(getFieldValueName(conf, f));
-                    } else {
+                    } else if(f.get(conf) != null){
                         result.append(f.get(conf).toString());
                     }
                     result.append('\n');
