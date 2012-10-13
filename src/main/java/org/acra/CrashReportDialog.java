@@ -76,14 +76,18 @@ public final class CrashReportDialog extends Activity {
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
         root.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        root.setFocusable(true);
+        root.setFocusableInTouchMode(true);
 
         final ScrollView scroll = new ScrollView(this);
         root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
+        final LinearLayout scrollable = new LinearLayout(this);
+        scrollable.setOrientation(LinearLayout.VERTICAL);
+        scroll.addView(scrollable);
 
         final TextView text = new TextView(this);
-
         text.setText(getText(ACRA.getConfig().resDialogText()));
-        scroll.addView(text, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+        scrollable.addView(text);
 
         // Add an optional prompt for user comments
         final int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
@@ -92,12 +96,12 @@ public final class CrashReportDialog extends Activity {
             label.setText(getText(commentPromptId));
 
             label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            root.addView(label, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            scrollable.addView(label,
+                    new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
             userComment = new EditText(this);
             userComment.setLines(2);
-            root.addView(userComment,
-                    new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            scrollable.addView(userComment);
         }
 
         // Add an optional user email field
@@ -107,17 +111,17 @@ public final class CrashReportDialog extends Activity {
             label.setText(getText(emailPromptId));
 
             label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            root.addView(label, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            scrollable.addView(label);
 
             userEmail = new EditText(this);
             userEmail.setSingleLine();
-            userEmail.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            userEmail.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
             prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig()
                     .sharedPreferencesMode());
             userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
 
-            root.addView(userEmail, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            scrollable.addView(userEmail);
         }
 
         final LinearLayout buttons = new LinearLayout(this);
@@ -175,7 +179,8 @@ public final class CrashReportDialog extends Activity {
 
             @Override
             public void onClick(View v) {
-                // Let's delete all non approved reports. We keep approved and silent reports.
+                // Let's delete all non approved reports. We keep approved and
+                // silent reports.
                 ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
                 finish();
             }
@@ -194,6 +199,13 @@ public final class CrashReportDialog extends Activity {
         getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, ACRA.getConfig().resDialogIcon());
 
         cancelNotification();
+
+        scroll.post(new Runnable() {
+            @Override
+            public void run() {
+                scroll.scrollTo(0, 0);
+            }
+        });
     }
 
     /**
