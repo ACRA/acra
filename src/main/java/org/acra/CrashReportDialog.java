@@ -51,6 +51,8 @@ import android.widget.Toast;
  */
 public final class CrashReportDialog extends Activity {
 
+    private static final String STATE_EMAIL = "email";
+    private static final String STATE_COMMENT = "comment";
     private SharedPreferences prefs;
     private EditText userComment;
     private EditText userEmail;
@@ -101,6 +103,12 @@ public final class CrashReportDialog extends Activity {
 
             userComment = new EditText(this);
             userComment.setLines(2);
+            if (savedInstanceState != null) {
+                String savedValue = savedInstanceState.getString(STATE_COMMENT);
+                if (savedValue != null) {
+                    userComment.setText(savedValue);
+                }
+            }
             scrollable.addView(userComment);
         }
 
@@ -119,7 +127,15 @@ public final class CrashReportDialog extends Activity {
 
             prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig()
                     .sharedPreferencesMode());
-            userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
+            String savedValue = null;
+            if(savedInstanceState != null) {
+                savedValue = savedInstanceState.getString(STATE_EMAIL);
+            }
+            if (savedValue != null) {
+                userEmail.setText(savedValue);
+            } else {
+                userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
+            }
 
             scrollable.addView(userEmail);
         }
@@ -206,6 +222,22 @@ public final class CrashReportDialog extends Activity {
                 scroll.scrollTo(0, 0);
             }
         });
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (userComment != null && userComment.getText() != null) {
+            outState.putString(STATE_COMMENT, userComment.getText().toString());
+        }
+        if (userEmail != null && userEmail.getText() != null) {
+            outState.putString(STATE_EMAIL, userEmail.getText().toString());
+        }
     }
 
     /**
