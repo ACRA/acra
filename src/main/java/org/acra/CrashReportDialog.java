@@ -32,6 +32,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -246,5 +247,14 @@ public final class CrashReportDialog extends Activity {
     protected void cancelNotification() {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(ACRAConstants.NOTIF_CRASH_ID);
+    }
+    
+    @Override 
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // If BACK button is pressed, handle it like a NO.
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }
