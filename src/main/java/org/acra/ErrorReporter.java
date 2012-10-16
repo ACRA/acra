@@ -393,7 +393,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * This method looks for pending reports and does the action required
      * depending on the interaction mode set.
      */
-    private void checkReportsOnApplicationStart() {
+    public void checkReportsOnApplicationStart() {
 
         // Delete any old unsent reports if this is a newer version of the app
         // than when we last started.
