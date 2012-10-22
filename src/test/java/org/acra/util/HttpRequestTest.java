@@ -30,6 +30,7 @@ public class HttpRequestTest {
     public void setUp() throws Exception {
         final NonAndroidLog log = new NonAndroidLog();
         ACRA.setLog(log);
+        ACRA.getConfig().setDisableSSLCertValidation(true);
     }
 
 

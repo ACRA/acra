@@ -91,9 +91,9 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String[] mExcludeMatchingSharedPreferencesKeys = null;
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
-    
+
     private String mGoogleFormUrlFormat = null;
-    
+
     private Boolean mDisableSSLCertValidation = null;
 
     /**
@@ -461,6 +461,16 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public void setApplicationLogFileLines(int applicationLogFileLines) {
         mApplicationLogFileLines = applicationLogFileLines;
+    }
+
+    /**
+     * 
+     * @param disableSSLCertValidation
+     *            Set this to true if you need to send reports to a server over
+     *            SSL using a self-signed certificate.
+     */
+    public void setDisableSSLCertValidation(boolean disableSSLCertValidation) {
+        mDisableSSLCertValidation = disableSSLCertValidation;
     }
 
     /**
