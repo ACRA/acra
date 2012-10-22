@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.acra.ACRA;
 import org.acra.log.NonAndroidLog;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +29,7 @@ public class HttpRequestTest {
     @Before
     public void setUp() throws Exception {
         final NonAndroidLog log = new NonAndroidLog();
-        HttpRequest.setLog(log);
+        ACRA.setLog(log);
     }
 
 

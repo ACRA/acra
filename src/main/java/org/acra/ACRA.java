@@ -16,6 +16,8 @@
 package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.log.ACRALog;
+import org.acra.log.AndroidLogDelegate;
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -24,7 +26,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import static org.acra.ReportField.*;
 
@@ -43,6 +44,8 @@ public class ACRA {
     public static final boolean DEV_LOGGING = false; // Should be false for
                                                      // release.
     public static final String LOG_TAG = ACRA.class.getSimpleName();
+    
+    public static ACRALog log = new AndroidLogDelegate();
 
     /**
      * The key of the application default SharedPreference where you can put a
@@ -121,7 +124,7 @@ public class ACRA {
         mApplication = app;
         mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
         if (mReportsCrashes == null) {
-            Log.e(LOG_TAG,
+            log.e(LOG_TAG,
                     "ACRA#init called but no ReportsCrashes annotation on Application " + mApplication.getPackageName());
             return;
         }
@@ -131,7 +134,7 @@ public class ACRA {
         try {
             checkCrashResources();
 
-            Log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+            log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = !shouldDisableACRA(prefs);
@@ -144,7 +147,7 @@ public class ACRA {
             errorReporterSingleton = errorReporter;
 
         } catch (ACRAConfigurationException e) {
-            Log.w(LOG_TAG, "Error : ", e);
+            log.w(LOG_TAG, "Error : ", e);
         }
 
         // We HAVE to keep a reference otherwise the listener could be garbage
@@ -262,7 +265,7 @@ public class ACRA {
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
             if (mApplication == null) {
-                Log.w(ACRA.LOG_TAG,
+                log.w(ACRA.LOG_TAG,
                         "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
             }
             configProxy = getNewDefaultConfig(mApplication);
@@ -285,7 +288,11 @@ public class ACRA {
      *         from the {@link ReportsCrashes} annotation.
      */
     public static ACRAConfiguration getNewDefaultConfig(Application app) {
-        return new ACRAConfiguration(app.getClass().getAnnotation(ReportsCrashes.class));
+        if(app != null) {
+            return new ACRAConfiguration(app.getClass().getAnnotation(ReportsCrashes.class));
+        } else {
+            return new ACRAConfiguration(null);
+        }
     }
 
     /**
@@ -330,4 +337,7 @@ public class ACRA {
         return mApplication;
     }
     
+    public static void setLog(ACRALog log) {
+        ACRA.log = log;
+    }
 }
