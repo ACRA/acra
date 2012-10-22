@@ -34,6 +34,7 @@ import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
 import static org.acra.ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
+import static org.acra.ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 import static org.acra.ACRAConstants.NULL_VALUE;
 
 import java.lang.annotation.Annotation;
@@ -92,6 +93,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Integer mApplicationLogFileLines = null;
     
     private String mGoogleFormUrlFormat = null;
+    
+    private Boolean mDisableSSLCertValidation = null;
 
     /**
      * @param additionalDropboxTags
@@ -958,5 +961,18 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_GOOGLE_FORM_URL_FORMAT;
+    }
+
+    @Override
+    public boolean disableSSLCertValidation() {
+        if (mDisableSSLCertValidation != null) {
+            return mDisableSSLCertValidation;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.disableSSLCertValidation();
+        }
+
+        return DEFAULT_DISABLE_SSL_CERT_VALIDATION;
     }
 }

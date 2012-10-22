@@ -503,4 +503,15 @@ public @interface ReportsCrashes {
      *         including a %s token which is replaced by the formKey.
      */
     String googleFormUrlFormat() default ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
+
+    /**
+     * <p>
+     * Set this to true if you need to post reports to your own server using an
+     * SSL connection with a self-signed certificate.
+     * </p>
+     * 
+     * @return True if SSL certificates validation has to be ignored when
+     *         posting reports.
+     */
+    boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 }

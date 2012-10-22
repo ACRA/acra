@@ -20,6 +20,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -39,8 +40,6 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 public final class HttpRequest {
-
-    private static ACRALog log = new AndroidLogDelegate();
 
     private static class SocketTimeOutRetryHandler implements HttpRequestRetryHandler {
 
@@ -64,15 +63,15 @@ public final class HttpRequest {
                     if (httpParams != null) {
                         final int newSocketTimeOut = HttpConnectionParams.getSoTimeout(httpParams) * 2;
                         HttpConnectionParams.setSoTimeout(httpParams, newSocketTimeOut);
-                        log.d(ACRA.LOG_TAG, "SocketTimeOut - increasing time out to " + newSocketTimeOut + " millis and trying again");
+                        ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut - increasing time out to " + newSocketTimeOut + " millis and trying again");
                     } else {
-                        log.d(ACRA.LOG_TAG, "SocketTimeOut - no HttpParams, cannot increase time out. Trying again with current settings");
+                        ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut - no HttpParams, cannot increase time out. Trying again with current settings");
                     }
 
                     return true;
                 }
 
-                log.d(ACRA.LOG_TAG, "SocketTimeOut but exceeded max number of retries : " + maxNrRetries);
+                ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut but exceeded max number of retries : " + maxNrRetries);
             }
 
             return false;  //To change body of implemented methods use File | Settings | File Templates.
@@ -80,14 +79,6 @@ public final class HttpRequest {
     }
 
 
-    /**
-     * By default HttpRequest uses the Android logging system.
-     *
-     * @param log   ACRALog to use for all HttpRequest instances.
-     */
-    static void setLog(ACRALog log) {
-        HttpRequest.log = log;
-    }
 
     private String login;
     private String password;
@@ -132,10 +123,10 @@ public final class HttpRequest {
         final HttpClient httpClient = getHttpClient();
         final HttpPost httpPost = getHttpPost(url, parameters);
 
-        log.d(ACRA.LOG_TAG, "Sending request to " + url);
-        if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HttpPost params : ");
+        ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpPost params : ");
         for (final Object key : parameters.keySet()) {
-            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, " key : '" + key + "'    value: '" + parameters.get(key) + "'");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, " key : '" + key + "'    value: '" + parameters.get(key) + "'");
         }
 
         final HttpResponse response = httpClient.execute(httpPost, new BasicHttpContext());
@@ -144,17 +135,17 @@ public final class HttpRequest {
             if (statusLine != null) {
                 final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
                 if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
-                    if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpPost);
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpPost);
                     throw new IOException("Host returned error code " + statusCode);
                 }
             }
 
-            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
             final String content = EntityUtils.toString(response.getEntity());
-            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HttpResponse Content : " + content.substring(0, Math.min(content.length(), 200)));
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Content : " + content.substring(0, Math.min(content.length(), 200)));
 
         } else {
-            if (ACRA.DEV_LOGGING) log.d(ACRA.LOG_TAG, "HTTP no Response!!");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
         }
     }
 
@@ -170,7 +161,11 @@ public final class HttpRequest {
 
         final SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-        registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
+        if(ACRA.getConfig().disableSSLCertValidation()) {
+            registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
+        } else {
+            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+        }
 
         final ClientConnectionManager clientConnectionManager = new ThreadSafeClientConnManager(httpParams, registry);
         final DefaultHttpClient httpClient = new DefaultHttpClient(clientConnectionManager, httpParams);
