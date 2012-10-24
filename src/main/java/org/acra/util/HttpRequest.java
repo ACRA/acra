@@ -14,6 +14,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.conn.ClientConnectionManager;
@@ -205,6 +206,23 @@ public final class HttpRequest {
         return httpPost;
     }
 
+    private HttpPut getHttpPut(URL url, String data) throws UnsupportedEncodingException {
+
+        final HttpPut httpPut = new HttpPut(url.toString());
+
+        final UsernamePasswordCredentials creds = getCredentials();
+        if (creds != null) {
+            httpPut.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
+        }
+        httpPut.setHeader("User-Agent", "Android");
+        httpPut.setHeader("Accept", "text/html,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+        httpPut.setHeader("Content-Type", "application/json");
+
+        httpPut.setEntity(new StringEntity(data, "UTF-8"));
+
+        return httpPut;
+    }
+
     /**
      * Converts a Map of parameters into a URL encoded Sting.
      *
@@ -228,4 +246,40 @@ public final class HttpRequest {
 
         return dataBfr.toString();
     }
+
+    /**
+     * Puts to a URL.
+     *
+     * @param url           URL to which to post.
+     * @param parameters    Map of parameters to post to a URL.
+     * @throws IOException if the data cannot be posted.
+     */
+    public void sendPut(URL url, String data) throws IOException {
+
+        final HttpClient httpClient = getHttpClient();
+        final HttpPut httpPut = getHttpPut(url, data);
+
+        ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpPut content :\n" + data);
+        
+        final HttpResponse response = httpClient.execute(httpPut, new BasicHttpContext());
+        if (response != null) {
+            final StatusLine statusLine = response.getStatusLine();
+            if (statusLine != null) {
+                final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
+                if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPut : " + httpPut);
+                    throw new IOException("Host returned error code " + statusCode);
+                }
+            }
+
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
+            final String content = EntityUtils.toString(response.getEntity());
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Content : " + content.substring(0, Math.min(content.length(), 200)));
+
+        } else {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
+        }
+    }
+
 }
