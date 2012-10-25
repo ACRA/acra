@@ -33,7 +33,7 @@ ACRA's notification systems are clean. If a crash occurs, your application does 
 
 The user is notified of an error only once, and you might enhance the percieved quality of your application by defining your own texts in the notifications/dialogs.
 
-Please do not hesitate to open defects/enhancements requests in [the issue tracker](issues).
+Please do not hesitate to open defects/enhancements requests in [the issue tracker](acra/issues).
 
 ACRA v4.4 - enforcing security
 ==============================
