@@ -15,18 +15,18 @@ What is ACRA ?
 
 ACRA is a library enabling Android Application to automatically post their crash reports to a GoogleDoc form. It is targetted to android applications developers to help them get data from their applications when they crash or behave erroneously.
 
-See [BasicSetup](wiki/BasicSetup) for a step-by-step installation and usage guide.
+See [BasicSetup](acra/wiki/BasicSetup) for a step-by-step installation and usage guide.
 
 A crash reporting feature for android apps is native since Android 2.2 (FroYo) but only available through the official Android Market (and with limited data). ACRA is a great help for Android developers :
 
-  * [developer configurable user interaction](wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
+  * [developer configurable user interaction](acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
   * usable with ALL versions of android (compiled with 1.5, not tested on 1.0/1.1 but might work... but who does really care ?) and capable of retrieving data from latest versions through reflection.
-  * more [detailed crash reports](wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
-  * you can [add your own variables content or debug traces](wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
-  * you can send [error reports even if the application doesn't crash](wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
+  * more [detailed crash reports](acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
+  * you can [add your own variables content or debug traces](acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
+  * you can send [error reports even if the application doesn't crash](acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
   * works for any application even if not delivered through Google's Android Market => great for devices/regions where the Android Market is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
-  * can be used with [your own self-hosted report receiver script](wiki/AdvancedUsage#wiki-Reports_destination)
+  * can be used with [your own self-hosted report receiver script](acra/wiki/AdvancedUsage#wiki-Reports_destination)
   * google doc reports can be shared with a whole development team. Other benefits from the Google Docs platform are still to be investigated (stats, macros...)
 
 ACRA's notification systems are clean. If a crash occurs, your application does not add user notifications over existing system's crash notifications or reporting features. If you use the Toast, Status bar notification or direct dialog modes, the "force close" dialog is not displayed anymore and devices where the system native reporting feature is enabled do not offer the user to send an additional report.
@@ -62,7 +62,7 @@ Here's what's new in ACRA 4.3.0:
 * addition of a collector for the details of the broken thread (id, name, groupname)
 * addition of a collector for the new MediaCodecList provided in the Jelly Bean API
 
-A more detailed description of the changes has been introduced in [this Google+ post](https://plus.google.com/b/118444843928759726538/118444843928759726538/posts/cnABXX7bbxV), based on the [ChangeLog](wiki/ChangeLog).
+A more detailed description of the changes has been introduced in [this Google+ post](https://plus.google.com/b/118444843928759726538/118444843928759726538/posts/cnABXX7bbxV), based on the [ChangeLog](acra/wiki/ChangeLog).
 
 If you upgrade from 4.2.3, be aware that the default list of ReportFields has changed. You would better create a new spreadsheet & form with the help of the doc/CrashReports-Template.csv or use `@ReportsCrashes(customReportContent={...})` to redefine your own list of fields.
 
@@ -79,7 +79,7 @@ _Kevin_
 ACRA v4.X main new features
 ===========================
 
-You can read in the [ChangeLog](http://code.google.com/p/acra/wiki/ChangeLog) that many things have been added since ACRA 3.1. Here is a summary:
+You can read in the [ChangeLog](http://code.google.com/p/acra/acra/wiki/ChangeLog) that many things have been added since ACRA 3.1. Here is a summary:
 
   * In addition to standard logcat data, reports can contain eventslog and radioevents data
   * Reports will contain the result of the "`adb shell dumpsys meminfo <pid>`" command which gives details about your application memory usage right after the crash.
@@ -98,4 +98,4 @@ And after that?
 
 Now that ACRA is stabilized on the device side (there shouldn't be much more data required...), the effort should be placed on crash data analysis and reports management tools for developers.
 
-You can look at [some contributions](wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
+You can look at [some contributions](acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
