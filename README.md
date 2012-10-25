@@ -42,7 +42,7 @@ ACRA v4.4 - enforcing security
 
 ACRA has been named in [this report](http://www.cs.utexas.edu/~shmat/shmat_ccs12.pdf) as a potential cause of SSL vulnerability for all android apps using it.
 
-The truth is that, in order to let devs use alternative backends over an SSL connection with self-signed certificates, I chose to disable certificate validation. But this is done only on the scope of ACRA reports senders. Using ACRA does not imply that your app becomes unsafe for all its SSL communications.
+The truth is that, in order to let devs use alternative backends over an SSL connection with self-signed certificates, I chose to disable certificate validation in earlier versions of the lib. But this was done only on the scope of ACRA reports senders. Using ACRA did not imply that your app became unsafe for all its SSL communications.
 
 Prior to ACRA v4.4.0, reports content were indeed vulnerable to a man in the middle attack. There "can" be some private data in there, but there are really few by default.
 
