@@ -72,7 +72,12 @@ public enum ReportField {
      * 
      * @see android.os.Build
      */
-    BUILD,
+    BUILD {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * Device brand (manufacturer or carrier).
      * 
@@ -97,7 +102,12 @@ public enum ReportField {
      * Contains key = value pairs defined by the application developer during
      * the application execution.
      */
-    CUSTOM_DATA,
+    CUSTOM_DATA {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * The Holy Stack Trace.
      */
@@ -107,19 +117,34 @@ public enum ReportField {
      * 
      * @see Configuration
      */
-    INITIAL_CONFIGURATION,
+    INITIAL_CONFIGURATION {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * {@link Configuration} fields state on the application crash.
      * 
      * @see Configuration
      */
-    CRASH_CONFIGURATION,
+    CRASH_CONFIGURATION {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * Device display specifications.
      * 
      * @see android.view.WindowManager#getDefaultDisplay()
      */
-    DISPLAY,
+    DISPLAY {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * Comment added by the user in the CrashReportDialog displayed in
      * {@link ReportingInteractionMode#NOTIFICATION} mode.
@@ -175,23 +200,48 @@ public enum ReportField {
     /**
      * Features declared as available on this device by the system.
      */
-    DEVICE_FEATURES,
+    DEVICE_FEATURES {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * External storage state and standard directories.
      */
-    ENVIRONMENT,
+    ENVIRONMENT {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * System settings.
      */
-    SETTINGS_SYSTEM,
+    SETTINGS_SYSTEM {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * Secure settings (applications can't modify them).
      */
-    SETTINGS_SECURE,
+    SETTINGS_SECURE {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * SharedPreferences contents
      */
-    SHARED_PREFERENCES,
+    SHARED_PREFERENCES {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
     /**
      * Content of your own application log file. To be configured with
      * {@link ReportsCrashes#applicationLogFile()} to define the path/name of
@@ -200,11 +250,24 @@ public enum ReportField {
      */
     APPLICATION_LOG,
     /**
-     * Since Android API Level 16 (Android 4.1 - Jelly Beans), retrieve the list of supported Media codecs and their capabilities (color format, profile and level).
+     * Since Android API Level 16 (Android 4.1 - Jelly Beans), retrieve the list
+     * of supported Media codecs and their capabilities (color format, profile
+     * and level).
      */
     MEDIA_CODEC_LIST,
     /**
      * Retrieves details of the failing thread (id, name, group name).
      */
-    THREAD_DETAILS
+    THREAD_DETAILS;
+
+    /**
+     * Whether this field is a collection of key/value pairs.
+     * 
+     * @return true if the field contains a string with a key/value pair on each
+     *         line, key and value separated by an equal sugn
+     * 
+     */
+    public boolean containsKeyValuePairs() {
+        return false;
+    }
 }
