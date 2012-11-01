@@ -34,7 +34,7 @@ import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.sender.EmailIntentSender;
 import org.acra.sender.GoogleFormSender;
-import org.acra.sender.HttpPostSender;
+import org.acra.sender.HttpSender;
 import org.acra.sender.ReportSender;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
@@ -869,7 +869,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // If formUri is set, instantiate a sender for a generic HTTP POST form
         // with default mapping.
         if (conf.formUri() != null && !"".equals(conf.formUri())) {
-            setReportSender(new HttpPostSender(null));
+            setReportSender(new HttpSender(ACRA.getConfig().formMethod(), null));
             return;
         }
 

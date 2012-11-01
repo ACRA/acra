@@ -15,9 +15,8 @@
  */
 package org.acra;
 
-import android.content.Context;
-
 import static org.acra.ReportField.IS_SILENT;
+import android.content.Context;
 
 /**
  * Responsible for collating those constants shared among the ACRA components.
@@ -106,4 +105,5 @@ public final class ACRAConstants {
     public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
 
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
+
 }

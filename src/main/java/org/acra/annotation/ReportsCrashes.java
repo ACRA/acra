@@ -22,6 +22,8 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
+import org.acra.sender.HttpSender;
+import org.acra.sender.HttpSender.Method;
 
 import java.lang.annotation.*;
 
@@ -514,4 +516,6 @@ public @interface ReportsCrashes {
      *         posting reports.
      */
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
+
+    Method formMethod() default Method.POST;
 }

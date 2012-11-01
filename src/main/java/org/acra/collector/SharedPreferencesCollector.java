@@ -57,7 +57,6 @@ final class SharedPreferencesCollector {
         }
 
         for (final String prefsId : shrdPrefs.keySet()) {
-            result.append(prefsId).append("\n");
             final SharedPreferences prefs = shrdPrefs.get(prefsId);
             if (prefs != null) {
                 final Map<String, ?> kv = prefs.getAll();
@@ -65,19 +64,19 @@ final class SharedPreferencesCollector {
                     for (final String key : kv.keySet()) {
                         if (!filteredKey(key)) {
                             if (kv.get(key) != null) {
-                                result.append(key).append("=").append(kv.get(key).toString()).append("\n");
+                                result.append(prefsId).append('.').append(key).append('=').append(kv.get(key).toString()).append("\n");
                             } else {
-                                result.append(key).append("=").append("null\n");
+                                result.append(prefsId).append('.').append(key).append('=').append("null\n");
                             }
                         }
                     }
                 } else {
-                    result.append("empty\n");
+                    result.append(prefsId).append('=').append("empty\n");
                 }
             } else {
                 result.append("null\n");
             }
-            result.append("\n");
+            result.append('\n');
         }
 
         return result.toString();

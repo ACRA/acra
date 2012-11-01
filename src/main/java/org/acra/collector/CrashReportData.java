@@ -20,6 +20,9 @@ import java.util.EnumMap;
 import java.util.Properties;
 
 import org.acra.ReportField;
+import org.acra.util.JSONReportBuilder;
+import org.acra.util.JSONReportBuilder.JSONReportException;
+import org.json.JSONObject;
 
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
@@ -47,5 +50,9 @@ public final class CrashReportData extends EnumMap<ReportField, String> {
      */
     public String getProperty(ReportField key) {
         return super.get(key);
+    }
+
+    public JSONObject toJSON() throws JSONReportException {
+        return JSONReportBuilder.buildJSONReport(this);
     }
 }

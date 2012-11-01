@@ -20,9 +20,9 @@ import org.acra.ReportField;
 
 /**
  * A simple interface for defining various crash report senders. You can reuse
- * {@link HttpPostSender} to send reports to your custom server-side report
+ * {@link HttpSender} to send reports to your custom server-side report
  * collection script even if you expect (or prefer) specific names for each
- * report field as {@link HttpPostSender#HttpPostSender(String, java.util.Map)}
+ * report field as {@link HttpSender#HttpPostSender(String, java.util.Map)}
  * can take a Map<ReportField, String> as an input to convert each field name to
  * your preferred POST parameter name.
  * 

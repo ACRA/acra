@@ -21,8 +21,10 @@ import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
 import static org.acra.ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
 import static org.acra.ACRAConstants.DEFAULT_DIALOG_ICON;
+import static org.acra.ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 import static org.acra.ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
 import static org.acra.ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+import static org.acra.ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
 import static org.acra.ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
 import static org.acra.ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
 import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
@@ -33,13 +35,12 @@ import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
-import static org.acra.ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
-import static org.acra.ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 import static org.acra.ACRAConstants.NULL_VALUE;
 
 import java.lang.annotation.Annotation;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.HttpSender.Method;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -95,7 +96,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String mGoogleFormUrlFormat = null;
 
     private Boolean mDisableSSLCertValidation = null;
-
+    private Method mFormMethod = null;
+    
     /**
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set
@@ -471,6 +473,15 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public void setDisableSSLCertValidation(boolean disableSSLCertValidation) {
         mDisableSSLCertValidation = disableSSLCertValidation;
+    }
+
+    /**
+     * 
+     * @param formMethod
+     *            The method to be used to send data to the server.
+     */
+    public void setFormMethod(Method formMethod) {
+        mFormMethod = formMethod;
     }
 
     /**
@@ -985,4 +996,22 @@ public class ACRAConfiguration implements ReportsCrashes {
 
         return DEFAULT_DISABLE_SSL_CERT_VALIDATION;
     }
+
+    @Override
+    public Method formMethod() {
+        if (mFormMethod != null) {
+            return mFormMethod;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.formMethod();
+        }
+
+        return Method.POST;
+    }
+
+    public static boolean isNull(String aString) {
+        return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
+    }
+
 }
