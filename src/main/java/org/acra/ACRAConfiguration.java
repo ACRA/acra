@@ -41,6 +41,7 @@ import java.lang.annotation.Annotation;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -96,7 +97,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String mGoogleFormUrlFormat = null;
 
     private Boolean mDisableSSLCertValidation = null;
-    private Method mFormMethod = null;
+    private Method mHttpMethod = null;
+    private Type mReportType = null;
     
     /**
      * @param additionalDropboxTags
@@ -477,11 +479,20 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param formMethod
+     * @param httpMethod
      *            The method to be used to send data to the server.
      */
-    public void setFormMethod(Method formMethod) {
-        mFormMethod = formMethod;
+    public void setHttpMethod(Method httpMethod) {
+        mHttpMethod = httpMethod;
+    }
+
+    /**
+     * 
+     * @param httpMethod
+     *            The type of content encoding to be used to send data to the server.
+     */
+    public void setReportType(Type type) {
+        mReportType = type;
     }
 
     /**
@@ -998,20 +1009,35 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     @Override
-    public Method formMethod() {
-        if (mFormMethod != null) {
-            return mFormMethod;
+    public Method httpMethod() {
+        if (mHttpMethod != null) {
+            return mHttpMethod;
         }
 
         if (mReportsCrashes != null) {
-            return mReportsCrashes.formMethod();
+            return mReportsCrashes.httpMethod();
         }
 
         return Method.POST;
     }
 
+    @Override
+    public Type reportType() {
+        if (mReportType != null) {
+            return mReportType;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.reportType();
+        }
+
+        return Type.FORM;
+    }
+
     public static boolean isNull(String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
+
+
 
 }

@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.acra.ACRA;
 import org.acra.log.NonAndroidLog;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +55,7 @@ public class HttpRequestTest {
         request.setMaxNrRetries(0);
 
         try {
-            request.sendPost(url, params);
+            request.send(url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
             Assert.fail("Should not be able to get a response with an impossibly low SocketTimeOut");
         } catch (SocketTimeoutException e) {
             // as expected.
@@ -62,7 +64,7 @@ public class HttpRequestTest {
         // Tell the HttpRequest to retry on Socket time out.
         request.setMaxNrRetries(5);
         try {
-            request.sendPost(url, params);
+            request.send(url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
         } catch (SocketTimeoutException e) {
             Assert.fail("Should not get a SocketTimeOut when using SocketTimeOutRetryHandler");
         }

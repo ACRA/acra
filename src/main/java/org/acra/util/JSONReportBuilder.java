@@ -60,7 +60,7 @@ public class JSONReportBuilder {
      * @return A JSONObject containing all fields from the report converted to
      *         JSON.
      * @throws ReportSenderException
-     * @throws JSONReportException 
+     * @throws JSONReportException
      */
     public static JSONObject buildJSONReport(CrashReportData errorContent) throws JSONReportException {
         JSONObject jsonReport = new JSONObject();
@@ -149,14 +149,18 @@ public class JSONReportBuilder {
     }
 
     private static Object guessType(String value) {
-        if(value.equalsIgnoreCase("true")) return true;
-        if(value.equalsIgnoreCase("false")) return false;
-        NumberFormat format = NumberFormat.getInstance();
-        try {
-            Number number = format.parse(value);
-            return number;
-        } catch (ParseException e) {
-            // never mind
+        if (value.equalsIgnoreCase("true"))
+            return true;
+        if (value.equalsIgnoreCase("false"))
+            return false;
+        if (value.matches("^[\\s\\d\\.,-]+$")) {
+            NumberFormat format = NumberFormat.getInstance();
+            try {
+                Number number = format.parse(value);
+                return number;
+            } catch (ParseException e) {
+                // never mind
+            }
         }
         return value;
     }
@@ -193,6 +197,7 @@ public class JSONReportBuilder {
     }
 
     public static class JSONReportException extends Exception {
+        private static final long serialVersionUID = -694684023635442219L;
 
         public JSONReportException(String message, Throwable e) {
             super(message, e);

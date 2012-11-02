@@ -13,11 +13,14 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 import org.acra.ACRA;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.params.ClientPNames;
@@ -114,34 +117,32 @@ public final class HttpRequest {
      * Posts to a URL.
      *
      * @param url           URL to which to post.
-     * @param parameters    Map of parameters to post to a URL.
+     * @param content    Map of parameters to post to a URL.
      * @throws IOException if the data cannot be posted.
      */
-    public void sendPost(URL url, Map<?, ?> parameters) throws IOException {
+    public void send(URL url, Method method, String content, Type type) throws IOException {
 
         final HttpClient httpClient = getHttpClient();
-        final HttpPost httpPost = getHttpPost(url, parameters);
+        final HttpEntityEnclosingRequestBase httpRequest = getHttpRequest(url, method, content, type);
 
         ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpPost params : ");
-        for (final Object key : parameters.keySet()) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, " key : '" + key + "'    value: '" + parameters.get(key) + "'");
-        }
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Http " + method.name() + " content : ");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, content);
 
-        final HttpResponse response = httpClient.execute(httpPost, new BasicHttpContext());
+        final HttpResponse response = httpClient.execute(httpRequest, new BasicHttpContext());
         if (response != null) {
             final StatusLine statusLine = response.getStatusLine();
             if (statusLine != null) {
                 final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
                 if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpPost);
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
                     throw new IOException("Host returned error code " + statusCode);
                 }
             }
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
-            final String content = EntityUtils.toString(response.getEntity());
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Content : " + content.substring(0, Math.min(content.length(), 200)));
+            final String respContent = EntityUtils.toString(response.getEntity());
+            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
 
         } else {
             if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
@@ -186,98 +187,56 @@ public final class HttpRequest {
         return null;
     }
 
-    private HttpPost getHttpPost(URL url, Map<?,?> parameters) throws UnsupportedEncodingException {
+    private HttpEntityEnclosingRequestBase getHttpRequest(URL url, Method method, String content, Type type) throws UnsupportedEncodingException, UnsupportedOperationException {
 
-        final HttpPost httpPost = new HttpPost(url.toString());
+        final HttpEntityEnclosingRequestBase httpRequest;
+        switch (method) {
+        case POST:
+            httpRequest = new HttpPost(url.toString());
+            break;
+        case PUT:
+            httpRequest = new HttpPut(url.toString());
+            break;
+        default:
+            throw new UnsupportedOperationException("Unknown method: " + method.name());
+        }
 
         final UsernamePasswordCredentials creds = getCredentials();
         if (creds != null) {
-            httpPost.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
+            httpRequest.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
         }
-        httpPost.setHeader("User-Agent", "Android");
-        httpPost.setHeader("Accept", "text/html,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
-        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+        httpRequest.setHeader("User-Agent", "Android");
+        httpRequest.setHeader("Accept", "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+        httpRequest.setHeader("Content-Type", type.getContentType());
 
-        final String paramsAsString = getParamsAsString(parameters);
-        httpPost.setEntity(new StringEntity(paramsAsString, "UTF-8"));
+        httpRequest.setEntity(new StringEntity(content, "UTF-8"));
 
-        return httpPost;
-    }
-
-    private HttpPut getHttpPut(URL url, String data) throws UnsupportedEncodingException {
-
-        final HttpPut httpPut = new HttpPut(url.toString());
-
-        final UsernamePasswordCredentials creds = getCredentials();
-        if (creds != null) {
-            httpPut.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
-        }
-        httpPut.setHeader("User-Agent", "Android");
-        httpPut.setHeader("Accept", "text/html,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
-        httpPut.setHeader("Content-Type", "application/json");
-
-        httpPut.setEntity(new StringEntity(data, "UTF-8"));
-
-        return httpPut;
+        return httpRequest;
     }
 
     /**
      * Converts a Map of parameters into a URL encoded Sting.
-     *
-     * @param parameters    Map of parameters to convert.
+     * 
+     * @param parameters
+     *            Map of parameters to convert.
      * @return URL encoded String representing the parameters.
-     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
+     * @throws UnsupportedEncodingException
+     *             if one of the parameters couldn't be converted to UTF-8.
      */
-    private String getParamsAsString(Map<?,?> parameters) throws UnsupportedEncodingException {
+    public static String getParamsAsFormString(Map<?, ?> parameters) throws UnsupportedEncodingException {
 
-		final StringBuilder dataBfr = new StringBuilder();
-		for (final Object key : parameters.keySet()) {
-			if (dataBfr.length() != 0) {
-				dataBfr.append('&');
-			}
-			final Object preliminaryValue = parameters.get(key);
+        final StringBuilder dataBfr = new StringBuilder();
+        for (final Object key : parameters.keySet()) {
+            if (dataBfr.length() != 0) {
+                dataBfr.append('&');
+            }
+            final Object preliminaryValue = parameters.get(key);
             final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-			dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"));
+            dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"));
             dataBfr.append('=');
             dataBfr.append(URLEncoder.encode(value.toString(), "UTF-8"));
-		}
+        }
 
         return dataBfr.toString();
     }
-
-    /**
-     * Puts to a URL.
-     *
-     * @param url           URL to which to post.
-     * @param parameters    Map of parameters to post to a URL.
-     * @throws IOException if the data cannot be posted.
-     */
-    public void sendPut(URL url, String data) throws IOException {
-
-        final HttpClient httpClient = getHttpClient();
-        final HttpPut httpPut = getHttpPut(url, data);
-
-        ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpPut content :\n" + data);
-        
-        final HttpResponse response = httpClient.execute(httpPut, new BasicHttpContext());
-        if (response != null) {
-            final StatusLine statusLine = response.getStatusLine();
-            if (statusLine != null) {
-                final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
-                if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPut : " + httpPut);
-                    throw new IOException("Host returned error code " + statusCode);
-                }
-            }
-
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
-            final String content = EntityUtils.toString(response.getEntity());
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Content : " + content.substring(0, Math.min(content.length(), 200)));
-
-        } else {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
-        }
-    }
-
 }

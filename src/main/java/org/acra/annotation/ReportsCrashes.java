@@ -15,17 +15,23 @@
  */
 package org.acra.annotation;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
-import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
 
-import java.lang.annotation.*;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * Provide configuration elements to the
@@ -517,5 +523,11 @@ public @interface ReportsCrashes {
      */
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 
-    Method formMethod() default Method.POST;
+    /**
+     * <p>The {@link Method} to be used when posting with {@link #formKey()}.</p>
+     * @return
+     */
+    Method httpMethod() default Method.POST;
+    
+    Type reportType() default Type.FORM;
 }

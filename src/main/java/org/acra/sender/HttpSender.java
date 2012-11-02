@@ -76,13 +76,24 @@ import android.util.Log;
 public class HttpSender implements ReportSender {
 
     public enum Method {
-        POST,
-        PUT
+        POST, PUT
     }
-    
+
     public enum Type {
-        FORM,
-        JSON
+        FORM {
+            @Override
+            public String getContentType() {
+                return "application/x-www-form-urlencoded";
+            }
+        },
+        JSON {
+            @Override
+            public String getContentType() {
+                return "application/json";
+            }
+        };
+
+        public abstract String getContentType();
     }
 
     private final Uri mFormUri;
@@ -91,7 +102,7 @@ public class HttpSender implements ReportSender {
 
     /**
      * <p>
-     * Create a new HttpPostSender instance with its destination taken from
+     * Create a new HttpSender instance with its destination taken from
      * {@link ACRA#getConfig()} dynamically. Configuration changes to the
      * formUri are applied automatically.
      * </p>
@@ -132,13 +143,13 @@ public class HttpSender implements ReportSender {
     public void send(CrashReportData report) throws ReportSenderException {
 
         try {
-            final URL reportUrl = mFormUri == null ? new URL(ACRA.getConfig().formUri()) : new URL(mFormUri.toString());
+            URL reportUrl = mFormUri == null ? new URL(ACRA.getConfig().formUri()) : new URL(mFormUri.toString());
             Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
-            final String login = ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA.getConfig()
-                    .formUriBasicAuthLogin();
-            final String password = ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthPassword()) ? null : ACRA.getConfig()
-                    .formUriBasicAuthPassword();
+            final String login = ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA
+                    .getConfig().formUriBasicAuthLogin();
+            final String password = ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthPassword()) ? null : ACRA
+                    .getConfig().formUriBasicAuthPassword();
 
             final HttpRequest request = new HttpRequest();
             request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
@@ -146,24 +157,27 @@ public class HttpSender implements ReportSender {
             request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
             request.setLogin(login);
             request.setPassword(password);
-            
+
+            Type type = ACRA.getConfig().reportType();
+            String reportAsString = "";
             switch (mMethod) {
             case POST:
                 final Map<String, String> finalReport = remap(report);
-                request.sendPost(reportUrl, finalReport);
+                reportAsString = HttpRequest.getParamsAsFormString(finalReport);
                 break;
             case PUT:
-                final String jsonReport = report.toJSON().toString();
-                request.sendPut(new URL(reportUrl.toString() + '/' + report.getProperty(ReportField.REPORT_ID)), jsonReport);
+                reportAsString = report.toJSON().toString();
+                reportUrl = new URL(reportUrl.toString() + '/' + report.getProperty(ReportField.REPORT_ID));
                 break;
             default:
-                break;
+                throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
             }
+            request.send(reportUrl, mMethod, reportAsString, type);
 
         } catch (IOException e) {
-            throw new ReportSenderException("Error while sending report via Http " + mMethod.name(), e);
+            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType() + " report via Http " + mMethod.name(), e);
         } catch (JSONReportException e) {
-            throw new ReportSenderException("Error while sending JSON report via Http " + mMethod.name(), e);
+            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType() + " report via Http " + mMethod.name(), e);
         }
     }
 
@@ -184,4 +198,6 @@ public class HttpSender implements ReportSender {
         }
         return finalReport;
     }
+
+
 }
