@@ -27,8 +27,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 
-import static org.acra.ReportField.*;
-
 /**
  * Use this class to initialize the crash reporting feature using
  * {@link #init(Application)} as soon as possible in your {@link Application}
@@ -41,7 +39,7 @@ import static org.acra.ReportField.*;
  */
 public class ACRA {
 
-    public static final boolean DEV_LOGGING = false; // Should be false for
+    public static final boolean DEV_LOGGING = true; // Should be false for
                                                      // release.
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
@@ -294,28 +292,6 @@ public class ACRA {
             return new ACRAConfiguration(null);
         }
     }
-
-    /**
-     * Default list of {@link ReportField}s to be sent in email reports. You can
-     * set your own list with
-     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
-     * 
-     * @see org.acra.annotation.ReportsCrashes#mailTo()
-     */
-    public final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { ReportField.USER_COMMENT,
-            ReportField.ANDROID_VERSION, ReportField.APP_VERSION_NAME, ReportField.BRAND, ReportField.PHONE_MODEL,
-            ReportField.CUSTOM_DATA, ReportField.STACK_TRACE };
-
-    /**
-     * Default list of {@link ReportField}s to be sent in reports. You can set
-     * your own list with
-     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
-     */
-    public static final ReportField[] DEFAULT_REPORT_FIELDS = { REPORT_ID, APP_VERSION_CODE, APP_VERSION_NAME,
-            PACKAGE_NAME, FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE,
-            AVAILABLE_MEM_SIZE, CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION,
-            DISPLAY, USER_COMMENT, USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT,
-            INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM, SETTINGS_SECURE };
 
     private static ACRAConfiguration configProxy;
 

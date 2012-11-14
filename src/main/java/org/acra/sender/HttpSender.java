@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
@@ -185,7 +186,7 @@ public class HttpSender implements ReportSender {
 
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if (fields.length == 0) {
-            fields = ACRA.DEFAULT_REPORT_FIELDS;
+            fields = ACRAConstants.DEFAULT_REPORT_FIELDS;
         }
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());

@@ -16,6 +16,7 @@
 package org.acra.sender;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
@@ -55,7 +56,7 @@ public class EmailIntentSender implements ReportSender {
     private String buildBody(CrashReportData errorContent) {
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if(fields.length == 0) {
-            fields = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
+            fields = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
         }
 
         final StringBuilder builder = new StringBuilder();

@@ -46,6 +46,7 @@ import static org.acra.ReportField.RADIOLOG;
 import static org.acra.ReportField.REPORT_ID;
 import static org.acra.ReportField.SETTINGS_SECURE;
 import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SETTINGS_GLOBAL;
 import static org.acra.ReportField.SHARED_PREFERENCES;
 import static org.acra.ReportField.STACK_TRACE;
 import static org.acra.ReportField.THREAD_DETAILS;
@@ -65,6 +66,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.util.Installation;
@@ -113,10 +115,10 @@ public final class CrashReportDataFactory {
             fieldsList = customReportFields;
         } else if (config.mailTo() == null || "".equals(config.mailTo())) {
             Log.d(LOG_TAG, "Using default Report Fields");
-            fieldsList = ACRA.DEFAULT_REPORT_FIELDS;
+            fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
         } else {
             Log.d(LOG_TAG, "Using default Mail Report Fields");
-            fieldsList = ACRA.DEFAULT_MAIL_REPORT_FIELDS;
+            fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
         }
 
         this.crashReportFields = Arrays.asList(fieldsList);
@@ -293,6 +295,11 @@ public final class CrashReportDataFactory {
             // Secure settings
             if (crashReportFields.contains(SETTINGS_SECURE)) {
                 crashReportData.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(context));
+            }
+
+            // Global settings
+            if (crashReportFields.contains(SETTINGS_GLOBAL)) {
+                crashReportData.put(SETTINGS_GLOBAL, SettingsCollector.collectGlobalSettings(context));
             }
 
             // SharedPreferences

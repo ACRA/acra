@@ -15,12 +15,43 @@
  */
 package org.acra;
 
+import static org.acra.ReportField.ANDROID_VERSION;
+import static org.acra.ReportField.APP_VERSION_CODE;
+import static org.acra.ReportField.APP_VERSION_NAME;
+import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
+import static org.acra.ReportField.BRAND;
+import static org.acra.ReportField.BUILD;
+import static org.acra.ReportField.CRASH_CONFIGURATION;
+import static org.acra.ReportField.CUSTOM_DATA;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.DUMPSYS_MEMINFO;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.INSTALLATION_ID;
 import static org.acra.ReportField.IS_SILENT;
+import static org.acra.ReportField.LOGCAT;
+import static org.acra.ReportField.PACKAGE_NAME;
+import static org.acra.ReportField.PHONE_MODEL;
+import static org.acra.ReportField.PRODUCT;
+import static org.acra.ReportField.REPORT_ID;
+import static org.acra.ReportField.SETTINGS_GLOBAL;
+import static org.acra.ReportField.SETTINGS_SECURE;
+import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SHARED_PREFERENCES;
+import static org.acra.ReportField.STACK_TRACE;
+import static org.acra.ReportField.TOTAL_MEM_SIZE;
+import static org.acra.ReportField.USER_APP_START_DATE;
+import static org.acra.ReportField.USER_COMMENT;
+import static org.acra.ReportField.USER_CRASH_DATE;
+import static org.acra.ReportField.USER_EMAIL;
 import android.content.Context;
 
 /**
  * Responsible for collating those constants shared among the ACRA components.
  * <p/>
+ * 
  * @author William Ferguson
  * @since 4.3.0
  */
@@ -33,13 +64,14 @@ public final class ACRAConstants {
      * user in NOTIFICATION mode
      */
     static final String APPROVED_SUFFIX = "-approved";
-    /** 
+    /**
      * This key is used to store the silent state of a report sent by
      * handleSilentException().
      */
     static final String SILENT_SUFFIX = "-" + IS_SILENT;
     /**
-     * This is the number of previously stored reports that we send in {@link SendWorker#checkAndSendReports(android.content.Context, boolean)}.
+     * This is the number of previously stored reports that we send in
+     * {@link SendWorker#checkAndSendReports(android.content.Context, boolean)}.
      * The number of reports is limited to avoid ANR on application start.
      */
     static final int MAX_SEND_REPORTS = 5;
@@ -60,7 +92,8 @@ public final class ACRAConstants {
     static final int TOAST_WAIT_DURATION = 3000;
 
     /**
-     * A special String value to allow the usage of a pseudo-null default value in annotation parameters.
+     * A special String value to allow the usage of a pseudo-null default value
+     * in annotation parameters.
      */
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
@@ -75,7 +108,7 @@ public final class ACRAConstants {
     public static final boolean DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START = true;
 
     public static final boolean DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START = true;
-    
+
     public static final int DEFAULT_DROPBOX_COLLECTION_MINUTES = 5;
 
     public static final boolean DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS = false;
@@ -89,7 +122,7 @@ public final class ACRAConstants {
     public static final int DEFAULT_RES_VALUE = 0;
 
     public static final String DEFAULT_STRING_VALUE = "";
-    
+
     public static final int DEFAULT_LOGCAT_LINES = 100;
 
     public static final int DEFAULT_BUFFER_SIZE_IN_BYTES = 8192;
@@ -101,9 +134,31 @@ public final class ACRAConstants {
     public static final String DEFAULT_APPLICATION_LOGFILE = DEFAULT_STRING_VALUE;
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
-    
+
     public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
 
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
+
+    /**
+     * Default list of {@link ReportField}s to be sent in email reports. You can
+     * set your own list with
+     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
+     * 
+     * @see org.acra.annotation.ReportsCrashes#mailTo()
+     */
+    public final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { USER_COMMENT, ANDROID_VERSION, APP_VERSION_NAME,
+            BRAND, PHONE_MODEL, CUSTOM_DATA, STACK_TRACE };
+
+    /**
+     * Default list of {@link ReportField}s to be sent in reports. You can set
+     * your own list with
+     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
+     */
+    public static final ReportField[] DEFAULT_REPORT_FIELDS = { REPORT_ID, APP_VERSION_CODE, APP_VERSION_NAME,
+            PACKAGE_NAME, FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION, BUILD, TOTAL_MEM_SIZE,
+            AVAILABLE_MEM_SIZE, CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION,
+            DISPLAY, USER_COMMENT, USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT,
+            INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM, SETTINGS_SECURE,
+            SETTINGS_GLOBAL };
 
 }

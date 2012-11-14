@@ -17,9 +17,12 @@
 package org.acra.collector;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.acra.ACRA;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
@@ -40,7 +43,8 @@ final class SettingsCollector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      * 
-     * @param ctx   Application context.
+     * @param ctx
+     *            Application context.
      * @return A human readable String containing one key=value pair per line.
      */
     public static String collectSystemSettings(Context ctx) {
@@ -72,7 +76,8 @@ final class SettingsCollector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      * 
-     * @param ctx   Application context.
+     * @param ctx
+     *            Application context.
      * @return A human readable String containing one key=value pair per line.
      */
     public static String collectSecureSettings(Context ctx) {
@@ -96,11 +101,56 @@ final class SettingsCollector {
         return result.toString();
     }
 
-	private static boolean isAuthorized(Field key) {
-		if (key == null || key.getName().startsWith("WIFI_AP")) {
-			return false;
-		}
-		return true;
-	}
+    /**
+     * Collect data from {@link android.provider.Settings.Global}. This
+     * collector uses reflection to be sure to always get the most accurate data
+     * whatever Android API level it runs on.
+     * 
+     * @param ctx
+     *            Application context.
+     * @return A human readable String containing one key=value pair per line.
+     */
+    public static String collectGlobalSettings(Context ctx) {
+        if (Compatibility.getAPILevel() < 17) {
+            return "";
+        }
+
+        final StringBuilder result = new StringBuilder();
+        try {
+            final Class<?> globalClass = Class.forName("android.provider.Settings$Global");
+            final Field[] keys = globalClass.getFields();
+            final Method getString = globalClass.getMethod("getString", ContentResolver.class, String.class);
+            for (final Field key : keys) {
+                Log.d(ACRA.LOG_TAG, "Found global setting: " + key);
+                if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
+                    final Object value = getString.invoke(null, ctx.getContentResolver(), (String) key.get(null));
+                    if (value != null) {
+                        result.append(key.getName()).append("=").append(value).append("\n");
+                    }
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            Log.w(ACRA.LOG_TAG, "Error : ", e);
+        } catch (IllegalAccessException e) {
+            Log.w(ACRA.LOG_TAG, "Error : ", e);
+        } catch (ClassNotFoundException e) {
+            Log.w(ACRA.LOG_TAG, "Error : ", e);
+        } catch (SecurityException e) {
+            Log.w(ACRA.LOG_TAG, "Error : ", e);
+        } catch (NoSuchMethodException e) {
+            Log.w(ACRA.LOG_TAG, "Error : ", e);
+        } catch (InvocationTargetException e) {
+            Log.w(ACRA.LOG_TAG, "Error : ", e);
+        }
+
+        return result.toString();
+    }
+
+    private static boolean isAuthorized(Field key) {
+        if (key == null || key.getName().startsWith("WIFI_AP")) {
+            return false;
+        }
+        return true;
+    }
 
 }

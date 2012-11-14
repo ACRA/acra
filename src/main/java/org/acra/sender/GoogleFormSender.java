@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.HttpSender.Method;
@@ -95,7 +96,7 @@ public class GoogleFormSender implements ReportSender {
 
         ReportField[] fields = ACRA.getConfig().customReportContent();
         if (fields.length == 0) {
-            fields = ACRA.DEFAULT_REPORT_FIELDS;
+            fields = ACRAConstants.DEFAULT_REPORT_FIELDS;
         }
 
         int inputId = 0;

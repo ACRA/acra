@@ -346,6 +346,8 @@ public @interface ReportsCrashes {
      * {@link ReportField#SETTINGS_SYSTEM}</li>
      * <li>
      * {@link ReportField#SETTINGS_SECURE}</li>
+     * <li>
+     * {@link ReportField#SETTINGS_GLOBAL}</li>
      * </ul>
      * </p>
      * 

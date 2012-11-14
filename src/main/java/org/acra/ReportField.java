@@ -234,6 +234,15 @@ public enum ReportField {
         }
     },
     /**
+     * Global settings, introduced in Android 4.2 (API level 17) to centralize settings for multiple users.
+     */
+    SETTINGS_GLOBAL {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
+    /**
      * SharedPreferences contents
      */
     SHARED_PREFERENCES {
