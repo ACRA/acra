@@ -150,6 +150,11 @@ final class SettingsCollector {
         if (key == null || key.getName().startsWith("WIFI_AP")) {
             return false;
         }
+        for (String regex : ACRA.getConfig().excludeMatchingSettingsKeys()) {
+            if(key.getName().matches(regex)) {
+               return false; 
+            }
+        }
         return true;
     }
 

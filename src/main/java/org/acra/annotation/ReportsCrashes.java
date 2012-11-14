@@ -476,6 +476,16 @@ public @interface ReportsCrashes {
     String[] excludeMatchingSharedPreferencesKeys() default {};
 
     /**
+     * Provide here regex patterns to be evaluated on each Settings.System,
+     * Settings.Secure and Settings.Global key to exclude KV pairs from the
+     * collected SharedPreferences. This allows you to exclude sensitive data to
+     * be collected.
+     * 
+     * @return an array of regex patterns, every matching key is not collected.
+     */
+    String[] excludeMatchingSettingsKeys() default {};
+
+    /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
      * path/name of your application log file. If the string does not contain
      * any path separator, the file is assumed as being in
@@ -526,10 +536,13 @@ public @interface ReportsCrashes {
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 
     /**
-     * <p>The {@link Method} to be used when posting with {@link #formKey()}.</p>
+     * <p>
+     * The {@link Method} to be used when posting with {@link #formKey()}.
+     * </p>
+     * 
      * @return
      */
     Method httpMethod() default Method.POST;
-    
+
     Type reportType() default Type.FORM;
 }

@@ -91,6 +91,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Boolean mSendReportsInDevMode = null;
 
     private String[] mExcludeMatchingSharedPreferencesKeys = null;
+    private String[] mExcludeMatchingSettingsKeys = null;
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
 
@@ -99,7 +100,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Boolean mDisableSSLCertValidation = null;
     private Method mHttpMethod = null;
     private Type mReportType = null;
-    
+
     /**
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set
@@ -448,6 +449,17 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
+     * @param excludeMatchingSettingssKeys
+     *            an array of Strings containing regexp defining
+     *            Settings.System, Settings.Secure and Settings.Global keys that
+     *            should be excluded from the data collection.
+     */
+    public void setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
+        mExcludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
+    }
+
+    /**
+     * 
      * @param applicationLogFile
      *            The path and file name of your application log file, to be
      *            used with {@link ReportField#APPLICATION_LOG}.
@@ -489,7 +501,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * 
      * @param httpMethod
-     *            The type of content encoding to be used to send data to the server.
+     *            The type of content encoding to be used to send data to the
+     *            server.
      */
     public void setReportType(Type type) {
         mReportType = type;
@@ -957,6 +970,21 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     @Override
+    public String[] excludeMatchingSettingsKeys() {
+        if (mExcludeMatchingSettingsKeys != null) {
+            return mExcludeMatchingSettingsKeys;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.excludeMatchingSettingsKeys();
+        }
+
+        String[] defaultValue = {};
+
+        return defaultValue;
+    }
+
+    @Override
     public String applicationLogFile() {
         if (mApplicationLogFile != null) {
             return mApplicationLogFile;
@@ -1037,7 +1065,5 @@ public class ACRAConfiguration implements ReportsCrashes {
     public static boolean isNull(String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
-
-
 
 }

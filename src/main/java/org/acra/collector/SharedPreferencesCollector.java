@@ -92,7 +92,9 @@ final class SharedPreferencesCollector {
      */
     private static boolean filteredKey(String key) {
         for (String regex : ACRA.getConfig().excludeMatchingSharedPreferencesKeys()) {
-            return key.matches(regex);
+            if(key.matches(regex)) {
+               return true; 
+            }
         }
         return false;
     }
