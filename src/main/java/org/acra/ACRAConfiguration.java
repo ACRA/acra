@@ -449,7 +449,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param excludeMatchingSettingssKeys
+     * @param excludeMatchingSettingsKeys
      *            an array of Strings containing regexp defining
      *            Settings.System, Settings.Secure and Settings.Global keys that
      *            should be excluded from the data collection.
@@ -500,7 +500,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param httpMethod
+     * @param type
      *            The type of content encoding to be used to send data to the
      *            server.
      */
