@@ -39,7 +39,7 @@ import android.preference.PreferenceManager;
  */
 public class ACRA {
 
-    public static final boolean DEV_LOGGING = true; // Should be false for
+    public static final boolean DEV_LOGGING = false; // Should be false for
                                                      // release.
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     

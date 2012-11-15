@@ -257,7 +257,7 @@ public final class CrashReportDataFactory {
 
             // Main display details
             if (crashReportFields.contains(DISPLAY)) {
-                crashReportData.put(DISPLAY, ReportUtils.getDisplayDetails(context));
+                crashReportData.put(DISPLAY, DisplayManagerCollector.collectDisplays(context));
             }
 
             // User crash date with local timezone
