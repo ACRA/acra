@@ -35,14 +35,18 @@ final class ReflectionCollector {
      * Retrieves key/value pairs from static fields of a class.
      *
      * @param someClass the class to be inspected.
+     * 
      * @return A human readable string with a key=value pair on each line.
      */
-    public static String collectConstants(Class<?> someClass) {
+    public static String collectConstants(Class<?> someClass, String prefix) {
 
         final StringBuilder result = new StringBuilder();
 
         final Field[] fields = someClass.getFields();
         for (final Field field : fields) {
+            if(prefix != null && prefix.length() > 0) {
+                result.append(prefix).append('.');
+            }
             result.append(field.getName()).append("=");
             try {
                 result.append(field.get(null).toString());
@@ -86,5 +90,9 @@ final class ReflectionCollector {
         }
 
         return result.toString();
+    }
+
+    public static String collectConstants(Class<?> someClass) {
+        return collectConstants(someClass, "");
     }
 }

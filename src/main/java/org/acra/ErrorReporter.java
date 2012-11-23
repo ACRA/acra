@@ -869,7 +869,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // If formUri is set, instantiate a sender for a generic HTTP POST form
         // with default mapping.
         if (conf.formUri() != null && !"".equals(conf.formUri())) {
-            setReportSender(new HttpSender(ACRA.getConfig().httpMethod(), null));
+            setReportSender(new HttpSender(ACRA.getConfig().httpMethod(), ACRA.getConfig().reportType(), null));
             return;
         }
 

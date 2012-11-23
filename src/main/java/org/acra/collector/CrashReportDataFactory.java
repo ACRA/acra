@@ -53,6 +53,7 @@ import static org.acra.ReportField.THREAD_DETAILS;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
 import static org.acra.ReportField.USER_CRASH_DATE;
 import static org.acra.ReportField.USER_EMAIL;
+import static org.acra.ReportField.USER_IP;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -222,7 +223,7 @@ public final class CrashReportDataFactory {
 
             // Android OS Build details
             if (crashReportFields.contains(BUILD)) {
-                crashReportData.put(BUILD, ReflectionCollector.collectConstants(android.os.Build.class));
+                crashReportData.put(BUILD, ReflectionCollector.collectConstants(android.os.Build.class) + ReflectionCollector.collectConstants(android.os.Build.VERSION.class, "VERSION"));
             }
 
             // Device model
@@ -373,6 +374,11 @@ public final class CrashReportDataFactory {
             // Failing thread details
             if (crashReportFields.contains(THREAD_DETAILS)) {
                 crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(brokenThread));
+            }
+
+            // IP addresses
+            if (crashReportFields.contains(USER_IP)) {
+                crashReportData.put(USER_IP, ReportUtils.getLocalIpAddress());
             }
 
         } catch (RuntimeException e) {

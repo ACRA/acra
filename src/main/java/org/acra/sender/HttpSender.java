@@ -100,6 +100,7 @@ public class HttpSender implements ReportSender {
     private final Uri mFormUri;
     private final Map<ReportField, String> mMapping;
     private final Method mMethod;
+    private final Type mType;
 
     /**
      * <p>
@@ -114,10 +115,11 @@ public class HttpSender implements ReportSender {
      *            .toString(). If not null, POST parameters will be named with
      *            the result of mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(Method method, Map<ReportField, String> mapping) {
+    public HttpSender(Method method, Type type, Map<ReportField, String> mapping) {
         mMethod = method;
         mFormUri = null;
         mMapping = mapping;
+        mType = type;
     }
 
     /**
@@ -134,10 +136,11 @@ public class HttpSender implements ReportSender {
      *            .toString(). If not null, POST parameters will be named with
      *            the result of mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(Method method, String formUri, Map<ReportField, String> mapping) {
+    public HttpSender(Method method, Type type, String formUri, Map<ReportField, String> mapping) {
         mMethod = method;
         mFormUri = Uri.parse(formUri);
         mMapping = mapping;
+        mType = type;
     }
 
     @Override
@@ -159,7 +162,6 @@ public class HttpSender implements ReportSender {
             request.setLogin(login);
             request.setPassword(password);
 
-            Type type = ACRA.getConfig().reportType();
             String reportAsString = "";
             switch (mMethod) {
             case POST:
@@ -173,7 +175,7 @@ public class HttpSender implements ReportSender {
             default:
                 throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
             }
-            request.send(reportUrl, mMethod, reportAsString, type);
+            request.send(reportUrl, mMethod, reportAsString, mType);
 
         } catch (IOException e) {
             throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType() + " report via Http " + mMethod.name(), e);
