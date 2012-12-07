@@ -23,6 +23,7 @@ import org.acra.util.BoundedLinkedList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,6 +100,20 @@ class LogCatCollector {
             final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
 
             Log.d(LOG_TAG, "Retrieving logcat output...");
+
+            // Dump stderr to null
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        InputStream stderr = process.getErrorStream();
+                        byte[] dummy = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
+                        while (stderr.read(dummy) >= 0)
+                            ;
+                    } catch (IOException e) {
+                    }
+                }
+            }).start();
+
             while (true) {
                 final String line = bufferedReader.readLine();
                 if (line == null) {
