@@ -1,5 +1,7 @@
 package org.acra.sender;
 
+// Based on raven-java(Ken Cochrane and others)
+
 import static org.acra.ReportField.ANDROID_VERSION;
 import static org.acra.ReportField.APP_VERSION_CODE;
 import static org.acra.ReportField.APP_VERSION_NAME;
@@ -26,6 +28,7 @@ import org.acra.ReportField;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.HttpSender.Method;
 import org.acra.util.HttpRequest;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -122,16 +125,25 @@ public class SentrySender implements ReportSender {
 
 	private String buildJSON(CrashReportData report) throws JSONException {
 		JSONObject obj = new JSONObject();
+		Throwable exception = report.getOriginalThrowble();
 		String message = report.getProperty(ReportField.STACK_TRACE).split("\n")[0];
 		obj.put("event_id", report.getProperty(ReportField.REPORT_ID)); //Hexadecimal string representing a uuid4 value.
 		
-		obj.put("culprit", report.getProperty(ReportField.FILE_PATH));
-		obj.put("sentry.interfaces.Stacktrace", report.getProperty(ReportField.STACK_TRACE));
+        if (exception == null) {
+            obj.put("culprit", message);
+        } else {
+            obj.put("culprit", determineCulprit(exception));
+            obj.put("sentry.interfaces.Exception", buildException(exception));
+            obj.put("sentry.interfaces.Stacktrace", buildStacktrace(exception));
+        }
 		
 		obj.put("level", "error");
 		obj.put("timestamp", getTimestampString());
-		obj.put("message", message);
-
+		if (exception != null) {
+			obj.put("message", exception.getMessage());
+		}else{
+			obj.put("message", message);
+		}
 		obj.put("logger", "org.acra");
 		obj.put("platform", "android");
 		obj.put("tags", remap(report, SENTRY_TAGS_FIELDS));
@@ -139,11 +151,72 @@ public class SentrySender implements ReportSender {
 			obj.put("extra", remap(report, ACRA.getConfig().customReportContent()));
 		}
 		
-		ACRA.log.d(ACRA.LOG_TAG, obj.toString());
+		if (ACRA.DEV_LOGGING) {
+			ACRA.log.d(ACRA.LOG_TAG, obj.toString());
+		}
+		
 		
 		return obj.toString();
 	}
  
+	 /**
+     * Determines the class and method name where the root cause exception occurred.
+     *
+     * @param exception exception
+     * @return the culprit
+     */
+    private String determineCulprit(Throwable exception) {
+        Throwable cause = exception;
+        String culprit = null;
+        while (cause != null) {
+            StackTraceElement[] elements = cause.getStackTrace();
+            if (elements.length > 0) {
+                StackTraceElement trace = elements[0];
+                culprit = trace.getClassName() + "." + trace.getMethodName();
+            }
+            cause = cause.getCause();
+        }
+        return culprit;
+    }
+
+    private JSONObject buildException(Throwable exception) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("type", exception.getClass().getSimpleName());
+        json.put("value", exception.getMessage());
+        json.put("module", exception.getClass().getPackage().getName());
+        return json;
+    }
+
+    private JSONObject buildStacktrace(Throwable exception) throws JSONException {
+        JSONArray array = new JSONArray();
+        Throwable cause = exception;
+        while (cause != null) {
+            StackTraceElement[] elements = cause.getStackTrace();
+            for (int index = 0; index < elements.length; ++index) {
+                if (index == 0) {
+                    JSONObject causedByFrame = new JSONObject();
+                    String msg = "Caused by: " + cause.getClass().getName();
+                    if (cause.getMessage() != null) {
+                        msg += " (\"" + cause.getMessage() + "\")";
+                    }
+                    causedByFrame.put("filename", msg);
+                    causedByFrame.put("lineno", -1);
+                    array.put(causedByFrame);
+                }
+                StackTraceElement element = elements[index];
+                JSONObject frame = new JSONObject();
+                frame.put("filename", element.getClassName());
+                frame.put("function", element.getMethodName());
+                frame.put("lineno", element.getLineNumber());
+                array.put(frame);
+            }
+            cause = cause.getCause();
+        }
+        JSONObject stacktrace = new JSONObject();
+        stacktrace.put("frames", array);
+        return stacktrace;
+    }
+	
 	private JSONObject remap(CrashReportData report, ReportField[] fields) throws JSONException {
 
         final JSONObject result = new JSONObject(); 
