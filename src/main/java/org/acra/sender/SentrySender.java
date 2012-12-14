@@ -20,8 +20,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.CRC32;
-import java.util.zip.Checksum;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -94,13 +92,20 @@ public class SentrySender implements ReportSender {
      * @return String version of the sentry auth header
      */
     protected String buildAuthHeader() {
+/*    	X-Sentry-Auth: Sentry sentry_version=3,
+    			sentry_client=<client version, arbitrary>,
+    			sentry_timestamp=<current timestamp>,
+    			sentry_key=<public api key>,
+    			sentry_secret=<secret api key>*/
         StringBuilder header = new StringBuilder();
-        header.append("sentry_version=3");
+        header.append("Sentry sentry_version=3");
+        header.append(",sentry_client=ACRA");
         header.append(",sentry_timestamp=");
         header.append(new Date().getTime());
         header.append(",sentry_key=");
         header.append(config.getPublicKey());
-        header.append(",sentry_client=ACRA,1.0");
+        header.append(",sentry_secret=");
+        header.append(config.getSecretKey());
 
         return header.toString();
     }
