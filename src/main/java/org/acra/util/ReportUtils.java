@@ -106,7 +106,7 @@ public final class ReportUtils {
     }
 
     public static String getLocalIpAddress() {
-        StringBuilder result = new StringBuilder().append('[');
+        StringBuilder result = new StringBuilder();
         boolean first = true;
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
@@ -115,9 +115,9 @@ public final class ReportUtils {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress()) {
                         if(!first) {
-                            result.append(',');
+                            result.append('\n');
                         }
-                        result.append('"').append(inetAddress.getHostAddress().toString()).append('"');
+                        result.append(inetAddress.getHostAddress().toString());
                         first = false;
                     }
                 }

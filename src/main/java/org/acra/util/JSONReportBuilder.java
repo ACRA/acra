@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -153,8 +154,9 @@ public class JSONReportBuilder {
             return true;
         if (value.equalsIgnoreCase("false"))
             return false;
-        if (value.matches("^[\\s\\d\\.,-]+$")) {
-            NumberFormat format = NumberFormat.getInstance();
+        
+        if (value.matches("(?:^|\\s)([1-9](?:\\d*|(?:\\d{0,2})(?:,\\d{3})*)(?:\\.\\d*[1-9])?|0?\\.\\d*[1-9]|0)(?:\\s|$)")) {
+            NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
                 Number number = format.parse(value);
                 return number;
