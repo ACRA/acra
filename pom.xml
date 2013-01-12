@@ -39,7 +39,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <android.version>3</android.version>
+        <android.version>14</android.version>
 	</properties>
 
 	<dependencies>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>1.5_r4</version>
+            <version>4.0.1.2</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

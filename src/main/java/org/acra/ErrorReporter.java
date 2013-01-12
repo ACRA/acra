@@ -16,19 +16,18 @@
 package org.acra;
 
 import android.Manifest.permission;
-import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Bundle;
 import android.os.Looper;
 import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.collector.Compatibility;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
@@ -76,7 +75,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     private boolean enabled = false;
 
-    private final Context mContext;
+    private final Application mContext;
     private final SharedPreferences prefs;
 
     /**
@@ -95,6 +94,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     private Thread brokenThread;
     private Throwable unhandledThrowable;
+    private transient Activity lastActivityCreated;
 
     /**
      * This is used to wait for the crash toast to end it's display duration
@@ -113,7 +113,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            Whether this ErrorReporter should capture Exceptions and
      *            forward their reports.
      */
-    ErrorReporter(Context context, SharedPreferences prefs, boolean enabled) {
+    ErrorReporter(Application context, SharedPreferences prefs, boolean enabled) {
 
         this.mContext = context;
         this.prefs = prefs;
@@ -127,6 +127,49 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // user_crash date.
         final Time appStartDate = new Time();
         appStartDate.setToNow();
+
+        if (Compatibility.getAPILevel() >= 14) { // ActivityLifecycleCallback only available for API14+
+            mContext.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "onActivityCreated " + activity.getClass());
+                    if (!(activity instanceof CrashReportDialog)) {
+                        // Ignore CrashReportDialog because we want the last application Activity that was started so that we can explicitly kill it off.
+                        lastActivityCreated = activity;
+                    }
+                }
+
+                @Override
+                public void onActivityStarted(Activity activity) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "onActivityStarted " + activity.getClass());
+                }
+
+                @Override
+                public void onActivityResumed(Activity activity) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "onActivityResumed " + activity.getClass());
+                }
+
+                @Override
+                public void onActivityPaused(Activity activity) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "onActivityPaused " + activity.getClass());
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "onActivityStopped " + activity.getClass());
+                }
+
+                @Override
+                public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.i(ACRA.LOG_TAG, "onActivitySaveInstanceState " + activity.getClass());
+                }
+
+                @Override
+                public void onActivityDestroyed(Activity activity) {
+                    if (ACRA.DEV_LOGGING) ACRA.log.i(ACRA.LOG_TAG, "onActivityDestroyed " + activity.getClass());
+                }
+            });
+        }
 
         crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration);
 
@@ -330,6 +373,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // We choose to close the process ourselves using the same actions.
             Log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + unhandledThrowable.getMessage(),
                     unhandledThrowable);
+
+            // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
+            // Determine the current/last Activity that was started and close it. Activity#finish (and maybe it's parent too).
+            Log.i(LOG_TAG, "Finishing the last Activity prior to killing the Process");
+            lastActivityCreated.finish();
+            Log.i(LOG_TAG, "Finished " + lastActivityCreated.getClass());
+            lastActivityCreated = null;
+
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(10);
         }
