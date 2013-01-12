@@ -121,7 +121,6 @@ final class SettingsCollector {
             final Field[] keys = globalClass.getFields();
             final Method getString = globalClass.getMethod("getString", ContentResolver.class, String.class);
             for (final Field key : keys) {
-                Log.d(ACRA.LOG_TAG, "Found global setting: " + key);
                 if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                     final Object value = getString.invoke(null, ctx.getContentResolver(), (String) key.get(null));
                     if (value != null) {

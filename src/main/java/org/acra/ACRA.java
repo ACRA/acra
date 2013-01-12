@@ -39,7 +39,7 @@ import android.preference.PreferenceManager;
  */
 public class ACRA {
 
-    public static final boolean DEV_LOGGING = true; // Should be false for
+    public static final boolean DEV_LOGGING = false; // Should be false for
                                                      // release.
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
@@ -116,7 +116,8 @@ public class ACRA {
     public static void init(Application app) {
 
         if (mApplication != null) {
-            throw new IllegalStateException("ACRA#init called more than once");
+            log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
+            return;
         }
 
         mApplication = app;
