@@ -376,10 +376,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
             // Determine the current/last Activity that was started and close it. Activity#finish (and maybe it's parent too).
-            Log.i(LOG_TAG, "Finishing the last Activity prior to killing the Process");
-            lastActivityCreated.finish();
-            Log.i(LOG_TAG, "Finished " + lastActivityCreated.getClass());
-            lastActivityCreated = null;
+            if (lastActivityCreated != null) {
+                Log.i(LOG_TAG, "Finishing the last Activity prior to killing the Process");
+                lastActivityCreated.finish();
+                Log.i(LOG_TAG, "Finished " + lastActivityCreated.getClass());
+                lastActivityCreated = null;
+            }
 
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(10);
