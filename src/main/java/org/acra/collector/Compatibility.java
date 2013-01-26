@@ -15,10 +15,10 @@
  */
 package org.acra.collector;
 
-import java.lang.reflect.Field;
-
 import android.content.Context;
 import android.os.Build;
+
+import java.lang.reflect.Field;
 
 /**
  * Utility class containing methods enabling backward compatibility.
@@ -26,7 +26,7 @@ import android.os.Build;
  * @author Normal
  * 
  */
-class Compatibility {
+public final class Compatibility {
 
     /**
      * Retrieves Android SDK API level using the best possible method.

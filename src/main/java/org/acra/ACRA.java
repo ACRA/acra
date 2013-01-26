@@ -137,8 +137,7 @@ public class ACRA {
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = !shouldDisableACRA(prefs);
-            final ErrorReporter errorReporter = new ErrorReporter(mApplication.getApplicationContext(), prefs,
-                    enableAcra);
+            final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra);
 
             // Append ReportSenders.
             errorReporter.setDefaultReportSenders();

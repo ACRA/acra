@@ -15,6 +15,12 @@
  */
 package org.acra;
 
+import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
+
+import java.lang.annotation.Annotation;
+
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
@@ -36,12 +42,6 @@ import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
 import static org.acra.ACRAConstants.NULL_VALUE;
-
-import java.lang.annotation.Annotation;
-
-import org.acra.annotation.ReportsCrashes;
-import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -449,7 +449,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param excludeMatchingSettingssKeys
+     * @param excludeMatchingSettingsKeys
      *            an array of Strings containing regexp defining
      *            Settings.System, Settings.Secure and Settings.Global keys that
      *            should be excluded from the data collection.
@@ -500,9 +500,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param httpMethod
-     *            The type of content encoding to be used to send data to the
-     *            server.
+     * @param type  The type of content encoding to be used to send data to the server.
      */
     public void setReportType(Type type) {
         mReportType = type;
