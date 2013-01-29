@@ -31,6 +31,8 @@ import org.acra.collector.Compatibility;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
+import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
+import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
 import org.acra.sender.EmailIntentSender;
 import org.acra.sender.GoogleFormSender;
 import org.acra.sender.HttpSender;
@@ -129,7 +131,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         appStartDate.setToNow();
 
         if (Compatibility.getAPILevel() >= 14) { // ActivityLifecycleCallback only available for API14+
-            mContext.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            ApplicationHelper.registerActivityLifecycleCallbacks(context, new ActivityLifecycleCallbacksCompat() {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "onActivityCreated " + activity.getClass());

@@ -1,5 +1,7 @@
 Application Crash Reporting for Android
-Copyright 2010 Emmanuel Astier & Kevin Gaudin
+Copyright (c) 2013 Kevin Gaudin
+http://acra.ch
 
-This product includes software developed at
-ACRA (http://acra.googlecode.com/).
+This product is licensed under the terms of the Apache Software License 2.0. See the LICENSE file for the full license text.
+
+This product includes software (package org.jraf.android.util.activitylifecyclecallbackscompat) developed at JRAF, Copyright (C) 2013 Benoit 'BoD' Lubek (BoD@JRAF.org), ASL 2.0.
