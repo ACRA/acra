@@ -1,4 +1,4 @@
-<a href='http://www.pledgie.com/campaigns/18789'><img alt='Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/18789.png?skin_name=chrome' border='0' /></a>
+[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789)
 
 Please tell us how you use ACRA
 ===============================
