@@ -69,4 +69,5 @@ public class HttpRequestTest {
             Assert.fail("Should not get a SocketTimeOut when using SocketTimeOutRetryHandler");
         }
     }
+    
 }
