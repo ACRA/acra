@@ -20,21 +20,21 @@ See [BasicSetup](http://github.com/ACRA/acra/wiki/BasicSetup) for a step-by-step
 
 A crash reporting feature for android apps is native since Android 2.2 (FroYo) but only available through the official Android Market (and with limited data). ACRA is a great help for Android developers :
 
-  * [developer configurable user interaction](acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
+  * [developer configurable user interaction](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
   * usable with ALL versions of android (compiled with 1.5, not tested on 1.0/1.1 but might work... but who does really care ?) and capable of retrieving data from latest versions through reflection.
-  * more [detailed crash reports](acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
-  * you can [add your own variables content or debug traces](acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
-  * you can send [error reports even if the application doesn't crash](acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
+  * more [detailed crash reports](http://github.com/ACRA/acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
+  * you can [add your own variables content or debug traces](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
+  * you can send [error reports even if the application doesn't crash](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
   * works for any application even if not delivered through Google's Android Market => great for devices/regions where the Android Market is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
-  * can be used with [your own self-hosted report receiver script](acra/wiki/AdvancedUsage#wiki-Reports_destination)
+  * can be used with [your own self-hosted report receiver script](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Reports_destination)
   * google doc reports can be shared with a whole development team. Other benefits from the Google Docs platform are still to be investigated (stats, macros...)
 
 ACRA's notification systems are clean. If a crash occurs, your application does not add user notifications over existing system's crash notifications or reporting features. If you use the Toast, Status bar notification or direct dialog modes, the "force close" dialog is not displayed anymore and devices where the system native reporting feature is enabled do not offer the user to send an additional report.
 
 The user is notified of an error only once, and you might enhance the percieved quality of your application by defining your own texts in the notifications/dialogs.
 
-Please do not hesitate to open defects/enhancements requests in [the issue tracker](acra/issues).
+Please do not hesitate to open defects/enhancements requests in [the issue tracker](http://github.com/ACRA/acra/issues).
 
 ACRA v4.4 - enforcing security
 ==============================
@@ -99,4 +99,4 @@ And after that?
 
 Now that ACRA is stabilized on the device side (there shouldn't be much more data required...), the effort should be placed on crash data analysis and reports management tools for developers.
 
-You can look at [some contributions](acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
+You can look at [some contributions](http://github.com/ACRA/acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
