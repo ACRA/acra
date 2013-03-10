@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<project name="acra" basedir="." default="dist">
+	<!-- must have junit.dir as a complete path the the junit 4+ jar file. If this property is omitted, the test targets will not run -->
+	<!-- must have junit.jar as the exact name of the junit 4+ jar file -->
+	<!-- must have android.dir set the the root path of the android sdk (e.g. /android) -->
+	<!-- must have android.jar set to the path to the android.jar file inside the android directory (e.g. platforms/android-17/android.jar) -->
+
+	<property name="version" value="4.5.0-alpha-2-SNAPSHOT" />
+
+	<property file="local.properties" />
+
+	<property name="src" value="src" />
+	<property name="bin" value="bin-android" />
+	<property name="bin-test" value="bin-test" />
+	<property name="dist" value="dist" />
+	<property name="jar" value="ACRA-${version}.jar" />
+	<property name="jar-test" value="ACRA-${version}.test.jar" />
+	<property name="test.dir" value="test-results" />
+
+	<target name="dist" depends="test, binaries" />
+	<target name="binaries" depends="compile, jar" />
+	<target name="compile" depends="--compile-test, --compile" />
+	<target name="jar" depends="--jar-test, --jar" />
+	<target name="release" depends="--compile, --jar" />
+
+	<target name="--compile" depends="--clean, --create-dirs">
+		<mkdir dir="${bin}" />
+		<javac destdir="${bin}" includeantruntime="false">
+			<src path="${src}" />
+			<exclude name="test/**/*.java" />
+			<classpath refid="android.classpath" />
+		</javac>
+	</target>
+	
+	<target name="test" depends="--compile-test, --jar-test" if="junit.dir">
+		<echo message="ACRA is not setup to test from the command line" />
+	</target>
+	<target name="--compile-test" depends="--clean-test, --create-dirs" if="junit.dir">
+		<mkdir dir="${bin-test}" />
+		<javac destdir="${bin-test}" includeantruntime="false">
+			<src path="${src}" />
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+	<target name="--jar" depends="--create-dirs">
+		<jar destfile="${dist}/${jar}">
+			<fileset dir="${bin}" />
+		</jar>
+	</target>
+
+	<target name="--jar-test" depends="--create-dirs" if="junit.dir">
+		<jar destfile="${dist}/${jar-test}">
+			<fileset dir="${bin-test}" />
+		</jar>
+	</target>
+
+
+	<target name="clean" depends="--clean, --clean-test">
+		<delete dir="${dist}" />
+	</target>
+	<target name="--clean" >
+		<delete dir="${bin}" />
+	</target>
+	<target name="--clean-test">
+		<delete dir="${bin-test}" />
+		<delete dir="${test.dir}" />
+	</target>
+
+	<target name="--create-dirs" depends="--create-test-dirs">
+		<mkdir dir="${dist}" />
+	</target>
+	<target name="--create-test-dirs" if="junit.dir">
+		<mkdir dir="${test.dir}" />
+	</target>
+
+
+	<path id="test.classpath">
+		<fileset dir="${android.dir}">
+			<include name="${android.jar}" />
+		</fileset>
+		<fileset dir="${junit.dir}">
+			<include name="${junit.jar}" />
+		</fileset>
+	</path>
+
+	<path id="android.classpath">
+		<fileset dir="${android.dir}">
+			<include name="${android.jar}" />
+		</fileset>
+	</path>
+</project>
