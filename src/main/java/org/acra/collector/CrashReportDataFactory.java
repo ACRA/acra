@@ -404,7 +404,9 @@ public final class CrashReportDataFactory {
             final String currentVal = customParameters.get(currentKey);
             customInfo.append(currentKey);
             customInfo.append(" = ");
-            customInfo.append(currentVal);
+            // We need to escape new lines in values or they are transformed into new
+            // custom fields. => let's replace all '\' with "\\"
+            customInfo.append(currentVal.replace("\\", "\\\\"));
             customInfo.append("\n");
         }
         return customInfo.toString();
