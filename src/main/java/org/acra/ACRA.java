@@ -115,6 +115,8 @@ public class ACRA {
      */
     public static void init(Application app) {
 
+// TODO: modify this - itudoben
+
         if (mApplication != null) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
             return;
