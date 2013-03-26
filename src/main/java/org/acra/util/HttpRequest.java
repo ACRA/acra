@@ -49,8 +49,11 @@ public final class HttpRequest {
         private final int maxNrRetries;
 
         /**
-         * @param httpParams    HttpParams that will be used in the HttpRequest.
-         * @param maxNrRetries  Max number of times to retry Request on failure due to SocketTimeOutException.
+         * @param httpParams
+         *            HttpParams that will be used in the HttpRequest.
+         * @param maxNrRetries
+         *            Max number of times to retry Request on failure due to
+         *            SocketTimeOutException.
          */
         private SocketTimeOutRetryHandler(HttpParams httpParams, int maxNrRetries) {
             this.httpParams = httpParams;
@@ -65,9 +68,11 @@ public final class HttpRequest {
                     if (httpParams != null) {
                         final int newSocketTimeOut = HttpConnectionParams.getSoTimeout(httpParams) * 2;
                         HttpConnectionParams.setSoTimeout(httpParams, newSocketTimeOut);
-                        ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut - increasing time out to " + newSocketTimeOut + " millis and trying again");
+                        ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut - increasing time out to " + newSocketTimeOut
+                                + " millis and trying again");
                     } else {
-                        ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut - no HttpParams, cannot increase time out. Trying again with current settings");
+                        ACRA.log.d(ACRA.LOG_TAG,
+                                "SocketTimeOut - no HttpParams, cannot increase time out. Trying again with current settings");
                     }
 
                     return true;
@@ -76,11 +81,10 @@ public final class HttpRequest {
                 ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut but exceeded max number of retries : " + maxNrRetries);
             }
 
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return false; // To change body of implemented methods use File |
+                          // Settings | File Templates.
         }
     }
-
-
 
     private String login;
     private String password;
@@ -106,8 +110,10 @@ public final class HttpRequest {
 
     /**
      * The default number of retries is 3.
-     *
-     * @param maxNrRetries  Max number of times to retry Request on failure due to SocketTimeOutException.
+     * 
+     * @param maxNrRetries
+     *            Max number of times to retry Request on failure due to
+     *            SocketTimeOutException.
      */
     public void setMaxNrRetries(int maxNrRetries) {
         this.maxNrRetries = maxNrRetries;
@@ -115,10 +121,13 @@ public final class HttpRequest {
 
     /**
      * Posts to a URL.
-     *
-     * @param url           URL to which to post.
-     * @param content    Map of parameters to post to a URL.
-     * @throws IOException if the data cannot be posted.
+     * 
+     * @param url
+     *            URL to which to post.
+     * @param content
+     *            Map of parameters to post to a URL.
+     * @throws IOException
+     *             if the data cannot be posted.
      */
     public void send(URL url, Method method, String content, Type type) throws IOException {
 
@@ -126,26 +135,38 @@ public final class HttpRequest {
         final HttpEntityEnclosingRequestBase httpRequest = getHttpRequest(url, method, content, type);
 
         ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Http " + method.name() + " content : ");
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, content);
+        if (ACRA.DEV_LOGGING)
+            ACRA.log.d(ACRA.LOG_TAG, "Http " + method.name() + " content : ");
+        if (ACRA.DEV_LOGGING)
+            ACRA.log.d(ACRA.LOG_TAG, content);
 
         final HttpResponse response = httpClient.execute(httpRequest, new BasicHttpContext());
         if (response != null) {
             final StatusLine statusLine = response.getStatusLine();
             if (statusLine != null) {
                 final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
-                if (statusCode.startsWith("4") || statusCode.startsWith("5")) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
+
+                if (!statusCode.equals("409") // 409 return code means that the
+                                              // report has been received
+                                              // already. So we can discard it.
+                        && (statusCode.startsWith("4") || statusCode.startsWith("5"))) {
+                    if (ACRA.DEV_LOGGING)
+                        ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
                     throw new IOException("Host returned error code " + statusCode);
                 }
             }
 
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : " + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
+            if (ACRA.DEV_LOGGING)
+                ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : "
+                        + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
             final String respContent = EntityUtils.toString(response.getEntity());
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
+            if (ACRA.DEV_LOGGING)
+                ACRA.log.d(ACRA.LOG_TAG,
+                        "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
 
         } else {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
+            if (ACRA.DEV_LOGGING)
+                ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
         }
     }
 
@@ -161,7 +182,7 @@ public final class HttpRequest {
 
         final SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-        if(ACRA.getConfig().disableSSLCertValidation()) {
+        if (ACRA.getConfig().disableSSLCertValidation()) {
             registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
         } else {
             registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
@@ -177,7 +198,8 @@ public final class HttpRequest {
     }
 
     /**
-     * @return Credentials to use with this HttpRequest or null if no credentials were supplied.
+     * @return Credentials to use with this HttpRequest or null if no
+     *         credentials were supplied.
      */
     private UsernamePasswordCredentials getCredentials() {
         if (login != null || password != null) {
@@ -187,7 +209,8 @@ public final class HttpRequest {
         return null;
     }
 
-    private HttpEntityEnclosingRequestBase getHttpRequest(URL url, Method method, String content, Type type) throws UnsupportedEncodingException, UnsupportedOperationException {
+    private HttpEntityEnclosingRequestBase getHttpRequest(URL url, Method method, String content, Type type)
+            throws UnsupportedEncodingException, UnsupportedOperationException {
 
         final HttpEntityEnclosingRequestBase httpRequest;
         switch (method) {
@@ -206,7 +229,9 @@ public final class HttpRequest {
             httpRequest.addHeader(BasicScheme.authenticate(creds, "UTF-8", false));
         }
         httpRequest.setHeader("User-Agent", "Android");
-        httpRequest.setHeader("Accept", "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
+        httpRequest
+                .setHeader("Accept",
+                        "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
         httpRequest.setHeader("Content-Type", type.getContentType());
 
         httpRequest.setEntity(new StringEntity(content, "UTF-8"));
