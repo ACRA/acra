@@ -54,6 +54,7 @@ import android.util.Log;
  * public class myApplication extends Application {
  * 
  *     public void onCreate() {
+ *         super.onCreate();
  *         ACRA.init(this);
  *         Map&lt;ReportField, String&gt; mapping = new HashMap&lt;ReportField, String&gt;();
  *         mapping.put(ReportField.APP_VERSION_CODE, &quot;myAppVerCode'); 
@@ -64,29 +65,38 @@ import android.util.Log;
  *         ErrorReporter.getInstance().removeAllReportSenders();
  *         // create your own instance with your specific mapping
  *         ErrorReporter.getInstance().addReportSender(new ReportSender(&quot;http://my.domain.com/reports/receiver.py&quot;, mapping));
- *         
- *         
- *         super.onCreate();
  *     }
  * }
  * </pre>
  * 
- * @author Kevin Gaudin
- * 
  */
 public class HttpSender implements ReportSender {
 
+    /**
+     * Available HTTP methods to send data. Only POST and PUT are currently
+     * supported.
+     */
     public enum Method {
         POST, PUT
     }
 
+    /**
+     * Type of report data encoding, currently supports Html Form encoding and
+     * JSON.
+     */
     public enum Type {
+        /**
+         * Send data as a www form encoded list of key/values.
+         */
         FORM {
             @Override
             public String getContentType() {
                 return "application/x-www-form-urlencoded";
             }
         },
+        /**
+         * Send data as a structured JSON tree.
+         */
         JSON {
             @Override
             public String getContentType() {
@@ -128,6 +138,10 @@ public class HttpSender implements ReportSender {
      * a parameter. Configuration changes to the formUri are not applied.
      * </p>
      * 
+     * @param method
+     *            HTTP {@link Method} to be used to send data.
+     * @param type
+     *            {@link Type} of data encoding.
      * @param formUri
      *            The URL of your server-side crash report collection script.
      * @param mapping
@@ -178,9 +192,11 @@ public class HttpSender implements ReportSender {
             request.send(reportUrl, mMethod, reportAsString, mType);
 
         } catch (IOException e) {
-            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType() + " report via Http " + mMethod.name(), e);
+            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType()
+                    + " report via Http " + mMethod.name(), e);
         } catch (JSONReportException e) {
-            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType() + " report via Http " + mMethod.name(), e);
+            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType()
+                    + " report via Http " + mMethod.name(), e);
         }
     }
 
@@ -201,6 +217,5 @@ public class HttpSender implements ReportSender {
         }
         return finalReport;
     }
-
 
 }
