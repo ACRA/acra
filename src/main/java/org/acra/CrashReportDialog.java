@@ -44,6 +44,14 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
+        if(forceCancel) {
+            ACRA.log.d(ACRA.LOG_TAG, "Forced reports deletion.");
+            cancelReports();
+            finish();
+            return;
+        }
+
         mReportFileName = getIntent().getStringExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME);
         Log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
         if (mReportFileName == null) {
@@ -221,5 +229,4 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     public void onDismiss(DialogInterface dialog) {
         finish();
     }
-
 }

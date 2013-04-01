@@ -80,7 +80,12 @@ public final class ACRAConstants {
      * latest generated report file in order to be able to associate the user
      * comment.
      */
-    static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
+    protected static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
+    /**
+     * Set this extra to true to force the deletion of reports by the
+     * {@link CrashReportDialog} activity.
+     */
+    protected static final String EXTRA_FORCE_CANCEL = "FORCE_CANCEL";
     /**
      * This is the identifier (value = 666) use for the status bar notification
      * issued when crashes occur.
@@ -160,5 +165,4 @@ public final class ACRAConstants {
             DISPLAY, USER_COMMENT, USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT,
             INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM, SETTINGS_SECURE,
             SETTINGS_GLOBAL };
-
 }
