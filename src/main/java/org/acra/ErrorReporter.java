@@ -15,17 +15,15 @@
  */
 package org.acra;
 
-import android.Manifest.permission;
-import android.app.*;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.os.Bundle;
-import android.os.Looper;
-import android.text.format.Time;
-import android.util.Log;
-import android.widget.Toast;
+import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ReportField.IS_SILENT;
+
+import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
 import org.acra.collector.ConfigurationCollector;
@@ -40,14 +38,21 @@ import org.acra.sender.ReportSender;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 
-import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.IS_SILENT;
+import android.Manifest.permission;
+import android.app.Activity;
+import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.os.Bundle;
+import android.os.Looper;
+import android.text.format.Time;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * <p>
@@ -104,6 +109,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private static boolean toastWaitEnded = true;
 
+    /**
+     * Used to create a new (non-cached) PendingIntent each time a new crash occurs. 
+     */
+    private static int mNotificationCounter = 0;
+    
     /**
      * Can only be constructed from within this class.
      * 
@@ -543,7 +553,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     void deletePendingNonApprovedReports(boolean keepOne) {
         // In NOTIFICATION AND DIALOG mode, we have to keep the latest report
         // which
-        // has been writtent before killing the app.
+        // has been written before killing the app.
         final int nbReportsToKeep = keepOne ? 1 : 0;
         deletePendingReports(false, true, nbReportsToKeep);
     }
@@ -661,9 +671,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             Log.d(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");
             sender = startSendingReports(sendOnlySilentReports, true);
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-            // Send reports when user accepts
-            Log.d(ACRA.LOG_TAG, "About to send status bar notification from #handleException");
-            notifySendReport(reportFileName);
+            Log.d(ACRA.LOG_TAG, "Notification will be created on application start.");
         }
 
         if (shouldDisplayToast) {
@@ -785,17 +793,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         Log.d(LOG_TAG, "Creating Notification for " + reportFileName);
         notificationIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, mNotificationCounter++, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
 
         final Intent deleteIntent = new Intent(mContext, CrashReportDialog.class);
         deleteIntent.putExtra(ACRAConstants.EXTRA_FORCE_CANCEL, true);
-        final PendingIntent pendingDeleteIntent = PendingIntent.getActivity(mContext, 1, deleteIntent, 0);
+        final PendingIntent pendingDeleteIntent = PendingIntent.getActivity(mContext, -1, deleteIntent, 0);
         notification.deleteIntent = pendingDeleteIntent;
         
         // Send new notification
-        notificationManager.cancelAll();
         notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification);
     }
 
@@ -879,6 +886,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 final boolean isReportApproved = fileNameParser.isApproved(fileName);
                 if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
                     final File fileToDelete = new File(mContext.getFilesDir(), fileName);
+                    ACRA.log.d(ACRA.LOG_TAG, "Deleting file " + fileName);
                     if (!fileToDelete.delete()) {
                         Log.e(ACRA.LOG_TAG, "Could not delete report : " + fileToDelete);
                     }
