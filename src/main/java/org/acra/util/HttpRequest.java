@@ -140,33 +140,40 @@ public final class HttpRequest {
         if (ACRA.DEV_LOGGING)
             ACRA.log.d(ACRA.LOG_TAG, content);
 
-        final HttpResponse response = httpClient.execute(httpRequest, new BasicHttpContext());
-        if (response != null) {
-            final StatusLine statusLine = response.getStatusLine();
-            if (statusLine != null) {
-                final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
-
-                if (!statusCode.equals("409") // 409 return code means that the
-                                              // report has been received
-                                              // already. So we can discard it.
-                        && (statusCode.startsWith("4") || statusCode.startsWith("5"))) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
-                    throw new IOException("Host returned error code " + statusCode);
+        HttpResponse response = null;
+        try {
+            response = httpClient.execute(httpRequest, new BasicHttpContext());
+            if (response != null) {
+                final StatusLine statusLine = response.getStatusLine();
+                if (statusLine != null) {
+                    final String statusCode = Integer.toString(response.getStatusLine().getStatusCode());
+    
+                    if (!statusCode.equals("409") // 409 return code means that the
+                                                  // report has been received
+                                                  // already. So we can discard it.
+                            && (statusCode.startsWith("4") || statusCode.startsWith("5"))) {
+                        if (ACRA.DEV_LOGGING)
+                            ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
+                        throw new IOException("Host returned error code " + statusCode);
+                    }
                 }
+
+                if (ACRA.DEV_LOGGING)
+                    ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : "
+                            + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
+                final String respContent = EntityUtils.toString(response.getEntity());
+                if (ACRA.DEV_LOGGING)
+                    ACRA.log.d(ACRA.LOG_TAG,
+                            "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
+
+            } else {
+                if (ACRA.DEV_LOGGING)
+                    ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
             }
-
-            if (ACRA.DEV_LOGGING)
-                ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : "
-                        + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
-            final String respContent = EntityUtils.toString(response.getEntity());
-            if (ACRA.DEV_LOGGING)
-                ACRA.log.d(ACRA.LOG_TAG,
-                        "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
-
-        } else {
-            if (ACRA.DEV_LOGGING)
-                ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
+        } finally {
+            if (response != null) {
+				response.getEntity().consumeContent();
+			}
         }
     }
 
