@@ -41,6 +41,32 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
+ACRA v4.5 - enabling the future
+===============================
+ACRA v4.5.0 is now available as a Release Candidate:
+https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0RC/acra-4.5.0RC.zip
+(also available in Maven Central repository)
+
+Please use it, test it, report issues. This release will be considered as stable if no major issue is reported on the 21st of April 2013.
+
+The summarized changelog is here: https://github.com/ACRA/acra/wiki/ChangeLog
+
+Included in this release (summarized summary):
+- many bugfixes
+- no more exception thrown in ACRA.init() if called twice (widget developers will enjoy it)
+- HttpPostSender is renamed HttpSender and can send PUT and POST requests with data encoded as FORM (same as before) and JSON. The JSON mode enables a fully structured JSON tree to be sent to your backend.
+- Display configuration details can benefit of the newly introduced DisplayManager from Android 4.2
+- CrashReportDialog is now using AlertDialog.Builder to ensure that dialogs are created using the UX guidelines enforced by the android version. (you should remove its theme attribute in your manifest to benefit from the default theme of the device)
+
+The most important part of this release is to enable the usage of Acralyzer (http://github.com/ACRA/acralyzer) which will be the default backend in future release.
+
+Next release will be 5.0 with important changes in mind:
+- no more default support of old Google Forms
+- use JSON as the default report storage and management mode (current implementation transforms flat data into JSON just before sending it)
+
+New ideas about the project are always welcome, you can open feature requests in the Github issue tracker.
+
+
 ACRA v4.4 - enforcing security
 ==============================
 
