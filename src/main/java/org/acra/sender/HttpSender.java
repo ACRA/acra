@@ -86,7 +86,8 @@ public class HttpSender implements ReportSender {
      */
     public enum Type {
         /**
-         * Send data as a www form encoded list of key/values.
+         * Send data as a www form encoded list of key/values. {@link http
+         * ://www.w3.org/TR/html401/interact/forms.html#h-17.13.4}
          */
         FORM {
             @Override
@@ -119,7 +120,19 @@ public class HttpSender implements ReportSender {
      * formUri are applied automatically.
      * </p>
      * 
+     * @param method
+     *            HTTP {@link Method} to be used to send data. Currently only
+     *            {@link Method#POST} and {@link Method#PUT} are available. If
+     *            {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
+     *            is appended to the formUri to be compliant with RESTful APIs.
+     * 
+     * @param type
+     *            {@link Type} of encoding used to send the report body.
+     *            {@link Type#FORM} is a simple Key/Value pairs list as defined
+     *            by the application/x-www-form-urlencoded mime type.
+     * 
      * @param mapping
+     *            Applies only to {@link Method#POST} method parameter.
      *            If null, POST parameters will be named with
      *            {@link ReportField} values converted to String with
      *            .toString(). If not null, POST parameters will be named with
@@ -139,12 +152,19 @@ public class HttpSender implements ReportSender {
      * </p>
      * 
      * @param method
-     *            HTTP {@link Method} to be used to send data.
+     *            HTTP {@link Method} to be used to send data. Currently only
+     *            {@link Method#POST} and {@link Method#PUT} are available. If
+     *            {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
+     *            is appended to the formUri to be compliant with RESTful APIs.
+     * 
      * @param type
-     *            {@link Type} of data encoding.
+     *            {@link Type} of encoding used to send the report body.
+     *            {@link Type#FORM} is a simple Key/Value pairs list as defined
+     *            by the application/x-www-form-urlencoded mime type.
      * @param formUri
      *            The URL of your server-side crash report collection script.
      * @param mapping
+     *            Applies only to {@link Method#POST} method parameter.
      *            If null, POST parameters will be named with
      *            {@link ReportField} values converted to String with
      *            .toString(). If not null, POST parameters will be named with
@@ -177,13 +197,25 @@ public class HttpSender implements ReportSender {
             request.setPassword(password);
 
             String reportAsString = "";
-            switch (mMethod) {
-            case POST:
+
+            // Generate report body depending on requested type
+            switch (mType) {
+            case JSON:
+                reportAsString = report.toJSON().toString();
+                break;
+            case FORM:
+            default:
                 final Map<String, String> finalReport = remap(report);
                 reportAsString = HttpRequest.getParamsAsFormString(finalReport);
                 break;
+
+            }
+
+            // Adjust URL depending on method
+            switch (mMethod) {
+            case POST:
+                break;
             case PUT:
-                reportAsString = report.toJSON().toString();
                 reportUrl = new URL(reportUrl.toString() + '/' + report.getProperty(ReportField.REPORT_ID));
                 break;
             default:
