@@ -20,6 +20,7 @@ import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
@@ -100,7 +101,16 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Boolean mDisableSSLCertValidation = null;
     private Method mHttpMethod = null;
     private Type mReportType = null;
+    private Map<String,String> mHeaders;
 
+    public void setHeaders(Map<String,String> headers) {
+        this.mHeaders = headers;
+    }
+
+    public Map<String,String> getHeaders() {
+        return mHeaders;
+    }
+    
     /**
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set

@@ -111,7 +111,8 @@ public class HttpSender implements ReportSender {
     private final Map<ReportField, String> mMapping;
     private final Method mMethod;
     private final Type mType;
-
+    
+    
     /**
      * <p>
      * Create a new HttpSender instance with its destination taken from
@@ -173,8 +174,10 @@ public class HttpSender implements ReportSender {
             request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
             request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
             request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
+            
             request.setLogin(login);
             request.setPassword(password);
+            request.setHeaders(ACRA.getConfig().getHeaders());
 
             String reportAsString = "";
             switch (mMethod) {
