@@ -401,12 +401,15 @@ public final class CrashReportDataFactory {
     private String createCustomInfoString() {
         final StringBuilder customInfo = new StringBuilder();
         for (final String currentKey : customParameters.keySet()) {
-            final String currentVal = customParameters.get(currentKey);
+            String currentVal = customParameters.get(currentKey);
             customInfo.append(currentKey);
             customInfo.append(" = ");
             // We need to escape new lines in values or they are transformed into new
             // custom fields. => let's replace all '\n' with "\\n"
-            customInfo.append(currentVal.replaceAll("\n", "\\\\n"));
+            if(currentVal != null) {
+                currentVal = currentVal.replaceAll("\n", "\\\\n");
+            }
+            customInfo.append(currentVal);
             customInfo.append("\n");
         }
         return customInfo.toString();
