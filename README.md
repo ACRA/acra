@@ -1,4 +1,4 @@
-[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789)
+[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://github.com/ACRA/acra&title=ACRA&language=&tags=github&category=software)
 
 Please tell us how you use ACRA
 ===============================
@@ -131,3 +131,7 @@ And after that?
 Now that ACRA is stabilized on the device side (there shouldn't be much more data required...), the effort should be placed on crash data analysis and reports management tools for developers.
 
 You can look at [some contributions](http://github.com/ACRA/acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
+
+[Acralyzer](http://github.com/ACRA/acralyzer) will soon be the official backend for reports storage and analysis. It is a free and open source modern web app, based on a full open stack and using advanced
+technology like CouchDB (JSON document storage with a RESTful API and Map/Reduce querying), AngularJS (one of the most advanced client-side JS frameworks), D3JS (for data visualisation)... If you are interested
+in webapps development, this project can become your playground too ;-)
