@@ -214,17 +214,6 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onPause()
-     */
-    @Override
-    protected void onPause() {
-        mDialog.dismiss();
-        super.onPause();
-    }
-
     @Override
     public void onDismiss(DialogInterface dialog) {
         finish();
