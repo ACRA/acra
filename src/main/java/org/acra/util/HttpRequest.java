@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.acra.ACRA;
@@ -91,7 +92,8 @@ public final class HttpRequest {
     private int connectionTimeOut = 3000;
     private int socketTimeOut = 3000;
     private int maxNrRetries = 3;
-
+    private Map<String,String> headers;
+    
     public void setLogin(String login) {
         this.login = login;
     }
@@ -108,6 +110,11 @@ public final class HttpRequest {
         this.socketTimeOut = socketTimeOut;
     }
 
+    public void setHeaders(Map<String,String> headers) {
+       this.headers = headers;
+    }
+
+    
     /**
      * The default number of retries is 3.
      * 
@@ -241,6 +248,15 @@ public final class HttpRequest {
                         "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
         httpRequest.setHeader("Content-Type", type.getContentType());
 
+        if(headers !=null) {
+           Iterator<String> headerIt = headers.keySet().iterator();
+           while(headerIt.hasNext()) {
+              String header = headerIt.next();
+              String value = headers.get(header);
+              httpRequest.setHeader(header, value);
+           }
+        }
+        
         httpRequest.setEntity(new StringEntity(content, "UTF-8"));
 
         return httpRequest;

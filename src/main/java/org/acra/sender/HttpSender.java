@@ -132,11 +132,11 @@ public class HttpSender implements ReportSender {
      *            by the application/x-www-form-urlencoded mime type.
      * 
      * @param mapping
-     *            Applies only to {@link Method#POST} method parameter.
-     *            If null, POST parameters will be named with
-     *            {@link ReportField} values converted to String with
-     *            .toString(). If not null, POST parameters will be named with
-     *            the result of mapping.get(ReportField.SOME_FIELD);
+     *            Applies only to {@link Method#POST} method parameter. If null,
+     *            POST parameters will be named with {@link ReportField} values
+     *            converted to String with .toString(). If not null, POST
+     *            parameters will be named with the result of
+     *            mapping.get(ReportField.SOME_FIELD);
      */
     public HttpSender(Method method, Type type, Map<ReportField, String> mapping) {
         mMethod = method;
@@ -164,11 +164,11 @@ public class HttpSender implements ReportSender {
      * @param formUri
      *            The URL of your server-side crash report collection script.
      * @param mapping
-     *            Applies only to {@link Method#POST} method parameter.
-     *            If null, POST parameters will be named with
-     *            {@link ReportField} values converted to String with
-     *            .toString(). If not null, POST parameters will be named with
-     *            the result of mapping.get(ReportField.SOME_FIELD);
+     *            Applies only to {@link Method#POST} method parameter. If null,
+     *            POST parameters will be named with {@link ReportField} values
+     *            converted to String with .toString(). If not null, POST
+     *            parameters will be named with the result of
+     *            mapping.get(ReportField.SOME_FIELD);
      */
     public HttpSender(Method method, Type type, String formUri, Map<ReportField, String> mapping) {
         mMethod = method;
@@ -195,6 +195,7 @@ public class HttpSender implements ReportSender {
             request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
             request.setLogin(login);
             request.setPassword(password);
+            request.setHeaders(ACRA.getConfig().getHeaders());
 
             String reportAsString = "";
 
