@@ -195,7 +195,7 @@ public class HttpSender implements ReportSender {
             request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
             request.setLogin(login);
             request.setPassword(password);
-            request.setHeaders(ACRA.getConfig().getHeaders());
+            request.setHeaders(ACRA.getConfig().getHttpHeaders());
 
             String reportAsString = "";
 
