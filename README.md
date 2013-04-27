@@ -44,7 +44,7 @@ For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA
 ACRA v4.5 - enabling the future
 ===============================
 ACRA v4.5.0 is now available as a second Release Candidate:
-https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0RC2/acra-4.5.0RC2.zip
+https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0RC3/acra-4.5.0RC3.zip
 (also available in Maven Central repository)
 
 Please use it, test it, report issues. This release will be considered as stable if no major issue is reported on the 21st of April 2013.
