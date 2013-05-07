@@ -23,6 +23,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
@@ -109,6 +110,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private static boolean toastWaitEnded = true;
 
+    private final CopyOnWriteArrayList<Runnable> runnablesToRunBeforeReporting;
+
     /**
      * Used to create a new (non-cached) PendingIntent each time a new crash occurs. 
      */
@@ -130,6 +133,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.mContext = context;
         this.prefs = prefs;
         this.enabled = enabled;
+        this.runnablesToRunBeforeReporting = new CopyOnWriteArrayList<Runnable>();
 
         // Store the initial Configuration state.
         final String initialConfiguration = ConfigurationCollector.collectConfiguration(mContext);
@@ -252,6 +256,29 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     public String putCustomData(String key, String value) {
         return crashReportDataFactory.putCustomData(key, value);
+    }
+
+    /**
+     * <p>
+     * Use this method to add commands to be executed before the ErrorReporter
+     * handles the throwable. This can be used to put custom data using
+     * {@link #putCustomData(String, String)}. The call is thread safe. Same
+     * {@link Runnable} will not be added twice.
+     * </p>
+     * <p>
+     * Same {@link Runnable} will not be added twice.
+     * </p>
+     * <p>
+     * The call is thread safe. {@link Runnable#run()} will be executed on the
+     * main thread in case of uncaught exception and on the caller thread of
+     * {@link #handleSilentException(Throwable)} or
+     * {@link #handleException(Throwable)}.
+     * </p>
+     * 
+     * @param runnable
+     */
+    public void addOnExceptionHandledCommand(Runnable runnable) {
+        runnablesToRunBeforeReporting.addIfAbsent(runnable);
     }
 
     /**
@@ -604,6 +631,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         if (!enabled) {
             return;
+        }
+
+        for (Runnable runnable : runnablesToRunBeforeReporting) {
+            String toString = "";
+            try {
+                toString = runnable.toString();
+                runnable.run();
+            } catch (Exception exceptionInRunnable) {
+                Log.d(ACRA.LOG_TAG, "Failed to execute #run in " + toString + " from #handleException");
+            }
         }
 
         boolean sendOnlySilentReports = false;
