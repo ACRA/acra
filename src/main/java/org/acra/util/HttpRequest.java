@@ -158,9 +158,18 @@ public final class HttpRequest {
                     if (!statusCode.equals("409") // 409 return code means that the
                                                   // report has been received
                                                   // already. So we can discard it.
+                            && !statusCode.equals("403") // a 403 error code is an explicit data validation refusal
+                                                         // from the server. The request must not be repeated.
+                                                         // Discard it.
                             && (statusCode.startsWith("4") || statusCode.startsWith("5"))) {
-                        if (ACRA.DEV_LOGGING)
+                        if (ACRA.DEV_LOGGING) {
                             ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
+                            ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : "
+                                    + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
+                            final String respContent = EntityUtils.toString(response.getEntity());
+                            ACRA.log.d(ACRA.LOG_TAG,
+                                    "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
+                        }
                         throw new IOException("Host returned error code " + statusCode);
                     }
                 }
