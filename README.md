@@ -43,8 +43,10 @@ For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA
 
 ACRA v4.5 - enabling the future
 ===============================
-ACRA v4.5.0 is now available as a second Release Candidate:
-https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0RC3/acra-4.5.0RC3.zip
+
+**ACRA 4.4.0 is now the official stable version.**
+
+https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0/acra-4.5.0.zip
 (also available in Maven Central repository)
 
 The summarized changelog is here: https://github.com/ACRA/acra/wiki/ChangeLog
@@ -68,8 +70,6 @@ New ideas about the project are always welcome, you can open feature requests in
 
 ACRA v4.4 - enforcing security
 ==============================
-
-**ACRA 4.4.0 is now the official stable version.**
 
 ACRA has been named in [this report](http://www.cs.utexas.edu/~shmat/shmat_ccs12.pdf) as a potential cause of SSL vulnerability for all android apps using it.
 
