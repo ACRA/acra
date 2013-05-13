@@ -49,6 +49,7 @@ import static org.acra.ReportField.SETTINGS_SYSTEM;
 import static org.acra.ReportField.SETTINGS_GLOBAL;
 import static org.acra.ReportField.SHARED_PREFERENCES;
 import static org.acra.ReportField.STACK_TRACE;
+import static org.acra.ReportField.STACK_TRACE_HASH;
 import static org.acra.ReportField.THREAD_DETAILS;
 import static org.acra.ReportField.TOTAL_MEM_SIZE;
 import static org.acra.ReportField.USER_CRASH_DATE;
@@ -176,6 +177,12 @@ public final class CrashReportDataFactory {
             if (isSilentReport) {
                 crashReportData.put(IS_SILENT, "true");
             }
+            
+            // StackTrace hash
+            if (crashReportFields.contains(STACK_TRACE_HASH)) {
+                crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
+            }
+            
 
             // Generate report uuid
             if (crashReportFields.contains(REPORT_ID)) {
@@ -415,6 +422,21 @@ public final class CrashReportDataFactory {
         printWriter.close();
 
         return stacktraceAsString;
+    }
+    
+    private String getStackTraceHash(Throwable th) {
+        final StringBuilder res = new StringBuilder();
+        Throwable cause = th;
+        while (cause != null) {
+            final StackTraceElement[] stackTraceElements = cause.getStackTrace();
+            for (final StackTraceElement e : stackTraceElements) {
+                res.append(e.getClassName());
+                res.append(e.getMethodName());
+            }
+            cause = cause.getCause();
+        }
+    
+        return Integer.toHexString(res.toString().hashCode());
     }
 
     private List<ReportField> getReportFields() {
