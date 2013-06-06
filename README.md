@@ -44,7 +44,7 @@ For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA
 ACRA v4.5 - enabling the future
 ===============================
 
-**ACRA 4.4.0 is now the official stable version.**
+**ACRA 4.5.0 is now the official stable version.**
 
 https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0/acra-4.5.0.zip
 (also available in Maven Central repository)
