@@ -539,9 +539,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 // been put on the task stack before killing the app.
                 // The user can explicitly say Yes or No... or ignore the dialog
                 // with the back button.
-                // As there are unapproved reports to send, display the dialog.
-                // The user comment will be associated to the latest report
-                notifyDialog(getLatestNonSilentReport(filesList));
             }
 
         }

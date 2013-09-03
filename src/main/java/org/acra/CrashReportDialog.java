@@ -58,8 +58,14 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
             finish();
         }
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setTitle(ACRA.getConfig().resDialogTitle());
-        dialogBuilder.setIcon(ACRA.getConfig().resDialogIcon());
+        int resourceId = ACRA.getConfig().resDialogTitle();
+        if(resourceId != 0) {
+            dialogBuilder.setTitle(resourceId);
+        }
+        resourceId = ACRA.getConfig().resDialogIcon();
+        if(resourceId != 0) {
+            dialogBuilder.setIcon(resourceId);
+        }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
         dialogBuilder.setPositiveButton(android.R.string.ok, CrashReportDialog.this);
         dialogBuilder.setNegativeButton(android.R.string.cancel, CrashReportDialog.this);
@@ -85,7 +91,10 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         scroll.addView(scrollable);
 
         final TextView text = new TextView(this);
-        text.setText(getText(ACRA.getConfig().resDialogText()));
+        final int dialogTextId = ACRA.getConfig().resDialogText();
+        if (dialogTextId != 0) {
+            text.setText(getText(dialogTextId));
+        }
         scrollable.addView(text);
 
         // Add an optional prompt for user comments

@@ -1,4 +1,4 @@
-[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://github.com/ACRA/acra&title=ACRA&language=&tags=github&category=software)
+[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)
 
 Please tell us how you use ACRA
 ===============================
@@ -43,11 +43,11 @@ For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA
 
 ACRA v4.5 - enabling the future
 ===============================
-ACRA v4.5.0 is now available as a second Release Candidate:
-https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0RC2/acra-4.5.0RC2.zip
-(also available in Maven Central repository)
 
-Please use it, test it, report issues. This release will be considered as stable if no major issue is reported on the 21st of April 2013.
+**ACRA 4.5.0 is now the official stable version.**
+
+https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0/acra-4.5.0.zip
+(also available in Maven Central repository)
 
 The summarized changelog is here: https://github.com/ACRA/acra/wiki/ChangeLog
 
@@ -70,8 +70,6 @@ New ideas about the project are always welcome, you can open feature requests in
 
 ACRA v4.4 - enforcing security
 ==============================
-
-**ACRA 4.4.0 is now the official stable version.**
 
 ACRA has been named in [this report](http://www.cs.utexas.edu/~shmat/shmat_ccs12.pdf) as a potential cause of SSL vulnerability for all android apps using it.
 
