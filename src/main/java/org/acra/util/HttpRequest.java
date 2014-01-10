@@ -212,19 +212,19 @@ public final class HttpRequest {
         if (ACRA.getConfig().disableSSLCertValidation()) {
             registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
         } else if (ACRA.getConfig().keyStore() != null) {
-        	try {
-	            SSLSocketFactory sf = new SSLSocketFactory(ACRA.getConfig().keyStore());
-	            sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
-	            registry.register(new Scheme("https", sf, 443));
-        	} catch (KeyManagementException e) {
+            try {
+                SSLSocketFactory sf = new SSLSocketFactory(ACRA.getConfig().keyStore());
+                sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+                registry.register(new Scheme("https", sf, 443));
+            } catch (KeyManagementException e) {
                 registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-			} catch (UnrecoverableKeyException e) {
-	            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-			} catch (NoSuchAlgorithmException e) {
-	            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-			} catch (KeyStoreException e) {
-	            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-			}
+            } catch (UnrecoverableKeyException e) {
+                registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            } catch (NoSuchAlgorithmException e) {
+                registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            } catch (KeyStoreException e) {
+                registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            }
         } else {
             registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         }
