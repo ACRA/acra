@@ -10,6 +10,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -207,6 +211,20 @@ public final class HttpRequest {
         registry.register(new Scheme("http", new PlainSocketFactory(), 80));
         if (ACRA.getConfig().disableSSLCertValidation()) {
             registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
+        } else if (ACRA.getConfig().keyStore() != null) {
+        	try {
+	            SSLSocketFactory sf = new SSLSocketFactory(ACRA.getConfig().keyStore());
+	            sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+	            registry.register(new Scheme("https", sf, 443));
+        	} catch (KeyManagementException e) {
+                registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+			} catch (UnrecoverableKeyException e) {
+	            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+			} catch (NoSuchAlgorithmException e) {
+	            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+			} catch (KeyStoreException e) {
+	            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+			}
         } else {
             registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         }
