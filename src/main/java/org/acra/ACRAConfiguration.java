@@ -35,9 +35,11 @@ import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
+import static org.acra.ACRAConstants.DEFAULT_TRUST_SSL_CERT;
 import static org.acra.ACRAConstants.NULL_VALUE;
 
 import java.lang.annotation.Annotation;
+import java.security.cert.Certificate;
 import java.util.Map;
 
 import org.acra.annotation.ReportsCrashes;
@@ -103,6 +105,9 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Method mHttpMethod = null;
     private Type mReportType = null;
     private Map<String, String> mHttpHeaders;
+
+    private String mTrustSSLCertName = null;
+    private Certificate mTrustSSLCert = DEFAULT_TRUST_SSL_CERT;
 
     /**
      * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
@@ -512,6 +517,18 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public void setDisableSSLCertValidation(boolean disableSSLCertValidation) {
         mDisableSSLCertValidation = disableSSLCertValidation;
+    }
+
+    /**
+     *
+     * @param trustSSLCertName
+     */
+    public void setTrustSSLCertName(String trustSSLCertName) {
+        mTrustSSLCertName = trustSSLCertName;
+    }
+
+    public void setTrustSSLCert(Certificate trustSSLCert) {
+        mTrustSSLCert = trustSSLCert;
     }
 
     /**
@@ -1059,6 +1076,23 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_DISABLE_SSL_CERT_VALIDATION;
+    }
+
+    @Override
+    public String trustSSLCertName() {
+        if (mTrustSSLCertName != null) {
+            return mTrustSSLCertName;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.trustSSLCertName();
+        }
+
+        return DEFAULT_STRING_VALUE;
+    }
+
+    public Certificate trustSSLCert() {
+        return mTrustSSLCert;
     }
 
     @Override

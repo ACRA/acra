@@ -10,10 +10,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 import org.apache.http.HttpResponse;
@@ -30,6 +39,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -138,7 +148,12 @@ public final class HttpRequest {
      */
     public void send(URL url, Method method, String content, Type type) throws IOException {
 
-        final HttpClient httpClient = getHttpClient();
+        final HttpClient httpClient;
+        try {
+            httpClient = getHttpClient();
+        } catch (GeneralSecurityException e) {
+            throw new IOException(e);
+        }
         final HttpEntityEnclosingRequestBase httpRequest = getHttpRequest(url, method, content, type);
 
         ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
@@ -195,8 +210,10 @@ public final class HttpRequest {
 
     /**
      * @return HttpClient to use with this HttpRequest.
+     * @throws IOException
+     * @throws GeneralSecurityException
      */
-    private HttpClient getHttpClient() {
+    private HttpClient getHttpClient() throws GeneralSecurityException, IOException {
         final HttpParams httpParams = new BasicHttpParams();
         httpParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
         HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeOut);
@@ -208,7 +225,7 @@ public final class HttpRequest {
         if (ACRA.getConfig().disableSSLCertValidation()) {
             registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
         } else {
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            registry.register(new Scheme("https", getSocketFactory(), 443));
         }
 
         final ClientConnectionManager clientConnectionManager = new ThreadSafeClientConnManager(httpParams, registry);
@@ -218,6 +235,22 @@ public final class HttpRequest {
         httpClient.setHttpRequestRetryHandler(retryHandler);
 
         return httpClient;
+    }
+
+    private static SocketFactory getSocketFactory() throws GeneralSecurityException, IOException {
+        Certificate trustSSLCert = ACRA.getConfig().trustSSLCert();
+
+        if (trustSSLCert == ACRAConstants.DEFAULT_TRUST_SSL_CERT) {
+            return SSLSocketFactory.getSocketFactory();
+        }
+
+        // Create a KeyStore containing our trusted CAs
+        String keyStoreType = KeyStore.getDefaultType();
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        keyStore.load(null, null);
+        keyStore.setCertificateEntry("ca", trustSSLCert);
+
+        return new SSLSocketFactory(keyStore);
     }
 
     /**

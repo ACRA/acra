@@ -15,6 +15,12 @@
  */
 package org.acra;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+
 import org.acra.annotation.ReportsCrashes;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
@@ -134,6 +140,24 @@ public class ACRA {
             checkCrashResources();
 
             log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+
+            String trustSSLCertName = getConfig().trustSSLCertName();
+            if (!trustSSLCertName.equals(ACRAConstants.DEFAULT_STRING_VALUE)) {
+                try {
+                    InputStream caInput = mApplication.getAssets().open(trustSSLCertName);
+                    try {
+                        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                        Certificate ca = cf.generateCertificate(caInput);
+                        getConfig().setTrustSSLCert(ca);
+                    } catch (CertificateException e) {
+                        throw new ACRAConfigurationException("could not parse certificate: " + e.getMessage());
+                    } finally {
+                        caInput.close();
+                    }
+                } catch (IOException e) {
+                    throw new ACRAConfigurationException("could not read certificate: " + e.getMessage());
+                }
+            }
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = !shouldDisableACRA(prefs);

@@ -545,4 +545,14 @@ public @interface ReportsCrashes {
     Method httpMethod() default Method.POST;
 
     Type reportType() default Type.FORM;
+
+    /**
+     * <p>
+     * Set this to the name of the asset that contains a PEM encoded X509 certificate that validates
+     * your server
+     * </p>
+     *
+     * @return the filename of the trusted certificate
+     */
+    String trustSSLCertName() default ACRAConstants.DEFAULT_STRING_VALUE;
 }
