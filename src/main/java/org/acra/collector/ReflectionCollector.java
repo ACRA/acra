@@ -49,7 +49,9 @@ final class ReflectionCollector {
             }
             result.append(field.getName()).append("=");
             try {
-                result.append(field.get(null).toString());
+                Object value = field.get(null);
+                if (value != null)
+                    result.append(value.toString());
             } catch (IllegalArgumentException e) {
                 result.append("N/A");
             } catch (IllegalAccessException e) {
