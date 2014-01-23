@@ -208,7 +208,7 @@ public final class HttpRequest {
         if (ACRA.getConfig().disableSSLCertValidation()) {
             registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
         } else {
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            registry.register(new Scheme("https", ACRAAdapter.getSocketFactory(), 443));
         }
 
         final ClientConnectionManager clientConnectionManager = new ThreadSafeClientConnManager(httpParams, registry);
