@@ -120,7 +120,7 @@ public final class CrashReportDataFactory {
      *            Throwable that caused the crash.
      * @param isSilentReport
      *            Whether to report this report as being sent silently.
-     * @param brokenThread2
+     * @param brokenThread  Thread on which the error occurred.
      * @return CrashReportData representing the current state of the application
      *         at the instant of the Exception.
      */
@@ -222,11 +222,12 @@ public final class CrashReportDataFactory {
             }
 
             if (crashReportFields.contains(BUILD_CONFIG)) {
-                String className = context.getPackageName() + ".BuildConfig";
+                final String className = context.getPackageName() + ".BuildConfig";
                 try {
-                    Class<?> buildConfig = Class.forName(className);
+                    final Class<?> buildConfig = Class.forName(className);
                     crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfig));
                 } catch (ClassNotFoundException e) {
+                    Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className);
                 }
             }
 
