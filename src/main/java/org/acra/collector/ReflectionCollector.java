@@ -44,14 +44,15 @@ final class ReflectionCollector {
 
         final Field[] fields = someClass.getFields();
         for (final Field field : fields) {
-            if(prefix != null && prefix.length() > 0) {
+            if (prefix != null && prefix.length() > 0) {
                 result.append(prefix).append('.');
             }
             result.append(field.getName()).append("=");
             try {
-                Object value = field.get(null);
-                if (value != null)
+                final Object value = field.get(null);
+                if (value != null) {
                     result.append(value.toString());
+                }
             } catch (IllegalArgumentException e) {
                 result.append("N/A");
             } catch (IllegalAccessException e) {
