@@ -20,10 +20,7 @@ import static org.acra.ReportField.IS_SILENT;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
@@ -372,7 +369,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                             + ". Building report.");
 
             // Generate and send crash report
-            report(null, e, null, ACRA.getConfig().mode(), false, true);
+            reportBuilder().message("Uncaught exception").exception(e).endsApplication().send();
         } catch (Throwable fatality) {
             // ACRA failed. Prevent any recursive call to
             // ACRA.uncaughtException(), let the native reporter do its job.
@@ -427,7 +424,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void handleSilentException(Throwable e) {
         // Mark this report as silent.
         if (enabled) {
-            report(null, e, null, ReportingInteractionMode.SILENT, true, false);
+            reportBuilder().exception(e).forceSilent().send();
             Log.d(LOG_TAG, "ACRA sent Silent report.");
             return;
         }
@@ -570,7 +567,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            sending the report.
      */
     public void handleException(Throwable e, boolean endApplication) {
-        report(null, e, null, ACRA.getConfig().mode(), false, endApplication);
+        reportBuilder().exception(e).endsApplication().send();
     }
 
     /**
@@ -583,104 +580,45 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            contain a new Exception("Report requested by developer").
      */
     public void handleException(Throwable e) {
-        report(null, e, null, ACRA.getConfig().mode(), false, false);
+        reportBuilder().exception(e).send();
     }
 
     /**
-     * Sends a simple report with the reporting interaction mode
-     * configured by the developer.
+     * Creates a new crash report builder
      */
-    public void report() {
-        report(null, null, null);
-    }
-
-    /**
-     * Send a report for an error message with the reporting interaction mode
-     * configured by the developer.
-     *
-     * @param msg
-     *            Optional error message to be reported.
-     */
-    public void report(String msg) {
-        report(msg, null, null);
-    }
-
-    /**
-     * Send a report for a message and {@link Throwable} with the reporting
-     * interaction mode configured by the developer.
-     *
-     * @param msg
-     *            Optional error message to be reported.
-     * @param e
-     *            Optional {@link Throwable} to be reported.
-     */
-    public void report(String msg, Throwable e) {
-        report(msg, e, null);
-    }
-
-    /**
-     * Send a report for a message and {@link Throwable} with the reporting
-     * interaction mode configured by the developer.
-     *
-     * @param msg
-     *            Optional error message to be reported.
-     * @param e
-     *            Optional {@link Throwable} to be reported.
-     * @param customData
-     *            Optional additional values to be added to CUSTOM_DATA. Values
-     *            specified here take precedence over globally specified custom data.
-     */
-    public void report(String msg, Throwable e, Map<String, String> customData) {
-        report(msg, e, customData, ACRA.getConfig().mode(), false, false);
+    public ReportBuilder reportBuilder() {
+        return new ReportBuilder();
     }
 
     /**
      * Try to send a report, if an error occurs stores a report file for a later
      * attempt.
      *
-     * @param msg
-     *            Error message to be reported. If null, this will either be
-     *            defaulted to e.toString() if e is not null, or
-     *            "Report requested by developer" otherwise.
-     * @param e
-     *            Throwable to be reported.
-     * @param customData
-     *            Additional information to be added to the report's CUSTOM_DATA field
-     * @param reportingInteractionMode
-     *            The desired interaction mode.
-     * @param forceSilentReport
-     *            This report is to be sent silently, whatever mode has been
-     *            configured.
-     * @param endApplication
-     *            Whether to end the application once the error has been
-     *            handled.
+     * @param reportBuilder The report builder used to assemble the report
      */
-    private void report(String msg, Throwable e, Map<String, String> customData,
-            ReportingInteractionMode reportingInteractionMode, final boolean forceSilentReport,
-            final boolean endApplication) {
+    private void report(final ReportBuilder reportBuilder) {
 
         if (!enabled) {
             return;
         }
 
         boolean sendOnlySilentReports = false;
-        if (reportingInteractionMode == null) {
+        ReportingInteractionMode reportingInteractionMode;
+        if (!reportBuilder.mForceSilent) {
             // No interaction mode defined, we assume it has been set during
             // ACRA.initACRA()
             reportingInteractionMode = ACRA.getConfig().mode();
         } else {
+            reportingInteractionMode = ReportingInteractionMode.SILENT;
+
             // An interaction mode has been provided. If ACRA has been
             // initialized with a non SILENT mode and this mode is overridden
             // with SILENT, then we have to send only reports which have been
             // explicitly declared as silent via handleSilentException().
-            if (reportingInteractionMode == ReportingInteractionMode.SILENT
-                    && ACRA.getConfig().mode() != ReportingInteractionMode.SILENT) {
+            if (ACRA.getConfig().mode() != ReportingInteractionMode.SILENT) {
                 sendOnlySilentReports = true;
             }
         }
-
-        if (msg == null && e == null)
-            msg = "Report requested by developer";
 
         final boolean shouldDisplayToast = reportingInteractionMode == ReportingInteractionMode.TOAST
                 || (ACRA.getConfig().resToastText() != 0 && (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG));
@@ -706,8 +644,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // that the Toast can be read by the user.
         }
 
-        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(msg, e, customData,
-                forceSilentReport, brokenThread);
+        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder.mMessage,
+                reportBuilder.mException, reportBuilder.mCustomData,
+                reportBuilder.mForceSilent, brokenThread);
 
         // Always write the report file
 
@@ -788,9 +727,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     notifyDialog(reportFileName);
                 }
 
-                Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + endApplication);
+                Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.mEndsApplication);
 
-                if (endApplication) {
+                if (reportBuilder.mEndsApplication) {
                     endApplication();
                 }
             }
@@ -1010,5 +949,84 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (conf.formKey() != null && !"".equals(conf.formKey().trim())) {
             addReportSender(new GoogleFormSender());
         }
+    }
+
+    /**
+     * Fluent API used to assemble the different options used for a crash report
+     */
+    public final class ReportBuilder {
+
+        private String mMessage;
+        private Throwable mException;
+        private Map<String, String> mCustomData;
+
+        private boolean mForceSilent = false, mEndsApplication = false;
+
+        /**
+         * Set the error message to be reported.
+         */
+        public ReportBuilder message(String msg) {
+            mMessage = msg;
+            return this;
+        }
+
+        /**
+         * Set the stack trace to be reported
+         */
+        public ReportBuilder exception(Throwable e) {
+            mException = e;
+            return this;
+        }
+
+        private void initCustomData() {
+            if (mCustomData ==  null)
+                mCustomData = new HashMap<String, String>();
+        }
+
+        /**
+         * Sets additional values to be added to {@code CUSTOM_DATA}. Values
+         * specified here take precedence over globally specified custom data.
+         */
+        public ReportBuilder customData(Map<String, String> customData) {
+            initCustomData();
+            mCustomData.putAll(customData);
+            return this;
+        }
+
+        /**
+         * Sets an additional value to be added to {@code CUSTOM_DATA}. The value
+         * specified here takes precedence over globally specified custom data.
+         */
+        public ReportBuilder customData(String key, String value) {
+            initCustomData();
+            mCustomData.put(key, value);
+            return this;
+        }
+
+        /**
+         * Forces the report to be sent silently, ignoring the default interaction mode set in the config
+         */
+        public ReportBuilder forceSilent() {
+            mForceSilent = true;
+            return this;
+        }
+
+        /**
+         * Ends the application after sending the crash report
+         */
+        public ReportBuilder endsApplication() {
+            mEndsApplication = true;
+            return this;
+        }
+
+        /**
+         * Assembles and sends the crash report
+         */
+        public void send() {
+            if (mMessage == null && mException == null)
+                mMessage = "Report requested by developer";
+            report(this);
+        }
+
     }
 }
