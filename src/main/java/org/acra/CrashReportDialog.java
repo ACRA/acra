@@ -14,6 +14,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -158,6 +159,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
+	    restartAppIfConfigured();
         if (which == DialogInterface.BUTTON_POSITIVE)
             sendCrash();
         else {
@@ -225,6 +227,16 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
 
     @Override
     public void onDismiss(DialogInterface dialog) {
+	    restartAppIfConfigured();
         finish();
+    }
+	
+	private void restartAppIfConfigured() {
+        final boolean restart = ACRA.getConfig().restartAfterDialog();
+        if (restart) {
+            Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
     }
 }

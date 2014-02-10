@@ -31,6 +31,7 @@ import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
 import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
 import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
+import static org.acra.ACRAConstants.DEFAULT_RESTART_AFTER_DIALOG;
 import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
@@ -68,7 +69,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String mFormUriBasicAuthLogin = null;
     private String mFormUriBasicAuthPassword = null;
     private Boolean mIncludeDropboxSystemTags = null;
-
+	private Boolean mRestartAfterDialog = null;
+	
     private String[] mLogcatArguments = null;
     private String mMailTo = null;
     private Integer mMaxNumberOfRequestRetries = null;
@@ -187,6 +189,14 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public void setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
         this.mForceCloseDialogAfterToast = forceCloseDialogAfterToast;
+    }
+
+    /**
+     * @param restartAfterDialog
+     *            the restartAfterDialog to set
+     */
+    public void setRestartAfterDialog(Boolean restartAfterDialog) {
+        this.mRestartAfterDialog = restartAfterDialog;
     }
 
     /**
@@ -651,6 +661,14 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+    }
+
+    @Override
+    public boolean restartAfterDialog() {
+        if (mRestartAfterDialog != null) {
+            return mRestartAfterDialog;
+        }
+        return DEFAULT_RESTART_AFTER_DIALOG;
     }
 
     @Override

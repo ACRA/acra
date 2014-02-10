@@ -74,6 +74,8 @@ public final class ACRAConstants {
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
     public static final boolean DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST = false;
+	
+	public static final boolean DEFAULT_RESTART_AFTER_DIALOG = false;
 
     public static final int DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES = 3;
 
