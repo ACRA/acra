@@ -47,6 +47,11 @@ public final class ACRAConstants {
      */
     static final int MAX_SEND_REPORTS = 5;
     /**
+     * Used in the intent starting CrashReportDialog to provide if
+     * the application should be ended
+     */
+    protected static final String EXTRA_END_APPLICATION = "EXTRA_END_APPLICATION";
+    /**
      * Used in the intent starting CrashReportDialog to provide the name of the
      * latest generated report file in order to be able to associate the user
      * comment.

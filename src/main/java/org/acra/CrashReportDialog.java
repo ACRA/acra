@@ -41,6 +41,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     private EditText userEmail;
     String mReportFileName;
     AlertDialog mDialog;
+    private boolean mEndApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         }
 
         mReportFileName = getIntent().getStringExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME);
+        mEndApplication = getIntent().getBooleanExtra(ACRAConstants.EXTRA_END_APPLICATION, false);
         Log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
         if (mReportFileName == null) {
             finish();
@@ -233,7 +235,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
 	
 	private void restartAppIfConfigured() {
         final boolean restart = ACRA.getConfig().restartAfterDialog();
-        if (restart) {
+        if (mEndApplication && restart) {
             Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);

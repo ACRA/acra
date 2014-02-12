@@ -729,7 +729,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     // right
                     // after its death.
                     Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
-                    notifyDialog(reportFileName);
+                    notifyDialog(reportFileName, endApplication);
                 }
 
                 Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + endApplication);
@@ -746,13 +746,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * {@link CrashReportDialog} Activity.
      * 
      * @param reportFileName
-     *            Name fo the error report to display in the crash report
+     *            Name for the error report to display in the crash report
      *            dialog.
+     * @param endApplication
+     * 			  boolean value to pass in order to know if application needs to be ended.
      */
-    void notifyDialog(String reportFileName) {
+    void notifyDialog(String reportFileName, boolean endApplication) {
         Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
         Intent dialogIntent = new Intent(mContext, CrashReportDialog.class);
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
+        dialogIntent.putExtra(ACRAConstants.EXTRA_END_APPLICATION, endApplication);
         dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(dialogIntent);
     }
