@@ -15,6 +15,7 @@
  */
 package org.acra.sender;
 
+import android.net.Uri;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
@@ -23,6 +24,8 @@ import org.acra.annotation.ReportsCrashes;
 
 import android.content.Context;
 import android.content.Intent;
+
+import java.io.File;
 
 /**
  * Send reports through an email intent. The user will be asked to chose his
@@ -49,6 +52,8 @@ public class EmailIntentSender implements ReportSender {
         emailIntent.setType("text/plain");
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+        // crash dump file (binary file) as attachment
+        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(errorContent.getProperty(ReportField.CRASH_DUMP))));
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { ACRA.getConfig().mailTo() });
         mContext.startActivity(emailIntent);
     }

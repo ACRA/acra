@@ -318,6 +318,11 @@ public final class CrashReportDataFactory {
                 Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
             }
 
+            // Application specific crash dump file
+            if (crashReportFields.contains(CRASH_DUMP)) {
+                crashReportData.put(CRASH_DUMP, ACRA.getConfig().crashDumpFile());
+            }
+
             // Application specific log file
             if (crashReportFields.contains(APPLICATION_LOG)) {
                 crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(context, ACRA.getConfig()
