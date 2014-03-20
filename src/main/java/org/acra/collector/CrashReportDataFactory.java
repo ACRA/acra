@@ -19,11 +19,7 @@ package org.acra.collector;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -320,7 +316,12 @@ public final class CrashReportDataFactory {
 
             // Application specific crash dump file
             if (crashReportFields.contains(CRASH_DUMP)) {
-                crashReportData.put(CRASH_DUMP, ACRA.getConfig().crashDumpFile());
+
+                if (ACRA.getConfig().crashDumpFile() != null &&
+                    new File(ACRA.getConfig().crashDumpFile()).exists())
+                    crashReportData.put(CRASH_DUMP, ACRA.getConfig().crashDumpFile());
+                else
+                    Log.w(ACRA.LOG_TAG, "Crash report dump file not found, skipping attachment");
             }
 
             // Application specific log file
