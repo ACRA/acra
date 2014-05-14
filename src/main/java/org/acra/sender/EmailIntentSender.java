@@ -50,7 +50,6 @@ public class EmailIntentSender implements ReportSender {
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { ACRA.getConfig().mailTo() });
         mContext.startActivity(emailIntent);
     }
 
