@@ -266,6 +266,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public String removeCustomData(String key) {
         return crashReportDataFactory.removeCustomData(key);
     }
+    
+    /**
+     * Removes all key/value pairs from your reports custom data field.
+     */
+    public void clearCustomData() {
+        crashReportDataFactory.clearCustomData();
+    }
 
     /**
      * Gets the current value for a key in your reports custom data field.
