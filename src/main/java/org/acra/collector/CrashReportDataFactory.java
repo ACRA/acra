@@ -101,6 +101,13 @@ public final class CrashReportDataFactory {
     public String removeCustomData(String key) {
         return customParameters.remove(key);
     }
+    
+    /**
+     * Removes all key/value pairs from the custom data field.
+     */
+    public void clearCustomData() {
+        customParameters.clear();
+    }
 
     /**
      * Gets the current value for a key in the custom data field.
