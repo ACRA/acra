@@ -59,7 +59,7 @@ public final class CrashReportDataFactory {
 
     private final Context context;
     private final SharedPreferences prefs;
-    private final Map<String, String> customParameters = new HashMap<String, String>();
+    private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
 
