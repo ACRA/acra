@@ -16,9 +16,6 @@
 package org.acra;
 
 import android.content.Context;
-
-import static org.acra.ReportField.*;
-
 /**
  * Responsible for collating those constants shared among the ACRA components.
  * <p/>
@@ -121,6 +118,8 @@ public final class ACRAConstants {
     public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
 
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
+
+    public static final String DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS = "org.acra.util.DefaultHttpsSocketFactoryFactory";
 
     /**
      * Default list of {@link ReportField}s to be sent in email reports. You can

@@ -176,7 +176,7 @@ final class SendWorker extends Thread {
             boolean sentAtLeastOnce = false;
             for (ReportSender sender : reportSenders) {
                 try {
-                    sender.send(errorContent);
+                    sender.send(context, errorContent);
                     // If at least one sender worked, don't re-send the report
                     // later.
                     sentAtLeastOnce = true;
