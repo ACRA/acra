@@ -439,6 +439,14 @@ public @interface ReportsCrashes {
      * @return true if the Force Close dialog has to be displayed.
      */
     boolean forceCloseDialogAfterToast() default ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+    
+    /**
+     * In {@link ReportingInteractionMode#DIALOG} mode, set this to true if you
+     * want the app to restart after the Dialog is closed.
+     * 
+     * @return true if the app has to be restarted.
+     */
+    boolean restartAfterDialog() default ACRAConstants.DEFAULT_RESTART_AFTER_DIALOG;
 
     /**
      * Add here your {@link SharedPreferences} identifier Strings if you use
@@ -534,6 +542,8 @@ public @interface ReportsCrashes {
      *         posting reports.
      */
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
+
+    String httpsSocketFactoryFactoryClass() default ACRAConstants.DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS;
 
     /**
      * <p>

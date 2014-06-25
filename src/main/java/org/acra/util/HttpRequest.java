@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.content.Context;
 import org.acra.ACRA;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -30,6 +31,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -129,6 +131,8 @@ public final class HttpRequest {
     /**
      * Posts to a URL.
      * 
+     *
+     * @param context
      * @param url
      *            URL to which to post.
      * @param content
@@ -136,9 +140,9 @@ public final class HttpRequest {
      * @throws IOException
      *             if the data cannot be posted.
      */
-    public void send(URL url, Method method, String content, Type type) throws IOException {
+    public void send(Context context, URL url, Method method, String content, Type type) throws IOException {
 
-        final HttpClient httpClient = getHttpClient();
+        final HttpClient httpClient = getHttpClient(context);
         final HttpEntityEnclosingRequestBase httpRequest = getHttpRequest(url, method, content, type);
 
         ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
@@ -196,7 +200,7 @@ public final class HttpRequest {
     /**
      * @return HttpClient to use with this HttpRequest.
      */
-    private HttpClient getHttpClient() {
+    private HttpClient getHttpClient(Context context) {
         final HttpParams httpParams = new BasicHttpParams();
         httpParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
         HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeOut);
@@ -208,7 +212,9 @@ public final class HttpRequest {
         if (ACRA.getConfig().disableSSLCertValidation()) {
             registry.register(new Scheme("https", (new FakeSocketFactory()), 443));
         } else {
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            final HttpsSocketFactoryFactory factory = ACRA.getConfig().getHttpSocketFactoryFactory();
+            final SocketFactory socketFactory = factory.create(context);
+            registry.register(new Scheme("https", socketFactory, 443));
         }
 
         final ClientConnectionManager clientConnectionManager = new ThreadSafeClientConnManager(httpParams, registry);

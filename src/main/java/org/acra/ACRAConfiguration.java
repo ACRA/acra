@@ -15,6 +15,18 @@
  */
 package org.acra;
 
+import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.HttpSender;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
+import org.acra.util.DefaultHttpsSocketFactoryFactory;
+import org.acra.util.HttpsSocketFactoryFactory;
+import org.acra.util.ReflectionException;
+import org.acra.util.ReflectionHelper;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
+
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
@@ -31,19 +43,12 @@ import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
 import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
 import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
+import static org.acra.ACRAConstants.DEFAULT_RESTART_AFTER_DIALOG;
 import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
 import static org.acra.ACRAConstants.NULL_VALUE;
-
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
-import org.acra.annotation.ReportsCrashes;
-import org.acra.sender.HttpSender;
-import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -53,6 +58,8 @@ import org.acra.sender.HttpSender.Type;
  * 
  */
 public class ACRAConfiguration implements ReportsCrashes {
+
+    private final ReflectionHelper reflectionHelper = new ReflectionHelper();
 
     private String[] mAdditionalDropboxTags = null;
 
@@ -68,7 +75,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String mFormUriBasicAuthLogin = null;
     private String mFormUriBasicAuthPassword = null;
     private Boolean mIncludeDropboxSystemTags = null;
-
+	private Boolean mRestartAfterDialog = null;
+	
     private String[] mLogcatArguments = null;
     private String mMailTo = null;
     private Integer mMaxNumberOfRequestRetries = null;
@@ -100,6 +108,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String mGoogleFormUrlFormat = null;
 
     private Boolean mDisableSSLCertValidation = null;
+    private String mHttpsSocketFactoryFactoryClass = null;
+    private HttpsSocketFactoryFactory mHttpsSocketFactoryFactory;
     private Method mHttpMethod = null;
     private Type mReportType = null;
     private Map<String, String> mHttpHeaders;
@@ -187,6 +197,14 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public void setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
         this.mForceCloseDialogAfterToast = forceCloseDialogAfterToast;
+    }
+
+    /**
+     * @param restartAfterDialog
+     *            the restartAfterDialog to set
+     */
+    public void setRestartAfterDialog(Boolean restartAfterDialog) {
+        this.mRestartAfterDialog = restartAfterDialog;
     }
 
     /**
@@ -654,6 +672,14 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     @Override
+    public boolean restartAfterDialog() {
+        if (mRestartAfterDialog != null) {
+            return mRestartAfterDialog;
+        }
+        return DEFAULT_RESTART_AFTER_DIALOG;
+    }
+
+    @Override
     public String formKey() {
         if (mFormKey != null) {
             return mFormKey;
@@ -1060,6 +1086,54 @@ public class ACRAConfiguration implements ReportsCrashes {
 
         return DEFAULT_DISABLE_SSL_CERT_VALIDATION;
     }
+
+    @Override
+    public String httpsSocketFactoryFactoryClass() {
+        if (mHttpsSocketFactoryFactoryClass != null) {
+            return mHttpsSocketFactoryFactoryClass;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.httpsSocketFactoryFactoryClass();
+        }
+
+        return mHttpsSocketFactoryFactoryClass;
+    }
+
+    /**
+     * @param httpsSocketFactoryFactory  HttpsSocketFactoryFactory to set.
+     */
+    public void setHttpsSocketFactoryFactory(HttpsSocketFactoryFactory httpsSocketFactoryFactory) {
+        this.mHttpsSocketFactoryFactory = httpsSocketFactoryFactory;
+    }
+
+    public HttpsSocketFactoryFactory getHttpSocketFactoryFactory() {
+        if (mHttpsSocketFactoryFactory != null) {
+            return mHttpsSocketFactoryFactory;
+        }
+
+        final String httpsSocketFactoryFactoryClass = httpsSocketFactoryFactoryClass();
+        if (httpsSocketFactoryFactoryClass != null) {
+            try {
+                final Object object = reflectionHelper.create(mReportsCrashes.httpsSocketFactoryFactoryClass());
+                if (object instanceof HttpsSocketFactoryFactory) {
+                    mHttpsSocketFactoryFactory = (HttpsSocketFactoryFactory) object;
+                } else {
+                    ACRA.log.w(ACRA.LOG_TAG, "Using default httpsSocketFactoryFactory - not a HttpSocketFactoryFactory : " + httpsSocketFactoryFactoryClass);
+                }
+            } catch (ReflectionException e) {
+                ACRA.log.w(ACRA.LOG_TAG, "Using default httpsSocketFactoryFactory - Could not construct : " + httpsSocketFactoryFactoryClass);
+            }
+        }
+
+        // If it's still null then take the default
+        if (mHttpsSocketFactoryFactoryClass != null) {
+            mHttpsSocketFactoryFactory = DefaultHttpsSocketFactoryFactory.INSTANCE;
+        }
+
+        return mHttpsSocketFactoryFactory;
+    }
+
 
     @Override
     public Method httpMethod() {

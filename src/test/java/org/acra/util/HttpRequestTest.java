@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import org.acra.ACRA;
 import org.acra.log.NonAndroidLog;
 import org.acra.sender.HttpSender.Method;
@@ -54,8 +55,12 @@ public class HttpRequestTest {
         request.setSocketTimeOut(100); // Set a very low SocketTimeOut. Something that will almost certainly fail.
         request.setMaxNrRetries(0);
 
+        // Context which will be used to create the SocketFactory
+        // Default HttpsSocketFactoryFactory doesn't require the Android Context.
+        final Context context = null;
+
         try {
-            request.send(url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
+            request.send(context, url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
             Assert.fail("Should not be able to get a response with an impossibly low SocketTimeOut");
         } catch (SocketTimeoutException e) {
             // as expected.
@@ -64,7 +69,7 @@ public class HttpRequestTest {
         // Tell the HttpRequest to retry on Socket time out.
         request.setMaxNrRetries(5);
         try {
-            request.send(url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
+            request.send(context, url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
         } catch (SocketTimeoutException e) {
             Assert.fail("Should not get a SocketTimeOut when using SocketTimeOutRetryHandler");
         }

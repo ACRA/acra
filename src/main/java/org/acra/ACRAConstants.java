@@ -15,10 +15,39 @@
  */
 package org.acra;
 
+import static org.acra.ReportField.ANDROID_VERSION;
+import static org.acra.ReportField.APP_VERSION_CODE;
+import static org.acra.ReportField.APP_VERSION_NAME;
+import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
+import static org.acra.ReportField.BRAND;
+import static org.acra.ReportField.BUILD;
+import static org.acra.ReportField.BUILD_CONFIG;
+import static org.acra.ReportField.CRASH_CONFIGURATION;
+import static org.acra.ReportField.CUSTOM_DATA;
+import static org.acra.ReportField.DEVICE_FEATURES;
+import static org.acra.ReportField.DISPLAY;
+import static org.acra.ReportField.DUMPSYS_MEMINFO;
+import static org.acra.ReportField.ENVIRONMENT;
+import static org.acra.ReportField.FILE_PATH;
+import static org.acra.ReportField.INITIAL_CONFIGURATION;
+import static org.acra.ReportField.INSTALLATION_ID;
+import static org.acra.ReportField.IS_SILENT;
+import static org.acra.ReportField.LOGCAT;
+import static org.acra.ReportField.PACKAGE_NAME;
+import static org.acra.ReportField.PHONE_MODEL;
+import static org.acra.ReportField.PRODUCT;
+import static org.acra.ReportField.REPORT_ID;
+import static org.acra.ReportField.SETTINGS_GLOBAL;
+import static org.acra.ReportField.SETTINGS_SECURE;
+import static org.acra.ReportField.SETTINGS_SYSTEM;
+import static org.acra.ReportField.SHARED_PREFERENCES;
+import static org.acra.ReportField.STACK_TRACE;
+import static org.acra.ReportField.TOTAL_MEM_SIZE;
+import static org.acra.ReportField.USER_APP_START_DATE;
+import static org.acra.ReportField.USER_COMMENT;
+import static org.acra.ReportField.USER_CRASH_DATE;
+import static org.acra.ReportField.USER_EMAIL;
 import android.content.Context;
-
-import static org.acra.ReportField.*;
-
 /**
  * Responsible for collating those constants shared among the ACRA components.
  * <p/>
@@ -47,6 +76,11 @@ public final class ACRAConstants {
      */
     static final int MAX_SEND_REPORTS = 5;
     /**
+     * Used in the intent starting CrashReportDialog to provide if
+     * the application should be ended
+     */
+    protected static final String EXTRA_END_APPLICATION = "EXTRA_END_APPLICATION";
+    /**
      * Used in the intent starting CrashReportDialog to provide the name of the
      * latest generated report file in order to be able to associate the user
      * comment.
@@ -74,6 +108,8 @@ public final class ACRAConstants {
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
     public static final boolean DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST = false;
+	
+	public static final boolean DEFAULT_RESTART_AFTER_DIALOG = false;
 
     public static final int DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES = 3;
 
@@ -114,6 +150,8 @@ public final class ACRAConstants {
     public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
 
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
+
+    public static final String DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS = "org.acra.util.DefaultHttpsSocketFactoryFactory";
 
     /**
      * Default list of {@link ReportField}s to be sent in email reports. You can
