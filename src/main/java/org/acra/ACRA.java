@@ -108,13 +108,11 @@ public class ACRA {
      * method.
      * </p>
      * 
-     * @param app
-     *            Your Application class.
-     * @throws IllegalStateException
-     *             if it is called more than once.
+     * @param app   Your Application class.
+     * @throws IllegalStateException if it is called more than once.
      */
     public static void init(Application app) {
-        ReportsCrashes reportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
+        final ReportsCrashes reportsCrashes = app.getClass().getAnnotation(ReportsCrashes.class);
         if (reportsCrashes == null) {
             log.e(LOG_TAG,
                     "ACRA#init called but no ReportsCrashes annotation on Application " + app.getPackageName());
@@ -130,12 +128,9 @@ public class ACRA {
      * method.
      * </p>
      *
-     * @param app
-     *            Your Application class.
-     * @param reportsCrashes
-     *            ACRAConfiguration to manually set up ACRA configuration.
-     * @throws IllegalStateException
-     *             if it is called more than once.
+     * @param app       Your Application class.
+     * @param config    ACRAConfiguration to manually set up ACRA configuration.
+     * @throws IllegalStateException if it is called more than once.
      */
     public static void init(Application app, ACRAConfiguration config){
 
@@ -146,8 +141,7 @@ public class ACRA {
         mApplication = app;
         
         if (config == null) {
-            log.e(LOG_TAG,
-                    "ACRA#init called but no ACRAConfiguration provided");
+            log.e(LOG_TAG, "ACRA#init called but no ACRAConfiguration provided");
             return;
         }
         setConfig(config);
