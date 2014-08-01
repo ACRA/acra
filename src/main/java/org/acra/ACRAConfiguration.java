@@ -38,6 +38,7 @@ import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
 import static org.acra.ACRAConstants.NULL_VALUE;
 
 import java.lang.annotation.Annotation;
+import java.security.KeyStore;
 import java.util.Map;
 
 import org.acra.annotation.ReportsCrashes;
@@ -103,6 +104,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Method mHttpMethod = null;
     private Type mReportType = null;
     private Map<String, String> mHttpHeaders;
+    private KeyStore mKeyStore;
 
     /**
      * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
@@ -572,6 +574,15 @@ public class ACRAConfiguration implements ReportsCrashes {
     public ACRAConfiguration setReportType(Type type) {
         mReportType = type;
         return this;
+    }
+
+    /**
+     * 
+     * @param keyStore
+     *            Set this to the keystore that contains the trusted certificates
+     */
+    public void setKeyStore(KeyStore keyStore) {
+        mKeyStore = keyStore;
     }
 
     /**
@@ -1133,6 +1144,14 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return Type.FORM;
+    }
+
+    public KeyStore keyStore() {
+        if (mKeyStore != null) {
+            return mKeyStore;
+        }
+
+        return null;
     }
 
     public static boolean isNull(String aString) {
