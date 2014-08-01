@@ -34,7 +34,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -211,7 +211,7 @@ public final class HttpRequest {
             registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         }
 
-        final ClientConnectionManager clientConnectionManager = new ThreadSafeClientConnManager(httpParams, registry);
+        final ClientConnectionManager clientConnectionManager = new SingleClientConnManager(httpParams, registry);
         final DefaultHttpClient httpClient = new DefaultHttpClient(clientConnectionManager, httpParams);
 
         final HttpRequestRetryHandler retryHandler = new SocketTimeOutRetryHandler(httpParams, maxNrRetries);
