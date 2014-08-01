@@ -23,6 +23,7 @@ import org.acra.annotation.ReportsCrashes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 /**
  * Send reports through an email intent. The user will be asked to chose his
@@ -44,12 +45,11 @@ public class EmailIntentSender implements ReportSender {
         final String subject = mContext.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);
 
-        final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+        final Intent emailIntent = new Intent(android.content.Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.fromParts("mailto", ACRA.getConfig().mailTo(), null));
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        emailIntent.setType("text/plain");
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { ACRA.getConfig().mailTo() });
         mContext.startActivity(emailIntent);
     }
 
