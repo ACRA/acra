@@ -15,28 +15,6 @@
  */
 package org.acra;
 
-import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
-import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
-import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
-import static org.acra.ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
-import static org.acra.ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
-import static org.acra.ACRAConstants.DEFAULT_DIALOG_ICON;
-import static org.acra.ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
-import static org.acra.ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
-import static org.acra.ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
-import static org.acra.ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
-import static org.acra.ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
-import static org.acra.ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
-import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
-import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
-import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
-import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
-import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
-import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
-import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
-import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
-import static org.acra.ACRAConstants.NULL_VALUE;
-
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
 import java.util.Map;
@@ -45,6 +23,8 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
+
+import static org.acra.ACRAConstants.*;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -95,6 +75,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     private String[] mExcludeMatchingSharedPreferencesKeys = null;
     private String[] mExcludeMatchingSettingsKeys = null;
+    private String mCrashDumpFile = null;
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
 
@@ -519,6 +500,16 @@ public class ACRAConfiguration implements ReportsCrashes {
     public ACRAConfiguration setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
         mExcludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
+    }
+
+    /**
+     *
+     * @param crashDumpFile
+     *          The path of crash dump file, to be used with {@link ReportField#CRASH_DUMP}.
+     *          Make sure it's stored in public place (like SD) to be available for email sender application
+     */
+    public void setCrashDumpFile(String crashDumpFile) {
+        this.mCrashDumpFile = crashDumpFile;
     }
 
     /**
@@ -1066,6 +1057,19 @@ public class ACRAConfiguration implements ReportsCrashes {
         String[] defaultValue = {};
 
         return defaultValue;
+    }
+
+    @Override
+    public String crashDumpFile() {
+        if (mCrashDumpFile != null) {
+            return mCrashDumpFile;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.crashDumpFile();
+        }
+
+        return DEFAULT_CRASH_DUMP_FILE;
     }
 
     @Override

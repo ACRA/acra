@@ -486,6 +486,14 @@ public @interface ReportsCrashes {
     String[] excludeMatchingSettingsKeys() default {};
 
     /**
+     * To use in combination with {@link ReportField#CRASH_DUMP} to set the
+     * path/name of crash dump file (binary file)
+     *
+     * @return a String containing the path of crash dump file.
+     */
+    String crashDumpFile() default ACRAConstants.DEFAULT_CRASH_DUMP_FILE;
+
+    /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
      * path/name of your application log file. If the string does not contain
      * any path separator, the file is assumed as being in

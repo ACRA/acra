@@ -18,6 +18,9 @@ ACRA is a library enabling Android Application to automatically post their crash
 
 See [BasicSetup](http://github.com/ACRA/acra/wiki/BasicSetup) for a step-by-step installation and usage guide.
 
+4ntoine-acra fork adds sending crash dump file (binary file) attaching to email possibility.
+See how to use the feature (and native crash reports) in [acra-breakpad](https://github.com/4ntoine/Acra-breakpad) project.
+
 A crash reporting feature for android apps is native since Android 2.2 (FroYo) but only available through the official Android Market (and with limited data). ACRA is a great help for Android developers :
 
   * [developer configurable user interaction](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog

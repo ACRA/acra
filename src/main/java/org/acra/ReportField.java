@@ -261,6 +261,13 @@ public enum ReportField {
             return true;
         }
     },
+
+    /**
+     * Crash dump filename. To be configured with
+     * {@link ReportsCrashes#crashDumpFile()} to define path of binary file
+     */
+    CRASH_DUMP,
+
     /**
      * Content of your own application log file. To be configured with
      * {@link ReportsCrashes#applicationLogFile()} to define the path/name of
