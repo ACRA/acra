@@ -110,7 +110,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     private static boolean toastWaitEnded = true;
 
-    private final CopyOnWriteArrayList<Runnable> runnablesToRunBeforeReporting;
+    private static final ExceptionHandlerInitializer NULL_EXCEPTION_HANDLER_INITIALIZER = new ExceptionHandlerInitializer() {
+        @Override
+        public void initializeExceptionHandler(ErrorReporter reporter) {
+        }
+    };
+    
+    private volatile ExceptionHandlerInitializer exceptionHandlerInitializer = NULL_EXCEPTION_HANDLER_INITIALIZER;
 
     /**
      * Used to create a new (non-cached) PendingIntent each time a new crash occurs. 
@@ -133,7 +139,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.mContext = context;
         this.prefs = prefs;
         this.enabled = enabled;
-        this.runnablesToRunBeforeReporting = new CopyOnWriteArrayList<Runnable>();
 
         // Store the initial Configuration state.
         final String initialConfiguration = ConfigurationCollector.collectConfiguration(mContext);
@@ -260,26 +265,39 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * <p>
-     * Use this method to add commands to be executed before the ErrorReporter
-     * handles the throwable. This can be used to put custom data using
-     * {@link #putCustomData(String, String)}. The call is thread safe. Same
-     * {@link Runnable} will not be added twice.
+     * Use this method to perform additional initialization before the
+     * ErrorReporter handles a throwable. This can be used, for example, to put
+     * custom data using {@link #putCustomData(String, String)}, which is not
+     * available immediately after startup. It can be, for example, last 20
+     * requests or something else. The call is thread safe.
      * </p>
      * <p>
-     * Same {@link Runnable} will not be added twice.
-     * </p>
-     * <p>
-     * The call is thread safe. {@link Runnable#run()} will be executed on the
-     * main thread in case of uncaught exception and on the caller thread of
-     * {@link #handleSilentException(Throwable)} or
+     * {@link ExceptionHandlerInitializer#initializeExceptionHandler(ErrorReporter)}
+     * will be executed on the main thread in case of uncaught exception and on
+     * the caller thread of {@link #handleSilentException(Throwable)} or
      * {@link #handleException(Throwable)}.
      * </p>
+     * <p>
+     * Example. Add to the {@link Application#onCreate()}:
      * 
-     * @param runnable
+     * <pre>
+     * {@code
+     * ACRA.getErrorReporter().setExceptionHandlerInitializer(new ExceptionHandlerInitializer() {
+     *     <code>@Override</code> public void initializeExceptionHandler(ErrorReporter reporter) {
+     *         reporter.putCustomData("CUSTOM_ACCUMULATED_DATA_TAG", someAccumulatedData.toString);
+     *     }
+     * });
+     * </pre>
+     * 
+     * </p>
+     * 
+     * @param initializer
+     *            The initializer. Can be <code>null</code>.
+     * 
      */
-    public void addOnExceptionHandledCommand(Runnable runnable) {
-        runnablesToRunBeforeReporting.addIfAbsent(runnable);
-    }
+    public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
+	exceptionHandlerInitializer = initializer != null ? initializer : NULL_EXCEPTION_HANDLER_INITIALIZER;
+    };
 
     /**
      * Removes a key/value pair from your reports custom data field.
@@ -633,15 +651,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             return;
         }
 
-        for (Runnable runnable : runnablesToRunBeforeReporting) {
-            String toString = "";
-            try {
-                toString = runnable.toString();
-                runnable.run();
-            } catch (Exception exceptionInRunnable) {
-                Log.d(ACRA.LOG_TAG, "Failed to execute #run in " + toString + " from #handleException");
-            }
-        }
+	try {
+	    exceptionHandlerInitializer.initializeExceptionHandler(this);
+	} catch (Exception exceptionInRunnable) {
+	    Log.d(ACRA.LOG_TAG, "Failed to initlize " + exceptionHandlerInitializer + " from #handleException");
+	}
 
         boolean sendOnlySilentReports = false;
         if (reportingInteractionMode == null) {
