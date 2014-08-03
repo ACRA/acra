@@ -23,6 +23,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
@@ -108,6 +109,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * before killing the Application.
      */
     private static boolean toastWaitEnded = true;
+
+    private static final ExceptionHandlerInitializer NULL_EXCEPTION_HANDLER_INITIALIZER = new ExceptionHandlerInitializer() {
+        @Override
+        public void initializeExceptionHandler(ErrorReporter reporter) {
+        }
+    };
+    
+    private volatile ExceptionHandlerInitializer exceptionHandlerInitializer = NULL_EXCEPTION_HANDLER_INITIALIZER;
 
     /**
      * Used to create a new (non-cached) PendingIntent each time a new crash occurs. 
@@ -253,6 +262,42 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public String putCustomData(String key, String value) {
         return crashReportDataFactory.putCustomData(key, value);
     }
+
+    /**
+     * <p>
+     * Use this method to perform additional initialization before the
+     * ErrorReporter handles a throwable. This can be used, for example, to put
+     * custom data using {@link #putCustomData(String, String)}, which is not
+     * available immediately after startup. It can be, for example, last 20
+     * requests or something else. The call is thread safe.
+     * </p>
+     * <p>
+     * {@link ExceptionHandlerInitializer#initializeExceptionHandler(ErrorReporter)}
+     * will be executed on the main thread in case of uncaught exception and on
+     * the caller thread of {@link #handleSilentException(Throwable)} or
+     * {@link #handleException(Throwable)}.
+     * </p>
+     * <p>
+     * Example. Add to the {@link Application#onCreate()}:
+     * 
+     * <pre>
+     * {@code
+     * ACRA.getErrorReporter().setExceptionHandlerInitializer(new ExceptionHandlerInitializer() {
+     *     <code>@Override</code> public void initializeExceptionHandler(ErrorReporter reporter) {
+     *         reporter.putCustomData("CUSTOM_ACCUMULATED_DATA_TAG", someAccumulatedData.toString);
+     *     }
+     * });
+     * </pre>
+     * 
+     * </p>
+     * 
+     * @param initializer
+     *            The initializer. Can be <code>null</code>.
+     * 
+     */
+    public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
+	exceptionHandlerInitializer = initializer != null ? initializer : NULL_EXCEPTION_HANDLER_INITIALIZER;
+    };
 
     /**
      * Removes a key/value pair from your reports custom data field.
@@ -612,6 +657,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (!enabled) {
             return;
         }
+
+	try {
+	    exceptionHandlerInitializer.initializeExceptionHandler(this);
+	} catch (Exception exceptionInRunnable) {
+	    Log.d(ACRA.LOG_TAG, "Failed to initlize " + exceptionHandlerInitializer + " from #handleException");
+	}
 
         boolean sendOnlySilentReports = false;
         if (reportingInteractionMode == null) {
