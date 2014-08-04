@@ -20,10 +20,10 @@ import static org.acra.ReportField.IS_SILENT;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
@@ -102,7 +102,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     private Thread brokenThread;
     private Throwable unhandledThrowable;
-    private transient Activity lastActivityCreated;
+    private WeakReference<Activity> lastActivityCreated = new WeakReference<Activity>(null);
 
     /**
      * This is used to wait for the crash toast to end it's display duration
@@ -160,7 +160,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         // Ignore CrashReportDialog because we want the last
                         // application Activity that was started so that we can
                         // explicitly kill it off.
-                        lastActivityCreated = activity;
+                        lastActivityCreated = new WeakReference<Activity>(activity);
                     }
                 }
 
@@ -291,13 +291,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * 
      * </p>
      * 
-     * @param initializer
-     *            The initializer. Can be <code>null</code>.
-     * 
+     * @param initializer   The initializer. Can be <code>null</code>.
      */
     public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
-	exceptionHandlerInitializer = initializer != null ? initializer : NULL_EXCEPTION_HANDLER_INITIALIZER;
-    };
+	    exceptionHandlerInitializer = (initializer != null) ? initializer : NULL_EXCEPTION_HANDLER_INITIALIZER;
+    }
 
     /**
      * Removes a key/value pair from your reports custom data field.
@@ -452,11 +450,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // https://github.com/ACRA/acra/issues/42#issuecomment-12134144
             // Determine the current/last Activity that was started and close
             // it. Activity#finish (and maybe it's parent too).
-            if (lastActivityCreated != null) {
+            final Activity lastActivity = lastActivityCreated.get();
+            if (lastActivity != null) {
                 Log.i(LOG_TAG, "Finishing the last Activity prior to killing the Process");
-                lastActivityCreated.finish();
-                Log.i(LOG_TAG, "Finished " + lastActivityCreated.getClass());
-                lastActivityCreated = null;
+                lastActivity.finish();
+                Log.i(LOG_TAG, "Finished " + lastActivity.getClass());
+                lastActivityCreated.clear();
             }
 
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -854,8 +853,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         final Intent deleteIntent = new Intent(mContext, CrashReportDialog.class);
         deleteIntent.putExtra(ACRAConstants.EXTRA_FORCE_CANCEL, true);
-        final PendingIntent pendingDeleteIntent = PendingIntent.getActivity(mContext, -1, deleteIntent, 0);
-        notification.deleteIntent = pendingDeleteIntent;
+        notification.deleteIntent = PendingIntent.getActivity(mContext, -1, deleteIntent, 0);
         
         // Send new notification
         notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification);
@@ -935,16 +933,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
         final String[] filesList = reportFinder.getCrashReportFiles();
         Arrays.sort(filesList);
-        if (filesList != null) {
-            for (int iFile = 0; iFile < filesList.length - nbOfLatestToKeep; iFile++) {
-                final String fileName = filesList[iFile];
-                final boolean isReportApproved = fileNameParser.isApproved(fileName);
-                if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
-                    final File fileToDelete = new File(mContext.getFilesDir(), fileName);
-                    ACRA.log.d(ACRA.LOG_TAG, "Deleting file " + fileName);
-                    if (!fileToDelete.delete()) {
-                        Log.e(ACRA.LOG_TAG, "Could not delete report : " + fileToDelete);
-                    }
+        for (int iFile = 0; iFile < filesList.length - nbOfLatestToKeep; iFile++) {
+            final String fileName = filesList[iFile];
+            final boolean isReportApproved = fileNameParser.isApproved(fileName);
+            if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
+                final File fileToDelete = new File(mContext.getFilesDir(), fileName);
+                ACRA.log.d(ACRA.LOG_TAG, "Deleting file " + fileName);
+                if (!fileToDelete.delete()) {
+                    Log.e(ACRA.LOG_TAG, "Could not delete report : " + fileToDelete);
                 }
             }
         }
