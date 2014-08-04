@@ -14,9 +14,9 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.util.Iterator;
 import java.util.Map;
 
+import android.content.Context;
 import org.acra.ACRA;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -34,6 +34,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -133,16 +134,15 @@ public final class HttpRequest {
     /**
      * Posts to a URL.
      * 
-     * @param url
-     *            URL to which to post.
-     * @param content
-     *            Map of parameters to post to a URL.
-     * @throws IOException
-     *             if the data cannot be posted.
+     *
+     * @param context   Android context for which to create the SocketFactory.
+     * @param url       URL to which to post.
+     * @param content   Map of parameters to post to a URL.
+     * @throws IOException if the data cannot be posted.
      */
-    public void send(URL url, Method method, String content, Type type) throws IOException {
+    public void send(Context context, URL url, Method method, String content, Type type) throws IOException {
 
-        final HttpClient httpClient = getHttpClient();
+        final HttpClient httpClient = getHttpClient(context);
         final HttpEntityEnclosingRequestBase httpRequest = getHttpRequest(url, method, content, type);
 
         ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
@@ -200,7 +200,7 @@ public final class HttpRequest {
     /**
      * @return HttpClient to use with this HttpRequest.
      */
-    private HttpClient getHttpClient() {
+    private HttpClient getHttpClient(Context context) {
         final HttpParams httpParams = new BasicHttpParams();
         httpParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
         HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeOut);
@@ -226,7 +226,9 @@ public final class HttpRequest {
                 registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
             }
         } else {
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            final HttpsSocketFactoryFactory factory = ACRA.getConfig().getHttpSocketFactoryFactory();
+            final SocketFactory socketFactory = factory.create(context);
+            registry.register(new Scheme("https", socketFactory, 443));
         }
 
         final ClientConnectionManager clientConnectionManager = new SingleClientConnManager(httpParams, registry);
@@ -275,11 +277,9 @@ public final class HttpRequest {
                         "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
         httpRequest.setHeader("Content-Type", type.getContentType());
 
-        if(headers !=null) {
-           Iterator<String> headerIt = headers.keySet().iterator();
-           while(headerIt.hasNext()) {
-              String header = headerIt.next();
-              String value = headers.get(header);
+        if(headers != null) {
+            for (final String header : headers.keySet()) {
+              final String value = headers.get(header);
               httpRequest.setHeader(header, value);
            }
         }

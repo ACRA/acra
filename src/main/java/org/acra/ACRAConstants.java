@@ -115,6 +115,8 @@ public final class ACRAConstants {
 
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
 
+    public static final String DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS = "org.acra.util.DefaultHttpsSocketFactoryFactory";
+
     /**
      * Default list of {@link ReportField}s to be sent in email reports. You can
      * set your own list with
