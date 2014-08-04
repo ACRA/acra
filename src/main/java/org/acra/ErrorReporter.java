@@ -438,7 +438,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         .forceCloseDialogAfterToast())) {
             // If using silent mode, let the system default handler do it's job
             // and display the force close dialog.
-            mDfltExceptionHandler.uncaughtException(brokenThread, unhandledThrowable);
+            if (mDfltExceptionHandler != null) {
+                mDfltExceptionHandler.uncaughtException(brokenThread, unhandledThrowable);
+                Log.d(ACRA.LOG_TAG, "Handing Exception on to default ExceptionHandler");
+            } else {
+                Log.w(ACRA.LOG_TAG, "NOT Handing Exception on to default ExceptionHandler - non configured");
+            }
         } else {
             // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
