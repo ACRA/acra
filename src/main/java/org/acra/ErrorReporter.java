@@ -407,6 +407,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 } else {
                     Log.e(ACRA.LOG_TAG, "ACRA is disabled for " + mContext.getPackageName()
                             + " - no default ExceptionHandler");
+                    Log.e(ACRA.LOG_TAG,
+                          "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
                 }
                 return;
             }
@@ -415,8 +417,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             unhandledThrowable = e;
 
             Log.e(ACRA.LOG_TAG,
-                    "ACRA caught a " + e.getClass().getSimpleName() + " exception for " + mContext.getPackageName()
-                            + ". Building report.");
+                  "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
+            Log.d(ACRA.LOG_TAG, "Building report");
 
             // Generate and send crash report
             handleException(e, ACRA.getConfig().mode(), false, true);
