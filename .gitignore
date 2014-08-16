@@ -4,3 +4,5 @@
 target
 pom.xml.releaseBackup
 release.properties
+*.iml
+*.idea/*

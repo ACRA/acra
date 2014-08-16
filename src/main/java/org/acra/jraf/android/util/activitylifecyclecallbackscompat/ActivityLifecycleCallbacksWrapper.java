@@ -71,4 +71,14 @@ import android.os.Bundle;
     public void onActivityDestroyed(Activity activity) {
         mCallback.onActivityDestroyed(activity);
     }
+
+    /**
+     * Due on wrap behavior of this class and collection element usage, would be tied to wrapped object,
+     * this allow previous added wrapper to be successfully removed from internal MainLifecycleDispatcher
+     * callbacks collection once called through ApplicationHelper on ICS+ methods
+     */
+    @Override
+    public boolean equals(Object o) {
+        return null == mCallback ? null == o : mCallback.equals(o);
+    }
 }
