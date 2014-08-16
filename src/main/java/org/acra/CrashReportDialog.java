@@ -67,8 +67,8 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
             dialogBuilder.setIcon(resourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
-        dialogBuilder.setPositiveButton(android.R.string.ok, CrashReportDialog.this);
-        dialogBuilder.setNegativeButton(android.R.string.cancel, CrashReportDialog.this);
+        dialogBuilder.setPositiveButton(getText(ACRA.getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
+        dialogBuilder.setNegativeButton(getText(ACRA.getConfig().resDialogNegativeButtonText()), CrashReportDialog.this);
         cancelNotification();
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
