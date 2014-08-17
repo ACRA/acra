@@ -95,6 +95,10 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_DIALOG_ICON = android.R.drawable.ic_dialog_alert;
 
+    public static final int DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT = android.R.string.ok;
+
+    public static final int DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT = android.R.string.cancel;
+
     public static final int DEFAULT_RES_VALUE = 0;
 
     public static final String DEFAULT_STRING_VALUE = "";

@@ -76,6 +76,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private ReportingInteractionMode mMode = null;
     private ReportsCrashes mReportsCrashes = null;
 
+    private Integer mResDialogPositiveButtonText = null;
+    private Integer mResDialogNegativeButtonText = null;
     private Integer mResDialogCommentPrompt = null;
     private Integer mResDialogEmailPrompt = null;
     private Integer mResDialogIcon = null;
@@ -299,6 +301,16 @@ public class ACRAConfiguration implements ReportsCrashes {
     public ACRAConfiguration setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.mMode = mode;
         ACRA.checkCrashResources();
+        return this;
+    }
+
+    public ACRAConfiguration setResDialogPositiveButtonText(int resId) {
+        mResDialogPositiveButtonText = resId;
+        return this;
+    }
+
+    public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
+        mResDialogNegativeButtonText = resId;
         return this;
     }
 
@@ -828,6 +840,32 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return ReportingInteractionMode.SILENT;
+    }
+
+    @Override
+    public int resDialogPositiveButtonText() {
+        if (mResDialogPositiveButtonText != null) {
+            return mResDialogPositiveButtonText;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.resDialogPositiveButtonText();
+        }
+
+        return DEFAULT_RES_VALUE;
+    }
+
+    @Override
+    public int resDialogNegativeButtonText() {
+        if (mResDialogNegativeButtonText != null) {
+            return mResDialogNegativeButtonText;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.resDialogNegativeButtonText();
+        }
+
+        return DEFAULT_RES_VALUE;
     }
 
     @Override
