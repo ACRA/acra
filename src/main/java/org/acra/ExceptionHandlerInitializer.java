@@ -15,5 +15,5 @@ public interface ExceptionHandlerInitializer {
      * 
      * @param reporter
      */
-    void initializeExceptionHandler(ErrorReporter reporter);
+    boolean initializeExceptionHandler(ErrorReporter reporter, Throwable e);
 }
