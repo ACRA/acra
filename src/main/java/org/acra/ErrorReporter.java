@@ -112,7 +112,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     private static final ExceptionHandlerInitializer NULL_EXCEPTION_HANDLER_INITIALIZER = new ExceptionHandlerInitializer() {
         @Override
-        public void initializeExceptionHandler(ErrorReporter reporter) {
+        public boolean initializeExceptionHandler(ErrorReporter reporter, Throwable e) {
+        	return true;
         }
     };
     
@@ -665,7 +666,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
 	try {
-	    exceptionHandlerInitializer.initializeExceptionHandler(this);
+	    if (!exceptionHandlerInitializer.initializeExceptionHandler(this, e)) {
+	    	return;
+	    }
 	} catch (Exception exceptionInRunnable) {
 	    Log.d(ACRA.LOG_TAG, "Failed to initlize " + exceptionHandlerInitializer + " from #handleException");
 	}
