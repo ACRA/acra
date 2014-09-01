@@ -60,10 +60,14 @@ class LogFileCollector {
         } else {
             reader = new BufferedReader(new InputStreamReader(context.openFileInput(fileName)), 1024);
         }
-        String line = reader.readLine();
-        while (line != null) {
-            resultBuffer.add(line + "\n");
-            line = reader.readLine();
+        try {
+            String line = reader.readLine();
+            while (line != null) {
+                resultBuffer.add(line + "\n");
+                line = reader.readLine();
+            }
+        } finally {
+            reader.close();
         }
         return resultBuffer.toString();
     }

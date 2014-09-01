@@ -100,6 +100,16 @@ public enum ReportField {
     AVAILABLE_MEM_SIZE,
     /**
      * Contains key = value pairs defined by the application developer during
+     * the application build.
+     */
+    BUILD_CONFIG {
+        @Override
+        public boolean containsKeyValuePairs() {
+            return true;
+        }
+    },
+    /**
+     * Contains key = value pairs defined by the application developer during
      * the application execution.
      */
     CUSTOM_DATA {

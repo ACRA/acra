@@ -1,4 +1,4 @@
-<a href='http://www.pledgie.com/campaigns/18789'><img alt='Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/18789.png?skin_name=chrome' border='0' /></a>
+[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)
 
 Please tell us how you use ACRA
 ===============================
@@ -16,30 +16,60 @@ What is ACRA ?
 
 ACRA is a library enabling Android Application to automatically post their crash reports to a GoogleDoc form. It is targetted to android applications developers to help them get data from their applications when they crash or behave erroneously.
 
-See [BasicSetup](acra/wiki/BasicSetup) for a step-by-step installation and usage guide.
+See [BasicSetup](http://github.com/ACRA/acra/wiki/BasicSetup) for a step-by-step installation and usage guide.
 
 A crash reporting feature for android apps is native since Android 2.2 (FroYo) but only available through the official Android Market (and with limited data). ACRA is a great help for Android developers :
 
-  * [developer configurable user interaction](acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
+  * [developer configurable user interaction](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
   * usable with ALL versions of android (compiled with 1.5, not tested on 1.0/1.1 but might work... but who does really care ?) and capable of retrieving data from latest versions through reflection.
-  * more [detailed crash reports](acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
-  * you can [add your own variables content or debug traces](acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
-  * you can send [error reports even if the application doesn't crash](acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
+  * more [detailed crash reports](http://github.com/ACRA/acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
+  * you can [add your own variables content or debug traces](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
+  * you can send [error reports even if the application doesn't crash](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
   * works for any application even if not delivered through Google's Android Market => great for devices/regions where the Android Market is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
-  * can be used with [your own self-hosted report receiver script](acra/wiki/AdvancedUsage#wiki-Reports_destination)
+  * can be used with [your own self-hosted report receiver script](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Reports_destination)
   * google doc reports can be shared with a whole development team. Other benefits from the Google Docs platform are still to be investigated (stats, macros...)
 
 ACRA's notification systems are clean. If a crash occurs, your application does not add user notifications over existing system's crash notifications or reporting features. If you use the Toast, Status bar notification or direct dialog modes, the "force close" dialog is not displayed anymore and devices where the system native reporting feature is enabled do not offer the user to send an additional report.
 
 The user is notified of an error only once, and you might enhance the percieved quality of your application by defining your own texts in the notifications/dialogs.
 
-Please do not hesitate to open defects/enhancements requests in [the issue tracker](acra/issues).
+Please do not hesitate to open defects/enhancements requests in [the issue tracker](http://github.com/ACRA/acra/issues).
+
+Change Log
+==========
+
+For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
+
+ACRA v4.5 - enabling the future
+===============================
+
+**ACRA 4.5.0 is now the official stable version.**
+
+https://oss.sonatype.org/content/groups/public/ch/acra/acra/4.5.0/acra-4.5.0.zip
+(also available in Maven Central repository)
+
+The summarized changelog is here: https://github.com/ACRA/acra/wiki/ChangeLog
+
+Included in this release (summarized summary):
+- many bugfixes
+- no more exception thrown in ACRA.init() if called twice (widget developers will enjoy it)
+- HttpPostSender is renamed HttpSender and can send PUT and POST requests with data encoded as FORM (same as before) and JSON. The JSON mode enables a fully structured JSON tree to be sent to your backend.
+- Display configuration details can benefit of the newly introduced DisplayManager from Android 4.2
+- CrashReportDialog is now using AlertDialog.Builder to ensure that dialogs are created using the UX guidelines enforced by the android version. (you should remove its theme attribute in your manifest to benefit from the default theme of the device)
+- Ability to set Http Headers with `ACRAConfig.setHttpHeaders()`
+
+The most important part of this release is to enable the usage of Acralyzer (http://github.com/ACRA/acralyzer) which will be the default backend in future release.
+
+Next release will be 5.0 with important changes in mind:
+- no more default support of old Google Forms
+- use JSON as the default report storage and management mode (current implementation transforms flat data into JSON just before sending it)
+
+New ideas about the project are always welcome, you can open feature requests in the Github issue tracker.
+
 
 ACRA v4.4 - enforcing security
 ==============================
-
-**ACRA 4.4.0 is now the official stable version.**
 
 ACRA has been named in [this report](http://www.cs.utexas.edu/~shmat/shmat_ccs12.pdf) as a potential cause of SSL vulnerability for all android apps using it.
 
@@ -99,4 +129,8 @@ And after that?
 
 Now that ACRA is stabilized on the device side (there shouldn't be much more data required...), the effort should be placed on crash data analysis and reports management tools for developers.
 
-You can look at [some contributions](acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
+You can look at [some contributions](http://github.com/ACRA/acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
+
+[Acralyzer](http://github.com/ACRA/acralyzer) will soon be the official backend for reports storage and analysis. It is a free and open source modern web app, based on a full open stack and using advanced
+technology like CouchDB (JSON document storage with a RESTful API and Map/Reduce querying), AngularJS (one of the most advanced client-side JS frameworks), D3JS (for data visualisation)... If you are interested
+in webapps development, this project can become your playground too ;-)

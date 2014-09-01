@@ -88,6 +88,18 @@ public @interface ReportsCrashes {
     ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
 
     /**
+     * @return Resource id for the label of positive button in the crash dialog.
+     *         If not provided, defaults to 'OK'.
+     */
+    int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
+
+    /**
+     * @return Resource id for the label of negative button in the crash dialog.
+     *         If not provided, defaults to 'cancel'.
+     */
+    int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
+
+    /**
      * @return Resource id for the user comment input label in the crash dialog.
      *         If not provided, disables the input field.
      */

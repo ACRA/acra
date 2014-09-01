@@ -17,43 +17,7 @@
 package org.acra.collector;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.ANDROID_VERSION;
-import static org.acra.ReportField.APPLICATION_LOG;
-import static org.acra.ReportField.APP_VERSION_CODE;
-import static org.acra.ReportField.APP_VERSION_NAME;
-import static org.acra.ReportField.AVAILABLE_MEM_SIZE;
-import static org.acra.ReportField.BRAND;
-import static org.acra.ReportField.BUILD;
-import static org.acra.ReportField.CRASH_CONFIGURATION;
-import static org.acra.ReportField.CUSTOM_DATA;
-import static org.acra.ReportField.DEVICE_FEATURES;
-import static org.acra.ReportField.DEVICE_ID;
-import static org.acra.ReportField.DISPLAY;
-import static org.acra.ReportField.DROPBOX;
-import static org.acra.ReportField.DUMPSYS_MEMINFO;
-import static org.acra.ReportField.ENVIRONMENT;
-import static org.acra.ReportField.EVENTSLOG;
-import static org.acra.ReportField.FILE_PATH;
-import static org.acra.ReportField.INITIAL_CONFIGURATION;
-import static org.acra.ReportField.INSTALLATION_ID;
-import static org.acra.ReportField.IS_SILENT;
-import static org.acra.ReportField.LOGCAT;
-import static org.acra.ReportField.MEDIA_CODEC_LIST;
-import static org.acra.ReportField.PACKAGE_NAME;
-import static org.acra.ReportField.PHONE_MODEL;
-import static org.acra.ReportField.PRODUCT;
-import static org.acra.ReportField.RADIOLOG;
-import static org.acra.ReportField.REPORT_ID;
-import static org.acra.ReportField.SETTINGS_SECURE;
-import static org.acra.ReportField.SETTINGS_SYSTEM;
-import static org.acra.ReportField.SETTINGS_GLOBAL;
-import static org.acra.ReportField.SHARED_PREFERENCES;
-import static org.acra.ReportField.STACK_TRACE;
-import static org.acra.ReportField.THREAD_DETAILS;
-import static org.acra.ReportField.TOTAL_MEM_SIZE;
-import static org.acra.ReportField.USER_CRASH_DATE;
-import static org.acra.ReportField.USER_EMAIL;
-import static org.acra.ReportField.USER_IP;
+import static org.acra.ReportField.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -62,6 +26,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -95,8 +60,7 @@ public final class CrashReportDataFactory {
 
     private final Context context;
     private final SharedPreferences prefs;
-    private final List<ReportField> crashReportFields;
-    private final Map<String, String> customParameters = new HashMap<String, String>();
+    private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
 
@@ -106,23 +70,6 @@ public final class CrashReportDataFactory {
         this.prefs = prefs;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
-
-        final ReportsCrashes config = ACRA.getConfig();
-        final ReportField[] customReportFields = config.customReportContent();
-
-        final ReportField[] fieldsList;
-        if (customReportFields.length != 0) {
-            Log.d(LOG_TAG, "Using custom Report Fields");
-            fieldsList = customReportFields;
-        } else if (config.mailTo() == null || "".equals(config.mailTo())) {
-            Log.d(LOG_TAG, "Using default Report Fields");
-            fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
-        } else {
-            Log.d(LOG_TAG, "Using default Mail Report Fields");
-            fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
-        }
-
-        this.crashReportFields = Arrays.asList(fieldsList);
     }
 
     /**
@@ -155,6 +102,13 @@ public final class CrashReportDataFactory {
     public String removeCustomData(String key) {
         return customParameters.remove(key);
     }
+    
+    /**
+     * Removes all key/value pairs from the custom data field.
+     */
+    public void clearCustomData() {
+        customParameters.clear();
+    }
 
     /**
      * Gets the current value for a key in the custom data field.
@@ -174,13 +128,15 @@ public final class CrashReportDataFactory {
      *            Throwable that caused the crash.
      * @param isSilentReport
      *            Whether to report this report as being sent silently.
-     * @param brokenThread2
+     * @param brokenThread  Thread on which the error occurred.
      * @return CrashReportData representing the current state of the application
      *         at the instant of the Exception.
      */
     public CrashReportData createCrashData(Throwable th, boolean isSilentReport, Thread brokenThread) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
+            final List<ReportField> crashReportFields = getReportFields();
+
             // Make every entry here bullet proof and move any slightly dodgy
             // ones to the end.
             // This ensures that we collect as much info as possible before
@@ -271,6 +227,16 @@ public final class CrashReportDataFactory {
             // Add custom info, they are all stored in a single field
             if (crashReportFields.contains(CUSTOM_DATA)) {
                 crashReportData.put(CUSTOM_DATA, createCustomInfoString());
+            }
+
+            if (crashReportFields.contains(BUILD_CONFIG)) {
+                final String className = context.getPackageName() + ".BuildConfig";
+                try {
+                    final Class<?> buildConfig = Class.forName(className);
+                    crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfig));
+                } catch (ClassNotFoundException e) {
+                    Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className);
+                }
             }
 
             // Add user email address, if set in the app's preferences
@@ -401,9 +367,14 @@ public final class CrashReportDataFactory {
     private String createCustomInfoString() {
         final StringBuilder customInfo = new StringBuilder();
         for (final String currentKey : customParameters.keySet()) {
-            final String currentVal = customParameters.get(currentKey);
+            String currentVal = customParameters.get(currentKey);
             customInfo.append(currentKey);
             customInfo.append(" = ");
+            // We need to escape new lines in values or they are transformed into new
+            // custom fields. => let's replace all '\n' with "\\n"
+            if(currentVal != null) {
+                currentVal = currentVal.replaceAll("\n", "\\\\n");
+            }
             customInfo.append(currentVal);
             customInfo.append("\n");
         }
@@ -426,5 +397,23 @@ public final class CrashReportDataFactory {
         printWriter.close();
 
         return stacktraceAsString;
+    }
+
+    private List<ReportField> getReportFields() {
+        final ReportsCrashes config = ACRA.getConfig();
+        final ReportField[] customReportFields = config.customReportContent();
+
+        final ReportField[] fieldsList;
+        if (customReportFields.length != 0) {
+            Log.d(LOG_TAG, "Using custom Report Fields");
+            fieldsList = customReportFields;
+        } else if (config.mailTo() == null || "".equals(config.mailTo())) {
+            Log.d(LOG_TAG, "Using default Report Fields");
+            fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
+        } else {
+            Log.d(LOG_TAG, "Using default Mail Report Fields");
+            fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
+        }
+        return Arrays.asList(fieldsList);
     }
 }

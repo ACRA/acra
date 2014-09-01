@@ -76,7 +76,7 @@ public class JSONReportBuilder {
                     String line = null;
                     try {
                         while ((line = reader.readLine()) != null) {
-                            addJSONFromPropery(subObject, line);
+                            addJSONFromProperty(subObject, line);
                         }
                     } catch (IOException e) {
                         ACRA.log.e(ACRA.LOG_TAG, "Error while converting " + key.name() + " to JSON.", e);
@@ -131,13 +131,16 @@ public class JSONReportBuilder {
      *            A string containing "some.key.name=Any value"
      * @throws JSONException
      */
-    private static void addJSONFromPropery(JSONObject destination, String propertyString) throws JSONException {
+    private static void addJSONFromProperty(JSONObject destination, String propertyString) throws JSONException {
         int equalsIndex = propertyString.indexOf('=');
         if (equalsIndex > 0) {
             JSONObject finalObject = destination;
             String currentKey = propertyString.substring(0, equalsIndex).trim();
             String currentValue = propertyString.substring(equalsIndex + 1).trim();
             Object value = guessType(currentValue);
+            if(value instanceof String) {
+                value = ((String) value).replaceAll("\\\\n","\n");
+            }
             String[] splitKey = currentKey.split("\\.");
             if (splitKey.length > 1) {
                 addJSONSubTree(finalObject, splitKey, value);

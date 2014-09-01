@@ -15,12 +15,6 @@
  */
 package org.acra;
 
-import org.acra.annotation.ReportsCrashes;
-import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
-
-import java.lang.annotation.Annotation;
-
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
@@ -42,6 +36,15 @@ import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
 import static org.acra.ACRAConstants.NULL_VALUE;
+
+import java.lang.annotation.Annotation;
+import java.security.KeyStore;
+import java.util.Map;
+
+import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.HttpSender;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
 
 /**
  * This class is to be used if you need to apply dynamic settings. This is
@@ -73,6 +76,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private ReportingInteractionMode mMode = null;
     private ReportsCrashes mReportsCrashes = null;
 
+    private Integer mResDialogPositiveButtonText = null;
+    private Integer mResDialogNegativeButtonText = null;
     private Integer mResDialogCommentPrompt = null;
     private Integer mResDialogEmailPrompt = null;
     private Integer mResDialogIcon = null;
@@ -101,68 +106,101 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Boolean mDisableSSLCertValidation = null;
     private Method mHttpMethod = null;
     private Type mReportType = null;
+    private Map<String, String> mHttpHeaders;
+    private KeyStore mKeyStore;
+
+    /**
+     * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
+     * This should be used also by third party senders.
+     * 
+     * @param headers
+     *            A map associating HTTP header names to their values.
+     */
+    public ACRAConfiguration setHttpHeaders(Map<String, String> headers) {
+        this.mHttpHeaders = headers;
+        return this;
+    }
+
+    /**
+     * Retrieve HTTP headers defined by the application developer. These should
+     * be added to requests sent by any third-party sender (over HTTP of
+     * course).
+     * 
+     * @return A map associating http header names to their values.
+     */
+    public Map<String, String> getHttpHeaders() {
+        return mHttpHeaders;
+    }
 
     /**
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set
      */
-    public void setAdditionalDropboxTags(String[] additionalDropboxTags) {
+    public ACRAConfiguration setAdditionalDropboxTags(String[] additionalDropboxTags) {
         this.mAdditionalDropboxTags = additionalDropboxTags;
+        return this;
     }
 
     /**
      * @param additionalSharedPreferences
      *            the additionalSharedPreferences to set
      */
-    public void setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
+    public ACRAConfiguration setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
         this.mAdditionalSharedPreferences = additionalSharedPreferences;
+        return this;
     }
 
     /**
      * @param connectionTimeout
      *            the connectionTimeout to set
      */
-    public void setConnectionTimeout(Integer connectionTimeout) {
+    public ACRAConfiguration setConnectionTimeout(Integer connectionTimeout) {
         this.mConnectionTimeout = connectionTimeout;
+        return this;
     }
 
     /**
      * @param customReportContent
      *            the customReportContent to set
      */
-    public void setCustomReportContent(ReportField[] customReportContent) {
+    public ACRAConfiguration setCustomReportContent(ReportField[] customReportContent) {
         this.mCustomReportContent = customReportContent;
+        return this;
     }
 
     /**
      * @param deleteUnapprovedReportsOnApplicationStart
      *            the deleteUnapprovedReportsOnApplicationStart to set
      */
-    public void setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
+    public ACRAConfiguration setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
         this.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
+        return this;
     }
 
     /**
      * @param deleteOldUnsetReportsOnApplicationStart
      */
-    public void setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsetReportsOnApplicationStart) {
+    public ACRAConfiguration setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsetReportsOnApplicationStart) {
         this.mDeleteOldUnsentReportsOnApplicationStart = deleteOldUnsetReportsOnApplicationStart;
+        return this;
     }
 
     /**
      * @param dropboxCollectionMinutes
      *            the dropboxCollectionMinutes to set
      */
-    public void setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
+    public ACRAConfiguration setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
         this.mDropboxCollectionMinutes = dropboxCollectionMinutes;
+        return this;
     }
 
     /**
      * @param forceCloseDialogAfterToast
      *            the forceCloseDialogAfterToast to set
      */
-    public void setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
+    public ACRAConfiguration setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
         this.mForceCloseDialogAfterToast = forceCloseDialogAfterToast;
+        return this;
     }
 
     /**
@@ -174,8 +212,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param formKey
      *            the formKey to set
      */
-    public void setFormKey(String formKey) {
+    public ACRAConfiguration setFormKey(String formKey) {
         this.mFormKey = formKey;
+        return this;
     }
 
     /**
@@ -187,40 +226,45 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param formUri
      *            the formUri to set
      */
-    public void setFormUri(String formUri) {
+    public ACRAConfiguration setFormUri(String formUri) {
         this.mFormUri = formUri;
+        return this;
     }
 
     /**
      * @param formUriBasicAuthLogin
      *            the formUriBasicAuthLogin to set
      */
-    public void setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
+    public ACRAConfiguration setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
         this.mFormUriBasicAuthLogin = formUriBasicAuthLogin;
+        return this;
     }
 
     /**
      * @param formUriBasicAuthPassword
      *            the formUriBasicAuthPassword to set
      */
-    public void setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
+    public ACRAConfiguration setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
         this.mFormUriBasicAuthPassword = formUriBasicAuthPassword;
+        return this;
     }
 
     /**
      * @param includeDropboxSystemTags
      *            the includeDropboxSystemTags to set
      */
-    public void setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
+    public ACRAConfiguration setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
         this.mIncludeDropboxSystemTags = includeDropboxSystemTags;
+        return this;
     }
 
     /**
      * @param logcatArguments
      *            the logcatArguments to set
      */
-    public void setLogcatArguments(String[] logcatArguments) {
+    public ACRAConfiguration setLogcatArguments(String[] logcatArguments) {
         this.mLogcatArguments = logcatArguments;
+        return this;
     }
 
     /**
@@ -232,16 +276,18 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param mailTo
      *            the mailTo to set
      */
-    public void setMailTo(String mailTo) {
+    public ACRAConfiguration setMailTo(String mailTo) {
         this.mMailTo = mailTo;
+        return this;
     }
 
     /**
      * @param maxNumberOfRequestRetries
      *            the maxNumberOfRequestRetries to set
      */
-    public void setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
+    public ACRAConfiguration setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
         this.mMaxNumberOfRequestRetries = maxNumberOfRequestRetries;
+        return this;
     }
 
     /**
@@ -253,9 +299,20 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @throws ACRAConfigurationException
      *             if a configuration item is missing for this mode.
      */
-    public void setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
+    public ACRAConfiguration setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.mMode = mode;
         ACRA.checkCrashResources();
+        return this;
+    }
+
+    public ACRAConfiguration setResDialogPositiveButtonText(int resId) {
+        mResDialogPositiveButtonText = resId;
+        return this;
+    }
+
+    public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
+        mResDialogNegativeButtonText = resId;
+        return this;
     }
 
     /**
@@ -267,8 +324,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogCommentPrompt()}
      */
-    public void setResDialogCommentPrompt(int resId) {
+    public ACRAConfiguration setResDialogCommentPrompt(int resId) {
         mResDialogCommentPrompt = resId;
+        return this;
     }
 
     /**
@@ -280,8 +338,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogEmailPrompt()}
      */
-    public void setResDialogEmailPrompt(int resId) {
+    public ACRAConfiguration setResDialogEmailPrompt(int resId) {
         mResDialogEmailPrompt = resId;
+        return this;
     }
 
     /**
@@ -292,8 +351,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
      */
-    public void setResDialogIcon(int resId) {
+    public ACRAConfiguration setResDialogIcon(int resId) {
         mResDialogIcon = resId;
+        return this;
     }
 
     /**
@@ -304,8 +364,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
      */
-    public void setResDialogOkToast(int resId) {
+    public ACRAConfiguration setResDialogOkToast(int resId) {
         mResDialogOkToast = resId;
+        return this;
     }
 
     /**
@@ -316,8 +377,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogText()}
      */
-    public void setResDialogText(int resId) {
+    public ACRAConfiguration setResDialogText(int resId) {
         mResDialogText = resId;
+        return this;
     }
 
     /**
@@ -328,8 +390,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
      */
-    public void setResDialogTitle(int resId) {
+    public ACRAConfiguration setResDialogTitle(int resId) {
         mResDialogTitle = resId;
+        return this;
     }
 
     /**
@@ -340,8 +403,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
      */
-    public void setResNotifIcon(int resId) {
+    public ACRAConfiguration setResNotifIcon(int resId) {
         mResNotifIcon = resId;
+        return this;
     }
 
     /**
@@ -352,8 +416,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifText()}
      */
-    public void setResNotifText(int resId) {
+    public ACRAConfiguration setResNotifText(int resId) {
         mResNotifText = resId;
+        return this;
     }
 
     /**
@@ -365,8 +430,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The resource id, see
      *            {@link ReportsCrashes#resNotifTickerText()}
      */
-    public void setResNotifTickerText(int resId) {
+    public ACRAConfiguration setResNotifTickerText(int resId) {
         mResNotifTickerText = resId;
+        return this;
     }
 
     /**
@@ -377,8 +443,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifTitle()}
      */
-    public void setResNotifTitle(int resId) {
+    public ACRAConfiguration setResNotifTitle(int resId) {
         mResNotifTitle = resId;
+        return this;
     }
 
     /**
@@ -389,32 +456,36 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resToastText()}
      */
-    public void setResToastText(int resId) {
+    public ACRAConfiguration setResToastText(int resId) {
         mResToastText = resId;
+        return this;
     }
 
     /**
      * @param sharedPreferenceMode
      *            the sharedPreferenceMode to set
      */
-    public void setSharedPreferenceMode(Integer sharedPreferenceMode) {
+    public ACRAConfiguration setSharedPreferenceMode(Integer sharedPreferenceMode) {
         this.mSharedPreferenceMode = sharedPreferenceMode;
+        return this;
     }
 
     /**
      * @param sharedPreferenceName
      *            the sharedPreferenceName to set
      */
-    public void setSharedPreferenceName(String sharedPreferenceName) {
+    public ACRAConfiguration setSharedPreferenceName(String sharedPreferenceName) {
         this.mSharedPreferenceName = sharedPreferenceName;
+        return this;
     }
 
     /**
      * @param socketTimeout
      *            the socketTimeout to set
      */
-    public void setSocketTimeout(Integer socketTimeout) {
+    public ACRAConfiguration setSocketTimeout(Integer socketTimeout) {
         this.mSocketTimeout = socketTimeout;
+        return this;
     }
 
     /**
@@ -423,8 +494,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            true if you want to collect only logcat lines related to your
      *            application process.
      */
-    public void setLogcatFilterByPid(Boolean filterByPid) {
+    public ACRAConfiguration setLogcatFilterByPid(Boolean filterByPid) {
         mLogcatFilterByPid = filterByPid;
+        return this;
     }
 
     /**
@@ -433,8 +505,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            false if you want to disable sending reports in development
      *            mode. Reports will be sent only on signed applications.
      */
-    public void setSendReportsInDevMode(Boolean sendReportsInDevMode) {
+    public ACRAConfiguration setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         mSendReportsInDevMode = sendReportsInDevMode;
+        return this;
     }
 
     /**
@@ -444,8 +517,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            SharedPreferences keys that should be excluded from the data
      *            collection.
      */
-    public void setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
+    public ACRAConfiguration setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
         mExcludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
+        return this;
     }
 
     /**
@@ -455,8 +529,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            Settings.System, Settings.Secure and Settings.Global keys that
      *            should be excluded from the data collection.
      */
-    public void setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
+    public ACRAConfiguration setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
         mExcludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
+        return this;
     }
 
     /**
@@ -465,8 +540,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The path and file name of your application log file, to be
      *            used with {@link ReportField#APPLICATION_LOG}.
      */
-    public void setApplicationLogFile(String applicationLogFile) {
+    public ACRAConfiguration setApplicationLogFile(String applicationLogFile) {
         mApplicationLogFile = applicationLogFile;
+        return this;
     }
 
     /**
@@ -476,8 +552,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            to be used with {@link ReportField#APPLICATION_LOG} and
      *            {@link ReportsCrashes#applicationLogFile()}.
      */
-    public void setApplicationLogFileLines(int applicationLogFileLines) {
+    public ACRAConfiguration setApplicationLogFileLines(int applicationLogFileLines) {
         mApplicationLogFileLines = applicationLogFileLines;
+        return this;
     }
 
     /**
@@ -486,8 +563,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            Set this to true if you need to send reports to a server over
      *            SSL using a self-signed certificate.
      */
-    public void setDisableSSLCertValidation(boolean disableSSLCertValidation) {
+    public ACRAConfiguration setDisableSSLCertValidation(boolean disableSSLCertValidation) {
         mDisableSSLCertValidation = disableSSLCertValidation;
+        return this;
     }
 
     /**
@@ -495,8 +573,9 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param httpMethod
      *            The method to be used to send data to the server.
      */
-    public void setHttpMethod(Method httpMethod) {
+    public ACRAConfiguration setHttpMethod(Method httpMethod) {
         mHttpMethod = httpMethod;
+        return this;
     }
 
     /**
@@ -505,8 +584,18 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The type of content encoding to be used to send data to the
      *            server.
      */
-    public void setReportType(Type type) {
+    public ACRAConfiguration setReportType(Type type) {
         mReportType = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @param keyStore
+     *            Set this to the keystore that contains the trusted certificates
+     */
+    public void setKeyStore(KeyStore keyStore) {
+        mKeyStore = keyStore;
     }
 
     /**
@@ -515,6 +604,13 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public ACRAConfiguration(ReportsCrashes defaults) {
         mReportsCrashes = defaults;
+    }
+
+    /**
+     * Empty constructor which sets no defaults.
+     */
+    public ACRAConfiguration(){
+        this(null);
     }
 
     @Override
@@ -745,6 +841,32 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return ReportingInteractionMode.SILENT;
+    }
+
+    @Override
+    public int resDialogPositiveButtonText() {
+        if (mResDialogPositiveButtonText != null) {
+            return mResDialogPositiveButtonText;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.resDialogPositiveButtonText();
+        }
+
+        return DEFAULT_RES_VALUE;
+    }
+
+    @Override
+    public int resDialogNegativeButtonText() {
+        if (mResDialogNegativeButtonText != null) {
+            return mResDialogNegativeButtonText;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.resDialogNegativeButtonText();
+        }
+
+        return DEFAULT_RES_VALUE;
     }
 
     @Override
@@ -1074,6 +1196,14 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return Type.FORM;
+    }
+
+    public KeyStore keyStore() {
+        if (mKeyStore != null) {
+            return mKeyStore;
+        }
+
+        return null;
     }
 
     public static boolean isNull(String aString) {
