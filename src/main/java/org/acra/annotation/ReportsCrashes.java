@@ -15,12 +15,9 @@
  */
 package org.acra.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -29,9 +26,12 @@ import org.acra.ReportingInteractionMode;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Provide configuration elements to the
@@ -120,6 +120,11 @@ public @interface ReportsCrashes {
      * @return Resource id for the title in the crash dialog.
      */
     int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return Resource id for the layout in the crash dialog.
+     */
+    int resDialogLayout() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the status bar notification. Default

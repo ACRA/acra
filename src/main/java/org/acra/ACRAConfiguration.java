@@ -78,6 +78,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Integer mResDialogIcon = null;
     private Integer mResDialogOkToast = null;
     private Integer mResDialogText = null;
+    private Integer mResDialogLayout = null;
     private Integer mResDialogTitle = null;
     private Integer mResNotifIcon = null;
     private Integer mResNotifText = null;
@@ -819,6 +820,19 @@ public class ACRAConfiguration implements ReportsCrashes {
 
         if (mReportsCrashes != null) {
             return mReportsCrashes.resDialogTitle();
+        }
+
+        return DEFAULT_RES_VALUE;
+    }
+
+    @Override
+    public int resDialogLayout() {
+        if (mResDialogLayout != null) {
+            return mResDialogLayout;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.resDialogLayout();
         }
 
         return DEFAULT_RES_VALUE;

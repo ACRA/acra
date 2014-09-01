@@ -16,15 +16,6 @@
 
 package org.acra;
 
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_EMAIL;
-
-import java.io.IOException;
-
-import org.acra.collector.CrashReportData;
-import org.acra.util.ToastSender;
-
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
@@ -43,6 +34,15 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.acra.collector.CrashReportData;
+import org.acra.util.ToastSender;
+
+import java.io.IOException;
+
+import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ReportField.USER_COMMENT;
+import static org.acra.ReportField.USER_EMAIL;
+
 /**
  * This is the dialog Activity used by ACRA to get authorization from the user
  * to send reports. Requires android:theme="@android:style/Theme.Dialog" and
@@ -58,6 +58,46 @@ public final class CrashReportDialog extends Activity {
     private EditText userComment;
     private EditText userEmail;
     String mReportFileName;
+    private View.OnClickListener sendReport = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // Retrieve user comment
+            final String comment = userComment != null ? userComment.getText().toString() : "";
+
+            // Store the user email
+            final String usrEmail;
+            if(prefs != null && userEmail != null) {
+                usrEmail = userEmail.getText().toString();
+                final Editor prefEditor = prefs.edit();
+                prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
+                prefEditor.commit();
+            } else {
+                usrEmail = "";
+            }
+
+            final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
+            try {
+                Log.d(LOG_TAG, "Add user comment to " + mReportFileName);
+                final CrashReportData crashData = persister.load(mReportFileName);
+                crashData.put(USER_COMMENT, comment);
+                crashData.put(USER_EMAIL, usrEmail);
+                persister.store(crashData, mReportFileName);
+            } catch(IOException e) {
+                Log.w(LOG_TAG, "User comment not added: ", e);
+            }
+
+            // Start the report sending task
+            Log.v(ACRA.LOG_TAG, "About to start SenderWorker from CrashReportDialog");
+            ACRA.getErrorReporter().startSendingReports(false, true);
+
+            // Optional Toast to thank the user
+            final int toastId = ACRA.getConfig().resDialogOkToast();
+            if(toastId != 0) {
+                ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
+            }
+            finish();
+        }
+    };
 
     /*
      * (non-Javadoc)
@@ -75,138 +115,111 @@ public final class CrashReportDialog extends Activity {
         }
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
 
-        final LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(10, 10, 10, 10);
-        root.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        root.setFocusable(true);
-        root.setFocusableInTouchMode(true);
+        if(ACRA.getConfig().resDialogLayout() != ACRAConstants.DEFAULT_RES_VALUE) {
+            setContentView(ACRA.getConfig().resDialogLayout());
+            if(findViewById(android.R.id.button1) != null) {
+                findViewById(android.R.id.button1).setOnClickListener(sendReport);
+            }
+        } else {
+            final LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setPadding(10, 10, 10, 10);
+            root.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            root.setFocusable(true);
+            root.setFocusableInTouchMode(true);
 
-        final ScrollView scroll = new ScrollView(this);
-        root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
-        final LinearLayout scrollable = new LinearLayout(this);
-        scrollable.setOrientation(LinearLayout.VERTICAL);
-        scroll.addView(scrollable);
+            final ScrollView scroll = new ScrollView(this);
+            root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
+            final LinearLayout scrollable = new LinearLayout(this);
+            scrollable.setOrientation(LinearLayout.VERTICAL);
+            scroll.addView(scrollable);
 
-        final TextView text = new TextView(this);
-        text.setText(getText(ACRA.getConfig().resDialogText()));
-        scrollable.addView(text);
+            final TextView text = new TextView(this);
+            text.setText(getText(ACRA.getConfig().resDialogText()));
+            scrollable.addView(text);
 
-        // Add an optional prompt for user comments
-        final int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
-        if (commentPromptId != 0) {
-            final TextView label = new TextView(this);
-            label.setText(getText(commentPromptId));
+            // Add an optional prompt for user comments
+            final int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
+            if(commentPromptId != 0) {
+                final TextView label = new TextView(this);
+                label.setText(getText(commentPromptId));
 
-            label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            scrollable.addView(label,
-                    new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+                label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
+                scrollable.addView(label,
+                        new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
-            userComment = new EditText(this);
-            userComment.setLines(2);
-            if (savedInstanceState != null) {
-                String savedValue = savedInstanceState.getString(STATE_COMMENT);
-                if (savedValue != null) {
-                    userComment.setText(savedValue);
+                userComment = new EditText(this);
+                userComment.setLines(2);
+                if(savedInstanceState != null) {
+                    String savedValue = savedInstanceState.getString(STATE_COMMENT);
+                    if(savedValue != null) {
+                        userComment.setText(savedValue);
+                    }
                 }
-            }
-            scrollable.addView(userComment);
-        }
-
-        // Add an optional user email field
-        final int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
-        if (emailPromptId != 0) {
-            final TextView label = new TextView(this);
-            label.setText(getText(emailPromptId));
-
-            label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            scrollable.addView(label);
-
-            userEmail = new EditText(this);
-            userEmail.setSingleLine();
-            userEmail.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-
-            prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig()
-                    .sharedPreferencesMode());
-            String savedValue = null;
-            if(savedInstanceState != null) {
-                savedValue = savedInstanceState.getString(STATE_EMAIL);
-            }
-            if (savedValue != null) {
-                userEmail.setText(savedValue);
-            } else {
-                userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
+                scrollable.addView(userComment);
             }
 
-            scrollable.addView(userEmail);
-        }
+            // Add an optional user email field
+            final int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
+            if(emailPromptId != 0) {
+                final TextView label = new TextView(this);
+                label.setText(getText(emailPromptId));
 
-        final LinearLayout buttons = new LinearLayout(this);
-        buttons.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        buttons.setPadding(buttons.getPaddingLeft(), 10, buttons.getPaddingRight(), buttons.getPaddingBottom());
+                label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
+                scrollable.addView(label);
 
-        final Button yes = new Button(this);
-        yes.setText(android.R.string.yes);
-        yes.setOnClickListener(new View.OnClickListener() {
+                userEmail = new EditText(this);
+                userEmail.setSingleLine();
+                userEmail.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
-            @Override
-            public void onClick(View v) {
-                // Retrieve user comment
-                final String comment = userComment != null ? userComment.getText().toString() : "";
-
-                // Store the user email
-                final String usrEmail;
-                if (prefs != null && userEmail != null) {
-                    usrEmail = userEmail.getText().toString();
-                    final Editor prefEditor = prefs.edit();
-                    prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
-                    prefEditor.commit();
+                prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig()
+                        .sharedPreferencesMode());
+                String savedValue = null;
+                if(savedInstanceState != null) {
+                    savedValue = savedInstanceState.getString(STATE_EMAIL);
+                }
+                if(savedValue != null) {
+                    userEmail.setText(savedValue);
                 } else {
-                    usrEmail = "";
+                    userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
                 }
 
-                final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
-                try {
-                    Log.d(LOG_TAG, "Add user comment to " + mReportFileName);
-                    final CrashReportData crashData = persister.load(mReportFileName);
-                    crashData.put(USER_COMMENT, comment);
-                    crashData.put(USER_EMAIL, usrEmail);
-                    persister.store(crashData, mReportFileName);
-                } catch (IOException e) {
-                    Log.w(LOG_TAG, "User comment not added: ", e);
-                }
-
-                // Start the report sending task
-                Log.v(ACRA.LOG_TAG, "About to start SenderWorker from CrashReportDialog");
-                ACRA.getErrorReporter().startSendingReports(false, true);
-
-                // Optional Toast to thank the user
-                final int toastId = ACRA.getConfig().resDialogOkToast();
-                if (toastId != 0) {
-                    ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
-                }
-                finish();
+                scrollable.addView(userEmail);
             }
 
-        });
-        buttons.addView(yes, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
-        final Button no = new Button(this);
-        no.setText(android.R.string.no);
-        no.setOnClickListener(new View.OnClickListener() {
+            final LinearLayout buttons = new LinearLayout(this);
+            buttons.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            buttons.setPadding(buttons.getPaddingLeft(), 10, buttons.getPaddingRight(), buttons.getPaddingBottom());
 
-            @Override
-            public void onClick(View v) {
-                // Let's delete all non approved reports. We keep approved and
-                // silent reports.
-                ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
-                finish();
-            }
+            final Button yes = new Button(this);
+            yes.setText(android.R.string.yes);
+            yes.setOnClickListener(sendReport);
+            buttons.addView(yes, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
+            final Button no = new Button(this);
+            no.setText(android.R.string.no);
+            no.setOnClickListener(new View.OnClickListener() {
 
-        });
-        buttons.addView(no, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
-        root.addView(buttons, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+                @Override
+                public void onClick(View v) {
+                    // Let's delete all non approved reports. We keep approved and
+                    // silent reports.
+                    ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
+                    finish();
+                }
 
-        setContentView(root);
+            });
+            buttons.addView(no, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f));
+            root.addView(buttons, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+
+            setContentView(root);
+
+            scroll.post(new Runnable() {
+                @Override
+                public void run() {
+                    scroll.scrollTo(0, 0);
+                }
+            });
+        }
 
         final int resTitle = ACRA.getConfig().resDialogTitle();
         if (resTitle != 0) {
@@ -216,13 +229,6 @@ public final class CrashReportDialog extends Activity {
         getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, ACRA.getConfig().resDialogIcon());
 
         cancelNotification();
-
-        scroll.post(new Runnable() {
-            @Override
-            public void run() {
-                scroll.scrollTo(0, 0);
-            }
-        });
     }
 
     /*
