@@ -12,6 +12,7 @@ import org.acra.util.ToastSender;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
@@ -40,6 +42,16 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     private EditText userEmail;
     String mReportFileName;
     AlertDialog mDialog;
+    private static DialogBuilderFactory factory = new DialogBuilderFactory(){
+        @Override
+        public AlertDialog.Builder getBuilder(Context context) {
+            return new AlertDialog.Builder(context);
+        }
+    };
+
+    public static void setDialogBuilderFactory(DialogBuilderFactory factory) {
+        CrashReportDialog.factory = factory;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +69,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         if (mReportFileName == null) {
             finish();
         }
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder dialogBuilder = factory.getBuilder(this);
         int resourceId = ACRA.getConfig().resDialogTitle();
         if(resourceId != 0) {
             dialogBuilder.setTitle(resourceId);
@@ -66,7 +78,28 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         if(resourceId != 0) {
             dialogBuilder.setIcon(resourceId);
         }
-        dialogBuilder.setView(buildCustomView(savedInstanceState));
+        if(ACRA.getConfig().resDialogLayout() != ACRAConstants.DEFAULT_RES_VALUE) {
+            View root = LayoutInflater.from(this).inflate(ACRA.getConfig().resDialogLayout(), null, false);
+            dialogBuilder.setView(root);
+            if(root.findViewById(android.R.id.button1) != null) {
+                root.findViewById(android.R.id.button1).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CrashReportDialog.this.onClick(null, DialogInterface.BUTTON_POSITIVE);
+                    }
+                });
+            }
+            if(root.findViewById(android.R.id.button2) != null) {
+                root.findViewById(android.R.id.button2).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CrashReportDialog.this.onClick(null, DialogInterface.BUTTON_NEGATIVE);
+                    }
+                });
+            }
+        } else {
+            dialogBuilder.setView(buildCustomView(savedInstanceState));
+        }
         dialogBuilder.setPositiveButton(getText(ACRA.getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
         dialogBuilder.setNegativeButton(getText(ACRA.getConfig().resDialogNegativeButtonText()), CrashReportDialog.this);
         cancelNotification();
@@ -226,5 +259,9 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     @Override
     public void onDismiss(DialogInterface dialog) {
         finish();
+    }
+
+    public interface DialogBuilderFactory {
+        AlertDialog.Builder getBuilder(Context context);
     }
 }
