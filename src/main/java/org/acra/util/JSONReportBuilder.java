@@ -11,6 +11,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSenderException;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,10 +23,10 @@ public class JSONReportBuilder {
      * single key=value pair. If a value can be decomposed into subobjects, it
      * is done.
      * </p>
-     * 
+     *
      * <p>
      * For example, a String containing:
-     * 
+     *
      * <pre>
      * some.key.name1=value1
      * some.key.name2=value2
@@ -33,15 +34,15 @@ public class JSONReportBuilder {
      * any.other.key=value4
      * key.without.value5
      * </pre>
-     * 
+     *
      * is converted to
-     * 
+     *
      * <pre>
      * {
      *   some : {
      *     key : {
      *       name1 : "value1",
-     *       name2 : "value2"     
+     *       name2 : "value2"
      *     },
      *     other : "value3"
      *   },
@@ -53,9 +54,9 @@ public class JSONReportBuilder {
      *   key.without.value : true
      * }
      * </pre>
-     * 
+     *
      * </p>
-     * 
+     *
      * @param errorContent
      *            The ACRA report data structure.
      * @return A JSONObject containing all fields from the report converted to
@@ -100,11 +101,11 @@ public class JSONReportBuilder {
      * if available when keys are composed of a succession of subkeys delimited
      * by dots.
      * </p>
-     * 
+     *
      * <p>
      * For example, adding the string "metrics.xdpi=160.0" to an object
      * containing
-     * 
+     *
      * <pre>
      * {
      *   "metrics" : { "ydpi" : "160.0"},
@@ -112,9 +113,9 @@ public class JSONReportBuilder {
      *   "height" : "533"
      * }
      * </pre>
-     * 
+     *
      * results in
-     * 
+     *
      * <pre>
      * {
      *   "metrics" : { "ydpi" : "160.0", "xdpi" : "160.0"},
@@ -122,9 +123,9 @@ public class JSONReportBuilder {
      *   "height" : "533"
      * }
      * </pre>
-     * 
+     *
      * </p>
-     * 
+     *
      * @param destination
      *            The JSONObject where the data must be inserted.
      * @param propertyString
@@ -157,7 +158,7 @@ public class JSONReportBuilder {
             return true;
         if (value.equalsIgnoreCase("false"))
             return false;
-        
+
         if (value.matches("(?:^|\\s)([1-9](?:\\d*|(?:\\d{0,2})(?:,\\d{3})*)(?:\\.\\d*[1-9])?|0?\\.\\d*[1-9]|0)(?:\\s|$)")) {
             NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
@@ -173,7 +174,7 @@ public class JSONReportBuilder {
     /**
      * Deep insert a value inside a JSONObject, reusing existing subobjects when
      * available or creating them when necessary.
-     * 
+     *
      * @param destination
      *            The JSONObject which receives the additional subitem.
      * @param keys
@@ -192,7 +193,26 @@ public class JSONReportBuilder {
                     intermediate = new JSONObject();
                     destination.accumulate(subKey, intermediate);
                 } else {
-                    intermediate = destination.getJSONObject(subKey);
+                    Object target = destination.get(subKey);
+                    if (target instanceof JSONObject) {
+                        intermediate = destination.getJSONObject(subKey);
+                    } else if (target instanceof JSONArray) {
+                        // Unexpected JSONArray, see issue #186
+                        JSONArray wildCard = destination.getJSONArray(subKey);
+                        for (int j = 0; j < wildCard.length(); j++) {
+                            intermediate = wildCard.optJSONObject(j);
+                            if (intermediate != null) {
+                                // Found the original JSONObject we were looking for
+                                break;
+                            }
+                        }
+                    }
+
+                    if (intermediate == null) {
+                        ACRA.log.e(ACRA.LOG_TAG, "Unknown json subtree type, see issue #186");
+                        // We should never get here, but if we do, drop this value to still send the report
+                        return;
+                    }
                 }
                 destination = intermediate;
             } else {
