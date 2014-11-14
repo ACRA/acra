@@ -143,7 +143,7 @@ public final class CrashReportDataFactory {
             // something crashes the collection process.
 
             crashReportData.put(STACK_TRACE, getStackTrace(th));
-            crashReportData.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
+            crashReportData.put(ReportField.USER_APP_START_DATE, ReportUtils.getTimeString(appStartDate));
 
             if (isSilentReport) {
                 crashReportData.put(IS_SILENT, "true");
@@ -221,7 +221,7 @@ public final class CrashReportDataFactory {
             if (crashReportFields.contains(USER_CRASH_DATE)) {
                 final Time curDate = new Time();
                 curDate.setToNow();
-                crashReportData.put(USER_CRASH_DATE, curDate.format3339(false));
+                crashReportData.put(USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
             }
 
             // Add custom info, they are all stored in a single field
