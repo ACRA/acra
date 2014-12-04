@@ -479,6 +479,15 @@ public @interface ReportsCrashes {
     boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 
     /**
+     * Set this to false if you want to disable sending reports at the time the
+     * exception is caught. In thie case, reports will not be sent until the
+     * application is restarted.
+     *
+     * @return false if reports should not be sent.
+     */
+    boolean sendReportsAtShutdown() default ACRAConstants.DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
+
+    /**
      * Provide here regex patterns to be evaluated on each SharedPreference key
      * to exclude KV pairs from the collected SharedPreferences. This allows you
      * to exclude sensitive user data like passwords to be collected.
