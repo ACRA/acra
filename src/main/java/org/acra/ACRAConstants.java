@@ -111,6 +111,8 @@ public final class ACRAConstants {
 
     public static final boolean DEFAULT_SEND_REPORTS_IN_DEV_MODE = true;
 
+    public static final boolean DEFAULT_SEND_REPORTS_AT_SHUTDOWN = true;
+
     public static final String DEFAULT_APPLICATION_LOGFILE = DEFAULT_STRING_VALUE;
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;

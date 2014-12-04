@@ -722,6 +722,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final String reportFileName = getReportFileName(crashReportData);
         saveCrashReportFile(reportFileName, crashReportData);
 
+        if (endApplication && !ACRA.getConfig().sendReportsAtShutdown()) {
+            endApplication();
+        }
+
         SendWorker sender = null;
 
         if (reportingInteractionMode == ReportingInteractionMode.SILENT

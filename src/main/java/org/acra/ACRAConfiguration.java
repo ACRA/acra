@@ -32,6 +32,7 @@ import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
 import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
 import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
 import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
@@ -94,6 +95,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Integer mSocketTimeout = null;
     private Boolean mLogcatFilterByPid = null;
     private Boolean mSendReportsInDevMode = null;
+    private Boolean mSendReportsAtShutdown = null;
 
     private String[] mExcludeMatchingSharedPreferencesKeys = null;
     private String[] mExcludeMatchingSettingsKeys = null;
@@ -506,6 +508,18 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public ACRAConfiguration setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         mSendReportsInDevMode = sendReportsInDevMode;
+        return this;
+    }
+
+    /**
+     * 
+     * @param sendReportsAtShutdown
+     *            false if you want to disable sending reports at the time the
+     *            exception is caught. Reports will be sent when the application
+     *            is restarted.
+     */
+    public ACRAConfiguration setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
+        mSendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }
 
@@ -1074,6 +1088,19 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+    }
+
+    @Override
+    public boolean sendReportsAtShutdown() {
+        if (mSendReportsAtShutdown != null) {
+            return mSendReportsAtShutdown;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.sendReportsAtShutdown();
+        }
+
+        return DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
     }
 
     @Override
