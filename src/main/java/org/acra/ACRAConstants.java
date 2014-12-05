@@ -45,7 +45,7 @@ public final class ACRAConstants {
      * {@link SendWorker#checkAndSendReports(android.content.Context, boolean)}.
      * The number of reports is limited to avoid ANR on application start.
      */
-    static final int MAX_SEND_REPORTS = 5;
+    public static final int DEFAULT_MAX_SEND_REPORTS = 5;
     /**
      * Used in the intent starting CrashReportDialog to provide the name of the
      * latest generated report file in order to be able to associate the user

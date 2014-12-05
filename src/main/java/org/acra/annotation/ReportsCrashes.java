@@ -445,6 +445,11 @@ public @interface ReportsCrashes {
     int maxNumberOfRequestRetries() default ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
 
     /**
+     * @return Maximum number of reports to send per SendWorker (default 5).
+     */
+    int maxSendReports() default ACRAConstants.DEFAULT_MAX_SEND_REPORTS;
+
+    /**
      * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you
      * prefer displaying the native Force Close dialog after the Toast.
      * 

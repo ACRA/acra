@@ -123,13 +123,14 @@ final class SendWorker extends Thread {
         Arrays.sort(reportFiles);
 
         int reportsSentCount = 0;
+        int maxSendReports = ACRA.getConfig().maxSendReports();
 
         for (String curFileName : reportFiles) {
             if (sendOnlySilentReports && !fileNameParser.isSilent(curFileName)) {
                 continue;
             }
 
-            if (reportsSentCount >= ACRAConstants.MAX_SEND_REPORTS) {
+            if (maxSendReports > 0 && reportsSentCount >= maxSendReports) {
                 break; // send only a few reports to avoid overloading the
                        // network
             }
