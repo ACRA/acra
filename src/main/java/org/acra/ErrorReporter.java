@@ -735,6 +735,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Approve and then send reports now
             Log.d(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");
             sender = startSendingReports(sendOnlySilentReports, true);
+            if (forceSilentReport && !endApplication) {
+                // Called by handleSilentException(). No need to wait around
+                // for the sender to complete.
+                return;
+            }
+
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             Log.d(ACRA.LOG_TAG, "Notification will be created on application start.");
         }
