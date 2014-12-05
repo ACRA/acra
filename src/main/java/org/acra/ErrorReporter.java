@@ -208,9 +208,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Don't do it twice to avoid losing the original handler.
         mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
-
-        // Check for pending reports
-        checkReportsOnApplicationStart();
     }
 
     /**

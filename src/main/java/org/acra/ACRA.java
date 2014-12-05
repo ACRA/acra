@@ -132,7 +132,27 @@ public class ACRA {
      * @param config    ACRAConfiguration to manually set up ACRA configuration.
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(Application app, ACRAConfiguration config){
+    public static void init(Application app, ACRAConfiguration config) {
+        init(app, config, true);
+    }
+
+    /**
+     * <p>
+     * Initialize ACRA for a given Application. The call to this method should
+     * be placed as soon as possible in the {@link Application#onCreate()}
+     * method.
+     * </p>
+     *
+     * @param app       Your Application class.
+     * @param config    ACRAConfiguration to manually set up ACRA configuration.
+     * @param checkReportsOnApplicationStart    Whether to invoke
+     *     ErrorReporter.checkReportsOnApplicationStart(). Apps which adjust the
+     *     ReportSenders should set this to false and call
+     *     checkReportsOnApplicationStart() themselves to prevent a potential
+     *     race with the SendWorker and list of ReportSenders.
+     * @throws IllegalStateException if it is called more than once.
+     */
+    public static void init(Application app, ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
         if (mApplication != null) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
@@ -161,6 +181,11 @@ public class ACRA {
             errorReporter.setDefaultReportSenders();
 
             errorReporterSingleton = errorReporter;
+
+            // Check for pending reports
+            if (checkReportsOnApplicationStart) {
+                errorReporter.checkReportsOnApplicationStart();
+            }
 
         } catch (ACRAConfigurationException e) {
             log.w(LOG_TAG, "Error : ", e);
