@@ -39,7 +39,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <android.version>14</android.version>
+        <android.version>17</android.version>
 	</properties>
 
 	<dependencies>
@@ -53,13 +53,12 @@
             NB The AndroidAPI dependency is included below to allow test execution and javadoc generation.
         -->
         <dependency>
-            <groupId>com.google.android</groupId>
+            <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>4.1.1.4</version>
-            <type>jar</type>
+            <version>4.2.2_r2</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
+        <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>

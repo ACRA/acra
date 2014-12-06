@@ -226,7 +226,7 @@ public final class HttpRequest {
                 registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
             }
         } else {
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            registry.register(new Scheme("https", new TlsSniSocketFactory(), 443));
         }
 
         final ClientConnectionManager clientConnectionManager = new SingleClientConnManager(httpParams, registry);
