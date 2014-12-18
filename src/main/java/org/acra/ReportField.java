@@ -279,6 +279,10 @@ public enum ReportField {
      */
     THREAD_DETAILS,
     /**
+     * True if the application is killed after report generation.
+     */
+    END_APPLICATION,
+    /**
      * Retrieves the user IP address(es).
      */
     USER_IP;

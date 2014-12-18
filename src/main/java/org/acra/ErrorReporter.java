@@ -715,7 +715,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, forceSilentReport,
-                brokenThread);
+                brokenThread, endApplication);
 
         // Always write the report file
 

@@ -132,7 +132,8 @@ public final class CrashReportDataFactory {
      * @return CrashReportData representing the current state of the application
      *         at the instant of the Exception.
      */
-    public CrashReportData createCrashData(Throwable th, boolean isSilentReport, Thread brokenThread) {
+    public CrashReportData createCrashData(Throwable th, boolean isSilentReport, Thread brokenThread,
+            boolean endApplication) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
             final List<ReportField> crashReportFields = getReportFields();
@@ -147,6 +148,10 @@ public final class CrashReportDataFactory {
 
             if (isSilentReport) {
                 crashReportData.put(IS_SILENT, "true");
+            }
+
+            if (endApplication) {
+                crashReportData.put(END_APPLICATION, "true");
             }
 
             // Generate report uuid
