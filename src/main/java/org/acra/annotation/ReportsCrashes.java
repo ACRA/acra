@@ -556,12 +556,12 @@ public @interface ReportsCrashes {
      */
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 
+    String httpsSocketFactoryFactoryClass() default ACRAConstants.DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS;
+
     /**
      * <p>
      * The {@link Method} to be used when posting with {@link #formKey()}.
      * </p>
-     * 
-     * @return
      */
     Method httpMethod() default Method.POST;
 

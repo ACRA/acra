@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
 import org.acra.ACRAConstants;
@@ -62,12 +63,13 @@ public class GoogleFormSender implements ReportSender {
      * @param formKey
      *            The formKey of the destination Google Doc Form.
      */
+    @SuppressWarnings( "unused" )
     public GoogleFormSender(String formKey) {
         mFormUri = Uri.parse(String.format(ACRA.getConfig().googleFormUrlFormat(), formKey));
     }
 
     @Override
-    public void send(CrashReportData report) throws ReportSenderException {
+    public void send(Context context, CrashReportData report) throws ReportSenderException {
         Uri formUri = mFormUri == null ? Uri.parse(String.format(ACRA.getConfig().googleFormUrlFormat(), ACRA
                 .getConfig().formKey())) : mFormUri;
         final Map<String, String> formParams = remap(report);
@@ -85,7 +87,7 @@ public class GoogleFormSender implements ReportSender {
             request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
             request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
             request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
-            request.send(reportUrl, Method.POST, HttpRequest.getParamsAsFormString(formParams), Type.FORM);
+            request.send(context, reportUrl, Method.POST, HttpRequest.getParamsAsFormString(formParams), Type.FORM);
 
         } catch (IOException e) {
             throw new ReportSenderException("Error while sending report to Google Form.", e);

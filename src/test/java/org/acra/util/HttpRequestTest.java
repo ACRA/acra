@@ -54,8 +54,9 @@ public class HttpRequestTest {
         request.setSocketTimeOut(100); // Set a very low SocketTimeOut. Something that will almost certainly fail.
         request.setMaxNrRetries(0);
 
+        // Context will be null because default HttpsSocketFactoryFactory doesn't require the Android Context.
         try {
-            request.send(url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
+            request.send(null /*context*/, url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
             Assert.fail("Should not be able to get a response with an impossibly low SocketTimeOut");
         } catch (SocketTimeoutException e) {
             // as expected.
@@ -64,7 +65,7 @@ public class HttpRequestTest {
         // Tell the HttpRequest to retry on Socket time out.
         request.setMaxNrRetries(5);
         try {
-            request.send(url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
+            request.send(null /*context*/, url, Method.POST, HttpRequest.getParamsAsFormString(params), Type.FORM);
         } catch (SocketTimeoutException e) {
             Assert.fail("Should not get a SocketTimeOut when using SocketTimeOutRetryHandler");
         }
