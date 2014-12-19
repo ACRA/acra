@@ -134,6 +134,11 @@ public @interface ReportsCrashes {
     int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
+     * @return Resource id for the layout in the crash dialog.
+     */
+    int resDialogLayout() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
      * @return Resource id for the icon in the status bar notification. Default
      *         is the system error notification icon.
      */
