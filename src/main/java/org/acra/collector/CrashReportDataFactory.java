@@ -25,7 +25,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,7 +153,6 @@ public final class CrashReportDataFactory {
                 crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
             }
             
-
             // Generate report uuid
             if (crashReportFields.contains(REPORT_ID)) {
                 crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
