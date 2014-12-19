@@ -650,15 +650,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            new Exception("Report requested by developer").
      * @param reportingInteractionMode
      *            The desired interaction mode.
-     * @param forceSilentReport
-     *            This report is to be sent silently, whatever mode has been
-     *            configured.
+     * @param markExceptionAsSilent
+     *            Denote that this report was programatically sent as a silent Exception.
      * @param endApplication
      *            Whether to end the application once the error has been
      *            handled.
      */
     private void handleException(Throwable e, ReportingInteractionMode reportingInteractionMode,
-            final boolean forceSilentReport, final boolean endApplication) {
+            final boolean markExceptionAsSilent, final boolean endApplication) {
 
         if (!enabled) {
             return;
@@ -714,8 +713,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // that the Toast can be read by the user.
         }
 
-        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, forceSilentReport,
-                brokenThread);
+        final CrashReportData crashReportData = crashReportDataFactory.createCrashData(e, markExceptionAsSilent, brokenThread);
 
         // Always write the report file
 
@@ -735,9 +733,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // Approve and then send reports now
             Log.d(ACRA.LOG_TAG, "About to start ReportSenderWorker from #handleException");
             sender = startSendingReports(sendOnlySilentReports, true);
-            if (forceSilentReport && !endApplication) {
-                // Called by handleSilentException(). No need to wait around
-                // for the sender to complete.
+            if ((reportingInteractionMode == ReportingInteractionMode.SILENT) && !endApplication) {
+                // Report is being sent silently and the application is not ending.
+                // So no need to wait around for the sender to complete.
                 return;
             }
 
