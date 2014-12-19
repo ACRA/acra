@@ -29,6 +29,7 @@ import static org.acra.ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
 import static org.acra.ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
 import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
 import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
+import static org.acra.ACRAConstants.DEFAULT_MAX_SEND_REPORTS;
 import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
 import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
@@ -79,6 +80,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String[] mLogcatArguments = null;
     private String mMailTo = null;
     private Integer mMaxNumberOfRequestRetries = null;
+    private Integer mMaxSendReports = null;
     private ReportingInteractionMode mMode = null;
     private ReportsCrashes mReportsCrashes = null;
 
@@ -310,6 +312,15 @@ public class ACRAConfiguration implements ReportsCrashes {
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
         this.mMaxNumberOfRequestRetries = maxNumberOfRequestRetries;
+        return this;
+    }
+
+    /**
+     * @param maxSendReports
+     *            the maxSendReports to set
+     */
+    public ACRAConfiguration setMaxSendReports(Integer maxSendReports) {
+        this.mMaxSendReports = maxSendReports;
         return this;
     }
 
@@ -883,6 +894,19 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
+    }
+
+    @Override
+    public int maxSendReports() {
+        if (mMaxSendReports != null) {
+            return mMaxSendReports;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.maxSendReports();
+        }
+
+        return DEFAULT_MAX_SEND_REPORTS;
     }
 
     @Override
