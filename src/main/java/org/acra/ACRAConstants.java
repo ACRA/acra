@@ -117,8 +117,6 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
 
-    public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
-
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
 
     public static final String DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS = "org.acra.util.DefaultHttpsSocketFactoryFactory";

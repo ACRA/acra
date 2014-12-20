@@ -15,33 +15,6 @@
  */
 package org.acra;
 
-import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
-import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
-import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
-import static org.acra.ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
-import static org.acra.ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
-import static org.acra.ACRAConstants.DEFAULT_DIALOG_ICON;
-import static org.acra.ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
-import static org.acra.ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
-import static org.acra.ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
-import static org.acra.ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
-import static org.acra.ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
-import static org.acra.ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
-import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
-import static org.acra.ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
-import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
-import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
-import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
-import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
-import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
-import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
-import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
-import static org.acra.ACRAConstants.NULL_VALUE;
-
-import java.lang.annotation.Annotation;
-import java.security.KeyStore;
-import java.util.Map;
-
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
@@ -50,12 +23,18 @@ import org.acra.util.DefaultHttpsSocketFactoryFactory;
 import org.acra.util.HttpsSocketFactoryFactory;
 import org.acra.util.ReflectionException;
 import org.acra.util.ReflectionHelper;
+
+import java.lang.annotation.Annotation;
+import java.security.KeyStore;
+import java.util.Map;
+
+import static org.acra.ACRAConstants.*;
+
 /**
  * This class is to be used if you need to apply dynamic settings. This is
  * needed for example when using ACRA in an Android Library Project since ADT
  * v14 where resource ids are not final anymore and can't be passed as
  * annotation parameters values.
- * 
  */
 public class ACRAConfiguration implements ReportsCrashes {
 
@@ -106,8 +85,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String[] mExcludeMatchingSettingsKeys = null;
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
-
-    private String mGoogleFormUrlFormat = null;
 
     private Boolean mDisableSSLCertValidation = null;
     private String mHttpsSocketFactoryFactoryClass = null;
@@ -1195,19 +1172,6 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_APPLICATION_LOGFILE_LINES;
-    }
-
-    @Override
-    public String googleFormUrlFormat() {
-        if (mGoogleFormUrlFormat != null) {
-            return mGoogleFormUrlFormat;
-        }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.googleFormUrlFormat();
-        }
-
-        return DEFAULT_GOOGLE_FORM_URL_FORMAT;
     }
 
     @Override

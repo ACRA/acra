@@ -15,30 +15,6 @@
  */
 package org.acra;
 
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.IS_SILENT;
-
-import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.acra.annotation.ReportsCrashes;
-import org.acra.collector.Compatibility;
-import org.acra.collector.ConfigurationCollector;
-import org.acra.collector.CrashReportData;
-import org.acra.collector.CrashReportDataFactory;
-import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
-import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import org.acra.sender.EmailIntentSender;
-import org.acra.sender.GoogleFormSender;
-import org.acra.sender.HttpSender;
-import org.acra.sender.ReportSender;
-import org.acra.util.PackageManagerWrapper;
-import org.acra.util.ToastSender;
-
 import android.Manifest.permission;
 import android.app.Activity;
 import android.app.Application;
@@ -54,6 +30,28 @@ import android.os.Looper;
 import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
+import org.acra.annotation.ReportsCrashes;
+import org.acra.collector.Compatibility;
+import org.acra.collector.ConfigurationCollector;
+import org.acra.collector.CrashReportData;
+import org.acra.collector.CrashReportDataFactory;
+import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
+import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
+import org.acra.sender.EmailIntentSender;
+import org.acra.sender.HttpSender;
+import org.acra.sender.ReportSender;
+import org.acra.util.PackageManagerWrapper;
+import org.acra.util.ToastSender;
+
+import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ReportField.IS_SILENT;
 
 /**
  * <p>
@@ -1012,13 +1010,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // with default mapping.
         if (conf.formUri() != null && !"".equals(conf.formUri())) {
             setReportSender(new HttpSender(ACRA.getConfig().httpMethod(), ACRA.getConfig().reportType(), null));
-            return;
-        }
-
-        // The default behavior is to use the formKey for a Google Docs Form. If
-        // a formUri was also provided, we keep its sender.
-        if (conf.formKey() != null && !"".equals(conf.formKey().trim())) {
-            addReportSender(new GoogleFormSender());
         }
     }
 }

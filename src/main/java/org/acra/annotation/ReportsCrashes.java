@@ -529,24 +529,6 @@ public @interface ReportsCrashes {
 
     /**
      * <p>
-     * Default behavior is to send reports to an URL following the format:
-     * "https://spreadsheets.google.com/formResponse?formkey=%s&amp;ifq" with %s
-     * replaced by the {@link #formKey()} value.
-     * </p>
-     * 
-     * <p>
-     * If Google ever changed its URI schemes for Forms (changing the host name
-     * or parameters names for example), you would be able to override it with
-     * the new value with the present method.
-     * </p>
-     * 
-     * @return The format of the URL used to post report data in a Google Form,
-     *         including a %s token which is replaced by the formKey.
-     */
-    String googleFormUrlFormat() default ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
-
-    /**
-     * <p>
      * Set this to true if you need to post reports to your own server using an
      * SSL connection with a self-signed certificate.
      * </p>
