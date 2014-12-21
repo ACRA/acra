@@ -32,7 +32,7 @@ import android.os.Build;
 /**
  * Helper for accessing {@link Application#registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} and
  * {@link Application#unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} introduced in API level 14 in a
- * backwards compatible fashion.<br/>
+ * backwards compatible fashion.<br>
  * When running on API level 14 or above, the framework's implementations of these methods will be used.
  */
 public class ApplicationHelper {

@@ -325,6 +325,7 @@ public class ACRA {
     }
 
     /**
+     * @param app       Your Application class.
      * @return new {@link ACRAConfiguration} instance with values initialized
      *         from the {@link ReportsCrashes} annotation.
      */

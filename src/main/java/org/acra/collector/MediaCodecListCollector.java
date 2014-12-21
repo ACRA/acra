@@ -133,7 +133,7 @@ public class MediaCodecListCollector {
      * with their capabilities (supported Color Formats, Codec Profiles et
      * Levels).
      * 
-     * @return
+     * @return The media codecs information
      */
     public static String collecMediaCodecList() {
         StringBuilder result = new StringBuilder();

@@ -21,7 +21,6 @@ import static org.acra.ReportField.*;
 
 /**
  * Responsible for collating those constants shared among the ACRA components.
- * <p/>
  * 
  * @author William Ferguson
  * @since 4.3.0

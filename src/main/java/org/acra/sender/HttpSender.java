@@ -88,7 +88,7 @@ public class HttpSender implements ReportSender {
     public enum Type {
         /**
          * Send data as a www form encoded list of key/values.
-         * {@see http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4}
+         * @see <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4">Form content types</a>
          */
         FORM {
             @Override

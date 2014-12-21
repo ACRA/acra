@@ -64,7 +64,8 @@ import static org.acra.ReportField.IS_SILENT;
  * <p>
  * When a crash occurs, it collects data of the crash context (device, system,
  * stack trace...) and writes a report file in the application private
- * directory. This report file is then sent :
+ * directory. This report file is then sent:
+ * </p>
  * <ul>
  * <li>immediately if {@link ReportsCrashes#mode} is set to
  * {@link ReportingInteractionMode#SILENT} or
@@ -74,7 +75,6 @@ import static org.acra.ReportField.IS_SILENT;
  * <li>when the user accepts to send it if {@link ReportsCrashes#mode()} is set
  * to {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </ul>
- * </p>
  * <p>
  * If an error occurs while sending a report, it is kept for later attempts.
  * </p>
@@ -277,18 +277,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * </p>
      * <p>
      * Example. Add to the {@link Application#onCreate()}:
-     *
+     * </p>
+     * 
      * <pre>
-     * {@code
      * ACRA.getErrorReporter().setExceptionHandlerInitializer(new ExceptionHandlerInitializer() {
      *     <code>@Override</code> public void initializeExceptionHandler(ErrorReporter reporter) {
      *         reporter.putCustomData("CUSTOM_ACCUMULATED_DATA_TAG", someAccumulatedData.toString);
      *     }
      * });
      * </pre>
-     *
-     * </p>
-     *
+     * 
      * @param initializer   The initializer. Can be <code>null</code>.
      */
     public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
@@ -654,6 +652,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * Creates a new crash report builder
+     *
+     * @return the newly created {@code ReportBuilder}
      */
     public ReportBuilder reportBuilder() {
         return new ReportBuilder();
@@ -1040,6 +1040,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         /**
          * Set the error message to be reported.
+         *
+         * @param msg the error message
+         * @return the updated {@code ReportBuilder}
          */
         public ReportBuilder message(String msg) {
             mMessage = msg;
@@ -1048,6 +1051,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         /**
          * Set the stack trace to be reported
+         *
+         * @param e The exception that should be associated with this report
+         * @return the updated {@code ReportBuilder}
          */
         public ReportBuilder exception(Throwable e) {
             mException = e;
@@ -1062,6 +1068,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         /**
          * Sets additional values to be added to {@code CUSTOM_DATA}. Values
          * specified here take precedence over globally specified custom data.
+         *
+         * @param customData a map of custom key-values to be attached to the report
+         * @return the updated {@code ReportBuilder}
          */
         public ReportBuilder customData(Map<String, String> customData) {
             initCustomData();
@@ -1072,6 +1081,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         /**
          * Sets an additional value to be added to {@code CUSTOM_DATA}. The value
          * specified here takes precedence over globally specified custom data.
+         *
+         * @param key the key identifying the custom data
+         * @param value the value for the custom data entry
+         * @return the updated {@code ReportBuilder}
          */
         public ReportBuilder customData(String key, String value) {
             initCustomData();
@@ -1081,6 +1094,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         /**
          * Forces the report to be sent silently, ignoring the default interaction mode set in the config
+         *
+         * @return the updated {@code ReportBuilder}
          */
         public ReportBuilder forceSilent() {
             mForceSilent = true;
@@ -1089,6 +1104,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         /**
          * Ends the application after sending the crash report
+         *
+         * @return the updated {@code ReportBuilder}
          */
         public ReportBuilder endsApplication() {
             mEndsApplication = true;
