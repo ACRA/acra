@@ -4,14 +4,18 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -126,5 +130,11 @@ public final class ReportUtils {
             ACRA.log.w(ACRA.LOG_TAG, ex.toString());
         }
         return result.toString();
+    }
+
+    public static String getTimeString(Time time)
+    {
+        SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
+        return format.format(time.toMillis(true));
     }
 }

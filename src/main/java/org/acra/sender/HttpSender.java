@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import org.acra.ACRA;
 import org.acra.ACRAConfiguration;
 import org.acra.ACRAConstants;
@@ -86,8 +87,8 @@ public class HttpSender implements ReportSender {
      */
     public enum Type {
         /**
-         * Send data as a www form encoded list of key/values. {@link http
-         * ://www.w3.org/TR/html401/interact/forms.html#h-17.13.4}
+         * Send data as a www form encoded list of key/values.
+         * {@see http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4}
          */
         FORM {
             @Override
@@ -194,13 +195,14 @@ public class HttpSender implements ReportSender {
      * @param password
      *            The password to set for HTTP Basic Auth.
      */
+    @SuppressWarnings( "unused" )
     public void setBasicAuth(String username, String password) {
         mUsername = username;
         mPassword = password;
     }    
 
     @Override
-    public void send(CrashReportData report) throws ReportSenderException {
+    public void send(Context context, CrashReportData report) throws ReportSenderException {
 
         try {
             URL reportUrl = mFormUri == null ? new URL(ACRA.getConfig().formUri()) : new URL(mFormUri.toString());
@@ -219,9 +221,8 @@ public class HttpSender implements ReportSender {
             request.setPassword(password);
             request.setHeaders(ACRA.getConfig().getHttpHeaders());
 
-            String reportAsString = "";
-
             // Generate report body depending on requested type
+            final String reportAsString;
             switch (mType) {
             case JSON:
                 reportAsString = report.toJSON().toString();
@@ -244,7 +245,7 @@ public class HttpSender implements ReportSender {
             default:
                 throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
             }
-            request.send(reportUrl, mMethod, reportAsString, mType);
+            request.send(context, reportUrl, mMethod, reportAsString, mType);
 
         } catch (IOException e) {
             throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType()

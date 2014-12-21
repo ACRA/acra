@@ -95,6 +95,10 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_DIALOG_ICON = android.R.drawable.ic_dialog_alert;
 
+    public static final int DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT = android.R.string.ok;
+
+    public static final int DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT = android.R.string.cancel;
+
     public static final int DEFAULT_RES_VALUE = 0;
 
     public static final String DEFAULT_STRING_VALUE = "";
@@ -107,13 +111,15 @@ public final class ACRAConstants {
 
     public static final boolean DEFAULT_SEND_REPORTS_IN_DEV_MODE = true;
 
+    public static final boolean DEFAULT_SEND_REPORTS_AT_SHUTDOWN = true;
+
     public static final String DEFAULT_APPLICATION_LOGFILE = DEFAULT_STRING_VALUE;
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
 
-    public static final String DEFAULT_GOOGLE_FORM_URL_FORMAT = "https://docs.google.com/spreadsheet/formResponse?formkey=%s&ifq";
-
     public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
+
+    public static final String DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS = "org.acra.util.DefaultHttpsSocketFactoryFactory";
 
     /**
      * Default list of {@link ReportField}s to be sent in email reports. You can
@@ -136,4 +142,6 @@ public final class ACRAConstants {
             DISPLAY, USER_COMMENT, USER_EMAIL, USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT,
             INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES, SETTINGS_SYSTEM, SETTINGS_SECURE,
             SETTINGS_GLOBAL };
+
+    public static final String DATE_TIME_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
 }

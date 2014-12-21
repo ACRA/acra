@@ -27,6 +27,8 @@ import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
+import java.util.concurrent.Callable;
+
 /**
  * Wraps an {@link ActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
  */
@@ -70,5 +72,25 @@ import android.os.Bundle;
     @Override
     public void onActivityDestroyed(Activity activity) {
         mCallback.onActivityDestroyed(activity);
+    }
+
+    /**
+     * Compare the current wrapped callback with another object wrapped callback
+     */
+    @Override
+    public boolean equals(Object object) {
+        if( !(object instanceof ActivityLifecycleCallbacksWrapper) )
+            return false;
+        ActivityLifecycleCallbacksWrapper that = ( ActivityLifecycleCallbacksWrapper )object;
+        return null == mCallback ? null == that.mCallback : mCallback.equals( that.mCallback );
+    }
+
+    /**
+     *
+     * return wrapped callback object hashCode
+     */
+    @Override
+    public int hashCode() {
+        return null != mCallback ? mCallback.hashCode() : 0;
     }
 }

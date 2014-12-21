@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public final class CrashReportDataFactory {
 
     private final Context context;
     private final SharedPreferences prefs;
-    private final Map<String, String> customParameters = new HashMap<String, String>();
+    private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Time appStartDate;
     private final String initialConfiguration;
 
@@ -101,6 +102,13 @@ public final class CrashReportDataFactory {
     public String removeCustomData(String key) {
         return customParameters.remove(key);
     }
+    
+    /**
+     * Removes all key/value pairs from the custom data field.
+     */
+    public void clearCustomData() {
+        customParameters.clear();
+    }
 
     /**
      * Gets the current value for a key in the custom data field.
@@ -135,12 +143,17 @@ public final class CrashReportDataFactory {
             // something crashes the collection process.
 
             crashReportData.put(STACK_TRACE, getStackTrace(msg, th));
-            crashReportData.put(ReportField.USER_APP_START_DATE, appStartDate.format3339(false));
+            crashReportData.put(ReportField.USER_APP_START_DATE, ReportUtils.getTimeString(appStartDate));
 
             if (isSilentReport) {
                 crashReportData.put(IS_SILENT, "true");
             }
-
+            
+            // StackTrace hash
+            if (crashReportFields.contains(STACK_TRACE_HASH)) {
+                crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
+            }
+            
             // Generate report uuid
             if (crashReportFields.contains(REPORT_ID)) {
                 crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
@@ -213,7 +226,7 @@ public final class CrashReportDataFactory {
             if (crashReportFields.contains(USER_CRASH_DATE)) {
                 final Time curDate = new Time();
                 curDate.setToNow();
-                crashReportData.put(USER_CRASH_DATE, curDate.format3339(false));
+                crashReportData.put(USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
             }
 
             // Add custom info, they are all stored in a single field
@@ -398,6 +411,21 @@ public final class CrashReportDataFactory {
         printWriter.close();
 
         return stacktraceAsString;
+    }
+    
+    private String getStackTraceHash(Throwable th) {
+        final StringBuilder res = new StringBuilder();
+        Throwable cause = th;
+        while (cause != null) {
+            final StackTraceElement[] stackTraceElements = cause.getStackTrace();
+            for (final StackTraceElement e : stackTraceElements) {
+                res.append(e.getClassName());
+                res.append(e.getMethodName());
+            }
+            cause = cause.getCause();
+        }
+    
+        return Integer.toHexString(res.toString().hashCode());
     }
 
     private List<ReportField> getReportFields() {

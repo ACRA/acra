@@ -88,6 +88,18 @@ public @interface ReportsCrashes {
     ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
 
     /**
+     * @return Resource id for the label of positive button in the crash dialog.
+     *         If not provided, defaults to 'OK'.
+     */
+    int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
+
+    /**
+     * @return Resource id for the label of negative button in the crash dialog.
+     *         If not provided, defaults to 'cancel'.
+     */
+    int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
+
+    /**
      * @return Resource id for the user comment input label in the crash dialog.
      *         If not provided, disables the input field.
      */
@@ -467,6 +479,15 @@ public @interface ReportsCrashes {
     boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 
     /**
+     * Set this to false if you want to disable sending reports at the time the
+     * exception is caught. In thie case, reports will not be sent until the
+     * application is restarted.
+     *
+     * @return false if reports should not be sent.
+     */
+    boolean sendReportsAtShutdown() default ACRAConstants.DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
+
+    /**
      * Provide here regex patterns to be evaluated on each SharedPreference key
      * to exclude KV pairs from the collected SharedPreferences. This allows you
      * to exclude sensitive user data like passwords to be collected.
@@ -508,24 +529,6 @@ public @interface ReportsCrashes {
 
     /**
      * <p>
-     * Default behavior is to send reports to an URL following the format:
-     * "https://spreadsheets.google.com/formResponse?formkey=%s&amp;ifq" with %s
-     * replaced by the {@link #formKey()} value.
-     * </p>
-     * 
-     * <p>
-     * If Google ever changed its URI schemes for Forms (changing the host name
-     * or parameters names for example), you would be able to override it with
-     * the new value with the present method.
-     * </p>
-     * 
-     * @return The format of the URL used to post report data in a Google Form,
-     *         including a %s token which is replaced by the formKey.
-     */
-    String googleFormUrlFormat() default ACRAConstants.DEFAULT_GOOGLE_FORM_URL_FORMAT;
-
-    /**
-     * <p>
      * Set this to true if you need to post reports to your own server using an
      * SSL connection with a self-signed certificate.
      * </p>
@@ -535,12 +538,12 @@ public @interface ReportsCrashes {
      */
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 
+    String httpsSocketFactoryFactoryClass() default ACRAConstants.DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS;
+
     /**
      * <p>
      * The {@link Method} to be used when posting with {@link #formKey()}.
      * </p>
-     * 
-     * @return
      */
     Method httpMethod() default Method.POST;
 
