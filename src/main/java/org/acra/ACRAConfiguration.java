@@ -302,7 +302,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.mMode = mode;
-        ACRA.checkCrashResources();
+        ACRA.checkCrashResources(this);
         return this;
     }
 
