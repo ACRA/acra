@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ import android.util.Log;
  * <p>
  * Also responsible for holding the custom data to send with each report.
  * </p>
- * 
+ *
  * @author William Ferguson
  * @since 4.3.0
  */
@@ -64,7 +65,7 @@ public final class CrashReportDataFactory {
     private final String initialConfiguration;
 
     public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate,
-            String initialConfiguration) {
+                                  String initialConfiguration) {
         this.context = context;
         this.prefs = prefs;
         this.appStartDate = appStartDate;
@@ -80,7 +81,7 @@ public final class CrashReportDataFactory {
      * The key/value pairs will be stored in the "custom" column, as a text
      * containing one 'key = value' pair on each line.
      * </p>
-     * 
+     *
      * @param key
      *            A key for your custom data.
      * @param value
@@ -93,7 +94,7 @@ public final class CrashReportDataFactory {
 
     /**
      * Removes a key/value pair from the custom data field.
-     * 
+     *
      * @param key
      *            The key of the data to be removed.
      * @return The value for this key before removal.
@@ -101,7 +102,7 @@ public final class CrashReportDataFactory {
     public String removeCustomData(String key) {
         return customParameters.remove(key);
     }
-    
+
     /**
      * Removes all key/value pairs from the custom data field.
      */
@@ -111,7 +112,7 @@ public final class CrashReportDataFactory {
 
     /**
      * Gets the current value for a key in the custom data field.
-     * 
+     *
      * @param key
      *            The key of the data to be retrieved.
      * @return The value for this key.
@@ -122,7 +123,7 @@ public final class CrashReportDataFactory {
 
     /**
      * Collects crash data.
-     * 
+     *
      * @param th
      *            Throwable that caused the crash.
      * @param isSilentReport
@@ -131,7 +132,7 @@ public final class CrashReportDataFactory {
      * @return CrashReportData representing the current state of the application
      *         at the instant of the Exception.
      */
-    public CrashReportData createCrashData(Throwable th, boolean isSilentReport, Thread brokenThread) {
+    public CrashReportData createCrashData(String msg, Throwable th, Map<String, String> customData, boolean isSilentReport, Thread brokenThread) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
             final List<ReportField> crashReportFields = getReportFields();
@@ -141,18 +142,18 @@ public final class CrashReportDataFactory {
             // This ensures that we collect as much info as possible before
             // something crashes the collection process.
 
-            crashReportData.put(STACK_TRACE, getStackTrace(th));
+            crashReportData.put(STACK_TRACE, getStackTrace(msg, th));
             crashReportData.put(ReportField.USER_APP_START_DATE, ReportUtils.getTimeString(appStartDate));
 
             if (isSilentReport) {
                 crashReportData.put(IS_SILENT, "true");
             }
-            
+
             // StackTrace hash
             if (crashReportFields.contains(STACK_TRACE_HASH)) {
                 crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
             }
-            
+
             // Generate report uuid
             if (crashReportFields.contains(REPORT_ID)) {
                 crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
@@ -230,7 +231,7 @@ public final class CrashReportDataFactory {
 
             // Add custom info, they are all stored in a single field
             if (crashReportFields.contains(CUSTOM_DATA)) {
-                crashReportData.put(CUSTOM_DATA, createCustomInfoString());
+                crashReportData.put(CUSTOM_DATA, createCustomInfoString(customData));
             }
 
             if (crashReportFields.contains(BUILD_CONFIG)) {
@@ -298,7 +299,7 @@ public final class CrashReportDataFactory {
 
             // Retrieve UDID(IMEI) if permission is available
             if (crashReportFields.contains(DEVICE_ID) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
-                    && pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
+                && pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
                 final String deviceId = ReportUtils.getDeviceId(context);
                 if (deviceId != null) {
                     crashReportData.put(DEVICE_ID, deviceId);
@@ -310,8 +311,8 @@ public final class CrashReportDataFactory {
             // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
             // Though, we can call logcat without any permission and still get traces related to our app.
             if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
-            		&& (pm.hasPermission(Manifest.permission.READ_LOGS))
-            			|| Compatibility.getAPILevel() >= 16) {
+                && (pm.hasPermission(Manifest.permission.READ_LOGS))
+                || Compatibility.getAPILevel() >= 16) {
                 Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
                 if (crashReportFields.contains(LOGCAT)) {
                     crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
@@ -324,7 +325,7 @@ public final class CrashReportDataFactory {
                 }
                 if (crashReportFields.contains(DROPBOX)) {
                     crashReportData.put(DROPBOX,
-                            DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
+                                        DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
                 }
             } else {
                 Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
@@ -333,7 +334,7 @@ public final class CrashReportDataFactory {
             // Application specific log file
             if (crashReportFields.contains(APPLICATION_LOG)) {
                 crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(context, ACRA.getConfig()
-                        .applicationLogFile(), ACRA.getConfig().applicationLogFileLines()));
+                    .applicationLogFile(), ACRA.getConfig().applicationLogFileLines()));
             }
 
             // Media Codecs list
@@ -365,13 +366,20 @@ public final class CrashReportDataFactory {
     /**
      * Generates the string which is posted in the single custom data field in
      * the GoogleDocs Form.
-     * 
+     *
      * @return A string with a 'key = value' pair on each line.
      */
-    private String createCustomInfoString() {
+    private String createCustomInfoString(Map<String, String> reportCustomData) {
+        Map<String, String> params = customParameters;
+
+        if (reportCustomData != null) {
+            params = new HashMap<String, String>(params);
+            params.putAll(reportCustomData);
+        }
+
         final StringBuilder customInfo = new StringBuilder();
-        for (final String currentKey : customParameters.keySet()) {
-            String currentVal = customParameters.get(currentKey);
+        for (final String currentKey : params.keySet()) {
+            String currentVal = params.get(currentKey);
             customInfo.append(currentKey);
             customInfo.append(" = ");
             // We need to escape new lines in values or they are transformed into new
@@ -385,10 +393,12 @@ public final class CrashReportDataFactory {
         return customInfo.toString();
     }
 
-    private String getStackTrace(Throwable th) {
-
+    private String getStackTrace(String msg, Throwable th) {
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
+
+        if (msg != null && !msg.isEmpty())
+            printWriter.println(msg);
 
         // If the exception was thrown in a background thread inside
         // AsyncTask, then the actual exception can be found with getCause
@@ -402,7 +412,7 @@ public final class CrashReportDataFactory {
 
         return stacktraceAsString;
     }
-    
+
     private String getStackTraceHash(Throwable th) {
         final StringBuilder res = new StringBuilder();
         Throwable cause = th;
@@ -414,7 +424,7 @@ public final class CrashReportDataFactory {
             }
             cause = cause.getCause();
         }
-    
+
         return Integer.toHexString(res.toString().hashCode());
     }
 
