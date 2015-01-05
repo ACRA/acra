@@ -123,7 +123,7 @@ public enum ReportField {
      */
     STACK_TRACE,
     /**
-     * A hash of the stack trace, taking only method names into account.<br/>
+     * A hash of the stack trace, taking only method names into account.<br>
      * Line numbers are stripped out before computing the hash. This can help you
      * uniquely identify stack traces.
      */

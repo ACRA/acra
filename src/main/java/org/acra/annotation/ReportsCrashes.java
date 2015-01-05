@@ -70,6 +70,7 @@ public @interface ReportsCrashes {
      * </p>
      * <p>
      * Other modes have resources requirements:
+     * </p>
      * <ul>
      * <li>{@link ReportingInteractionMode#TOAST} requires
      * {@link #resToastText()} to be provided to define the text that you want
@@ -78,9 +79,10 @@ public @interface ReportsCrashes {
      * {@link #resNotifTickerText()}, {@link #resNotifTitle()},
      * {@link #resNotifText()}, {@link #resDialogText()}.</li>
      * <li>{@link ReportingInteractionMode#DIALOG} requires
-     * {@link #resDialogText()}</li>. Default is
-     * {@link ReportingInteractionMode#SILENT}
+     * {@link #resDialogText()}.</li>
      * </ul>
+     * <p>
+     * Default is {@link ReportingInteractionMode#SILENT}
      * </p>
      * 
      * @return the interaction mode that you want ACRA to implement.
@@ -288,7 +290,7 @@ public @interface ReportsCrashes {
      * <p>
      * Redefines the list of {@link ReportField}s collected and sent in your
      * reports. If you modify this list, you have to create a new Google Drive
-     * Spreadsheet & Form which will be based on these fields as column headers.
+     * Spreadsheet &amp; Form which will be based on these fields as column headers.
      * </p>
      * <p>
      * The fields order is significant. You can also use this property to modify
@@ -297,6 +299,7 @@ public @interface ReportsCrashes {
      * <p>
      * The default list is the following, except if you send reports by mail
      * using {@link #mailTo()}.
+     * </p>
      * <ul>
      * <li>
      * {@link ReportField#REPORT_ID}</li>
@@ -361,7 +364,6 @@ public @interface ReportsCrashes {
      * <li>
      * {@link ReportField#SETTINGS_GLOBAL}</li>
      * </ul>
-     * </p>
      * 
      * @return ReportField Array listing the fields to be included in the
      *         report.
@@ -374,6 +376,7 @@ public @interface ReportsCrashes {
      * email. This allows to get rid of the INTERNET permission. Reports content
      * can be customized with {@link #customReportContent()} . Default fields
      * are:
+     * </p>
      * <ul>
      * <li>
      * {@link ReportField#USER_COMMENT}</li>
@@ -390,7 +393,6 @@ public @interface ReportsCrashes {
      * <li>
      * {@link ReportField#STACK_TRACE}</li>
      * </ul>
-     * </p>
      * 
      * @return email address to which to send reports.
      */
@@ -544,6 +546,8 @@ public @interface ReportsCrashes {
      * <p>
      * The {@link Method} to be used when posting with {@link #formKey()}.
      * </p>
+     *
+     * @return HTTP method used when posting reports.
      */
     Method httpMethod() default Method.POST;
 

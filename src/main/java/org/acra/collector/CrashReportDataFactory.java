@@ -124,8 +124,12 @@ public final class CrashReportDataFactory {
     /**
      * Collects crash data.
      *
+     * @param msg
+     *            A message to be associated with the crash report.
      * @param th
      *            Throwable that caused the crash.
+     * @param customData
+     *            Custom key/value pairs to be associated with the crash report.
      * @param isSilentReport
      *            Whether to report this report as being sent silently.
      * @param brokenThread  Thread on which the error occurred.

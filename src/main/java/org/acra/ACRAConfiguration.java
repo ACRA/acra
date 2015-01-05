@@ -100,6 +100,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param headers
      *            A map associating HTTP header names to their values.
+     * @return The updated ACRA configuration
      */
     public ACRAConfiguration setHttpHeaders(Map<String, String> headers) {
         this.mHttpHeaders = headers;
@@ -120,6 +121,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalDropboxTags(String[] additionalDropboxTags) {
@@ -130,6 +132,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param additionalSharedPreferences
      *            the additionalSharedPreferences to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
@@ -140,6 +143,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param connectionTimeout
      *            the connectionTimeout to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setConnectionTimeout(Integer connectionTimeout) {
@@ -150,6 +154,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param customReportContent
      *            the customReportContent to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setCustomReportContent(ReportField[] customReportContent) {
@@ -160,6 +165,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param deleteUnapprovedReportsOnApplicationStart
      *            the deleteUnapprovedReportsOnApplicationStart to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
@@ -169,6 +175,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * @param deleteOldUnsentReportsOnApplicationStart    When to delete old (unsent) reports on startup.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsentReportsOnApplicationStart) {
@@ -179,6 +186,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param dropboxCollectionMinutes
      *            the dropboxCollectionMinutes to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
@@ -189,6 +197,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param forceCloseDialogAfterToast
      *            the forceCloseDialogAfterToast to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
@@ -204,6 +213,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param formKey
      *            the formKey to set
+     * @return The updated ACRA configuration
      */
     public ACRAConfiguration setFormKey(String formKey) {
         this.mFormKey = formKey;
@@ -218,6 +228,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param formUri
      *            the formUri to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUri(String formUri) {
@@ -228,6 +239,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param formUriBasicAuthLogin
      *            the formUriBasicAuthLogin to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
@@ -238,6 +250,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param formUriBasicAuthPassword
      *            the formUriBasicAuthPassword to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
@@ -248,6 +261,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param includeDropboxSystemTags
      *            the includeDropboxSystemTags to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
@@ -258,6 +272,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param logcatArguments
      *            the logcatArguments to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setLogcatArguments(String[] logcatArguments) {
@@ -273,6 +288,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param mailTo
      *            the mailTo to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMailTo(String mailTo) {
@@ -283,6 +299,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param maxNumberOfRequestRetries
      *            the maxNumberOfRequestRetries to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
@@ -296,6 +313,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param mode
      *            the new mode to set.
+     * @return The updated ACRA configuration
      * @throws ACRAConfigurationException
      *             if a configuration item is missing for this mode.
      */
@@ -324,6 +342,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogCommentPrompt()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogCommentPrompt(int resId) {
@@ -339,6 +358,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogEmailPrompt()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogEmailPrompt(int resId) {
@@ -353,6 +373,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogIcon(int resId) {
@@ -367,6 +388,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogOkToast(int resId) {
@@ -381,6 +403,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogText()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogText(int resId) {
@@ -395,6 +418,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogTitle(int resId) {
@@ -409,6 +433,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifIcon(int resId) {
@@ -423,6 +448,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifText()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifText(int resId) {
@@ -438,6 +464,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param resId
      *            The resource id, see
      *            {@link ReportsCrashes#resNotifTickerText()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifTickerText(int resId) {
@@ -452,6 +479,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifTitle()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifTitle(int resId) {
@@ -466,6 +494,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resToastText()}
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResToastText(int resId) {
@@ -476,6 +505,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param sharedPreferenceMode
      *            the sharedPreferenceMode to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSharedPreferenceMode(Integer sharedPreferenceMode) {
@@ -486,6 +516,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param sharedPreferenceName
      *            the sharedPreferenceName to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSharedPreferenceName(String sharedPreferenceName) {
@@ -496,6 +527,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     /**
      * @param socketTimeout
      *            the socketTimeout to set
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSocketTimeout(Integer socketTimeout) {
@@ -508,6 +540,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param filterByPid
      *            true if you want to collect only logcat lines related to your
      *            application process.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setLogcatFilterByPid(Boolean filterByPid) {
@@ -520,6 +553,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param sendReportsInDevMode
      *            false if you want to disable sending reports in development
      *            mode. Reports will be sent only on signed applications.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsInDevMode(Boolean sendReportsInDevMode) {
@@ -533,6 +567,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            false if you want to disable sending reports at the time the
      *            exception is caught. Reports will be sent when the application
      *            is restarted.
+     * @return The updated ACRA configuration
      */
     public ACRAConfiguration setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
         mSendReportsAtShutdown = sendReportsAtShutdown;
@@ -545,6 +580,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            an array of Strings containing regexp defining
      *            SharedPreferences keys that should be excluded from the data
      *            collection.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
@@ -558,6 +594,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            an array of Strings containing regexp defining
      *            Settings.System, Settings.Secure and Settings.Global keys that
      *            should be excluded from the data collection.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
@@ -570,6 +607,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param applicationLogFile
      *            The path and file name of your application log file, to be
      *            used with {@link ReportField#APPLICATION_LOG}.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setApplicationLogFile(String applicationLogFile) {
@@ -583,6 +621,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            The number of lines of your application log to be collected,
      *            to be used with {@link ReportField#APPLICATION_LOG} and
      *            {@link ReportsCrashes#applicationLogFile()}.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setApplicationLogFileLines(int applicationLogFileLines) {
@@ -595,6 +634,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param disableSSLCertValidation
      *            Set this to true if you need to send reports to a server over
      *            SSL using a self-signed certificate.
+     * @return The updated ACRA configuration
      */
     public ACRAConfiguration setDisableSSLCertValidation(boolean disableSSLCertValidation) {
         mDisableSSLCertValidation = disableSSLCertValidation;
@@ -605,6 +645,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * 
      * @param httpMethod
      *            The method to be used to send data to the server.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setHttpMethod(Method httpMethod) {
@@ -617,6 +658,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * @param type
      *            The type of content encoding to be used to send data to the
      *            server.
+     * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setReportType(Type type) {
