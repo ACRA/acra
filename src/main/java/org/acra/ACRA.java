@@ -169,7 +169,7 @@ public class ACRA {
         final SharedPreferences prefs = getACRASharedPreferences();
 
         try {
-            checkCrashResources();
+            checkCrashResources(config);
 
             log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
 
@@ -253,8 +253,7 @@ public class ACRA {
      * @throws ACRAConfigurationException
      *             if required values are missing.
      */
-    static void checkCrashResources() throws ACRAConfigurationException {
-        ReportsCrashes conf = getConfig();
+    static void checkCrashResources(ReportsCrashes conf) throws ACRAConfigurationException {
         switch (conf.mode()) {
         case TOAST:
             if (conf.resToastText() == 0) {
