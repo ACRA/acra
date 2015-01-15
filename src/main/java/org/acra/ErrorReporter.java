@@ -575,7 +575,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             ReportingInteractionMode reportingInteractionMode = ACRA.getConfig().mode();
 
-            filesList = reportFinder.getCrashReportFiles();
             final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
 
             if (reportingInteractionMode == ReportingInteractionMode.SILENT
