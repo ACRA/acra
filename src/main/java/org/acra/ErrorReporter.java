@@ -419,7 +419,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Generate and send crash report
             reportBuilder()
-                .message("Uncaught exception")
                 .exception(e)
                 .endsApplication()
                 .send();
