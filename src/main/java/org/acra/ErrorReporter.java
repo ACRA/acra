@@ -232,6 +232,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The value associated to your key.
      */
     @Deprecated
+    @SuppressWarnings("unused")
     public void addCustomData(String key, String value) {
         crashReportDataFactory.putCustomData(key, value);
     }
@@ -257,6 +258,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #removeCustomData(String)
      * @see #getCustomData(String)
      */
+    @SuppressWarnings("unused")
     public String putCustomData(String key, String value) {
         return crashReportDataFactory.putCustomData(key, value);
     }
@@ -302,6 +304,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #putCustomData(String, String)
      * @see #getCustomData(String)
      */
+    @SuppressWarnings("unused")
     public String removeCustomData(String key) {
         return crashReportDataFactory.removeCustomData(key);
     }
@@ -309,6 +312,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Removes all key/value pairs from your reports custom data field.
      */
+    @SuppressWarnings("unused")
     public void clearCustomData() {
         crashReportDataFactory.clearCustomData();
     }
@@ -322,6 +326,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #putCustomData(String, String)
      * @see #removeCustomData(String)
      */
+    @SuppressWarnings("unused")
     public String getCustomData(String key) {
         return crashReportDataFactory.getCustomData(key);
     }
@@ -343,6 +348,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param sender
      *            The {@link ReportSender} instance to be removed.
      */
+    @SuppressWarnings("unused")
     public void removeReportSender(ReportSender sender) {
         mReportSenders.remove(sender);
     }
@@ -353,6 +359,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param senderClass
      *            ReportSender class whose instances should be removed.
      */
+    @SuppressWarnings("unused")
     public void removeReportSenders(Class<?> senderClass) {
         if (ReportSender.class.isAssignableFrom(senderClass)) {
             for (ReportSender sender : mReportSenders) {
@@ -627,11 +634,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            Set this to true if you want the application to be ended after
      *            sending the report.
      */
+    @SuppressWarnings("unused")
     public void handleException(Throwable e, boolean endApplication) {
-        reportBuilder()
-            .exception(e)
-            .endsApplication()
-            .send();
+        final ReportBuilder builder = reportBuilder()
+            .exception(e);
+        if (endApplication) {
+            builder.endsApplication();
+        }
+        builder.send();
     }
 
     /**
@@ -643,6 +653,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The {@link Throwable} to be reported. If null the report will
      *            contain a new Exception("Report requested by developer").
      */
+    @SuppressWarnings("unused")
     public void handleException(Throwable e) {
         reportBuilder()
             .exception(e)
@@ -1071,6 +1082,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * @param customData a map of custom key-values to be attached to the report
          * @return the updated {@code ReportBuilder}
          */
+        @SuppressWarnings("unused")
         public ReportBuilder customData(Map<String, String> customData) {
             initCustomData();
             mCustomData.putAll(customData);
@@ -1085,6 +1097,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * @param value the value for the custom data entry
          * @return the updated {@code ReportBuilder}
          */
+        @SuppressWarnings("unused")
         public ReportBuilder customData(String key, String value) {
             initCustomData();
             mCustomData.put(key, value);
