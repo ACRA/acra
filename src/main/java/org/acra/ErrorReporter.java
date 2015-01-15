@@ -536,14 +536,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     public void checkReportsOnApplicationStart() {
 
-        // Delete any old unsent reports if this is a newer version of the app
-        // than when we last started.
-        final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
-        final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
-        final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
-        final boolean newVersion = (packageInfo != null && packageInfo.versionCode > lastVersionNr);
-        if (newVersion) {
-            if (ACRA.getConfig().deleteOldUnsentReportsOnApplicationStart()) {
+        if (ACRA.getConfig().deleteOldUnsentReportsOnApplicationStart()) {
+            // Delete any old unsent reports if this is a newer version of the app
+            // than when we last started.
+            final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
+            final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
+            final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
+            final boolean newVersion = (packageInfo != null && packageInfo.versionCode > lastVersionNr);
+            if (newVersion) {
                 deletePendingReports();
             }
             final SharedPreferences.Editor prefsEditor = prefs.edit();
