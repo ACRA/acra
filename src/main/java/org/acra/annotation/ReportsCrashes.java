@@ -36,8 +36,8 @@ import android.preference.PreferenceManager;
 /**
  * Provide configuration elements to the
  * {@link ACRA#init(android.app.Application)} method. The only mandatory
- * configuration item is the {@link #formKey()} parameter which is the Id of
- * your Google Documents form which will receive reports.
+ * configuration item is the {@link #formUri()} parameter which is the Uri
+ * to the server that will receive your reports.
  * 
  * @author Kevin Gaudin
  * 
@@ -47,11 +47,6 @@ import android.preference.PreferenceManager;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface ReportsCrashes {
-
-    /**
-     * @return The id of the Google Doc form.
-     */
-    String formKey();
 
     /**
      * The Uri of your own server-side script that will receive reports. This is
@@ -544,7 +539,7 @@ public @interface ReportsCrashes {
 
     /**
      * <p>
-     * The {@link Method} to be used when posting with {@link #formKey()}.
+     * The {@link Method} to be used when posting with {@link #formUri()}.
      * </p>
      *
      * @return HTTP method used when posting reports.
