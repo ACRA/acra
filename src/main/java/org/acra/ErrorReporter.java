@@ -100,8 +100,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // report.
     private final Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
-    private Thread brokenThread;
-    private Throwable unhandledThrowable;
     private WeakReference<Activity> lastActivityCreated = new WeakReference<Activity>(null);
 
     /**
@@ -417,15 +415,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 return;
             }
 
-            brokenThread = t;
-            unhandledThrowable = e;
-
             Log.e(ACRA.LOG_TAG,
                   "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
             Log.d(ACRA.LOG_TAG, "Building report");
 
             // Generate and send crash report
             reportBuilder()
+                .uncaughtExceptionThread(t)
                 .exception(e)
                 .endsApplication()
                 .send();
@@ -439,26 +435,24 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     *
+     * End the application.
      */
-    private void endApplication() {
-        if (ACRA.getConfig().mode() == ReportingInteractionMode.SILENT
-            || (ACRA.getConfig().mode() == ReportingInteractionMode.TOAST && ACRA.getConfig()
-            .forceCloseDialogAfterToast())) {
-            // If using silent mode, let the system default handler do it's job
-            // and display the force close dialog.
-            if (mDfltExceptionHandler != null) {
-                Log.d(ACRA.LOG_TAG, "Handing Exception on to default ExceptionHandler");
-                mDfltExceptionHandler.uncaughtException(brokenThread, unhandledThrowable);
-            } else {
-                Log.w(ACRA.LOG_TAG, "NOT Handing Exception on to default ExceptionHandler - non configured");
-            }
+    private void endApplication(Thread uncaughtExceptionThread, Throwable th) {
+        final boolean letDefaultHandlerEndApplication = (
+             ACRA.getConfig().mode() == ReportingInteractionMode.SILENT ||
+            (ACRA.getConfig().mode() == ReportingInteractionMode.TOAST && ACRA.getConfig().forceCloseDialogAfterToast())
+        );
+
+        final boolean handlingUncaughtException = uncaughtExceptionThread != null;
+        if (handlingUncaughtException && letDefaultHandlerEndApplication && (mDfltExceptionHandler != null)) {
+            // Let the system default handler do it's job and display the force close dialog.
+            Log.d(ACRA.LOG_TAG, "Handing Exception on to default ExceptionHandler");
+            mDfltExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
         } else {
             // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
             // We choose to close the process ourselves using the same actions.
-            Log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + unhandledThrowable.getMessage(),
-                  unhandledThrowable);
+            Log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + th.getMessage(), th);
 
             // Trying to solve
             // https://github.com/ACRA/acra/issues/42#issuecomment-12134144
@@ -731,7 +725,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder.mMessage,
                                                                                        reportBuilder.mException, reportBuilder.mCustomData,
-                                                                                       reportBuilder.mForceSilent, brokenThread);
+                                                                                       reportBuilder.mForceSilent, reportBuilder.mUncaughtExceptionThread);
 
         // Always write the report file
 
@@ -739,7 +733,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         saveCrashReportFile(reportFileName, crashReportData);
 
         if (reportBuilder.mEndsApplication && !ACRA.getConfig().sendReportsAtShutdown()) {
-            endApplication();
+            endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
         }
 
         SendWorker sender = null;
@@ -791,9 +785,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
 
-        // start an AsyncTask waiting for the end of the sender
-        // call endApplication() in onPostExecute(), only when (toastWaitEnded
-        // == true)
+        // Start an AsyncTask waiting for the end of the sender.
+        // Once sent, call endApplication() if reportBuilder.mEndApplication
         final SendWorker worker = sender;
         final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
             && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
@@ -825,7 +818,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.mEndsApplication);
 
                 if (reportBuilder.mEndsApplication) {
-                    endApplication();
+                    endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
                 }
             }
         }.start();
@@ -1042,6 +1035,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public final class ReportBuilder {
 
         private String mMessage;
+        private Thread mUncaughtExceptionThread;
         private Throwable mException;
         private Map<String, String> mCustomData;
 
@@ -1056,6 +1050,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          */
         public ReportBuilder message(String msg) {
             mMessage = msg;
+            return this;
+        }
+
+        /**
+         * Sets the Thread on which an uncaught Exception occurred.
+         *
+         * @param thread    Thread on which an uncaught Exception occurred.
+         * @return the updated {@code ReportBuilder}
+         */
+        private ReportBuilder uncaughtExceptionThread(Thread thread) {
+            mUncaughtExceptionThread = thread;
             return this;
         }
 
@@ -1128,10 +1133,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * Assembles and sends the crash report
          */
         public void send() {
-            if (mMessage == null && mException == null)
+            if (mMessage == null && mException == null) {
                 mMessage = "Report requested by developer";
+            }
             report(this);
         }
-
     }
 }
