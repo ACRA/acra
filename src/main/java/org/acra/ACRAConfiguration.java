@@ -49,7 +49,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Boolean mDeleteOldUnsentReportsOnApplicationStart = null;
     private Integer mDropboxCollectionMinutes = null;
     private Boolean mForceCloseDialogAfterToast = null;
-    private String mFormKey = null;
     private String mFormUri = null;
     private String mFormUriBasicAuthLogin = null;
     private String mFormUriBasicAuthPassword = null;
@@ -206,21 +205,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * Modify the formKey of the Google Docs form receiving reports. You need to
-     * call {@link ErrorReporter#setDefaultReportSenders()} after modifying this
-     * value if you were not using a formKey before (a mailTo or formUri
-     * instead).
-     * 
-     * @param formKey
-     *            the formKey to set
-     * @return The updated ACRA configuration
-     */
-    public ACRAConfiguration setFormKey(String formKey) {
-        this.mFormKey = formKey;
-        return this;
-    }
-
-    /**
      * Modify the formUri of your backend server receiving reports. You need to
      * call {@link ErrorReporter#setDefaultReportSenders()} after modifying this
      * value if you were not using a formUri before (a mailTo or formKey
@@ -324,11 +308,13 @@ public class ACRAConfiguration implements ReportsCrashes {
         return this;
     }
 
+    @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogPositiveButtonText(int resId) {
         mResDialogPositiveButtonText = resId;
         return this;
     }
 
+    @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
         mResDialogNegativeButtonText = resId;
         return this;
@@ -569,6 +555,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            is restarted.
      * @return The updated ACRA configuration
      */
+    @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
         mSendReportsAtShutdown = sendReportsAtShutdown;
         return this;
@@ -798,19 +785,6 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
-    }
-
-    @Override
-    public String formKey() {
-        if (mFormKey != null) {
-            return mFormKey;
-        }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.formKey();
-        }
-
-        return DEFAULT_STRING_VALUE;
     }
 
     @Override

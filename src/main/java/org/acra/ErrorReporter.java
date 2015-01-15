@@ -100,8 +100,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     // report.
     private final Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
-    private Thread brokenThread;
-    private Throwable unhandledThrowable;
     private WeakReference<Activity> lastActivityCreated = new WeakReference<Activity>(null);
 
     /**
@@ -232,6 +230,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The value associated to your key.
      */
     @Deprecated
+    @SuppressWarnings("unused")
     public void addCustomData(String key, String value) {
         crashReportDataFactory.putCustomData(key, value);
     }
@@ -257,6 +256,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #removeCustomData(String)
      * @see #getCustomData(String)
      */
+    @SuppressWarnings("unused")
     public String putCustomData(String key, String value) {
         return crashReportDataFactory.putCustomData(key, value);
     }
@@ -302,6 +302,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #putCustomData(String, String)
      * @see #getCustomData(String)
      */
+    @SuppressWarnings("unused")
     public String removeCustomData(String key) {
         return crashReportDataFactory.removeCustomData(key);
     }
@@ -309,6 +310,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Removes all key/value pairs from your reports custom data field.
      */
+    @SuppressWarnings("unused")
     public void clearCustomData() {
         crashReportDataFactory.clearCustomData();
     }
@@ -322,6 +324,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #putCustomData(String, String)
      * @see #removeCustomData(String)
      */
+    @SuppressWarnings("unused")
     public String getCustomData(String key) {
         return crashReportDataFactory.getCustomData(key);
     }
@@ -343,6 +346,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param sender
      *            The {@link ReportSender} instance to be removed.
      */
+    @SuppressWarnings("unused")
     public void removeReportSender(ReportSender sender) {
         mReportSenders.remove(sender);
     }
@@ -353,6 +357,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param senderClass
      *            ReportSender class whose instances should be removed.
      */
+    @SuppressWarnings("unused")
     public void removeReportSenders(Class<?> senderClass) {
         if (ReportSender.class.isAssignableFrom(senderClass)) {
             for (ReportSender sender : mReportSenders) {
@@ -410,15 +415,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 return;
             }
 
-            brokenThread = t;
-            unhandledThrowable = e;
-
             Log.e(ACRA.LOG_TAG,
                   "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
             Log.d(ACRA.LOG_TAG, "Building report");
 
             // Generate and send crash report
             reportBuilder()
+                .uncaughtExceptionThread(t)
                 .exception(e)
                 .endsApplication()
                 .send();
@@ -432,26 +435,26 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     *
+     * End the application.
      */
-    private void endApplication() {
-        if (ACRA.getConfig().mode() == ReportingInteractionMode.SILENT
-            || (ACRA.getConfig().mode() == ReportingInteractionMode.TOAST && ACRA.getConfig()
-            .forceCloseDialogAfterToast())) {
-            // If using silent mode, let the system default handler do it's job
-            // and display the force close dialog.
-            if (mDfltExceptionHandler != null) {
-                Log.d(ACRA.LOG_TAG, "Handing Exception on to default ExceptionHandler");
-                mDfltExceptionHandler.uncaughtException(brokenThread, unhandledThrowable);
-            } else {
-                Log.w(ACRA.LOG_TAG, "NOT Handing Exception on to default ExceptionHandler - non configured");
-            }
+    private void endApplication(Thread uncaughtExceptionThread, Throwable th) {
+        // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
+        // as the intent is clearer and would allows you to switch it off for SILENT.
+        final boolean letDefaultHandlerEndApplication = (
+             ACRA.getConfig().mode() == ReportingInteractionMode.SILENT ||
+            (ACRA.getConfig().mode() == ReportingInteractionMode.TOAST && ACRA.getConfig().forceCloseDialogAfterToast())
+        );
+
+        final boolean handlingUncaughtException = uncaughtExceptionThread != null;
+        if (handlingUncaughtException && letDefaultHandlerEndApplication && (mDfltExceptionHandler != null)) {
+            // Let the system default handler do it's job and display the force close dialog.
+            Log.d(ACRA.LOG_TAG, "Handing Exception on to default ExceptionHandler");
+            mDfltExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
         } else {
             // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
             // We choose to close the process ourselves using the same actions.
-            Log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + unhandledThrowable.getMessage(),
-                  unhandledThrowable);
+            Log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + th.getMessage(), th);
 
             // Trying to solve
             // https://github.com/ACRA/acra/issues/42#issuecomment-12134144
@@ -627,11 +630,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            Set this to true if you want the application to be ended after
      *            sending the report.
      */
+    @SuppressWarnings("unused")
     public void handleException(Throwable e, boolean endApplication) {
-        reportBuilder()
-            .exception(e)
-            .endsApplication()
-            .send();
+        final ReportBuilder builder = reportBuilder()
+            .exception(e);
+        if (endApplication) {
+            builder.endsApplication();
+        }
+        builder.send();
     }
 
     /**
@@ -643,6 +649,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The {@link Throwable} to be reported. If null the report will
      *            contain a new Exception("Report requested by developer").
      */
+    @SuppressWarnings("unused")
     public void handleException(Throwable e) {
         reportBuilder()
             .exception(e)
@@ -720,7 +727,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder.mMessage,
                                                                                        reportBuilder.mException, reportBuilder.mCustomData,
-                                                                                       reportBuilder.mForceSilent, brokenThread);
+                                                                                       reportBuilder.mForceSilent, reportBuilder.mUncaughtExceptionThread);
 
         // Always write the report file
 
@@ -728,7 +735,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         saveCrashReportFile(reportFileName, crashReportData);
 
         if (reportBuilder.mEndsApplication && !ACRA.getConfig().sendReportsAtShutdown()) {
-            endApplication();
+            endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
         }
 
         SendWorker sender = null;
@@ -780,9 +787,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
 
-        // start an AsyncTask waiting for the end of the sender
-        // call endApplication() in onPostExecute(), only when (toastWaitEnded
-        // == true)
+        // Start an AsyncTask waiting for the end of the sender.
+        // Once sent, call endApplication() if reportBuilder.mEndApplication
         final SendWorker worker = sender;
         final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
             && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
@@ -814,7 +820,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.mEndsApplication);
 
                 if (reportBuilder.mEndsApplication) {
-                    endApplication();
+                    endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
                 }
             }
         }.start();
@@ -1031,6 +1037,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public final class ReportBuilder {
 
         private String mMessage;
+        private Thread mUncaughtExceptionThread;
         private Throwable mException;
         private Map<String, String> mCustomData;
 
@@ -1045,6 +1052,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          */
         public ReportBuilder message(String msg) {
             mMessage = msg;
+            return this;
+        }
+
+        /**
+         * Sets the Thread on which an uncaught Exception occurred.
+         *
+         * @param thread    Thread on which an uncaught Exception occurred.
+         * @return the updated {@code ReportBuilder}
+         */
+        private ReportBuilder uncaughtExceptionThread(Thread thread) {
+            mUncaughtExceptionThread = thread;
             return this;
         }
 
@@ -1071,6 +1089,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * @param customData a map of custom key-values to be attached to the report
          * @return the updated {@code ReportBuilder}
          */
+        @SuppressWarnings("unused")
         public ReportBuilder customData(Map<String, String> customData) {
             initCustomData();
             mCustomData.putAll(customData);
@@ -1085,6 +1104,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * @param value the value for the custom data entry
          * @return the updated {@code ReportBuilder}
          */
+        @SuppressWarnings("unused")
         public ReportBuilder customData(String key, String value) {
             initCustomData();
             mCustomData.put(key, value);
@@ -1115,10 +1135,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * Assembles and sends the crash report
          */
         public void send() {
-            if (mMessage == null && mException == null)
+            if (mMessage == null && mException == null) {
                 mMessage = "Report requested by developer";
+            }
             report(this);
         }
-
     }
 }
