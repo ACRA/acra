@@ -666,6 +666,25 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
+     * Helps manage
+     */
+    private static class TimeHelper {
+
+        private Long initialTimeMillis;
+
+        public void setInitialTimeMillis(long initialTimeMillis) {
+            this.initialTimeMillis = initialTimeMillis;
+        }
+
+        /**
+         * @return 0 if the initial time has yet to be set otherwise returns the difference between now and the initial time.
+         */
+        public long getElapsedTime() {
+            return (initialTimeMillis == null) ? 0 : System.currentTimeMillis() - initialTimeMillis;
+        }
+    }
+
+    /**
      * Try to send a report, if an error occurs stores a report file for a later
      * attempt.
      *
@@ -704,6 +723,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final boolean shouldDisplayToast = reportingInteractionMode == ReportingInteractionMode.TOAST
             || (ACRA.getConfig().resToastText() != 0 && (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG));
 
+        final TimeHelper sentToastTimeMillis = new TimeHelper();
         if (shouldDisplayToast) {
             new Thread() {
 
@@ -716,6 +736,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 public void run() {
                     Looper.prepare();
                     ToastSender.sendToast(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG);
+                    sentToastTimeMillis.setInitialTimeMillis(System.currentTimeMillis());
                     Looper.loop();
                 }
 
@@ -767,20 +788,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
                 @Override
                 public void run() {
-                    final Time beforeWait = new Time();
-                    final Time currentTime = new Time();
-                    beforeWait.setToNow();
-                    final long beforeWaitInMillis = beforeWait.toMillis(false);
-                    long elapsedTimeInMillis = 0;
-                    while (elapsedTimeInMillis < ACRAConstants.TOAST_WAIT_DURATION) {
+                    Log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
+                        + " millis from " + sentToastTimeMillis.initialTimeMillis
+                        + " currentMillis=" + System.currentTimeMillis());
+                    while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
                         try {
                             // Wait a bit to let the user read the toast
-                            Thread.sleep(ACRAConstants.TOAST_WAIT_DURATION);
+                            Thread.sleep(100);
                         } catch (InterruptedException e1) {
                             Log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                         }
-                        currentTime.setToNow();
-                        elapsedTimeInMillis = currentTime.toMillis(false) - beforeWaitInMillis;
                     }
                     toastWaitEnded = true;
                 }
@@ -799,13 +816,19 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             public void run() {
                 // We have to wait for BOTH the toast display wait AND
                 // the worker job to be completed.
-                Log.d(LOG_TAG, "Waiting for Toast + worker...");
-                while (!toastWaitEnded || (worker != null && worker.isAlive())) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e1) {
-                        Log.e(LOG_TAG, "Error : ", e1);
+                if (toastWaitEnded || (worker == null)) {
+                    // Nothing to wait for.
+                    Log.d(LOG_TAG, "Toast (if any) and worker completed - not waiting");
+                } else {
+                    Log.d(LOG_TAG, "Waiting for " + (toastWaitEnded ? "Toast " : " -- ") + (worker.isAlive() ? "and Worker" : ""));
+                    while (!toastWaitEnded || worker.isAlive()) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e1) {
+                            Log.e(LOG_TAG, "Error : ", e1);
+                        }
                     }
+                    Log.d(LOG_TAG, "Finished waiting for Toast + Worker");
                 }
 
                 if (showDirectDialog) {
