@@ -438,6 +438,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * End the application.
      */
     private void endApplication(Thread uncaughtExceptionThread, Throwable th) {
+        // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
+        // as the intent is clearer and would allows you to switch it off for SILENT.
         final boolean letDefaultHandlerEndApplication = (
              ACRA.getConfig().mode() == ReportingInteractionMode.SILENT ||
             (ACRA.getConfig().mode() == ReportingInteractionMode.TOAST && ACRA.getConfig().forceCloseDialogAfterToast())
