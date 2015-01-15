@@ -536,14 +536,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     public void checkReportsOnApplicationStart() {
 
-        // Delete any old unsent reports if this is a newer version of the app
-        // than when we last started.
-        final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
-        final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
-        final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
-        final boolean newVersion = (packageInfo != null && packageInfo.versionCode > lastVersionNr);
-        if (newVersion) {
-            if (ACRA.getConfig().deleteOldUnsentReportsOnApplicationStart()) {
+        if (ACRA.getConfig().deleteOldUnsentReportsOnApplicationStart()) {
+            // Delete any old unsent reports if this is a newer version of the app
+            // than when we last started.
+            final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
+            final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
+            final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
+            final boolean newVersion = (packageInfo != null && packageInfo.versionCode > lastVersionNr);
+            if (newVersion) {
                 deletePendingReports();
             }
             final SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -551,7 +551,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             prefsEditor.commit();
         }
 
-        if ((ACRA.getConfig().mode() == ReportingInteractionMode.NOTIFICATION || ACRA.getConfig().mode() == ReportingInteractionMode.DIALOG)
+        ReportingInteractionMode reportingInteractionMode = ACRA.getConfig().mode();
+
+        if ((reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG)
             && ACRA.getConfig().deleteUnapprovedReportsOnApplicationStart()) {
             // NOTIFICATION or DIALOG mode, and there are unapproved reports to
             // send (latest notification/dialog has been ignored: neither
@@ -573,9 +575,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // notify it.
             // If there are unapproved reports in DIALOG mode, show the dialog
 
-            ReportingInteractionMode reportingInteractionMode = ACRA.getConfig().mode();
 
-            filesList = reportFinder.getCrashReportFiles();
             final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
 
             if (reportingInteractionMode == ReportingInteractionMode.SILENT
@@ -590,12 +590,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
                 Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
                 startSendingReports(false, false);
-            } else if (ACRA.getConfig().mode() == ReportingInteractionMode.NOTIFICATION) {
+            } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
                 // NOTIFICATION mode there are unapproved reports to send
                 // Display the notification.
                 // The user comment will be associated to the latest report
                 notifySendReport(getLatestNonSilentReport(filesList));
-            } else if (ACRA.getConfig().mode() == ReportingInteractionMode.DIALOG) {
+            } else if (reportingInteractionMode == ReportingInteractionMode.DIALOG) {
                 // DIALOG mode: the dialog is always displayed because it has
                 // been put on the task stack before killing the app.
                 // The user can explicitly say Yes or No... or ignore the dialog
