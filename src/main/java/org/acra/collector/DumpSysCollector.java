@@ -38,10 +38,12 @@ final class DumpSysCollector {
      * this application process.
      * 
      * @return The execution result.
+     * @throws IOException 
      */
-    public static String collectMemInfo() {
+    public static String collectMemInfo() throws IOException {
 
         final StringBuilder meminfo = new StringBuilder();
+		BufferedReader bufferedReader = null;
         try {
             final List<String> commandLine = new ArrayList<String>();
             commandLine.add("dumpsys");
@@ -49,7 +51,7 @@ final class DumpSysCollector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
+            bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
 
             while (true) {
                 final String line = bufferedReader.readLine();
@@ -62,7 +64,10 @@ final class DumpSysCollector {
 
         } catch (IOException e) {
             Log.e(ACRA.LOG_TAG, "DumpSysCollector.meminfo could not retrieve data", e);
-        }
+        } finally {
+        	if (bufferedReader != null)
+        		bufferedReader.close();
+		}
 
         return meminfo.toString();
     }
