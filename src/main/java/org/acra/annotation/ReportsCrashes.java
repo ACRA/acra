@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
+import org.acra.CrashReportDialog;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.sender.HttpSender.Method;
@@ -536,6 +537,12 @@ public @interface ReportsCrashes {
     boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
 
     String httpsSocketFactoryFactoryClass() default ACRAConstants.DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS;
+
+    /**
+     * @return Class for the CrashReportDialog used when sending intent.
+     *  If not provided, defaults to CrashReportDialog.class
+     */
+    Class<? extends CrashReportDialog> reportDialogClass() default CrashReportDialog.class;
 
     /**
      * <p>

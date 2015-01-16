@@ -76,7 +76,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         mDialog.show();
     }
 
-    private View buildCustomView(Bundle savedInstanceState) {
+    protected View buildCustomView(Bundle savedInstanceState) {
         final LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);

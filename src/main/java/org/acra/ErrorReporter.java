@@ -859,7 +859,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     void notifyDialog(String reportFileName) {
         Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
-        Intent dialogIntent = new Intent(mContext, CrashReportDialog.class);
+        Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
         dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(dialogIntent);
