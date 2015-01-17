@@ -19,7 +19,6 @@ package org.acra.collector;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -337,8 +336,14 @@ public final class CrashReportDataFactory {
 
             // Application specific log file
             if (crashReportFields.contains(APPLICATION_LOG)) {
-                crashReportData.put(APPLICATION_LOG, LogFileCollector.collectLogFile(context, ACRA.getConfig()
-                    .applicationLogFile(), ACRA.getConfig().applicationLogFileLines()));
+                try {
+                    final String logFile = LogFileCollector.collectLogFile(context,
+                                                                           ACRA.getConfig().applicationLogFile(),
+                                                                           ACRA.getConfig().applicationLogFileLines());
+                    crashReportData.put(APPLICATION_LOG, logFile);
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile(), e);
+                }
             }
 
             // Media Codecs list
@@ -358,10 +363,6 @@ public final class CrashReportDataFactory {
 
         } catch (RuntimeException e) {
             Log.e(LOG_TAG, "Error while retrieving crash data", e);
-        } catch (FileNotFoundException e) {
-            Log.e(LOG_TAG, "Error : application log file " + ACRA.getConfig().applicationLogFile() + " not found.", e);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile() + ".", e);
         }
 
         return crashReportData;
