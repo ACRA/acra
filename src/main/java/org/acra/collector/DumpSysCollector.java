@@ -38,9 +38,8 @@ final class DumpSysCollector {
      * this application process.
      * 
      * @return The execution result.
-     * @throws IOException 
      */
-    public static String collectMemInfo() throws IOException {
+    public static String collectMemInfo() {
 
         final StringBuilder meminfo = new StringBuilder();
 		BufferedReader bufferedReader = null;
@@ -64,10 +63,9 @@ final class DumpSysCollector {
 
         } catch (IOException e) {
             Log.e(ACRA.LOG_TAG, "DumpSysCollector.meminfo could not retrieve data", e);
-        } finally {
-        	if (bufferedReader != null)
-        		bufferedReader.close();
 		}
+
+        CollectorUtil.safeClose(bufferedReader);
 
         return meminfo.toString();
     }
