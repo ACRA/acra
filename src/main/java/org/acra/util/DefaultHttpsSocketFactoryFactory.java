@@ -13,6 +13,6 @@ public final class DefaultHttpsSocketFactoryFactory implements HttpsSocketFactor
 
     @Override
     public SocketFactory create(Context context) {
-        return SSLSocketFactory.getSocketFactory();
+        return new TlsSniSocketFactory();
     }
 }
