@@ -39,7 +39,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <android.version>14</android.version>
+        <android.version>17</android.version>
 	</properties>
 
 	<dependencies>

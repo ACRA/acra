@@ -18,12 +18,14 @@ import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.params.HttpParams;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -43,6 +45,7 @@ import javax.net.ssl.SSLSocketFactory;
  * @since 4.6.0
  */
 public class TlsSniSocketFactory implements LayeredSocketFactory {
+
     private static final String TAG =  TlsSniSocketFactory.class.getSimpleName();
     
     private final static int VERSION_CODES_JELLY_BEAN_MR1 = 17;
@@ -51,8 +54,28 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
     private final static SSLSocketFactory sslSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0);
 
     // use BrowserCompatHostnameVerifier to allow IP addresses in the Common Name
-    final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
+    private final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
 
+    private static final List<String> ALLOWED_CIPHERS = Arrays.asList(
+        // allowed secure ciphers according to NIST.SP.800-52r1.pdf Section 3.3.1 (see http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r1.pdf)
+        // TLS 1.2
+        "TLS_RSA_WITH_AES_256_GCM_SHA384",
+        "TLS_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+        "TLS_ECHDE_RSA_WITH_AES_128_GCM_SHA256",
+        // maximum interoperability
+        "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+        "TLS_RSA_WITH_AES_128_CBC_SHA",
+        // additionally
+        "TLS_RSA_WITH_AES_256_CBC_SHA",
+        "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+        "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"
+    );
 
     // Plain TCP/IP (layer below TLS)
 
@@ -68,10 +91,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
 
     @Override
     public boolean isSecure(Socket s) throws IllegalArgumentException {
-        if (s instanceof SSLSocket) {
-            return ((SSLSocket)s).isConnected();
-        }
-        return false;
+        return (s instanceof SSLSocket) && s.isConnected();
     }
 
 
@@ -85,10 +105,11 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
         }
 
         // create and connect SSL socket, but don't do hostname/certificate verification yet
-        SSLSocket ssl = (SSLSocket)sslSocketFactory.createSocket(InetAddress.getByName(host), port);
+        final SSLSocket ssl = (SSLSocket) sslSocketFactory.createSocket(InetAddress.getByName(host), port);
 
         // establish and verify TLS connection
         establishAndVerify(ssl, host);
+
         return ssl;
     }
     
@@ -100,9 +121,9 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
      *   - verify certificate
      * @param socket    unconnected SSLSocket
      * @param host      host name for SNI
-     * @throws SSLPeerUnverifiedException
+     * @throws IOException if the connection could not be established.
      */
-    private void establishAndVerify(SSLSocket socket, String host) throws IOException, SSLPeerUnverifiedException {
+    private void establishAndVerify(SSLSocket socket, String host) throws IOException {
         setTlsParameters(socket);
         setSniHostname(socket, host);
         
@@ -116,8 +137,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
             throw new SSLPeerUnverifiedException(host);
         }
 
-        Log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() +
-                " using " + session.getCipherSuite());
+        Log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() + " using " + session.getCipherSuite());
     }
     
     /**
@@ -134,54 +154,33 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
         /* set reasonable protocol versions */
         // - enable all supported protocols (enables TLSv1.1 and TLSv1.2 on Android <5.0)
         // - remove all SSL versions (especially SSLv3) because they're insecure now
-        List<String> protocols = new LinkedList<String>();
+        final List<String> protocols = new LinkedList<String>();
         for (String protocol : socket.getSupportedProtocols()) {
             if (!protocol.toUpperCase().contains("SSL")) {
                 protocols.add(protocol);
             }
         }
         Log.v(TAG, "Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
-        socket.setEnabledProtocols(protocols.toArray(new String[0]));
+        socket.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
 
         /* set reasonable cipher suites */
         if (Build.VERSION.SDK_INT < VERSION_CODES_LOLLIPOP) {
             // choose secure cipher suites
-            List<String> allowedCiphers = Arrays.asList(new String[] {
-                // allowed secure ciphers according to NIST.SP.800-52r1.pdf Section 3.3.1 (see http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r1.pdf)
-                // TLS 1.2
-                "TLS_RSA_WITH_AES_256_GCM_SHA384",
-                "TLS_RSA_WITH_AES_128_GCM_SHA256",
-                "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
-                "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-                "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-                "TLS_ECHDE_RSA_WITH_AES_128_GCM_SHA256",
-                // maximum interoperability
-                "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
-                "TLS_RSA_WITH_AES_128_CBC_SHA",
-                // additionally
-                "TLS_RSA_WITH_AES_256_CBC_SHA",
-                "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
-                "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-                "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
-                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-            });
-            
-            List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
+
+            final List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
             
             // preferred ciphers = allowed Ciphers \ availableCiphers
-            HashSet<String> preferredCiphers = new HashSet<String>(allowedCiphers);
+            final Set<String> preferredCiphers = new HashSet<String>(ALLOWED_CIPHERS);
             preferredCiphers.retainAll(availableCiphers);
             
-            // add preferred ciphers to enabled ciphers
+            // add enabled ciphers to preferred ciphers
             // for maximum security, preferred ciphers should *replace* enabled ciphers,
             // but for the security level of ACRA, disabling of insecure
             // ciphers should be a server-side task
-            HashSet<String> enabledCiphers = preferredCiphers;
-            enabledCiphers.addAll(new HashSet<String>(Arrays.asList(socket.getEnabledCipherSuites())));
+            preferredCiphers.addAll(Arrays.asList(socket.getEnabledCipherSuites()));
             
-            Log.v(TAG, "Setting allowed TLS ciphers: " + TextUtils.join(", ", enabledCiphers));
-            socket.setEnabledCipherSuites(enabledCiphers.toArray(new String[0]));
+            Log.v(TAG, "Setting allowed TLS ciphers: " + TextUtils.join(", ", preferredCiphers));
+            socket.setEnabledCipherSuites(preferredCiphers.toArray(new String[preferredCiphers.size()]));
         }
     }
     
@@ -190,14 +189,14 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
         // set SNI host name
         if (Build.VERSION.SDK_INT >= VERSION_CODES_JELLY_BEAN_MR1 && sslSocketFactory instanceof SSLCertificateSocketFactory) {
             Log.d(TAG, "Using documented SNI with host name " + hostName);
-            ((SSLCertificateSocketFactory)sslSocketFactory).setHostname(socket, hostName);
+            ((SSLCertificateSocketFactory) sslSocketFactory).setHostname(socket, hostName);
         } else {
             Log.d(TAG, "No documented SNI support on Android <4.2, trying reflection method with host name " + hostName);
             try {
-                java.lang.reflect.Method setHostnameMethod = socket.getClass().getMethod("setHostname", String.class);
+                final Method setHostnameMethod = socket.getClass().getMethod("setHostname", String.class);
                 setHostnameMethod.invoke(socket, hostName);
             } catch (Exception e) {
-                Log.w(TAG, "SNI not useable", e);
+                Log.w(TAG, "SNI not usable", e);
             }
         }
     }
