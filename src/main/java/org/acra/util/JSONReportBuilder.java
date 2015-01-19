@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
-import org.acra.collector.CollectorUtil;
 import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSenderException;
 import org.json.JSONArray;
@@ -67,7 +66,6 @@ public class JSONReportBuilder {
      */
     public static JSONObject buildJSONReport(CrashReportData errorContent) throws JSONReportException {
         JSONObject jsonReport = new JSONObject();
-        BufferedReader reader = null;
         for (ReportField key : errorContent.keySet()) {
             try {
                 // Each ReportField can be identified as a substructure and not
@@ -75,7 +73,7 @@ public class JSONReportBuilder {
                 if (key.containsKeyValuePairs()) {
                     JSONObject subObject = new JSONObject();
                     String strContent = errorContent.getProperty(key);
-                    reader = new BufferedReader(new StringReader(strContent), 1024);
+                    BufferedReader reader = new BufferedReader(new StringReader(strContent), 1024);
                     String line = null;
                     try {
                         while ((line = reader.readLine()) != null) {
@@ -91,8 +89,6 @@ public class JSONReportBuilder {
                 }
             } catch (JSONException e) {
                 throw new JSONReportException("Could not create JSON object for key " + key, e);
-            } finally {
-            	CollectorUtil.safeClose(reader);
             }
         }
         return jsonReport;

@@ -20,8 +20,6 @@
 package org.acra;
 
 import android.content.Context;
-
-import org.acra.collector.CollectorUtil;
 import org.acra.collector.CrashReportData;
 
 import java.io.BufferedInputStream;
@@ -324,8 +322,6 @@ final class CrashReportPersister {
             crashData.put(key, value);
         }
 
-        CollectorUtil.safeClose(reader);
-        
         return crashData;
     }
 
