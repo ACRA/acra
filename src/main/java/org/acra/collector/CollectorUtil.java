@@ -3,7 +3,7 @@ package org.acra.collector;
 import java.io.IOException;
 import java.io.Reader;
 
-final class CollectorUtil {
+public final class CollectorUtil {
 
     /**
      * Closes a Reader.
@@ -11,6 +11,8 @@ final class CollectorUtil {
      * @param reader    Reader to close. If reader is null then method just returns.
      */
     public static void safeClose(Reader reader) {
+    	if (reader == null)	return;
+    	
         try {
             reader.close();
         } catch (IOException e) {
