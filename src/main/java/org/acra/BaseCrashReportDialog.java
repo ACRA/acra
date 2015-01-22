@@ -22,9 +22,16 @@ import static org.acra.ReportField.USER_EMAIL;
  *
  * The methods sendCrash(comment, usrEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
+ *
+ * This Activity will be instantiated with 2 arguments:
+ * <ol>
+ *     <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
+ *     <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
+ * </ol>
  */
-public class BaseCrashReportDialog extends Activity {
-    String mReportFileName;
+public abstract class BaseCrashReportDialog extends Activity {
+
+    private String mReportFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +72,16 @@ public class BaseCrashReportDialog extends Activity {
 
     /**
      * Send crash report given user's comment and email address. If none should be empty strings
-     * @param comment
-     * @param usrEmail
+     * @param comment       Comment (may be null) provided by the user.
+     * @param userEmail     Email address (may be null) provided by the client.
      */
-    protected void sendCrash(String comment, String usrEmail) {
+    protected void sendCrash(String comment, String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
         try {
             Log.d(LOG_TAG, "Add user comment to " + mReportFileName);
             final CrashReportData crashData = persister.load(mReportFileName);
-            crashData.put(USER_COMMENT, comment);
-            crashData.put(USER_EMAIL, usrEmail);
+            crashData.put(USER_COMMENT, comment == null ? "" : comment);
+            crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, mReportFileName);
         } catch (IOException e) {
             Log.w(LOG_TAG, "User comment not added: ", e);

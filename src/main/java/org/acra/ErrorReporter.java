@@ -834,10 +834,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 if (showDirectDialog) {
                     // Create a new activity task with the confirmation dialog.
                     // This new task will be persisted on application restart
-                    // right
-                    // after its death.
+                    // right after its death.
                     Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
-                    notifyDialog(reportFileName);
+                    notifyDialog(reportFileName, reportBuilder);
                 }
 
                 Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.mEndsApplication);
@@ -850,17 +849,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Notify user with a dialog the app has crashed, ask permission to send it.
+     * Notify user with a dialog the app has crashed.
      * {@link CrashReportDialog} Activity.
      *
-     * @param reportFileName
-     *            Name fo the error report to display in the crash report
-     *            dialog.
+     * @param reportFileName    Name of the error report to display in the crash report dialog.
      */
-    void notifyDialog(String reportFileName) {
+    private void notifyDialog(String reportFileName, ReportBuilder reportBuilder) {
         Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
-        Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
+        final Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
+        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.mException);
         dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(dialogIntent);
     }

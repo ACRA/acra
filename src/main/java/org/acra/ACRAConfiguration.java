@@ -1225,7 +1225,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
 
     @Override
-    public Class reportDialogClass() {
+    public Class<? extends BaseCrashReportDialog> reportDialogClass() {
         if (mReportDialogClass != null) {
             return mReportDialogClass;
         }

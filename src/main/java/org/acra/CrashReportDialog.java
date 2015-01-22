@@ -19,6 +19,7 @@ import android.widget.TextView;
  * AndroidManifest to work properly.
  **/
 public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
+
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
     private SharedPreferences prefs;
@@ -31,14 +32,14 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        int resourceId = ACRA.getConfig().resDialogTitle();
-        if(resourceId != 0) {
-            dialogBuilder.setTitle(resourceId);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final int titleResourceId = ACRA.getConfig().resDialogTitle();
+        if (titleResourceId != 0) {
+            dialogBuilder.setTitle(titleResourceId);
         }
-        resourceId = ACRA.getConfig().resDialogIcon();
-        if(resourceId != 0) {
-            dialogBuilder.setIcon(resourceId);
+        final int iconResourceId = ACRA.getConfig().resDialogIcon();
+        if (iconResourceId != 0) {
+            dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
         dialogBuilder.setPositiveButton(getText(ACRA.getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
