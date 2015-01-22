@@ -1,82 +1,57 @@
 package org.acra;
 
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_EMAIL;
-
-import java.io.IOException;
-
-import org.acra.collector.CrashReportData;
-import org.acra.util.ToastSender;
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 /**
  * This is the dialog Activity used by ACRA to get authorization from the user
  * to send reports. Requires android:launchMode="singleInstance" in your
  * AndroidManifest to work properly.
  **/
-public class CrashReportDialog extends Activity implements DialogInterface.OnClickListener, OnDismissListener {
+public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
+
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
     private SharedPreferences prefs;
     private EditText userComment;
     private EditText userEmail;
-    String mReportFileName;
+
     AlertDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
-        if(forceCancel) {
-            ACRA.log.d(ACRA.LOG_TAG, "Forced reports deletion.");
-            cancelReports();
-            finish();
-            return;
-        }
 
-        mReportFileName = getIntent().getStringExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME);
-        Log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
-        if (mReportFileName == null) {
-            finish();
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final int titleResourceId = ACRA.getConfig().resDialogTitle();
+        if (titleResourceId != 0) {
+            dialogBuilder.setTitle(titleResourceId);
         }
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        int resourceId = ACRA.getConfig().resDialogTitle();
-        if(resourceId != 0) {
-            dialogBuilder.setTitle(resourceId);
-        }
-        resourceId = ACRA.getConfig().resDialogIcon();
-        if(resourceId != 0) {
-            dialogBuilder.setIcon(resourceId);
+        final int iconResourceId = ACRA.getConfig().resDialogIcon();
+        if (iconResourceId != 0) {
+            dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
         dialogBuilder.setPositiveButton(getText(ACRA.getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
         dialogBuilder.setNegativeButton(getText(ACRA.getConfig().resDialogNegativeButtonText()), CrashReportDialog.this);
-        cancelNotification();
+
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
         mDialog.setOnDismissListener(this);
         mDialog.show();
     }
 
-    private View buildCustomView(Bundle savedInstanceState) {
+    protected View buildCustomView(Bundle savedInstanceState) {
         final LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
@@ -148,63 +123,34 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         return root;
     }
 
-    /**
-     * Disable the notification in the Status Bar.
-     */
-    protected void cancelNotification() {
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(ACRAConstants.NOTIF_CRASH_ID);
-    }
-
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (which == DialogInterface.BUTTON_POSITIVE)
-            sendCrash();
-        else {
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            // Retrieve user comment
+            final String comment = userComment != null ? userComment.getText().toString() : "";
+
+            // Store the user email
+            final String usrEmail;
+            if (prefs != null && userEmail != null) {
+                usrEmail = userEmail.getText().toString();
+                final SharedPreferences.Editor prefEditor = prefs.edit();
+                prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
+                prefEditor.commit();
+            } else {
+                usrEmail = "";
+            }
+            sendCrash(comment, usrEmail);
+        } else {
             cancelReports();
         }
+
         finish();
     }
 
-    private void cancelReports() {
-        ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
-    }
 
-    private void sendCrash() {
-        // Retrieve user comment
-        final String comment = userComment != null ? userComment.getText().toString() : "";
-
-        // Store the user email
-        final String usrEmail;
-        if (prefs != null && userEmail != null) {
-            usrEmail = userEmail.getText().toString();
-            final Editor prefEditor = prefs.edit();
-            prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
-            prefEditor.commit();
-        } else {
-            usrEmail = "";
-        }
-
-        final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
-        try {
-            Log.d(LOG_TAG, "Add user comment to " + mReportFileName);
-            final CrashReportData crashData = persister.load(mReportFileName);
-            crashData.put(USER_COMMENT, comment);
-            crashData.put(USER_EMAIL, usrEmail);
-            persister.store(crashData, mReportFileName);
-        } catch (IOException e) {
-            Log.w(LOG_TAG, "User comment not added: ", e);
-        }
-
-        // Start the report sending task
-        Log.v(ACRA.LOG_TAG, "About to start SenderWorker from CrashReportDialog");
-        ACRA.getErrorReporter().startSendingReports(false, true);
-
-        // Optional Toast to thank the user
-        final int toastId = ACRA.getConfig().resDialogOkToast();
-        if (toastId != 0) {
-            ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
-        }
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        finish();
     }
 
     /*
@@ -221,10 +167,5 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         if (userEmail != null && userEmail.getText() != null) {
             outState.putString(STATE_EMAIL, userEmail.getText().toString());
         }
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        finish();
     }
 }

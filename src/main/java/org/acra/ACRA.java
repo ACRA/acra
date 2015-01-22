@@ -92,7 +92,6 @@ public class ACRA {
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
     private static Application mApplication;
-    private static ReportsCrashes mReportsCrashes;
 
     // Accessible via ACRA#getErrorReporter().
     private static ErrorReporter errorReporterSingleton;
@@ -269,9 +268,9 @@ public class ACRA {
             }
             break;
         case DIALOG:
-            if (conf.resDialogText() == 0) {
+            if (CrashReportDialog.class.equals(conf.reportDialogClass()) && conf.resDialogText() == 0) {
                 throw new ACRAConfigurationException(
-                        "DIALOG mode: you have to define at least the resDialogText parameters in your application @ReportsCrashes() annotation.");
+                        "DIALOG mode: Using the (default) CrashReportDialog requires you to define at least the resDialogText parameter in your application @ReportsCrashes() annotation.");
             }
             break;
 		default:

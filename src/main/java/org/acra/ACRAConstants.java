@@ -45,12 +45,20 @@ public final class ACRAConstants {
      * The number of reports is limited to avoid ANR on application start.
      */
     static final int MAX_SEND_REPORTS = 5;
+
     /**
      * Used in the intent starting CrashReportDialog to provide the name of the
      * latest generated report file in order to be able to associate the user
      * comment.
      */
-    protected static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
+    public static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
+    /**
+     * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
+     *
+     * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
+     */
+    public static final String EXTRA_REPORT_EXCEPTION = "REPORT_EXCEPTION";
+
     /**
      * Set this extra to true to force the deletion of reports by the
      * {@link CrashReportDialog} activity.
