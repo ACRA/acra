@@ -31,7 +31,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Provides a SSLSocketFactory that is able to use SNI for SSL connections and
@@ -51,7 +50,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
     private final static int VERSION_CODES_JELLY_BEAN_MR1 = 17;
     private final static int VERSION_CODES_LOLLIPOP = 21;
     
-    private final static SSLSocketFactory sslSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0);
+    private final SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(0);
 
     // use BrowserCompatHostnameVerifier to allow IP addresses in the Common Name
     private final static HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
@@ -187,9 +186,9 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
     @TargetApi(VERSION_CODES_JELLY_BEAN_MR1)
     private void setSniHostname(SSLSocket socket, String hostName) {
         // set SNI host name
-        if (Build.VERSION.SDK_INT >= VERSION_CODES_JELLY_BEAN_MR1 && sslSocketFactory instanceof SSLCertificateSocketFactory) {
+        if (Build.VERSION.SDK_INT >= VERSION_CODES_JELLY_BEAN_MR1) {
             Log.d(TAG, "Using documented SNI with host name " + hostName);
-            ((SSLCertificateSocketFactory) sslSocketFactory).setHostname(socket, hostName);
+            sslSocketFactory.setHostname(socket, hostName);
         } else {
             Log.d(TAG, "No documented SNI support on Android <4.2, trying reflection method with host name " + hostName);
             try {
