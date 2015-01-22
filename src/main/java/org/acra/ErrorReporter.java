@@ -542,13 +542,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
             final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
             final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
-            final boolean newVersion = (packageInfo != null && packageInfo.versionCode > lastVersionNr);
-            if (newVersion) {
-                deletePendingReports();
+            if (packageInfo != null) {
+                final boolean newVersion = packageInfo.versionCode > lastVersionNr;
+                if (newVersion) {
+                    deletePendingReports();
+                }
+                final SharedPreferences.Editor prefsEditor = prefs.edit();
+                prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, packageInfo.versionCode);
+                prefsEditor.commit();
             }
-            final SharedPreferences.Editor prefsEditor = prefs.edit();
-            prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, packageInfo.versionCode);
-            prefsEditor.commit();
         }
 
         ReportingInteractionMode reportingInteractionMode = ACRA.getConfig().mode();
