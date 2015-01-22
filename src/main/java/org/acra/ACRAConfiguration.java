@@ -59,6 +59,7 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Integer mMaxNumberOfRequestRetries = null;
     private ReportingInteractionMode mMode = null;
     private ReportsCrashes mReportsCrashes = null;
+    private Class<? extends BaseCrashReportDialog> mReportDialogClass = null;
 
     private Integer mResDialogPositiveButtonText = null;
     private Integer mResDialogNegativeButtonText = null;
@@ -317,6 +318,12 @@ public class ACRAConfiguration implements ReportsCrashes {
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
         mResDialogNegativeButtonText = resId;
+        return this;
+    }
+
+    @SuppressWarnings( "unused" )
+    public ACRAConfiguration setReportDialogClass(Class<? extends BaseCrashReportDialog> reportDialogClass) {
+        mReportDialogClass = reportDialogClass;
         return this;
     }
 
@@ -1214,6 +1221,20 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return null;
+    }
+
+
+    @Override
+    public Class reportDialogClass() {
+        if (mReportDialogClass != null) {
+            return mReportDialogClass;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.reportDialogClass();
+        }
+
+        return CrashReportDialog.class;
     }
 
     /**

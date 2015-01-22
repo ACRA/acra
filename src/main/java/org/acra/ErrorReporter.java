@@ -154,7 +154,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                     if (ACRA.DEV_LOGGING)
                         ACRA.log.d(ACRA.LOG_TAG, "onActivityCreated " + activity.getClass());
-                    if (!(activity instanceof CrashReportDialog)) {
+                    if (!(activity instanceof BaseCrashReportDialog)) {
                         // Ignore CrashReportDialog because we want the last
                         // application Activity that was started so that we can
                         // explicitly kill it off.
@@ -859,7 +859,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     void notifyDialog(String reportFileName) {
         Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
-        Intent dialogIntent = new Intent(mContext, CrashReportDialog.class);
+        Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
         dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(dialogIntent);
