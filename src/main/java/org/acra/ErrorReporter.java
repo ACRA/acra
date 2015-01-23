@@ -867,12 +867,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param reportFileName Name of the report file to send.
      */
     private void createNotification(String reportFileName, ReportBuilder reportBuilder) {
-        // This notification can't be set to AUTO_CANCEL because after a crash,
-        // clicking on it restarts the application and this triggers a check
-        // for pending reports which issues the notification back.
-        // TODO if that still true now that we don't create notification on start - Try setting AUTO_CANCEL
 
-        // Notification cancellation is done in the dialog activity displayed on notification click.
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
         final ReportsCrashes conf = ACRA.getConfig();
@@ -888,11 +883,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final CharSequence contentText = mContext.getText(conf.resNotifText());
 
         Log.d(LOG_TAG, "Creating Notification for " + reportFileName);
-        final Intent notificationIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, mNotificationCounter++, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final Intent crashReportDialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, mNotificationCounter++, crashReportDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
+        notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
 
+        // TODO What does deleteIntent do? Shouldn't it also invoke the custom report dialog? And pass in the std args too?
         final Intent deleteIntent = new Intent(mContext, CrashReportDialog.class);
         deleteIntent.putExtra(ACRAConstants.EXTRA_FORCE_CANCEL, true);
         notification.deleteIntent = PendingIntent.getActivity(mContext, -1, deleteIntent, 0);
@@ -932,29 +929,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             persister.store(crashData, fileName);
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occurred while writing the report file...", e);
-        }
-    }
-
-    /**
-     * Retrieve the most recently created "non silent" report from an array of
-     * report file names. A non silent is any report which has not been created
-     * with {@link #handleSilentException(Throwable)}.
-     *
-     * @param filesList
-     *            An array of report file names.
-     * @return The most recently created "non silent" report file name.
-     */
-    private String getLatestNonSilentReport(String[] filesList) {
-        if (filesList != null && filesList.length > 0) {
-            for (int i = filesList.length - 1; i >= 0; i--) {
-                if (!fileNameParser.isSilent(filesList[i])) {
-                    return filesList[i];
-                }
-            }
-            // We should never have this result, but this should be secure...
-            return filesList[filesList.length - 1];
-        } else {
-            return null;
         }
     }
 

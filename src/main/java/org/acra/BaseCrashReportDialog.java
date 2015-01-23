@@ -1,11 +1,9 @@
 package org.acra;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 import org.acra.collector.CrashReportData;
 import org.acra.util.ToastSender;
 
@@ -49,16 +47,6 @@ public abstract class BaseCrashReportDialog extends Activity {
         if (mReportFileName == null) {
             finish();
         }
-        cancelNotification();
-    }
-
-
-    /**
-     * Disable the notification in the Status Bar.
-     */
-    private void cancelNotification() {
-        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(ACRAConstants.NOTIF_CRASH_ID);
     }
 
 
