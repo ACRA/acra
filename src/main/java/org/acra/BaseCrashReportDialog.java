@@ -34,7 +34,10 @@ public abstract class BaseCrashReportDialog extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
+
+        ACRA.log.d(ACRA.LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
+
+        final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {
             ACRA.log.d(ACRA.LOG_TAG, "Forced reports deletion.");
             cancelReports();

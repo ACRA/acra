@@ -830,6 +830,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     // right after its death.
                     Log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFileName);
                     final Intent dialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+                    dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(dialogIntent);
                 }
 
@@ -849,11 +850,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
     private Intent createCrashReportDialogIntent(String reportFileName, ReportBuilder reportBuilder) {
-        Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
+        Log.d(LOG_TAG, "Creating DialogIntent for " + reportFileName + " exception=" + reportBuilder.mException);
         final Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.mException);
-        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return dialogIntent;
     }
 
@@ -889,8 +889,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
         notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
 
-        // TODO What does deleteIntent do? Shouldn't it also invoke the custom report dialog? And pass in the std args too?
-        final Intent deleteIntent = new Intent(mContext, CrashReportDialog.class);
+        // The deleteIntent is invoked when the user swipes away the Notification.
+        // In this case we invoke the CrashReportDialog with EXTRA_FORCE_CANCEL==true
+        // which will cause BaseCrashReportDialog to clear the crash report and finish itself.
+        final Intent deleteIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
         deleteIntent.putExtra(ACRAConstants.EXTRA_FORCE_CANCEL, true);
         notification.deleteIntent = PendingIntent.getActivity(mContext, -1, deleteIntent, 0);
 

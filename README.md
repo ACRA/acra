@@ -41,6 +41,15 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
+ACRA v4.6
+===============================
+
+The summarized changelog is here: https://github.com/ACRA/acra/wiki/ChangeLog
+
+Included in this release (summarized summary):
+- CustomReportDialog using @ReportCrashes#reportDialogClass (NB must extend from BaseCrashReportDialog).
+- many bugfixes
+
 ACRA v4.5 - enabling the future
 ===============================
 
