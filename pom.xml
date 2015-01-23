@@ -7,7 +7,7 @@
     </parent>
 	<groupId>ch.acra</groupId>
 	<artifactId>acra</artifactId>
-	<version>4-SNAPSHOT</version>
+	<version>4.6.0RC2-SNAPSHOT</version>
 
 	<name>Application Crash Report for Android</name>
 
