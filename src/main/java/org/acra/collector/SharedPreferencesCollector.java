@@ -48,7 +48,7 @@ final class SharedPreferencesCollector {
     public static String collect(Context context) {
         final StringBuilder result = new StringBuilder();
         final Map<String, SharedPreferences> shrdPrefs = new TreeMap<String, SharedPreferences>();
-        shrdPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
+        shrdPrefs.put("default", ACRA.getACRASharedPreferences());
         final String[] shrdPrefsIds = ACRA.getConfig().additionalSharedPreferences();
         if (shrdPrefsIds != null) {
             for (final String shrdPrefId : shrdPrefsIds) {
