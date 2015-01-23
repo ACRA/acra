@@ -592,16 +592,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
                 Log.v(ACRA.LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
                 startSendingReports(false, false);
-            } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-                // NOTIFICATION mode there are unapproved reports to send
-                // Display the notification.
-                // The user comment will be associated to the latest report
-                notifySendReport(getLatestNonSilentReport(filesList));
-            } else if (reportingInteractionMode == ReportingInteractionMode.DIALOG) {
-                // DIALOG mode: the dialog is always displayed because it has
-                // been put on the task stack before killing the app.
-                // The user can explicitly say Yes or No... or ignore the dialog
-                // with the back button.
             }
 
         }
@@ -777,7 +767,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
 
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-            Log.d(ACRA.LOG_TAG, "Notification will be created on application start.");
+            Log.d(ACRA.LOG_TAG, "Creating Notification.");
+            createNotification(reportFileName, reportBuilder);
         }
 
         if (shouldDisplayToast) {
@@ -837,8 +828,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     // Create a new activity task with the confirmation dialog.
                     // This new task will be persisted on application restart
                     // right after its death.
-                    Log.d(ACRA.LOG_TAG, "About to create DIALOG from #handleException");
-                    notifyDialog(reportFileName, reportBuilder);
+                    Log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFileName);
+                    final Intent dialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+                    dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(dialogIntent);
                 }
 
                 Log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.mEndsApplication);
@@ -851,37 +844,31 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Notify user with a dialog the app has crashed.
-     * {@link CrashReportDialog} Activity.
+     * Creates an Intent that can be used to create and show a CrashReportDialog.
      *
      * @param reportFileName    Name of the error report to display in the crash report dialog.
+     * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
-    private void notifyDialog(String reportFileName, ReportBuilder reportBuilder) {
-        Log.d(LOG_TAG, "Creating Dialog for " + reportFileName);
+    private Intent createCrashReportDialogIntent(String reportFileName, ReportBuilder reportBuilder) {
+        Log.d(LOG_TAG, "Creating DialogIntent for " + reportFileName + " exception=" + reportBuilder.mException);
         final Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.mException);
-        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(dialogIntent);
+        return dialogIntent;
     }
 
+
     /**
-     * Send a status bar notification.
+     * Creates a status bar notification.
      *
      * The action triggered when the notification is selected is to start the
      * {@link CrashReportDialog} Activity.
      *
-     * @param reportFileName
-     *            Name of the report file to send.
+     * @param reportFileName Name of the report file to send.
      */
-    private void notifySendReport(String reportFileName) {
-        // This notification can't be set to AUTO_CANCEL because after a crash,
-        // clicking on it restarts the application and this triggers a check
-        // for pending reports which issues the notification back.
-        // Notification cancellation is done in the dialog activity displayed
-        // on notification click.
-        final NotificationManager notificationManager = (NotificationManager) mContext
-            .getSystemService(Context.NOTIFICATION_SERVICE);
+    private void createNotification(String reportFileName, ReportBuilder reportBuilder) {
+
+        final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
         final ReportsCrashes conf = ACRA.getConfig();
 
@@ -895,14 +882,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final CharSequence contentTitle = mContext.getText(conf.resNotifTitle());
         final CharSequence contentText = mContext.getText(conf.resNotifText());
 
-        final Intent notificationIntent = new Intent(mContext, CrashReportDialog.class);
         Log.d(LOG_TAG, "Creating Notification for " + reportFileName);
-        notificationIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
-        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, mNotificationCounter++, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final Intent crashReportDialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+        final PendingIntent contentIntent = PendingIntent.getActivity(mContext, mNotificationCounter++, crashReportDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
+        notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
 
-        final Intent deleteIntent = new Intent(mContext, CrashReportDialog.class);
+        // The deleteIntent is invoked when the user swipes away the Notification.
+        // In this case we invoke the CrashReportDialog with EXTRA_FORCE_CANCEL==true
+        // which will cause BaseCrashReportDialog to clear the crash report and finish itself.
+        final Intent deleteIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
         deleteIntent.putExtra(ACRAConstants.EXTRA_FORCE_CANCEL, true);
         notification.deleteIntent = PendingIntent.getActivity(mContext, -1, deleteIntent, 0);
 
@@ -941,29 +931,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             persister.store(crashData, fileName);
         } catch (Exception e) {
             Log.e(LOG_TAG, "An error occurred while writing the report file...", e);
-        }
-    }
-
-    /**
-     * Retrieve the most recently created "non silent" report from an array of
-     * report file names. A non silent is any report which has not been created
-     * with {@link #handleSilentException(Throwable)}.
-     *
-     * @param filesList
-     *            An array of report file names.
-     * @return The most recently created "non silent" report file name.
-     */
-    private String getLatestNonSilentReport(String[] filesList) {
-        if (filesList != null && filesList.length > 0) {
-            for (int i = filesList.length - 1; i >= 0; i--) {
-                if (!fileNameParser.isSilent(filesList[i])) {
-                    return filesList[i];
-                }
-            }
-            // We should never have this result, but this should be secure...
-            return filesList[filesList.length - 1];
-        } else {
-            return null;
         }
     }
 

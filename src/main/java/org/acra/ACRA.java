@@ -261,16 +261,19 @@ public class ACRA {
             }
             break;
         case NOTIFICATION:
-            if (conf.resNotifTickerText() == 0 || conf.resNotifTitle() == 0 || conf.resNotifText() == 0
-                    || conf.resDialogText() == 0) {
+            if (conf.resNotifTickerText() == 0 || conf.resNotifTitle() == 0 || conf.resNotifText() == 0) {
                 throw new ACRAConfigurationException(
-                        "NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText, resDialogText parameters in your application @ReportsCrashes() annotation.");
+                        "NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText parameters in your application @ReportsCrashes() annotation.");
+            }
+            if (CrashReportDialog.class.equals(conf.reportDialogClass()) && conf.resDialogText() == 0) {
+                throw new ACRAConfigurationException(
+                        "NOTIFICATION mode: using the (default) CrashReportDialog requires you have to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
             }
             break;
         case DIALOG:
             if (CrashReportDialog.class.equals(conf.reportDialogClass()) && conf.resDialogText() == 0) {
                 throw new ACRAConfigurationException(
-                        "DIALOG mode: Using the (default) CrashReportDialog requires you to define at least the resDialogText parameter in your application @ReportsCrashes() annotation.");
+                        "DIALOG mode: using the (default) CrashReportDialog requires you to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
             }
             break;
 		default:
