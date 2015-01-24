@@ -479,7 +479,7 @@ public @interface ReportsCrashes {
 
     /**
      * Set this to false if you want to disable sending reports at the time the
-     * exception is caught. In thie case, reports will not be sent until the
+     * exception is caught. In this case, reports will not be sent until the
      * application is restarted.
      *
      * @return false if reports should not be sent.

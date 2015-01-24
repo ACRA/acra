@@ -47,34 +47,42 @@ final class SharedPreferencesCollector {
      */
     public static String collect(Context context) {
         final StringBuilder result = new StringBuilder();
-        final Map<String, SharedPreferences> shrdPrefs = new TreeMap<String, SharedPreferences>();
-        shrdPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
-        final String[] shrdPrefsIds = ACRA.getConfig().additionalSharedPreferences();
-        if (shrdPrefsIds != null) {
-            for (final String shrdPrefId : shrdPrefsIds) {
-                shrdPrefs.put(shrdPrefId, context.getSharedPreferences(shrdPrefId, Context.MODE_PRIVATE));
+
+        // Include the default SharedPreferences
+        final Map<String, SharedPreferences> sharedPrefs = new TreeMap<String, SharedPreferences>();
+        sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
+
+        // Add in any additional SharedPreferences
+        final String[] sharedPrefIds = ACRA.getConfig().additionalSharedPreferences();
+        if (sharedPrefIds != null) {
+            for (final String sharedPrefId : sharedPrefIds) {
+                sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
             }
         }
 
-        for (final String prefsId : shrdPrefs.keySet()) {
-            final SharedPreferences prefs = shrdPrefs.get(prefsId);
-            if (prefs != null) {
-                final Map<String, ?> kv = prefs.getAll();
-                if (kv != null && kv.size() > 0) {
-                    for (final String key : kv.keySet()) {
-                        if (!filteredKey(key)) {
-                            if (kv.get(key) != null) {
-                                result.append(prefsId).append('.').append(key).append('=').append(kv.get(key).toString()).append("\n");
-                            } else {
-                                result.append(prefsId).append('.').append(key).append('=').append("null\n");
-                            }
-                        }
-                    }
+        // Iterate over all included preference files and add the preferences from each.
+        for (Map.Entry<String, SharedPreferences> entry : sharedPrefs.entrySet()) {
+            final String sharedPrefId = entry.getKey();
+            final SharedPreferences prefs = entry.getValue();
+
+            final Map<String, ?> prefEntries = prefs.getAll();
+
+            // Show that we have no preferences saved for that preference file.
+            if (prefEntries.isEmpty()) {
+                result.append(sharedPrefId).append('=').append("empty\n");
+                continue;
+            }
+
+            // Add all non-filtered preferences from that preference file.
+            for (final String key : prefEntries.keySet()) {
+                if (filteredKey(key)) {
+                    ACRA.log.d(ACRA.LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + key + " due to filtering rule");
                 } else {
-                    result.append(prefsId).append('=').append("empty\n");
+                    final Object prefValue = prefEntries.get(key);
+                    result.append(sharedPrefId).append('.').append(key).append('=');
+                    result.append(prefValue == null ? "null" : prefValue.toString());
+                    result.append("\n");
                 }
-            } else {
-                result.append("null\n");
             }
             result.append('\n');
         }
