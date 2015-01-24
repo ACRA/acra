@@ -16,7 +16,7 @@ What is ACRA ?
 
 ACRA is a library enabling Android Application to automatically post their crash reports to a GoogleDoc form. It is targetted to android applications developers to help them get data from their applications when they crash or behave erroneously.
 
-ACRA is used in 2.76% of all apps on Google Play as of Jan 2015. That's over 40M *apps* using ACRA. And since the average US user has 41 apps installed on their phone that means there is a 70% that ACRA is running on any phone. That means ACRA is running on over a *billion devices*.
+ACRA is used in 2.76% ([See AppBrain/stats](http://www.appbrain.com/stats/libraries/details/acra/acra)) of all apps on Google Play as of Jan 2015. That's over 40M **apps** using ACRA. And since the average US user has 41 apps installed on their phone that means there is a 70% that ACRA is running on any phone. That means ACRA is running on over a **billion devices**.
 
 See [BasicSetup](http://github.com/ACRA/acra/wiki/BasicSetup) for a step-by-step installation and usage guide.
 
