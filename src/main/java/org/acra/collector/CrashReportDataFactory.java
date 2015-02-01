@@ -238,7 +238,7 @@ public final class CrashReportDataFactory {
             }
 
             if (crashReportFields.contains(BUILD_CONFIG)) {
-                final String className = context.getPackageName() + ".BuildConfig";
+                final String className = context.getClass().getPackage().getName() + ".BuildConfig";
                 try {
                     final Class<?> buildConfig = Class.forName(className);
                     crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfig));
