@@ -460,7 +460,7 @@ public final class CrashReportDataFactory {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className);
+            Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className + ". Please configure 'buildConfigClass' in your ACRA config");
             throw e;
         }
     }
