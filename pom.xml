@@ -167,9 +167,9 @@
 	</build>
 
 	<scm>
-		<connection>scm:git:https://github.com/ACRA/acra.git</connection>
-		<developerConnection>scm:git:https://github.com/ACRA/acra.git</developerConnection>
-		<url>https://github.com/ACRA/acra.git</url>
+		<connection>scm:git:git@github.com:ACRA/acra.git</connection>
+		<developerConnection>scm:git:git@github.com:ACRA/acra.git</developerConnection>
+		<url>ssh://git@github.com:ACRA/acra.git</url>
 	</scm>
     <profiles>
         <profile>
