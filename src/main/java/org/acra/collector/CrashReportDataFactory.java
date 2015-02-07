@@ -238,12 +238,11 @@ public final class CrashReportDataFactory {
             }
 
             if (crashReportFields.contains(BUILD_CONFIG)) {
-                final String className = context.getClass().getPackage().getName() + ".BuildConfig";
                 try {
-                    final Class<?> buildConfig = Class.forName(className);
-                    crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfig));
+                    final Class buildConfigClass = getBuildConfigClass();
+                    crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfigClass));
                 } catch (ClassNotFoundException e) {
-                    Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className);
+                    // We have already logged this when we had the name of the class that wasn't found.
                 }
             }
 
@@ -449,5 +448,20 @@ public final class CrashReportDataFactory {
             fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
         }
         return Arrays.asList(fieldsList);
+    }
+
+    private Class<?> getBuildConfigClass() throws ClassNotFoundException {
+        final Class configuredBuildConfig = ACRA.getConfig().buildConfigClass();
+        if (configuredBuildConfig != null) {
+            return configuredBuildConfig;
+        }
+
+        final String className = context.getClass().getPackage().getName() + ".BuildConfig";
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className + ". Please configure 'buildConfigClass' in your ACRA config");
+            throw e;
+        }
     }
 }

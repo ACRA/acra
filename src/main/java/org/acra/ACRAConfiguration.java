@@ -83,6 +83,7 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     private String[] mExcludeMatchingSharedPreferencesKeys = null;
     private String[] mExcludeMatchingSettingsKeys = null;
+    private Class mBuildConfigClass;
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
 
@@ -596,6 +597,10 @@ public class ACRAConfiguration implements ReportsCrashes {
         return this;
     }
 
+    public ACRAConfiguration setBuildConfigClass(Class buildConfigClass) {
+        mBuildConfigClass = buildConfigClass;
+        return this;
+    }
     /**
      * 
      * @param applicationLogFile
@@ -1169,6 +1174,23 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return new String[0];
+    }
+
+    @Override
+    /**
+     * Will return null if no value has been configured.
+     * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
+     */
+    public Class buildConfigClass() {
+        if (mBuildConfigClass != null) {
+            return mBuildConfigClass;
+        }
+
+        if ((mReportsCrashes != null) && (mReportsCrashes.buildConfigClass() != null)) {
+            return mReportsCrashes.buildConfigClass();
+        }
+
+        return null;
     }
 
     @Override

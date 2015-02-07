@@ -506,6 +506,13 @@ public @interface ReportsCrashes {
     String[] excludeMatchingSettingsKeys() default {};
 
     /**
+     * The default value will be a BuildConfig class residing in the same package as the Application class.
+     *
+     * @return BuildConfig class from which to read any BuildConfig attributes.
+     */
+    Class buildConfigClass();
+
+    /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
      * path/name of your application log file. If the string does not contain
      * any path separator, the file is assumed as being in
