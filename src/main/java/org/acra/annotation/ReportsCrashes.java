@@ -510,7 +510,7 @@ public @interface ReportsCrashes {
      *
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
-    Class buildConfigClass();
+    Class buildConfigClass() default Object.class;
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
