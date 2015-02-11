@@ -597,6 +597,7 @@ public class ACRAConfiguration implements ReportsCrashes {
         return this;
     }
 
+    @SuppressWarnings( "unused" )
     public ACRAConfiguration setBuildConfigClass(Class buildConfigClass) {
         mBuildConfigClass = buildConfigClass;
         return this;
