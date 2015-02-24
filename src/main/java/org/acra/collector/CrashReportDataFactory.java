@@ -312,9 +312,8 @@ public final class CrashReportDataFactory {
             // Before JellyBean, this required the READ_LOGS permission
             // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
             // Though, we can call logcat without any permission and still get traces related to our app.
-            if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true)
-                && (pm.hasPermission(Manifest.permission.READ_LOGS))
-                || Compatibility.getAPILevel() >= 16) {
+            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= 16);
+            if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
                 Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
                 if (crashReportFields.contains(LOGCAT)) {
                     crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
