@@ -22,7 +22,6 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
-    private SharedPreferences prefs;
     private EditText userComment;
     private EditText userEmail;
 
@@ -106,8 +105,6 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
             userEmail.setSingleLine();
             userEmail.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
-            prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig()
-                    .sharedPreferencesMode());
             String savedValue = null;
             if (savedInstanceState != null) {
                 savedValue = savedInstanceState.getString(STATE_EMAIL);
@@ -115,6 +112,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
             if (savedValue != null) {
                 userEmail.setText(savedValue);
             } else {
+                final SharedPreferences prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig().sharedPreferencesMode());
                 userEmail.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
             }
             scrollable.addView(userEmail);
@@ -131,13 +129,14 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
             // Store the user email
             final String usrEmail;
-            if (prefs != null && userEmail != null) {
+            final SharedPreferences prefs = getSharedPreferences(ACRA.getConfig().sharedPreferencesName(), ACRA.getConfig().sharedPreferencesMode());
+            if (userEmail != null) {
                 usrEmail = userEmail.getText().toString();
                 final SharedPreferences.Editor prefEditor = prefs.edit();
                 prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, usrEmail);
                 prefEditor.commit();
             } else {
-                usrEmail = "";
+                usrEmail = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "");
             }
             sendCrash(comment, usrEmail);
         } else {
