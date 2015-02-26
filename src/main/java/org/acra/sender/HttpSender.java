@@ -33,7 +33,6 @@ import org.acra.util.HttpRequest;
 import org.acra.util.JSONReportBuilder.JSONReportException;
 
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * <p>
@@ -206,7 +205,7 @@ public class HttpSender implements ReportSender {
 
         try {
             URL reportUrl = mFormUri == null ? new URL(ACRA.getConfig().formUri()) : new URL(mFormUri.toString());
-            Log.d(LOG_TAG, "Connect to " + reportUrl.toString());
+            ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
             final String login = mUsername != null ? mUsername : ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA
                     .getConfig().formUriBasicAuthLogin();

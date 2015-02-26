@@ -6,8 +6,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import android.util.Log;
-
 /**
  * Responsible for delegating calls to the Android logging system.
  * <p/>
@@ -102,7 +100,11 @@ public final class NonAndroidLog implements ACRALog {
 
     //public native  boolean isLoggable(java.lang.String tag, int level);
     public int w(String tag, Throwable tr) {
-        return Log.w(tag, tr);
+        if (logLevel <= WARN) {
+            out.println(tag + " : ");
+            tr.printStackTrace(out);
+        }
+        return 0;
     }
 
     public int e(String tag, String msg) {

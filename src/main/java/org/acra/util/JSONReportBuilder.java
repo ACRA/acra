@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static org.acra.ACRA.LOG_TAG;
+
 public class JSONReportBuilder {
     /**
      * <p>
@@ -82,7 +84,7 @@ public class JSONReportBuilder {
                             addJSONFromProperty(subObject, line);
                         }
                     } catch (IOException e) {
-                        ACRA.log.e(ACRA.LOG_TAG, "Error while converting " + key.name() + " to JSON.", e);
+                        ACRA.log.e(LOG_TAG, "Error while converting " + key.name() + " to JSON.", e);
                     }
                     jsonReport.accumulate(key.name(), subObject);
                 } else {
@@ -213,7 +215,7 @@ public class JSONReportBuilder {
                     }
 
                     if (intermediate == null) {
-                        ACRA.log.e(ACRA.LOG_TAG, "Unknown json subtree type, see issue #186");
+                        ACRA.log.e(LOG_TAG, "Unknown json subtree type, see issue #186");
                         // We should never get here, but if we do, drop this value to still send the report
                         return;
                     }

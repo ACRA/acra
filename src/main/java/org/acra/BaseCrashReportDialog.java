@@ -2,7 +2,6 @@ package org.acra;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 import org.acra.collector.CrashReportData;
 import org.acra.util.ToastSender;
@@ -35,18 +34,18 @@ public abstract class BaseCrashReportDialog extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ACRA.log.d(ACRA.LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
+        ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
 
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {
-            ACRA.log.d(ACRA.LOG_TAG, "Forced reports deletion.");
+            ACRA.log.d(LOG_TAG, "Forced reports deletion.");
             cancelReports();
             finish();
             return;
         }
 
         mReportFileName = getIntent().getStringExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME);
-        Log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
+        ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
         if (mReportFileName == null) {
             finish();
         }
@@ -69,17 +68,17 @@ public abstract class BaseCrashReportDialog extends Activity {
     protected void sendCrash(String comment, String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
         try {
-            Log.d(LOG_TAG, "Add user comment to " + mReportFileName);
+            ACRA.log.d(LOG_TAG, "Add user comment to " + mReportFileName);
             final CrashReportData crashData = persister.load(mReportFileName);
             crashData.put(USER_COMMENT, comment == null ? "" : comment);
             crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, mReportFileName);
         } catch (IOException e) {
-            Log.w(LOG_TAG, "User comment not added: ", e);
+            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
         }
 
         // Start the report sending task
-        Log.v(ACRA.LOG_TAG, "About to start SenderWorker from CrashReportDialog");
+        ACRA.log.v(LOG_TAG, "About to start SenderWorker from CrashReportDialog");
         ACRA.getErrorReporter().startSendingReports(false, true);
 
         // Optional Toast to thank the user

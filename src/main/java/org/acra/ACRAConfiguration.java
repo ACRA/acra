@@ -15,7 +15,6 @@
  */
 package org.acra;
 
-import android.util.Log;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
@@ -131,13 +130,13 @@ public class ACRAConfiguration implements ReportsCrashes {
 
         final ReportField[] fieldsList;
         if (customReportFields.length != 0) {
-            Log.d(LOG_TAG, "Using custom Report Fields");
+            ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             fieldsList = customReportFields;
         } else if (mailTo() == null || "".equals(mailTo())) {
-            Log.d(LOG_TAG, "Using default Report Fields");
+            ACRA.log.d(LOG_TAG, "Using default Report Fields");
             fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
         } else {
-            Log.d(LOG_TAG, "Using default Mail Report Fields");
+            ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
             fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
         }
         return Arrays.asList(fieldsList);
@@ -1304,10 +1303,10 @@ public class ACRAConfiguration implements ReportsCrashes {
                 if (object instanceof HttpsSocketFactoryFactory) {
                     mHttpsSocketFactoryFactory = (HttpsSocketFactoryFactory) object;
                 } else {
-                    ACRA.log.w(ACRA.LOG_TAG, "Using default httpsSocketFactoryFactory - not a HttpSocketFactoryFactory : " + httpsSocketFactoryFactoryClass);
+                    ACRA.log.w(LOG_TAG, "Using default httpsSocketFactoryFactory - not a HttpSocketFactoryFactory : " + httpsSocketFactoryFactoryClass);
                 }
             } catch (ReflectionException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Using default httpsSocketFactoryFactory - Could not construct : " + httpsSocketFactoryFactoryClass);
+                ACRA.log.w(LOG_TAG, "Using default httpsSocketFactoryFactory - Could not construct : " + httpsSocketFactoryFactoryClass);
             }
         }
 
