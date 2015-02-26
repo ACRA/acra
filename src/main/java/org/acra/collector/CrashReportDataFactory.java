@@ -41,7 +41,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Environment;
 import android.text.format.Time;
-import android.util.Log;
 
 /**
  * Responsible for creating the CrashReportData for an Exception.
@@ -311,7 +310,7 @@ public final class CrashReportDataFactory {
             // Though, we can call logcat without any permission and still get traces related to our app.
             final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= 16);
             if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
-                Log.i(ACRA.LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
                 if (crashReportFields.contains(LOGCAT)) {
                     crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
                 }
@@ -326,7 +325,7 @@ public final class CrashReportDataFactory {
                                         DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
                 }
             } else {
-                Log.i(ACRA.LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
+                ACRA.log.i(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
             }
 
             // Application specific log file
@@ -337,7 +336,7 @@ public final class CrashReportDataFactory {
                                                                            ACRA.getConfig().applicationLogFileLines());
                     crashReportData.put(APPLICATION_LOG, logFile);
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile(), e);
+                    ACRA.log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile(), e);
                 }
             }
 
@@ -357,7 +356,7 @@ public final class CrashReportDataFactory {
             }
 
         } catch (RuntimeException e) {
-            Log.e(LOG_TAG, "Error while retrieving crash data", e);
+            ACRA.log.e(LOG_TAG, "Error while retrieving crash data", e);
         }
 
         return crashReportData;
@@ -440,7 +439,7 @@ public final class CrashReportDataFactory {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            Log.e(ACRA.LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className + ". Please configure 'buildConfigClass' in your ACRA config");
+            ACRA.log.e(LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className + ". Please configure 'buildConfigClass' in your ACRA config");
             throw e;
         }
     }

@@ -25,7 +25,6 @@ import org.acra.ACRA;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -94,9 +93,9 @@ public final class ConfigurationCollector {
                         uiModeValues.put(f.getInt(null), fieldName);
                     }
                 } catch (IllegalArgumentException e) {
-                    Log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
+                    ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
                 } catch (IllegalAccessException e) {
-                    Log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
+                    ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
                 }
             }
         }
@@ -136,9 +135,9 @@ public final class ConfigurationCollector {
                     result.append('\n');
                 }
             } catch (IllegalArgumentException e) {
-                Log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
+                ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
             } catch (IllegalAccessException e) {
-                Log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
+                ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
             }
         }
         return result.toString();
@@ -227,7 +226,7 @@ public final class ConfigurationCollector {
             final Configuration crashConf = context.getResources().getConfiguration();
             return collector.toString(crashConf);
         } catch (RuntimeException e) {
-            Log.w(ACRA.LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
+            ACRA.log.w(LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
             return "Couldn't retrieve crash config";
         }
     }

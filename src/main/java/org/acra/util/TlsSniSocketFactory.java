@@ -11,8 +11,8 @@ import android.annotation.TargetApi;
 import android.net.SSLCertificateSocketFactory;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 
+import org.acra.ACRA;
 import org.apache.http.conn.scheme.LayeredSocketFactory;
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.params.HttpParams;
@@ -136,7 +136,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
             throw new SSLPeerUnverifiedException(host);
         }
 
-        Log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() + " using " + session.getCipherSuite());
+        ACRA.log.i(TAG, "Established " + session.getProtocol() + " connection with " + session.getPeerHost() + " using " + session.getCipherSuite());
     }
     
     /**
@@ -159,7 +159,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
                 protocols.add(protocol);
             }
         }
-        Log.v(TAG, "Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
+        ACRA.log.v(TAG, "Setting allowed TLS protocols: " + TextUtils.join(", ", protocols));
         socket.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
 
         /* set reasonable cipher suites */
@@ -178,7 +178,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
             // ciphers should be a server-side task
             preferredCiphers.addAll(Arrays.asList(socket.getEnabledCipherSuites()));
             
-            Log.v(TAG, "Setting allowed TLS ciphers: " + TextUtils.join(", ", preferredCiphers));
+            ACRA.log.v(TAG, "Setting allowed TLS ciphers: " + TextUtils.join(", ", preferredCiphers));
             socket.setEnabledCipherSuites(preferredCiphers.toArray(new String[preferredCiphers.size()]));
         }
     }
@@ -187,15 +187,15 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
     private void setSniHostname(SSLSocket socket, String hostName) {
         // set SNI host name
         if (Build.VERSION.SDK_INT >= VERSION_CODES_JELLY_BEAN_MR1) {
-            Log.d(TAG, "Using documented SNI with host name " + hostName);
+            ACRA.log.d(TAG, "Using documented SNI with host name " + hostName);
             sslSocketFactory.setHostname(socket, hostName);
         } else {
-            Log.d(TAG, "No documented SNI support on Android <4.2, trying reflection method with host name " + hostName);
+            ACRA.log.d(TAG, "No documented SNI support on Android <4.2, trying reflection method with host name " + hostName);
             try {
                 final Method setHostnameMethod = socket.getClass().getMethod("setHostname", String.class);
                 setHostnameMethod.invoke(socket, hostName);
             } catch (Exception e) {
-                Log.w(TAG, "SNI not usable", e);
+                ACRA.log.w(TAG, "SNI not usable", e);
             }
         }
     }

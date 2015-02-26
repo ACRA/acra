@@ -25,7 +25,8 @@ import org.acra.ACRA;
 
 import android.content.Context;
 import android.text.format.Time;
-import android.util.Log;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Collects data from the DropBoxManager introduced with Android API Level 8. A
@@ -117,17 +118,17 @@ final class DropBoxCollector {
             return dropboxContent.toString();
 
         } catch (SecurityException e) {
-            Log.i(ACRA.LOG_TAG, "DropBoxManager not available.");
+            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
         } catch (NoSuchMethodException e) {
-            Log.i(ACRA.LOG_TAG, "DropBoxManager not available.");
+            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
         } catch (IllegalArgumentException e) {
-            Log.i(ACRA.LOG_TAG, "DropBoxManager not available.");
+            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
         } catch (IllegalAccessException e) {
-            Log.i(ACRA.LOG_TAG, "DropBoxManager not available.");
+            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
         } catch (InvocationTargetException e) {
-            Log.i(ACRA.LOG_TAG, "DropBoxManager not available.");
+            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
         } catch (NoSuchFieldException e) {
-            Log.i(ACRA.LOG_TAG, "DropBoxManager not available.");
+            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
         }
 
         return NO_RESULT;
