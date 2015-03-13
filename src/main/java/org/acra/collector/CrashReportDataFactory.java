@@ -431,7 +431,7 @@ public final class CrashReportDataFactory {
         return Integer.toHexString(res.toString().hashCode());
     }
 
-    private List<ReportField> getReportFields() {
+    public static List<ReportField> getReportFields() {
         final ReportsCrashes config = ACRA.getConfig();
         final ReportField[] customReportFields = config.customReportContent();
 

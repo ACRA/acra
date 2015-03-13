@@ -55,20 +55,19 @@ public final class ConfigurationCollector {
     private static final String PREFIX_KEYBOARDHIDDEN = "KEYBOARDHIDDEN_";
     private static final String PREFIX_KEYBOARD = "KEYBOARD_";
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
-    private static SparseArray<String> mHardKeyboardHiddenValues = new SparseArray<String>();
-    private static SparseArray<String> mKeyboardValues = new SparseArray<String>();
-    private static SparseArray<String> mKeyboardHiddenValues = new SparseArray<String>();
-    private static SparseArray<String> mNavigationValues = new SparseArray<String>();
-    private static SparseArray<String> mNavigationHiddenValues = new SparseArray<String>();
-    private static SparseArray<String> mOrientationValues = new SparseArray<String>();
-    private static SparseArray<String> mScreenLayoutValues = new SparseArray<String>();
-    private static SparseArray<String> mTouchScreenValues = new SparseArray<String>();
-    private static SparseArray<String> mUiModeValues = new SparseArray<String>();
+    private final SparseArray<String> mHardKeyboardHiddenValues = new SparseArray<String>();
+    private final SparseArray<String> mKeyboardValues = new SparseArray<String>();
+    private final SparseArray<String> mKeyboardHiddenValues = new SparseArray<String>();
+    private final SparseArray<String> mNavigationValues = new SparseArray<String>();
+    private final SparseArray<String> mNavigationHiddenValues = new SparseArray<String>();
+    private final SparseArray<String> mOrientationValues = new SparseArray<String>();
+    private final SparseArray<String> mScreenLayoutValues = new SparseArray<String>();
+    private final SparseArray<String> mTouchScreenValues = new SparseArray<String>();
+    private final SparseArray<String> mUiModeValues = new SparseArray<String>();
 
-    private static final HashMap<String, SparseArray<String>> mValueArrays = new HashMap<String, SparseArray<String>>();
+    private final HashMap<String, SparseArray<String>> mValueArrays = new HashMap<String, SparseArray<String>>();
 
-    // Static init
-    static {
+    private ConfigurationCollector() {
         mValueArrays.put(PREFIX_HARDKEYBOARDHIDDEN, mHardKeyboardHiddenValues);
         mValueArrays.put(PREFIX_KEYBOARD, mKeyboardValues);
         mValueArrays.put(PREFIX_KEYBOARDHIDDEN, mKeyboardHiddenValues);
@@ -120,7 +119,7 @@ public final class ConfigurationCollector {
      * @return A String describing all the fields of the given Configuration,
      *         with values replaced by constant names.
      */
-    public static String toString(Configuration conf) {
+    private String toString(Configuration conf) {
         final StringBuilder result = new StringBuilder();
         for (final Field f : conf.getClass().getFields()) {
             try {
@@ -158,7 +157,7 @@ public final class ConfigurationCollector {
      *         constant name.
      * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private static String getFieldValueName(Configuration conf, Field f) throws IllegalAccessException {
+    private String getFieldValueName(Configuration conf, Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
             return Integer.toString(f.getInt(conf));
@@ -222,8 +221,9 @@ public final class ConfigurationCollector {
      */
     public static String collectConfiguration(Context context) {
         try {
+            final ConfigurationCollector collector = new ConfigurationCollector();
             final Configuration crashConf = context.getResources().getConfiguration();
-            return ConfigurationCollector.toString(crashConf);
+            return collector.toString(crashConf);
         } catch (RuntimeException e) {
             Log.w(ACRA.LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
             return "Couldn't retrieve crash config";
