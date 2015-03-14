@@ -30,7 +30,6 @@ import android.os.Looper;
 import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
-import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
 import org.acra.collector.ConfigurationCollector;
@@ -139,10 +138,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.prefs = prefs;
         this.enabled = enabled;
 
-        // Store the initial Configuration state. This is expensive to gather, so only do so
-        // if we plan to report it.
+        // Store the initial Configuration state.
+        // This is expensive to gather, so only do so if we plan to report it.
         final String initialConfiguration;
-        if (CrashReportDataFactory.getReportFields().contains(ReportField.INITIAL_CONFIGURATION)) {
+        if (ACRA.getConfig().getReportFields().contains(ReportField.INITIAL_CONFIGURATION)) {
             initialConfiguration = ConfigurationCollector.collectConfiguration(mContext);
         } else {
             initialConfiguration = null;

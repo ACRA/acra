@@ -15,6 +15,7 @@
  */
 package org.acra;
 
+import android.util.Log;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
@@ -26,8 +27,11 @@ import org.acra.util.ReflectionHelper;
 
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.*;
 
 /**
@@ -117,6 +121,26 @@ public class ACRAConfiguration implements ReportsCrashes {
      */
     public Map<String, String> getHttpHeaders() {
         return mHttpHeaders;
+    }
+
+    /**
+     * @return List of ReportField that ACRA will provide to the server.
+     */
+    public List<ReportField> getReportFields() {
+        final ReportField[] customReportFields = customReportContent();
+
+        final ReportField[] fieldsList;
+        if (customReportFields.length != 0) {
+            Log.d(LOG_TAG, "Using custom Report Fields");
+            fieldsList = customReportFields;
+        } else if (mailTo() == null || "".equals(mailTo())) {
+            Log.d(LOG_TAG, "Using default Report Fields");
+            fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
+        } else {
+            Log.d(LOG_TAG, "Using default Mail Report Fields");
+            fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
+        }
+        return Arrays.asList(fieldsList);
     }
 
     /**

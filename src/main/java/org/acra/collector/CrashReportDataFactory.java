@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,9 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.annotation.ReportsCrashes;
 import org.acra.util.Installation;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ReportUtils;
@@ -138,7 +135,7 @@ public final class CrashReportDataFactory {
     public CrashReportData createCrashData(String msg, Throwable th, Map<String, String> customData, boolean isSilentReport, Thread brokenThread) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            final List<ReportField> crashReportFields = getReportFields();
+            final List<ReportField> crashReportFields = ACRA.getConfig().getReportFields();
 
             // Make every entry here bullet proof and move any slightly dodgy
             // ones to the end.
@@ -429,24 +426,6 @@ public final class CrashReportDataFactory {
         }
 
         return Integer.toHexString(res.toString().hashCode());
-    }
-
-    public static List<ReportField> getReportFields() {
-        final ReportsCrashes config = ACRA.getConfig();
-        final ReportField[] customReportFields = config.customReportContent();
-
-        final ReportField[] fieldsList;
-        if (customReportFields.length != 0) {
-            Log.d(LOG_TAG, "Using custom Report Fields");
-            fieldsList = customReportFields;
-        } else if (config.mailTo() == null || "".equals(config.mailTo())) {
-            Log.d(LOG_TAG, "Using default Report Fields");
-            fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
-        } else {
-            Log.d(LOG_TAG, "Using default Mail Report Fields");
-            fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
-        }
-        return Arrays.asList(fieldsList);
     }
 
     private Class<?> getBuildConfigClass() throws ClassNotFoundException {
