@@ -106,7 +106,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * This is used to wait for the crash toast to end it's display duration
      * before killing the Application.
      */
-    private static boolean toastWaitEnded = true;
+    private boolean toastWaitEnded = true;
 
     private static final ExceptionHandlerInitializer NULL_EXCEPTION_HANDLER_INITIALIZER = new ExceptionHandlerInitializer() {
         @Override
@@ -777,11 +777,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             createNotification(reportFileName, reportBuilder);
         }
 
+        toastWaitEnded = true;
         if (shouldDisplayToast) {
-            // A toast is being displayed, we have to wait for its end before
-            // doing anything else.
-            // The toastWaitEnded flag will be checked before any other
-            // operation.
+            // A toast is being displayed, we have to wait for its end before doing anything else.
+            // The toastWaitEnded flag will be checked before any other operation.
             toastWaitEnded = false;
             new Thread() {
 
@@ -813,21 +812,28 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             @Override
             public void run() {
-                // We have to wait for BOTH the toast display wait AND
-                // the worker job to be completed.
-                if (toastWaitEnded || (worker == null)) {
-                    // Nothing to wait for.
-                    Log.d(LOG_TAG, "Toast (if any) and worker completed - not waiting");
-                } else {
-                    Log.d(LOG_TAG, "Waiting for " + (toastWaitEnded ? "Toast " : " -- ") + (worker.isAlive() ? "and Worker" : ""));
-                    while (!toastWaitEnded || worker.isAlive()) {
+                // We have to wait for the toast display to be completed.
+                Log.d(LOG_TAG, "Waiting for Toast");
+                while (!toastWaitEnded) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e1) {
+                        Log.e(LOG_TAG, "Error : ", e1);
+                    }
+                }
+                Log.d(LOG_TAG, "Finished waiting for Toast");
+
+                // We have to wait for the worker job to be completed.
+                if (worker != null) {
+                    Log.d(LOG_TAG, "Waiting for Worker");
+                    while (worker.isAlive()) {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e1) {
                             Log.e(LOG_TAG, "Error : ", e1);
                         }
                     }
-                    Log.d(LOG_TAG, "Finished waiting for Toast + Worker");
+                    Log.d(LOG_TAG, "Finished waiting for Worker");
                 }
 
                 if (showDirectDialog) {
