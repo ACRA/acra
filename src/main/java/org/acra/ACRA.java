@@ -170,7 +170,7 @@ public class ACRA {
         try {
             checkCrashResources(config);
 
-            log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", intializing...");
+            log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", initializing...");
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = !shouldDisableACRA(prefs);
