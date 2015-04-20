@@ -47,6 +47,8 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import static org.acra.ACRA.LOG_TAG;
+
 public final class HttpRequest {
 
     private static class SocketTimeOutRetryHandler implements HttpRequestRetryHandler {
@@ -74,17 +76,17 @@ public final class HttpRequest {
                     if (httpParams != null) {
                         final int newSocketTimeOut = HttpConnectionParams.getSoTimeout(httpParams) * 2;
                         HttpConnectionParams.setSoTimeout(httpParams, newSocketTimeOut);
-                        ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut - increasing time out to " + newSocketTimeOut
+                        ACRA.log.d(LOG_TAG, "SocketTimeOut - increasing time out to " + newSocketTimeOut
                                 + " millis and trying again");
                     } else {
-                        ACRA.log.d(ACRA.LOG_TAG,
+                        ACRA.log.d(LOG_TAG,
                                 "SocketTimeOut - no HttpParams, cannot increase time out. Trying again with current settings");
                     }
 
                     return true;
                 }
 
-                ACRA.log.d(ACRA.LOG_TAG, "SocketTimeOut but exceeded max number of retries : " + maxNrRetries);
+                ACRA.log.d(LOG_TAG, "SocketTimeOut but exceeded max number of retries : " + maxNrRetries);
             }
 
             return false; // To change body of implemented methods use File |
@@ -145,11 +147,11 @@ public final class HttpRequest {
         final HttpClient httpClient = getHttpClient(context);
         final HttpEntityEnclosingRequestBase httpRequest = getHttpRequest(url, method, content, type);
 
-        ACRA.log.d(ACRA.LOG_TAG, "Sending request to " + url);
+        ACRA.log.d(LOG_TAG, "Sending request to " + url);
         if (ACRA.DEV_LOGGING)
-            ACRA.log.d(ACRA.LOG_TAG, "Http " + method.name() + " content : ");
+            ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
         if (ACRA.DEV_LOGGING)
-            ACRA.log.d(ACRA.LOG_TAG, content);
+            ACRA.log.d(LOG_TAG, content);
 
         HttpResponse response = null;
         try {
@@ -167,11 +169,11 @@ public final class HttpRequest {
                                                          // Discard it.
                             && (statusCode.startsWith("4") || statusCode.startsWith("5"))) {
                         if (ACRA.DEV_LOGGING) {
-                            ACRA.log.d(ACRA.LOG_TAG, "Could not send HttpPost : " + httpRequest);
-                            ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : "
+                            ACRA.log.d(LOG_TAG, "Could not send HttpPost : " + httpRequest);
+                            ACRA.log.d(LOG_TAG, "HttpResponse Status : "
                                     + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
                             final String respContent = EntityUtils.toString(response.getEntity());
-                            ACRA.log.d(ACRA.LOG_TAG,
+                            ACRA.log.d(LOG_TAG,
                                     "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
                         }
                         throw new IOException("Host returned error code " + statusCode);
@@ -179,16 +181,16 @@ public final class HttpRequest {
                 }
 
                 if (ACRA.DEV_LOGGING)
-                    ACRA.log.d(ACRA.LOG_TAG, "HttpResponse Status : "
+                    ACRA.log.d(LOG_TAG, "HttpResponse Status : "
                             + (statusLine != null ? statusLine.getStatusCode() : "NoStatusLine#noCode"));
                 final String respContent = EntityUtils.toString(response.getEntity());
                 if (ACRA.DEV_LOGGING)
-                    ACRA.log.d(ACRA.LOG_TAG,
+                    ACRA.log.d(LOG_TAG,
                             "HttpResponse Content : " + respContent.substring(0, Math.min(respContent.length(), 200)));
 
             } else {
                 if (ACRA.DEV_LOGGING)
-                    ACRA.log.d(ACRA.LOG_TAG, "HTTP no Response!!");
+                    ACRA.log.d(LOG_TAG, "HTTP no Response!!");
             }
         } finally {
             if (response != null) {

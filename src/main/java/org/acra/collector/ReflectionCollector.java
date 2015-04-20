@@ -19,6 +19,7 @@ package org.acra.collector;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Tools to retrieve key/value pairs from static fields and getters of any
@@ -51,7 +52,11 @@ final class ReflectionCollector {
             try {
                 final Object value = field.get(null);
                 if (value != null) {
+                  if (field.getType().isArray()) {
+                    result.append(Arrays.toString((Object[]) value));
+                  } else {
                     result.append(value.toString());
+                  }
                 }
             } catch (IllegalArgumentException e) {
                 result.append("N/A");

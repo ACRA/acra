@@ -15,7 +15,6 @@
  */
 package org.acra.collector;
 
-import android.util.Log;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 
@@ -24,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Collects results of the <code>dumpsys</code> command.
@@ -62,7 +63,7 @@ final class DumpSysCollector {
             }
 
         } catch (IOException e) {
-            Log.e(ACRA.LOG_TAG, "DumpSysCollector.meminfo could not retrieve data", e);
+            ACRA.log.e(LOG_TAG, "DumpSysCollector.meminfo could not retrieve data", e);
 		}
 
         CollectorUtil.safeClose(bufferedReader);

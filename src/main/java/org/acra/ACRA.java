@@ -17,6 +17,7 @@ package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.log.ACRALog;
+import org.acra.log.HollowLog;
 import org.acra.log.AndroidLogDelegate;
 
 import android.app.Application;
@@ -307,7 +308,7 @@ public class ACRA {
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
             if (mApplication == null) {
-                log.w(ACRA.LOG_TAG,
+                log.w(LOG_TAG,
                         "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
             }
             configProxy = getNewDefaultConfig(mApplication);
@@ -357,8 +358,15 @@ public class ACRA {
     static Application getApplication() {
         return mApplication;
     }
-    
+
     public static void setLog(ACRALog log) {
+        if (log == null) {
+            throw new NullPointerException("ACRALog cannot be null");
+        }
         ACRA.log = log;
+    }
+
+    public static void disableLog() {
+        ACRA.log = new HollowLog();
     }
 }

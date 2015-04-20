@@ -25,6 +25,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import static org.acra.ACRA.LOG_TAG;
+
 /**
  * Collects the content (key/value pairs) of SharedPreferences, from the
  * application default preferences or any other preferences asked by the
@@ -76,7 +78,7 @@ final class SharedPreferencesCollector {
             // Add all non-filtered preferences from that preference file.
             for (final String key : prefEntries.keySet()) {
                 if (filteredKey(key)) {
-                    ACRA.log.d(ACRA.LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + key + " due to filtering rule");
+                    ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + key + " due to filtering rule");
                 } else {
                     final Object prefValue = prefEntries.get(key);
                     result.append(sharedPrefId).append('.').append(key).append('=');
