@@ -17,6 +17,7 @@ package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.log.ACRALog;
+import org.acra.log.HollowLog;
 import org.acra.log.AndroidLogDelegate;
 
 import android.app.Application;
@@ -357,8 +358,11 @@ public class ACRA {
     static Application getApplication() {
         return mApplication;
     }
-    
+
     public static void setLog(ACRALog log) {
+        if (log == null) {
+            throw new NullPointerException("ACRALog cannot be null");
+        }
         ACRA.log = log;
     }
 }
