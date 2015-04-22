@@ -15,6 +15,8 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import static org.acra.ACRA.LOG_TAG;
+
 final class DisplayManagerCollector {
 
     final static SparseArray<String> mFlagsNames = new SparseArray<String>();
@@ -40,17 +42,17 @@ final class DisplayManagerCollector {
                 Method getDisplays = displayManager.getClass().getMethod("getDisplays");
                 displays = (Display[]) getDisplays.invoke(displayManager);
             } catch (IllegalArgumentException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Error while collecting DisplayManager data: ", e);
+                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
             } catch (SecurityException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Error while collecting DisplayManager data: ", e);
+                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
             } catch (IllegalAccessException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Error while collecting DisplayManager data: ", e);
+                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
             } catch (NoSuchFieldException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Error while collecting DisplayManager data: ", e);
+                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
             } catch (NoSuchMethodException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Error while collecting DisplayManager data: ", e);
+                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
             } catch (InvocationTargetException e) {
-                ACRA.log.w(ACRA.LOG_TAG, "Error while collecting DisplayManager data: ", e);
+                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
             }
         }
 

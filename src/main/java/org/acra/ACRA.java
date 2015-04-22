@@ -307,7 +307,7 @@ public class ACRA {
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
             if (mApplication == null) {
-                log.w(ACRA.LOG_TAG,
+                log.w(LOG_TAG,
                         "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
             }
             configProxy = getNewDefaultConfig(mApplication);

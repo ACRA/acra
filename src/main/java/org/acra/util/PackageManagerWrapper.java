@@ -5,7 +5,8 @@ import static org.acra.ACRA.LOG_TAG;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
+
+import org.acra.ACRA;
 
 /**
  * Responsible for wrapping calls to PackageManager to ensure that they always complete without throwing RuntimeExceptions.
@@ -62,7 +63,7 @@ public final class PackageManagerWrapper {
         try {
             return pm.getPackageInfo(context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.v(LOG_TAG, "Failed to find PackageInfo for current App : " + context.getPackageName());
+            ACRA.log.v(LOG_TAG, "Failed to find PackageInfo for current App : " + context.getPackageName());
             return null;
         } catch (RuntimeException e) {
             // To catch RuntimeException("Package manager has died") that can occur on some version of Android,
