@@ -1,7 +1,7 @@
 package org.acra.log;
 
 /**
- * Stub implementation of {@link org.acra.log.ACRALog}
+ * Stub implementation of {@link org.acra.log.ACRALog}, quenches all logging.
  */
 public class HollowLog implements ACRALog {
     @Override
