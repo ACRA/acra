@@ -52,11 +52,11 @@ final class ReflectionCollector {
             try {
                 final Object value = field.get(null);
                 if (value != null) {
-                  if (field.getType().isArray()) {
-                    result.append(Arrays.toString((Object[]) value));
-                  } else {
-                    result.append(value.toString());
-                  }
+                    if (field.getType().isArray()) {
+                        result.append(Arrays.toString((Object[]) value));
+                    } else {
+                        result.append(value.toString());
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 result.append("N/A");
