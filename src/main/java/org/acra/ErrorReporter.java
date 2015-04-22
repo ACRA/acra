@@ -829,7 +829,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e1) {
-                            ACRA.log.e(LOG_TAG, "Error : ", e1);
+                            ACRA.log.d(LOG_TAG, "Error : ", e1);
                         }
                     }
                     ACRA.log.d(LOG_TAG, "Finished waiting for Worker");
