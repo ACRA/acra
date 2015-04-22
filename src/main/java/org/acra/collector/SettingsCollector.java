@@ -27,7 +27,8 @@ import android.content.Context;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
-import android.util.Log;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Helper to collect data from {@link System} and {@link Secure} Settings
@@ -61,9 +62,9 @@ final class SettingsCollector {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
                 } catch (IllegalArgumentException e) {
-                    Log.w(ACRA.LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, "Error : ", e);
                 } catch (IllegalAccessException e) {
-                    Log.w(ACRA.LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
         }
@@ -91,9 +92,9 @@ final class SettingsCollector {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
                 } catch (IllegalArgumentException e) {
-                    Log.w(ACRA.LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, "Error : ", e);
                 } catch (IllegalAccessException e) {
-                    Log.w(ACRA.LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
         }
@@ -129,17 +130,17 @@ final class SettingsCollector {
                 }
             }
         } catch (IllegalArgumentException e) {
-            Log.w(ACRA.LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, "Error : ", e);
         } catch (IllegalAccessException e) {
-            Log.w(ACRA.LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, "Error : ", e);
         } catch (ClassNotFoundException e) {
-            Log.w(ACRA.LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, "Error : ", e);
         } catch (SecurityException e) {
-            Log.w(ACRA.LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, "Error : ", e);
         } catch (NoSuchMethodException e) {
-            Log.w(ACRA.LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, "Error : ", e);
         } catch (InvocationTargetException e) {
-            Log.w(ACRA.LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, "Error : ", e);
         }
 
         return result.toString();

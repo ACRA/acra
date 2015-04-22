@@ -13,7 +13,8 @@ import java.util.UUID;
 import org.acra.ACRA;
 
 import android.content.Context;
-import android.util.Log;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * <p>
@@ -40,10 +41,10 @@ public class Installation {
                 }
                 sID = readInstallationFile(installation);
             } catch (IOException e) {
-                Log.w(ACRA.LOG_TAG, "Couldn't retrieve InstallationId for " + context.getPackageName(), e);
+                ACRA.log.w(LOG_TAG, "Couldn't retrieve InstallationId for " + context.getPackageName(), e);
                 return "Couldn't retrieve InstallationId";
             } catch (RuntimeException e) {
-                Log.w(ACRA.LOG_TAG, "Couldn't retrieve InstallationId for " + context.getPackageName(), e);
+                ACRA.log.w(LOG_TAG, "Couldn't retrieve InstallationId for " + context.getPackageName(), e);
                 return "Couldn't retrieve InstallationId";
             }
         }

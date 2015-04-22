@@ -21,7 +21,8 @@ import java.lang.reflect.Method;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.util.Log;
+
+import org.acra.ACRA;
 
 /**
  * Features declared as available on the device. Available only with API level > 5.
@@ -55,7 +56,7 @@ final class DeviceFeaturesCollector {
                 result.append("\n");
             }
         } catch (Throwable e) {
-            Log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + ctx.getPackageName(), e);
+            ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + ctx.getPackageName(), e);
             result.append("Could not retrieve data: ");
             result.append(e.getMessage());
         }

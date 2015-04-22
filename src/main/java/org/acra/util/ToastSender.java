@@ -3,8 +3,9 @@ package org.acra.util;
 import org.acra.ACRA;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for sending Toasts under all circumstances.
@@ -25,7 +26,7 @@ public final class ToastSender {
         try {
             Toast.makeText(context, toastResourceId, toastLength).show();
         } catch (RuntimeException e) {
-            Log.e(ACRA.LOG_TAG, "Could not send crash Toast", e);
+            ACRA.log.e(LOG_TAG, "Could not send crash Toast", e);
         }
     }
 }
