@@ -28,6 +28,15 @@ import java.lang.reflect.Field;
  */
 public final class Compatibility {
 
+    public class VERSION_CODES {
+        public final static int ECLAIR = 5;
+        public final static int FROYO = 8;
+        public final static int ICE_CREAM_SANDWICH = 14;
+        public final static int JELLY_BEAN = 16;
+        public final static int JELLY_BEAN_MR1 = 17;
+        public final static int LOLLIPOP = 21;
+    }
+
     /**
      * Retrieves Android SDK API level using the best possible method.
      * 

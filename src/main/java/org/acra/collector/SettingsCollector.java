@@ -112,7 +112,7 @@ final class SettingsCollector {
      * @return A human readable String containing one key=value pair per line.
      */
     public static String collectGlobalSettings(Context ctx) {
-        if (Compatibility.getAPILevel() < 17) {
+        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
             return "";
         }
 

@@ -26,7 +26,7 @@ final class DisplayManagerCollector {
         Display[] displays = null;
         final StringBuilder result = new StringBuilder();
 
-        if (Compatibility.getAPILevel() < 17) {
+        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
             // Before Android 4.2, there was a single display available from the
             // window manager
             final WindowManager windowManager = (WindowManager) ctx

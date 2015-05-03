@@ -54,12 +54,12 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         final LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
-        root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        root.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         root.setFocusable(true);
         root.setFocusableInTouchMode(true);
 
         final ScrollView scroll = new ScrollView(this);
-        root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f));
+        root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
         final LinearLayout scrollable = new LinearLayout(this);
         scrollable.setOrientation(LinearLayout.VERTICAL);
         scroll.addView(scrollable);
@@ -78,8 +78,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
             label.setText(getText(commentPromptId));
 
             label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            scrollable.addView(label, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.WRAP_CONTENT));
+            scrollable.addView(label, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
             userCommentView = new EditText(this);
             userCommentView.setLines(2);
