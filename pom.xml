@@ -39,6 +39,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!--
+			NB ACRA supports back to API3.
+			But in order to compile classes and method that will NOT be used except when the target platform is of sufficient version
+			we need to compile against version 17.
+		-->
         <android.version>17</android.version>
 	</properties>
 
@@ -57,7 +63,7 @@
             <artifactId>android</artifactId>
             <version>4.1.1.4</version>
             <type>jar</type>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -123,6 +129,7 @@
 					</execution>
 				</executions>
                 <configuration>
+					<bootclasspath>${env.ANDROID_HOME}/platforms/android-${android.version}/android.jar</bootclasspath>
                     <excludePackageNames>org.acra.log,org.acra.util</excludePackageNames>
                 </configuration>
 			</plugin>

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import android.text.TextUtils;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.util.Installation;
@@ -308,7 +309,7 @@ public final class CrashReportDataFactory {
             // Before JellyBean, this required the READ_LOGS permission
             // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
             // Though, we can call logcat without any permission and still get traces related to our app.
-            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= 16);
+            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
             if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
                 ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
                 if (crashReportFields.contains(LOGCAT)) {
@@ -396,7 +397,7 @@ public final class CrashReportDataFactory {
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
 
-        if (msg != null && !msg.isEmpty())
+        if (msg != null && !TextUtils.isEmpty(msg))
             printWriter.println(msg);
 
         // If the exception was thrown in a background thread inside

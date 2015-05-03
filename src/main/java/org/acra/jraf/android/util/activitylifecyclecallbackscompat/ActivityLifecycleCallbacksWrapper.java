@@ -27,15 +27,14 @@ import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
-import java.util.concurrent.Callable;
-
 /**
  * Wraps an {@link ActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
  */
 /* package */class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
-    private org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat mCallback;
 
-    public ActivityLifecycleCallbacksWrapper(org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat callback) {
+    private final ActivityLifecycleCallbacksCompat mCallback;
+
+    public ActivityLifecycleCallbacksWrapper(ActivityLifecycleCallbacksCompat callback) {
         mCallback = callback;
     }
 
@@ -79,9 +78,10 @@ import java.util.concurrent.Callable;
      */
     @Override
     public boolean equals(Object object) {
-        if( !(object instanceof ActivityLifecycleCallbacksWrapper) )
+        if( !(object instanceof ActivityLifecycleCallbacksWrapper) ) {
             return false;
-        ActivityLifecycleCallbacksWrapper that = ( ActivityLifecycleCallbacksWrapper )object;
+        }
+        final ActivityLifecycleCallbacksWrapper that = (ActivityLifecycleCallbacksWrapper) object;
         return null == mCallback ? null == that.mCallback : mCallback.equals( that.mCallback );
     }
 

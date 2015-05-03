@@ -152,7 +152,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Time appStartDate = new Time();
         appStartDate.setToNow();
 
-        if (Compatibility.getAPILevel() >= 14) { // ActivityLifecycleCallback
+        if (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.ICE_CREAM_SANDWICH) { // ActivityLifecycleCallback
             // only available for API14+
             ApplicationHelper.registerActivityLifecycleCallbacks(context, new ActivityLifecycleCallbacksCompat() {
                 @Override

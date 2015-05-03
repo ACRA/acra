@@ -7,12 +7,12 @@
  */
 package org.acra.util;
 
-import android.annotation.TargetApi;
 import android.net.SSLCertificateSocketFactory;
 import android.os.Build;
 import android.text.TextUtils;
 
 import org.acra.ACRA;
+import org.acra.collector.Compatibility;
 import org.apache.http.conn.scheme.LayeredSocketFactory;
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.params.HttpParams;
@@ -46,9 +46,6 @@ import javax.net.ssl.SSLSocket;
 public class TlsSniSocketFactory implements LayeredSocketFactory {
 
     private static final String TAG =  TlsSniSocketFactory.class.getSimpleName();
-    
-    private final static int VERSION_CODES_JELLY_BEAN_MR1 = 17;
-    private final static int VERSION_CODES_LOLLIPOP = 21;
     
     private final SSLCertificateSocketFactory sslSocketFactory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(0);
 
@@ -163,7 +160,7 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
         socket.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
 
         /* set reasonable cipher suites */
-        if (Build.VERSION.SDK_INT < VERSION_CODES_LOLLIPOP) {
+        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.LOLLIPOP) {
             // choose secure cipher suites
 
             final List<String> availableCiphers = Arrays.asList(socket.getSupportedCipherSuites());
@@ -183,10 +180,9 @@ public class TlsSniSocketFactory implements LayeredSocketFactory {
         }
     }
     
-    @TargetApi(VERSION_CODES_JELLY_BEAN_MR1)
     private void setSniHostname(SSLSocket socket, String hostName) {
         // set SNI host name
-        if (Build.VERSION.SDK_INT >= VERSION_CODES_JELLY_BEAN_MR1) {
+        if (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
             ACRA.log.d(TAG, "Using documented SNI with host name " + hostName);
             sslSocketFactory.setHostname(socket, hostName);
         } else {

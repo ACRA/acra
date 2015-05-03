@@ -82,7 +82,7 @@ class LogCatCollector {
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
             tailCount = Integer.parseInt(logcatArgumentsList.get(tailIndex + 1));
-            if (Compatibility.getAPILevel() < 8) {
+            if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.FROYO) {
                 logcatArgumentsList.remove(tailIndex + 1);
                 logcatArgumentsList.remove(tailIndex);
                 logcatArgumentsList.add("-d");
