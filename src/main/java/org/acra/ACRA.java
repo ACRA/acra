@@ -164,7 +164,7 @@ public class ACRA {
             log.e(LOG_TAG, "ACRA#init called but no ACRAConfiguration provided");
             return;
         }
-        setConfig(config);
+        configProxy = config;
 
         final SharedPreferences prefs = getACRASharedPreferences();
 
@@ -314,16 +314,6 @@ public class ACRA {
             configProxy = getNewDefaultConfig(mApplication);
         }
         return configProxy;
-    }
-
-    /**
-     * Sets the whole ACRA configuration.
-     * 
-     * @param conf
-     *            ACRAConfiguration to use as a proxy for config info.
-     */
-    public static void setConfig(ACRAConfiguration conf) {
-        configProxy = conf;
     }
 
     /**
