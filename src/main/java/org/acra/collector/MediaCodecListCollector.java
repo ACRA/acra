@@ -179,14 +179,14 @@ public class MediaCodecListCollector {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    private static String collectCapabilitiesForType(Object codecInfo, String type) throws IllegalArgumentException,
+    private static String collectCapabilitiesForType(final Object codecInfo, String type) throws IllegalArgumentException,
             IllegalAccessException, InvocationTargetException {
-        StringBuilder result = new StringBuilder();
 
-        Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
+        final StringBuilder result = new StringBuilder();
+        final Object codecCapabilities = getCapabilitiesForTypeMethod.invoke(codecInfo, type);
 
         // Color Formats
-        int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
+        final int[] colorFormats = (int[]) colorFormatsField.get(codecCapabilities);
         if (colorFormats.length > 0) {
             result.append(type).append(" color formats:");
             for (int i = 0; i < colorFormats.length; i++) {
@@ -198,19 +198,21 @@ public class MediaCodecListCollector {
             result.append("\n");
         }
 
+        final CodecType codecType = identifyCodecType(codecInfo);
+
         // Profile Levels
-        Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
+        final Object[] codecProfileLevels = (Object[]) profileLevelsField.get(codecCapabilities);
         if (codecProfileLevels.length > 0) {
             result.append(type).append(" profile levels:");
             for (int i = 0; i < codecProfileLevels.length; i++) {
 
-                CodecType codecType = identifyCodecType(codecInfo);
-                int profileValue = profileField.getInt(codecProfileLevels[i]);
-                int levelValue = levelField.getInt(codecProfileLevels[i]);
+                final int profileValue = profileField.getInt(codecProfileLevels[i]);
+                final int levelValue = levelField.getInt(codecProfileLevels[i]);
 
                 if (codecType == null) {
                     // Unknown codec
                     result.append(profileValue).append('-').append(levelValue);
+                    break;
                 }
 
                 switch (codecType) {
