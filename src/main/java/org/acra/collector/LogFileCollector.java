@@ -17,14 +17,19 @@
 package org.acra.collector;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.acra.ACRA;
 import org.acra.util.BoundedLinkedList;
 
 import android.app.Application;
 import android.content.Context;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Collects the N last lines of a text stream. Use this collector if your
@@ -54,12 +59,7 @@ class LogFileCollector {
      */
     public static String collectLogFile(Context context, String fileName, int numberOfLines) throws IOException {
         final BoundedLinkedList<String> resultBuffer = new BoundedLinkedList<String>(numberOfLines);
-        final BufferedReader reader;
-        if (fileName.contains("/")) {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)), 1024);
-        } else {
-            reader = new BufferedReader(new InputStreamReader(context.openFileInput(fileName)), 1024);
-        }
+        final BufferedReader reader = getReader(context, fileName);
         try {
             String line = reader.readLine();
             while (line != null) {
@@ -70,5 +70,18 @@ class LogFileCollector {
             CollectorUtil.safeClose(reader);
         }
         return resultBuffer.toString();
+    }
+
+    private static BufferedReader getReader(Context context, String fileName) {
+        try {
+            if (fileName.contains("/")) {
+                return new BufferedReader(new InputStreamReader(new FileInputStream(fileName)), 1024);
+            } else {
+                return new BufferedReader(new InputStreamReader(context.openFileInput(fileName)), 1024);
+            }
+        } catch (FileNotFoundException e) {
+            ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + ACRA.getConfig().applicationLogFile() + "'");
+            return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(new byte[0])));
+        }
     }
 }
