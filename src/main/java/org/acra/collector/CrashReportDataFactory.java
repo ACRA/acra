@@ -142,388 +142,370 @@ public final class CrashReportDataFactory {
             // This ensures that we collect as much info as possible before
             // something crashes the collection process.
 
-			try {
-				crashReportData.put(STACK_TRACE, getStackTrace(msg, th));
-			} catch (RuntimeException e){
-				ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE data", e);
-			}
-
-			try {
-				crashReportData.put(ReportField.USER_APP_START_DATE, ReportUtils.getTimeString(appStartDate));
-			} catch (RuntimeException e){
-				ACRA.log.e(LOG_TAG, "Error while retrieving USER_APP_START_DATE data", e);
-			}
-
-			if (isSilentReport) {
-				crashReportData.put(IS_SILENT, "true");
-			}
-
-            // StackTrace hash
-			if (crashReportFields.contains(STACK_TRACE_HASH)) {
-				try {
-					crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE_HASH data", e);
-				}
-			}
-
-			// Generate report uuid
-			if (crashReportFields.contains(REPORT_ID)) {
-				try {
-					crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving REPORT_ID data", e);
-				}
+            try {
+                crashReportData.put(STACK_TRACE, getStackTrace(msg, th));
+            } catch (RuntimeException e){
+                ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE data", e);
             }
 
-			// StackTrace hash
-			if (crashReportFields.contains(STACK_TRACE_HASH)) {
-				try {
-					crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE_HASH data", e);
-				}
-			}
+            try {
+                crashReportData.put(ReportField.USER_APP_START_DATE, ReportUtils.getTimeString(appStartDate));
+            } catch (RuntimeException e){
+                ACRA.log.e(LOG_TAG, "Error while retrieving USER_APP_START_DATE data", e);
+            }
 
-			// Generate report uuid
-			if (crashReportFields.contains(REPORT_ID)) {
-				try {
-					crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving REPORT_ID data", e);
-				}
-			}
+            if (isSilentReport) {
+                crashReportData.put(IS_SILENT, "true");
+            }
 
-			// Installation unique ID
-			if (crashReportFields.contains(INSTALLATION_ID)) {
-				try {
-					crashReportData.put(INSTALLATION_ID, Installation.id(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving INSTALLATION_ID data", e);
-				}
-			}
+            // StackTrace hash
+            if (crashReportFields.contains(STACK_TRACE_HASH)) {
+                try {
+                    crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE_HASH data", e);
+                }
+            }
 
-			// Device Configuration when crashing
-			if (crashReportFields.contains(INITIAL_CONFIGURATION)) {
-				try {
-					crashReportData.put(INITIAL_CONFIGURATION, initialConfiguration);
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving INITIAL_CONFIGURATION data", e);
-				}
-			}
-			if (crashReportFields.contains(CRASH_CONFIGURATION)) {
-				try {
-					crashReportData.put(CRASH_CONFIGURATION, ConfigurationCollector.collectConfiguration(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving CRASH_CONFIGURATION data", e);
-				}
-			}
+            // Generate report uuid
+            if (crashReportFields.contains(REPORT_ID)) {
+                try {
+                    crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving REPORT_ID data", e);
+                }
+            }
 
-			// Collect meminfo
-			if (!(th instanceof OutOfMemoryError) && crashReportFields.contains(DUMPSYS_MEMINFO)) {
-				try {
-					crashReportData.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving DUMPSYS_MEMINFO data", e);
-				}
-			}
+            // Installation unique ID
+            if (crashReportFields.contains(INSTALLATION_ID)) {
+                try {
+                    crashReportData.put(INSTALLATION_ID, Installation.id(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving INSTALLATION_ID data", e);
+                }
+            }
 
-			// Application Package name
-			if (crashReportFields.contains(PACKAGE_NAME)) {
-				try {
-					crashReportData.put(PACKAGE_NAME, context.getPackageName());
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving PACKAGE_NAME data", e);
-				}
-			}
+            // Device Configuration when crashing
+            if (crashReportFields.contains(INITIAL_CONFIGURATION)) {
+                try {
+                    crashReportData.put(INITIAL_CONFIGURATION, initialConfiguration);
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving INITIAL_CONFIGURATION data", e);
+                }
+            }
+            if (crashReportFields.contains(CRASH_CONFIGURATION)) {
+                try {
+                    crashReportData.put(CRASH_CONFIGURATION, ConfigurationCollector.collectConfiguration(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving CRASH_CONFIGURATION data", e);
+                }
+            }
 
-			// Android OS Build details
-			if (crashReportFields.contains(BUILD)) {
-				try {
-					crashReportData.put(BUILD, ReflectionCollector.collectConstants(android.os.Build.class) + ReflectionCollector.collectConstants(android.os.Build.VERSION.class, "VERSION"));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving BUILD data", e);
-				}
-			}
+            // Collect meminfo
+            if (!(th instanceof OutOfMemoryError) && crashReportFields.contains(DUMPSYS_MEMINFO)) {
+                try {
+                    crashReportData.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving DUMPSYS_MEMINFO data", e);
+                }
+            }
 
-			// Device model
-			if (crashReportFields.contains(PHONE_MODEL)) {
-				try {
-					crashReportData.put(PHONE_MODEL, android.os.Build.MODEL);
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving PHONE_MODEL data", e);
-				}
-			}
-			// Android version
-			if (crashReportFields.contains(ANDROID_VERSION)) {
-				try {
-					crashReportData.put(ANDROID_VERSION, android.os.Build.VERSION.RELEASE);
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving ANDROID_VERSION data", e);
-				}
-			}
+            // Application Package name
+            if (crashReportFields.contains(PACKAGE_NAME)) {
+                try {
+                    crashReportData.put(PACKAGE_NAME, context.getPackageName());
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving PACKAGE_NAME data", e);
+                }
+            }
 
-			// Device Brand (manufacturer)
-			if (crashReportFields.contains(BRAND)) {
-				try {
-					crashReportData.put(BRAND, android.os.Build.BRAND);
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving BRAND data", e);
-				}
-			}
-			if (crashReportFields.contains(PRODUCT)) {
-				try {
-					crashReportData.put(PRODUCT, android.os.Build.PRODUCT);
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving PRODUCT data", e);
-				}
-			}
+            // Android OS Build details
+            if (crashReportFields.contains(BUILD)) {
+                try {
+                    crashReportData.put(BUILD, ReflectionCollector.collectConstants(android.os.Build.class) + ReflectionCollector.collectConstants(android.os.Build.VERSION.class, "VERSION"));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving BUILD data", e);
+                }
+            }
 
-			// Device Memory
-			if (crashReportFields.contains(TOTAL_MEM_SIZE)) {
-				try {
-					crashReportData.put(TOTAL_MEM_SIZE, Long.toString(ReportUtils.getTotalInternalMemorySize()));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving TOTAL_MEM_SIZE data", e);
-				}
-			}
-			if (crashReportFields.contains(AVAILABLE_MEM_SIZE)) {
-				try {
-					crashReportData.put(AVAILABLE_MEM_SIZE, Long.toString(ReportUtils.getAvailableInternalMemorySize()));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving AVAILABLE_MEM_SIZE data", e);
-				}
-			}
+            // Device model
+            if (crashReportFields.contains(PHONE_MODEL)) {
+                try {
+                    crashReportData.put(PHONE_MODEL, android.os.Build.MODEL);
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving PHONE_MODEL data", e);
+                }
+            }
+            // Android version
+            if (crashReportFields.contains(ANDROID_VERSION)) {
+                try {
+                    crashReportData.put(ANDROID_VERSION, android.os.Build.VERSION.RELEASE);
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving ANDROID_VERSION data", e);
+                }
+            }
 
-			// Application file path
-			if (crashReportFields.contains(FILE_PATH)) {
-				try {
-					crashReportData.put(FILE_PATH, ReportUtils.getApplicationFilePath(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving FILE_PATH data", e);
-				}
-			}
+            // Device Brand (manufacturer)
+            if (crashReportFields.contains(BRAND)) {
+                try {
+                    crashReportData.put(BRAND, android.os.Build.BRAND);
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving BRAND data", e);
+                }
+            }
+            if (crashReportFields.contains(PRODUCT)) {
+                try {
+                    crashReportData.put(PRODUCT, android.os.Build.PRODUCT);
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving PRODUCT data", e);
+                }
+            }
 
-			// Main display details
-			if (crashReportFields.contains(DISPLAY)) {
-				try {
-					crashReportData.put(DISPLAY, DisplayManagerCollector.collectDisplays(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving DISPLAY data", e);
-				}
-			}
+            // Device Memory
+            if (crashReportFields.contains(TOTAL_MEM_SIZE)) {
+                try {
+                    crashReportData.put(TOTAL_MEM_SIZE, Long.toString(ReportUtils.getTotalInternalMemorySize()));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving TOTAL_MEM_SIZE data", e);
+                }
+            }
+            if (crashReportFields.contains(AVAILABLE_MEM_SIZE)) {
+                try {
+                    crashReportData.put(AVAILABLE_MEM_SIZE, Long.toString(ReportUtils.getAvailableInternalMemorySize()));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving AVAILABLE_MEM_SIZE data", e);
+                }
+            }
 
-			// User crash date with local timezone
-			if (crashReportFields.contains(USER_CRASH_DATE)) {
-				try {
-					final Time curDate = new Time();
-					curDate.setToNow();
-					crashReportData.put(USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving USER_CRASH_DATE data", e);
-				}
-			}
+            // Application file path
+            if (crashReportFields.contains(FILE_PATH)) {
+                try {
+                    crashReportData.put(FILE_PATH, ReportUtils.getApplicationFilePath(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving FILE_PATH data", e);
+                }
+            }
 
-			// Add custom info, they are all stored in a single field
-			if (crashReportFields.contains(CUSTOM_DATA)) {
-				try {
-					crashReportData.put(CUSTOM_DATA, createCustomInfoString(customData));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving CUSTOM_DATA data", e);
-				}
-			}
+            // Main display details
+            if (crashReportFields.contains(DISPLAY)) {
+                try {
+                    crashReportData.put(DISPLAY, DisplayManagerCollector.collectDisplays(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving DISPLAY data", e);
+                }
+            }
 
-			if (crashReportFields.contains(BUILD_CONFIG)) {
-				try {
-					final Class buildConfigClass = getBuildConfigClass();
-					crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfigClass));
-				} catch (ClassNotFoundException e) {
-					// We have already logged this when we had the name of the class that wasn't found.
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving BUILD_CONFIG data", e);
-				}
-			}
+            // User crash date with local timezone
+            if (crashReportFields.contains(USER_CRASH_DATE)) {
+                try {
+                    final Time curDate = new Time();
+                    curDate.setToNow();
+                    crashReportData.put(USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving USER_CRASH_DATE data", e);
+                }
+            }
 
-			// Add user email address, if set in the app's preferences
-			if (crashReportFields.contains(USER_EMAIL)) {
-				try {
-					crashReportData.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving USER_EMAIL data", e);
-				}
-			}
+            // Add custom info, they are all stored in a single field
+            if (crashReportFields.contains(CUSTOM_DATA)) {
+                try {
+                    crashReportData.put(CUSTOM_DATA, createCustomInfoString(customData));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving CUSTOM_DATA data", e);
+                }
+            }
 
-			// Device features
-			if (crashReportFields.contains(DEVICE_FEATURES)) {
-				try {
-					crashReportData.put(DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving DEVICE_FEATURES data", e);
-				}
-			}
+            if (crashReportFields.contains(BUILD_CONFIG)) {
+                try {
+                    final Class buildConfigClass = getBuildConfigClass();
+                    crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfigClass));
+                } catch (ClassNotFoundException e) {
+                    // We have already logged this when we had the name of the class that wasn't found.
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving BUILD_CONFIG data", e);
+                }
+            }
 
-			// Environment (External storage state)
-			if (crashReportFields.contains(ENVIRONMENT)) {
-				try {
-					crashReportData.put(ENVIRONMENT, ReflectionCollector.collectStaticGettersResults(Environment.class));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving ENVIRONMENT data", e);
-				}
-			}
+            // Add user email address, if set in the app's preferences
+            if (crashReportFields.contains(USER_EMAIL)) {
+                try {
+                    crashReportData.put(USER_EMAIL, prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A"));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving USER_EMAIL data", e);
+                }
+            }
 
-			// System settings
-			if (crashReportFields.contains(SETTINGS_SYSTEM)) {
-				try {
-					crashReportData.put(SETTINGS_SYSTEM, SettingsCollector.collectSystemSettings(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_SYSTEM data", e);
-				}
-			}
+            // Device features
+            if (crashReportFields.contains(DEVICE_FEATURES)) {
+                try {
+                    crashReportData.put(DEVICE_FEATURES, DeviceFeaturesCollector.getFeatures(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving DEVICE_FEATURES data", e);
+                }
+            }
 
-			// Secure settings
-			if (crashReportFields.contains(SETTINGS_SECURE)) {
-				try {
-					crashReportData.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_SECURE data", e);
-				}
-			}
+            // Environment (External storage state)
+            if (crashReportFields.contains(ENVIRONMENT)) {
+                try {
+                    crashReportData.put(ENVIRONMENT, ReflectionCollector.collectStaticGettersResults(Environment.class));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving ENVIRONMENT data", e);
+                }
+            }
 
-			// Global settings
-			if (crashReportFields.contains(SETTINGS_GLOBAL)) {
-				try {
+            // System settings
+            if (crashReportFields.contains(SETTINGS_SYSTEM)) {
+                try {
+                    crashReportData.put(SETTINGS_SYSTEM, SettingsCollector.collectSystemSettings(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_SYSTEM data", e);
+                }
+            }
 
-					crashReportData.put(SETTINGS_GLOBAL, SettingsCollector.collectGlobalSettings(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_GLOBAL data", e);
-				}
-			}
+            // Secure settings
+            if (crashReportFields.contains(SETTINGS_SECURE)) {
+                try {
+                    crashReportData.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_SECURE data", e);
+                }
+            }
 
-			// SharedPreferences
-			if (crashReportFields.contains(SHARED_PREFERENCES)) {
-				try {
-					crashReportData.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(context));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving SHARED_PREFERENCES data", e);
-				}
-			}
+            // Global settings
+            if (crashReportFields.contains(SETTINGS_GLOBAL)) {
+                try {
 
-			// Now get all the crash data that relies on the PackageManager
-			// (which may or may not be here).
-			final PackageManagerWrapper pm = new PackageManagerWrapper(context);
+                    crashReportData.put(SETTINGS_GLOBAL, SettingsCollector.collectGlobalSettings(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_GLOBAL data", e);
+                }
+            }
 
-			try {
-				final PackageInfo pi = pm.getPackageInfo();
-				if (pi != null) {
-					// Application Version
-					if (crashReportFields.contains(APP_VERSION_CODE)) {
-						crashReportData.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
-					}
-					if (crashReportFields.contains(APP_VERSION_NAME)) {
-						crashReportData.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
-					}
-				} else {
-					// Could not retrieve package info...
-					crashReportData.put(APP_VERSION_NAME, "Package info unavailable");
-				}
-			} catch (RuntimeException e){
-				ACRA.log.e(LOG_TAG, "Error while retrieving APP_VERSION_CODE and APP_VERSION_NAME data", e);
-			}
+            // SharedPreferences
+            if (crashReportFields.contains(SHARED_PREFERENCES)) {
+                try {
+                    crashReportData.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(context));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving SHARED_PREFERENCES data", e);
+                }
+            }
 
-			// Retrieve UDID(IMEI) if permission is available
-			if (crashReportFields.contains(DEVICE_ID) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
-					&& pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
-				try {
-					final String deviceId = ReportUtils.getDeviceId(context);
-					if (deviceId != null) {
-						crashReportData.put(DEVICE_ID, deviceId);
-					}
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving DEVICE_ID data", e);
-				}
-			}
+            // Now get all the crash data that relies on the PackageManager
+            // (which may or may not be here).
+            final PackageManagerWrapper pm = new PackageManagerWrapper(context);
 
-			// Collect DropBox and logcat
-			// Before JellyBean, this required the READ_LOGS permission
-			// Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
-			// Though, we can call logcat without any permission and still get traces related to our app.
-			final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
-			if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
-				ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
-				if (crashReportFields.contains(LOGCAT)) {
-					try {
-						crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
-					} catch (RuntimeException e){
-						ACRA.log.e(LOG_TAG, "Error while retrieving LOGCAT data", e);
-					}
-				}
-				if (crashReportFields.contains(EVENTSLOG)) {
-					try {
-						crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
-					} catch (RuntimeException e){
-						ACRA.log.e(LOG_TAG, "Error while retrieving EVENTSLOG data", e);
-					}
-				}
-				if (crashReportFields.contains(RADIOLOG)) {
-					try {
-						crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
-					} catch (RuntimeException e){
-						ACRA.log.e(LOG_TAG, "Error while retrieving RADIOLOG data", e);
-					}
-				}
-				if (crashReportFields.contains(DROPBOX)) {
-					try {
-						crashReportData.put(DROPBOX,
-								DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
-					} catch (RuntimeException e){
-						ACRA.log.e(LOG_TAG, "Error while retrieving DROPBOX data", e);
-					}
-				}
-			} else {
-				ACRA.log.i(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
-			}
+            try {
+                final PackageInfo pi = pm.getPackageInfo();
+                if (pi != null) {
+                    // Application Version
+                    if (crashReportFields.contains(APP_VERSION_CODE)) {
+                        crashReportData.put(APP_VERSION_CODE, Integer.toString(pi.versionCode));
+                    }
+                    if (crashReportFields.contains(APP_VERSION_NAME)) {
+                        crashReportData.put(APP_VERSION_NAME, pi.versionName != null ? pi.versionName : "not set");
+                    }
+                } else {
+                    // Could not retrieve package info...
+                    crashReportData.put(APP_VERSION_NAME, "Package info unavailable");
+                }
+            } catch (RuntimeException e){
+                ACRA.log.e(LOG_TAG, "Error while retrieving APP_VERSION_CODE and APP_VERSION_NAME data", e);
+            }
 
-			// Application specific log file
-			if (crashReportFields.contains(APPLICATION_LOG)) {
-				try {
-					final String logFile = LogFileCollector.collectLogFile(context,
-							ACRA.getConfig().applicationLogFile(),
-							ACRA.getConfig().applicationLogFileLines());
-					crashReportData.put(APPLICATION_LOG, logFile);
-				} catch (IOException e) {
-					ACRA.log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile(), e);
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving APPLICATION_LOG data", e);
+            // Retrieve UDID(IMEI) if permission is available
+            if (crashReportFields.contains(DEVICE_ID) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
+                && pm.hasPermission(Manifest.permission.READ_PHONE_STATE)) {
+                try {
+                    final String deviceId = ReportUtils.getDeviceId(context);
+                    if (deviceId != null) {
+                        crashReportData.put(DEVICE_ID, deviceId);
+                    }
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving DEVICE_ID data", e);
+                }
+            }
 
-				}
-			}
+            // Collect DropBox and logcat
+            // Before JellyBean, this required the READ_LOGS permission
+            // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
+            // Though, we can call logcat without any permission and still get traces related to our app.
+            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
+            if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
+                ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                if (crashReportFields.contains(LOGCAT)) {
+                    try {
+                        crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving LOGCAT data", e);
+                    }
+                }
+                if (crashReportFields.contains(EVENTSLOG)) {
+                    try {
+                        crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving EVENTSLOG data", e);
+                    }
+                }
+                if (crashReportFields.contains(RADIOLOG)) {
+                    try {
+                        crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving RADIOLOG data", e);
+                    }
+                }
+                if (crashReportFields.contains(DROPBOX)) {
+                    try {
+                        crashReportData.put(DROPBOX,
+                                            DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving DROPBOX data", e);
+                    }
+                }
+            } else {
+                ACRA.log.i(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
+            }
 
-			// Media Codecs list
-			if (crashReportFields.contains(MEDIA_CODEC_LIST)) {
-				try {
-					crashReportData.put(MEDIA_CODEC_LIST, MediaCodecListCollector.collecMediaCodecList());
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving MEDIA_CODEC_LIST data", e);
-				}
-			}
+            // Application specific log file
+            if (crashReportFields.contains(APPLICATION_LOG)) {
+                try {
+                    final String logFile = LogFileCollector.collectLogFile(context,
+                                                                           ACRA.getConfig().applicationLogFile(),
+                                                                           ACRA.getConfig().applicationLogFileLines());
+                    crashReportData.put(APPLICATION_LOG, logFile);
+                } catch (IOException e) {
+                    ACRA.log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile(), e);
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving APPLICATION_LOG data", e);
 
-			// Failing thread details
-			if (crashReportFields.contains(THREAD_DETAILS)) {
-				try {
-					crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(brokenThread));
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving THREAD_DETAILS data", e);
-				}
-			}
+                }
+            }
 
-			// IP addresses
-			if (crashReportFields.contains(USER_IP)) {
-				try {
-					crashReportData.put(USER_IP, ReportUtils.getLocalIpAddress());
-				} catch (RuntimeException e){
-					ACRA.log.e(LOG_TAG, "Error while retrieving USER_IP data", e);
-				}
-			}
+            // Media Codecs list
+            if (crashReportFields.contains(MEDIA_CODEC_LIST)) {
+                try {
+                    crashReportData.put(MEDIA_CODEC_LIST, MediaCodecListCollector.collecMediaCodecList());
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving MEDIA_CODEC_LIST data", e);
+                }
+            }
+
+            // Failing thread details
+            if (crashReportFields.contains(THREAD_DETAILS)) {
+                try {
+                    crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(brokenThread));
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving THREAD_DETAILS data", e);
+                }
+            }
+
+            // IP addresses
+            if (crashReportFields.contains(USER_IP)) {
+                try {
+                    crashReportData.put(USER_IP, ReportUtils.getLocalIpAddress());
+                } catch (RuntimeException e){
+                    ACRA.log.e(LOG_TAG, "Error while retrieving USER_IP data", e);
+                }
+            }
 
         } catch (RuntimeException e) {
             ACRA.log.e(LOG_TAG, "Error while retrieving crash data", e);
