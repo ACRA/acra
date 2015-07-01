@@ -173,22 +173,31 @@ final class SendWorker extends Thread {
     private void sendCrashReport(CrashReportData errorContent) throws ReportSenderException {
         if (!ACRA.isDebuggable() || ACRA.getConfig().sendReportsInDevMode()) {
             boolean sentAtLeastOnce = false;
+            ReportSenderException sendFailure = null;
+            String failedSender = null;
             for (ReportSender sender : reportSenders) {
                 try {
+                    ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
                     sender.send(context, errorContent);
-                    // If at least one sender worked, don't re-send the report
-                    // later.
+                    ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
+
+                    // If at least one sender worked, don't re-send the report later.
                     sentAtLeastOnce = true;
                 } catch (ReportSenderException e) {
-                    if (!sentAtLeastOnce) {
-                        throw e; // Don't log here because we aren't dealing
-                                 // with the Exception here.
-                    } else {
-                        ACRA.log.w(LOG_TAG,
-                                "ReportSender of class "
-                                        + sender.getClass().getName()
-                                        + " failed but other senders completed their task. ACRA will not send this report again.");
-                    }
+                    sendFailure = e;
+                    failedSender = sender.getClass().getName();
+                }
+            }
+
+            if (sendFailure != null) {
+                // We had some failure
+                if (!sentAtLeastOnce) {
+                    throw sendFailure; // Don't log here because we aren't dealing with the Exception here.
+                } else {
+                    ACRA.log.w(LOG_TAG,
+                               "ReportSender of class "
+                                   + failedSender
+                                   + " failed but other senders completed their task. ACRA will not send this report again.");
                 }
             }
         }
