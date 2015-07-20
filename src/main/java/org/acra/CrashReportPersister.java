@@ -1,6 +1,6 @@
 /*
  * java.util.Properties.java modified by Kevin Gaudin to allow usage of enums as keys.
- * 
+ *
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
  *  this work for additional information regarding copyright ownership.
@@ -69,15 +69,7 @@ final class CrashReportPersister {
 
         try {
             final BufferedInputStream bis = new BufferedInputStream(in, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-            bis.mark(Integer.MAX_VALUE);
-            final boolean isEbcdic = isEbcdic(bis);
-            bis.reset();
-
-            if (!isEbcdic) {
-                return load(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
-            } else {
-                return load(new InputStreamReader(bis)); //$NON-NLS-1$
-            }
+            return load(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
         } finally {
             in.close();
         }
@@ -112,24 +104,6 @@ final class CrashReportPersister {
         } finally {
             out.close();
         }
-    }
-
-    private boolean isEbcdic(BufferedInputStream in) throws IOException {
-        byte b;
-        while ((b = (byte) in.read()) != -1) {
-            if (b == 0x23 || b == 0x0a || b == 0x3d) {// ascii: newline/#/=
-                return false;
-            }
-            if (b == 0x15) {// EBCDIC newline
-                return true;
-            }
-        }
-        // we found no ascii newline, '#', neither '=', relative safe to
-        // consider it
-        // as non-ascii, the only exception will be a single line with only
-        // key(no value and '=')
-        // in this case, it should be no harm to read it in default charset
-        return false;
     }
 
     /**
@@ -323,7 +297,7 @@ final class CrashReportPersister {
             }
             crashData.put(key, value);
         }
-        
+
         CollectorUtil.safeClose(reader);
 
         return crashData;
