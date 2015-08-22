@@ -56,8 +56,10 @@ final class DisplayManagerCollector {
             }
         }
 
-        for (Display display : displays) {
-            result.append(collectDisplayData(display));
+        if (displays != null) {
+            for (Display display : displays) {
+                result.append(collectDisplayData(display));
+            }
         }
 
         return result.toString();
