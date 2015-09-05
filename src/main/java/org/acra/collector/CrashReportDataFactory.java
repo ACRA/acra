@@ -16,19 +16,11 @@
 
 package org.acra.collector;
 
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.*;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.os.Environment;
 import android.text.TextUtils;
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -36,12 +28,20 @@ import org.acra.util.Installation;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ReportUtils;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.os.Environment;
-import android.text.format.Time;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ReportField.*;
 
 /**
  * Responsible for creating the CrashReportData for an Exception.
@@ -57,10 +57,10 @@ public final class CrashReportDataFactory {
     private final Context context;
     private final SharedPreferences prefs;
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
-    private final Time appStartDate;
+    private final Calendar appStartDate;
     private final String initialConfiguration;
 
-    public CrashReportDataFactory(Context context, SharedPreferences prefs, Time appStartDate,
+    public CrashReportDataFactory(Context context, SharedPreferences prefs, Calendar appStartDate,
                                   String initialConfiguration) {
         this.context = context;
         this.prefs = prefs;
@@ -298,8 +298,7 @@ public final class CrashReportDataFactory {
             // User crash date with local timezone
             if (crashReportFields.contains(USER_CRASH_DATE)) {
                 try {
-                    final Time curDate = new Time();
-                    curDate.setToNow();
+                    final Calendar curDate = new GregorianCalendar();
                     crashReportData.put(USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving USER_CRASH_DATE data", e);

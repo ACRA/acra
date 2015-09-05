@@ -27,7 +27,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Looper;
-import android.text.format.Time;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.Compatibility;
@@ -47,6 +47,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,8 +151,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Sets the application start date.
         // This will be included in the reports, will be helpful compared to
         // user_crash date.
-        final Time appStartDate = new Time();
-        appStartDate.setToNow();
+        final Calendar appStartDate = new GregorianCalendar();
 
         if (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.ICE_CREAM_SANDWICH) { // ActivityLifecycleCallback
             // only available for API14+
@@ -888,16 +889,25 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         final CharSequence tickerText = mContext.getText(conf.resNotifTickerText());
         final long when = System.currentTimeMillis();
-        final Notification notification = new Notification(icon, tickerText, when);
-
-        final CharSequence contentTitle = mContext.getText(conf.resNotifTitle());
-        final CharSequence contentText = mContext.getText(conf.resNotifText());
 
         ACRA.log.d(LOG_TAG, "Creating Notification for " + reportFileName);
         final Intent crashReportDialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
         final PendingIntent contentIntent = PendingIntent.getActivity(mContext, mNotificationCounter++, crashReportDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        notification.setLatestEventInfo(mContext, contentTitle, contentText, contentIntent);
+        final CharSequence contentTitle = mContext.getText(conf.resNotifTitle());
+        final CharSequence contentText = mContext.getText(conf.resNotifText());
+
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+        final Notification notification = builder
+            .setSmallIcon(icon)
+            .setTicker(tickerText)
+            .setWhen(when)
+            .setAutoCancel(true)
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
+            .setContentIntent(contentIntent)
+            .build();
+
         notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
 
         // The deleteIntent is invoked when the user swipes away the Notification.
@@ -912,9 +922,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     private String getReportFileName(CrashReportData crashData) {
-        final Time now = new Time();
-        now.setToNow();
-        final long timestamp = now.toMillis(false);
+        final Calendar now = new GregorianCalendar();
+        final long timestamp = now.getTimeInMillis();
         final String isSilent = crashData.getProperty(IS_SILENT);
         return "" + timestamp + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "")
             + ACRAConstants.REPORTFILE_EXTENSION;

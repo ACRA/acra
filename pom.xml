@@ -7,6 +7,7 @@
     </parent>
 	<groupId>ch.acra</groupId>
 	<artifactId>acra</artifactId>
+	<packaging>aar</packaging>
 	<version>4.6.3-SNAPSHOT</version>
 
 	<name>Application Crash Report for Android</name>
@@ -43,9 +44,9 @@
 		<!--
 			NB ACRA supports back to API3.
 			But in order to compile classes and method that will NOT be used except when the target platform is of sufficient version
-			we need to compile against version 17.
+			we need to compile against version 23.
 		-->
-        <android.version>17</android.version>
+        <android.version>23</android.version>
 	</properties>
 
 	<dependencies>
@@ -59,12 +60,18 @@
             NB The AndroidAPI dependency is included below to allow test execution and javadoc generation.
         -->
         <dependency>
-            <groupId>com.google.android</groupId>
+            <groupId>android</groupId> <!-- deployed using the android-maven-sdk-deployer -->
             <artifactId>android</artifactId>
-            <version>4.1.1.4</version>
+            <version>6.0_r1</version>
             <type>jar</type>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>com.android.support</groupId>
+			<artifactId>support-v4</artifactId>
+			<version>23.0.1</version>
+			<type>aar</type>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -72,6 +79,7 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -107,6 +115,13 @@
 		</pluginManagement>
 
 		<plugins>
+			<plugin>
+				<groupId>com.simpligility.maven.plugins</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>4.3.0</version>
+				<extensions>true</extensions>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
