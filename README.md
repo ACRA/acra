@@ -43,6 +43,13 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
+ACRA v4.7
+===============================
+Packaging as an AAR.
+In order to utilize the previously deprecated and now removed mechanisms of the Notification class ACRA now includes a dependency on com.android.support:support-v4.
+THis means that ACRA now needs to be packaged as an AAR instead of a JAR.
+
+
 ACRA v4.6
 ===============================
 
