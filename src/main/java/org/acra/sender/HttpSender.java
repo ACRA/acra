@@ -215,7 +215,6 @@ public class HttpSender implements ReportSender {
             final HttpRequest request = new HttpRequest();
             request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
             request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
-            request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
             request.setLogin(login);
             request.setPassword(password);
             request.setHeaders(ACRA.getConfig().getHttpHeaders());
@@ -231,7 +230,6 @@ public class HttpSender implements ReportSender {
                 final Map<String, String> finalReport = remap(report);
                 reportAsString = HttpRequest.getParamsAsFormString(finalReport);
                 break;
-
             }
 
             // Adjust URL depending on method
@@ -244,7 +242,7 @@ public class HttpSender implements ReportSender {
             default:
                 throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
             }
-            request.send(context, reportUrl, mMethod, reportAsString, mType);
+            request.send(reportUrl, mMethod, reportAsString, mType);
 
         } catch (IOException e) {
             throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType()

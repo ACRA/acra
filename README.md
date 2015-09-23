@@ -45,9 +45,17 @@ For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA
 
 ACRA v4.7
 ===============================
-Packaging as an AAR.
-In order to utilize the previously deprecated and now removed mechanisms of the Notification class ACRA now includes a dependency on com.android.support:support-v4.
-THis means that ACRA now needs to be packaged as an AAR instead of a JAR.
+- Support for Android M (6.0)
+  - Using HtttpUrlConnection instead of Apache Http
+  - Using com.android.support:support-v4 to provide support fro removed Notification methods.
+- Packaging as an AAR.
+  In order to use com.android.support:support-v4 ACRA now needs to be packaged as an AAR instead of a JAR.
+- Removal of maxNumberOfRequestRetries config as HttpUrlConnection does not natively support retries on Socket timeout.
+- Removal of httpsSocketFactoryFactoryClass config and TlsSniSocketFactory as it was not natively supported with HttpUrlConnection and it is questionable as to whether it is still required.
+  HttpUrlConnection decides upon the Socket to use based upon protocol.
+- Removal of disableSSLCertValidation (this hasn't been used since the introduction of the keystore parameter).  
+- Increase of default connection timeout to 5000ms
+- Increase of default socket timeout to 8000ms
 
 
 ACRA v4.6

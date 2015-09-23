@@ -19,10 +19,6 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
-import org.acra.util.DefaultHttpsSocketFactoryFactory;
-import org.acra.util.HttpsSocketFactoryFactory;
-import org.acra.util.ReflectionException;
-import org.acra.util.ReflectionHelper;
 
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
@@ -41,8 +37,6 @@ import static org.acra.ACRAConstants.*;
  */
 public class ACRAConfiguration implements ReportsCrashes {
 
-    private final ReflectionHelper reflectionHelper = new ReflectionHelper();
-
     private String[] mAdditionalDropboxTags = null;
 
     private String[] mAdditionalSharedPreferences = null;
@@ -59,7 +53,6 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     private String[] mLogcatArguments = null;
     private String mMailTo = null;
-    private Integer mMaxNumberOfRequestRetries = null;
     private ReportingInteractionMode mMode = null;
     private ReportsCrashes mReportsCrashes = null;
     private Class<? extends BaseCrashReportDialog> mReportDialogClass = null;
@@ -90,9 +83,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     private String mApplicationLogFile = null;
     private Integer mApplicationLogFileLines = null;
 
-    private Boolean mDisableSSLCertValidation = null;
-    private String mHttpsSocketFactoryFactoryClass = null;
-    private HttpsSocketFactoryFactory mHttpsSocketFactoryFactory;
     private Method mHttpMethod = null;
     private Type mReportType = null;
     private Map<String, String> mHttpHeaders;
@@ -302,17 +292,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMailTo(String mailTo) {
         this.mMailTo = mailTo;
-        return this;
-    }
-
-    /**
-     * @param maxNumberOfRequestRetries
-     *            the maxNumberOfRequestRetries to set
-     * @return The updated ACRA configuration
-     */
-    @SuppressWarnings( "unused" )
-    public ACRAConfiguration setMaxNumberOfRequestRetries(Integer maxNumberOfRequestRetries) {
-        this.mMaxNumberOfRequestRetries = maxNumberOfRequestRetries;
         return this;
     }
 
@@ -654,18 +633,6 @@ public class ACRAConfiguration implements ReportsCrashes {
 
     /**
      * 
-     * @param disableSSLCertValidation
-     *            Set this to true if you need to send reports to a server over
-     *            SSL using a self-signed certificate.
-     * @return The updated ACRA configuration
-     */
-    public ACRAConfiguration setDisableSSLCertValidation(boolean disableSSLCertValidation) {
-        mDisableSSLCertValidation = disableSSLCertValidation;
-        return this;
-    }
-
-    /**
-     * 
      * @param httpMethod
      *            The method to be used to send data to the server.
      * @return The updated ACRA configuration
@@ -899,19 +866,6 @@ public class ACRAConfiguration implements ReportsCrashes {
         }
 
         return DEFAULT_STRING_VALUE;
-    }
-
-    @Override
-    public int maxNumberOfRequestRetries() {
-        if (mMaxNumberOfRequestRetries != null) {
-            return mMaxNumberOfRequestRetries;
-        }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.maxNumberOfRequestRetries();
-        }
-
-        return DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
     }
 
     @Override
@@ -1244,33 +1198,6 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     @Override
-    public boolean disableSSLCertValidation() {
-        if (mDisableSSLCertValidation != null) {
-            return mDisableSSLCertValidation;
-        }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.disableSSLCertValidation();
-        }
-
-        return DEFAULT_DISABLE_SSL_CERT_VALIDATION;
-    }
-
-    @Override
-    public String httpsSocketFactoryFactoryClass() {
-        if (mHttpsSocketFactoryFactoryClass != null) {
-            return mHttpsSocketFactoryFactoryClass;
-        }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.httpsSocketFactoryFactoryClass();
-        }
-
-        return null;
-    }
-
-
-    @Override
     public Class<? extends BaseCrashReportDialog> reportDialogClass() {
         if (mReportDialogClass != null) {
             return mReportDialogClass;
@@ -1282,42 +1209,6 @@ public class ACRAConfiguration implements ReportsCrashes {
 
         return CrashReportDialog.class;
     }
-
-    /**
-     * @param httpsSocketFactoryFactory  HttpsSocketFactoryFactory to set.
-     */
-    @SuppressWarnings( "unused" )
-    public void setHttpsSocketFactoryFactory(HttpsSocketFactoryFactory httpsSocketFactoryFactory) {
-        this.mHttpsSocketFactoryFactory = httpsSocketFactoryFactory;
-    }
-
-    public HttpsSocketFactoryFactory getHttpSocketFactoryFactory() {
-        if (mHttpsSocketFactoryFactory != null) {
-            return mHttpsSocketFactoryFactory;
-        }
-
-        final String httpsSocketFactoryFactoryClass = httpsSocketFactoryFactoryClass();
-        if (httpsSocketFactoryFactoryClass != null) {
-            try {
-                final Object object = reflectionHelper.create(mReportsCrashes.httpsSocketFactoryFactoryClass());
-                if (object instanceof HttpsSocketFactoryFactory) {
-                    mHttpsSocketFactoryFactory = (HttpsSocketFactoryFactory) object;
-                } else {
-                    ACRA.log.w(LOG_TAG, "Using default httpsSocketFactoryFactory - not a HttpSocketFactoryFactory : " + httpsSocketFactoryFactoryClass);
-                }
-            } catch (ReflectionException e) {
-                ACRA.log.w(LOG_TAG, "Using default httpsSocketFactoryFactory - Could not construct : " + httpsSocketFactoryFactoryClass);
-            }
-        }
-
-        // If it's still null then take the default
-        if (mHttpsSocketFactoryFactoryClass == null) {
-            mHttpsSocketFactoryFactory = DefaultHttpsSocketFactoryFactory.INSTANCE;
-        }
-
-        return mHttpsSocketFactoryFactory;
-    }
-
 
     @Override
     public Method httpMethod() {
