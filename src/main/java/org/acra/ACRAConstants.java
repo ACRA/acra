@@ -84,9 +84,9 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES = 3;
 
-    public static final int DEFAULT_SOCKET_TIMEOUT = 5000;
+    public static final int DEFAULT_SOCKET_TIMEOUT = 8000;
 
-    public static final int DEFAULT_CONNECTION_TIMEOUT = 3000;
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
 
     public static final boolean DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START = true;
 

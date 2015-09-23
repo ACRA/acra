@@ -421,8 +421,7 @@ public @interface ReportsCrashes {
     boolean deleteOldUnsentReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
 
     /**
-     * @return Value in milliseconds for timeout attempting to connect to a
-     *         network (default 3000ms).
+     * @return Value in milliseconds for timeout attempting to connect to a network (default 5000ms).
      */
     int connectionTimeout() default ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
 
@@ -430,18 +429,9 @@ public @interface ReportsCrashes {
      * If the request is retried due to timeout, the socketTimeout will double
      * before retrying the request.
      * 
-     * @return Value in milliseconds for timeout receiving a response to a
-     *         network request (default 5000ms).
-     * @see #maxNumberOfRequestRetries()
+     * @return Value in milliseconds for timeout receiving a response to a network request (default 8000ms).
      */
     int socketTimeout() default ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
-
-    /**
-     * @return Maximum number of times a network request will be retried when
-     *         receiving the response times out (default 3).
-     * @see #socketTimeout()
-     */
-    int maxNumberOfRequestRetries() default ACRAConstants.DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES;
 
     /**
      * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you
@@ -532,19 +522,6 @@ public @interface ReportsCrashes {
      * @return number of lines to collect.
      */
     int applicationLogFileLines() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
-
-    /**
-     * <p>
-     * Set this to true if you need to post reports to your own server using an
-     * SSL connection with a self-signed certificate.
-     * </p>
-     * 
-     * @return True if SSL certificates validation has to be ignored when
-     *         posting reports.
-     */
-    boolean disableSSLCertValidation() default ACRAConstants.DEFAULT_DISABLE_SSL_CERT_VALIDATION;
-
-    String httpsSocketFactoryFactoryClass() default ACRAConstants.DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS;
 
     /**
      * @return Class for the CrashReportDialog used when sending intent.
