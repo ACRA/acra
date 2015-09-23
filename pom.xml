@@ -36,6 +36,13 @@
 				<role>developer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>william.ferguson</id>
+			<name>William Ferguson</name>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<properties>
