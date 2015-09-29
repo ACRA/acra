@@ -76,9 +76,7 @@ public final class HttpRequest {
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
 
                 final KeyStore keyStore = ACRA.getConfig().keyStore();
-                if (keyStore != null) {
-                    tmf.init(keyStore);
-                }
+                tmf.init(keyStore);
 
                 final SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, tmf.getTrustManagers(), null);
@@ -118,6 +116,10 @@ public final class HttpRequest {
         urlConnection.setRequestMethod(method.name());
         urlConnection.setDoOutput(true);
         urlConnection.setChunkedStreamingMode(0);
+
+        // Disable ConnectionPooling because otherwise OkHttp ConnectionPool will try to start a Thread on #connect
+        System.setProperty("http.keepAlive", "false");
+
         urlConnection.connect();
 
         final OutputStream outputStream = new BufferedOutputStream(urlConnection.getOutputStream());
