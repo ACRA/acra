@@ -1,12 +1,5 @@
 [![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)
 
-Please tell us how you use ACRA
-===============================
-
-In order to focus future developments on what is really important to you, please [take this survey](https://spreadsheets.google.com/viewform?hl=en&formkey=dDV5ek03OS1SOWNlZlBxNkFXbV9kSmc6MQ#gid=0)!
-
-You can view the survey results [here](https://spreadsheets.google.com/spreadsheet/viewanalytics?hl=en&formkey=dDV5ek03OS1SOWNlZlBxNkFXbV9kSmc6MQ).
-
 <a href="https://plus.google.com/118444843928759726538" rel="publisher">Follow ACRA on Google+ for latest news and tips.</a>
 
 [![](https://ssl.gstatic.com/images/icons/gplus-32.png)](https://plus.google.com/118444843928759726538)
