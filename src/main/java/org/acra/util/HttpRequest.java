@@ -131,7 +131,7 @@ public final class HttpRequest {
 
         final int responseCode = urlConnection.getResponseCode();
         ACRA.log.d(LOG_TAG,"Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
-        if (responseCode == HttpURLConnection.HTTP_OK) {
+        if ((responseCode >= 200) && (responseCode < 300)) {
             // All is good
             ACRA.log.d(LOG_TAG,"Request received by server");
         } else if (responseCode == 403) {
