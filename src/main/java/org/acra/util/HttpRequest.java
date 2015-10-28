@@ -5,6 +5,7 @@
  */
 package org.acra.util;
 
+import net.iharder.Base64;
 import org.acra.ACRA;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -16,9 +17,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
@@ -89,11 +88,9 @@ public final class HttpRequest {
 
         // Set Credentials
         if ((login != null) && (password != null)) {
-            Authenticator.setDefault(new Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(login, password.toCharArray());
-                }
-            });
+            final String credentials = login + ":" + password;
+            final String encoded = Base64.encodeBytes(credentials.getBytes("UTF-8"));
+            urlConnection.setRequestProperty("Authorization", "Basic " + encoded);
         }
 
         urlConnection.setConnectTimeout(connectionTimeOut);
