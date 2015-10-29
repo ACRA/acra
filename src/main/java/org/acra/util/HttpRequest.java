@@ -109,10 +109,12 @@ public final class HttpRequest {
             }
         }
 
+        final byte[] contentAsBytes = content.getBytes("UTF-8");
+
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         urlConnection.setRequestMethod(method.name());
         urlConnection.setDoOutput(true);
-        urlConnection.setChunkedStreamingMode(0);
+        urlConnection.setFixedLengthStreamingMode(contentAsBytes.length);
 
         // Disable ConnectionPooling because otherwise OkHttp ConnectionPool will try to start a Thread on #connect
         System.setProperty("http.keepAlive", "false");
@@ -120,8 +122,7 @@ public final class HttpRequest {
         urlConnection.connect();
 
         final OutputStream outputStream = new BufferedOutputStream(urlConnection.getOutputStream());
-
-        outputStream.write(content.getBytes("UTF-8"));
+        outputStream.write(contentAsBytes);
         outputStream.flush();
         outputStream.close();
 
