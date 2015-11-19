@@ -5,7 +5,7 @@
  */
 package org.acra.util;
 
-import net.iharder.Base64;
+import android.util.Base64;
 import org.acra.ACRA;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -89,7 +89,7 @@ public final class HttpRequest {
         // Set Credentials
         if ((login != null) && (password != null)) {
             final String credentials = login + ":" + password;
-            final String encoded = Base64.encodeBytes(credentials.getBytes("UTF-8"));
+            final String encoded = new String(Base64.encode(credentials.getBytes("UTF-8"), Base64.DEFAULT), "UTF-8");
             urlConnection.setRequestProperty("Authorization", "Basic " + encoded);
         }
 
