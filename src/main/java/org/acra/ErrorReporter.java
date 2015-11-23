@@ -50,7 +50,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -90,7 +90,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Contains the active {@link ReportSender}s.
      */
-    private final List<ReportSender> mReportSenders = new ArrayList<ReportSender>();
+    private final ArrayList<Class<? extends ReportSender>> mReportSenders = new ArrayList<Class<? extends ReportSender>>();
 
     private final CrashReportDataFactory crashReportDataFactory;
 
@@ -284,7 +284,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * <p>
      * Example. Add to the {@link Application#onCreate()}:
      * </p>
-     * 
+     *
      * <pre>
      * ACRA.getErrorReporter().setExceptionHandlerInitializer(new ExceptionHandlerInitializer() {
      *     <code>@Override</code> public void initializeExceptionHandler(ErrorReporter reporter) {
@@ -292,7 +292,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *     }
      * });
      * </pre>
-     * 
+     *
      * @param initializer   The initializer. Can be <code>null</code>.
      */
     public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
@@ -341,7 +341,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param sender
      *            The {@link ReportSender} to be added.
      */
+    @Deprecated
     public void addReportSender(ReportSender sender) {
+        mReportSenders.add(sender.getClass());
+    }
+
+    @SuppressWarnings("unused")
+    public void addReportSender(Class<? extends ReportSender> sender) {
         mReportSenders.add(sender);
     }
 
@@ -353,7 +359,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            The {@link ReportSender} instance to be removed.
      */
     @SuppressWarnings("unused")
+    @Deprecated
     public void removeReportSender(ReportSender sender) {
+        mReportSenders.remove(sender.getClass());
+    }
+
+    @SuppressWarnings("unused")
+    public void removeReportSender(Class<? extends ReportSender> sender) {
         mReportSenders.remove(sender);
     }
 
@@ -364,12 +376,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            ReportSender class whose instances should be removed.
      */
     @SuppressWarnings("unused")
-    public void removeReportSenders(Class<?> senderClass) {
-        if (ReportSender.class.isAssignableFrom(senderClass)) {
-            for (ReportSender sender : mReportSenders) {
-                if (senderClass.isInstance(sender)) {
-                    mReportSenders.remove(sender);
-                }
+    public void removeReportSenders(Class<? extends ReportSender> senderClass) {
+        for (Iterator<Class<? extends ReportSender>> iterator = mReportSenders.iterator(); iterator.hasNext(); ) {
+            final Class<? extends ReportSender> sender = iterator.next();
+            if (senderClass == sender) {
+                iterator.remove();
             }
         }
     }
@@ -521,12 +532,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            If true then only send silent reports.
      * @param approveReportsFirst
      *            If true then approve unapproved reports first.
-     * @return SendWorker that will be sending the report.s
      */
-    SendWorker startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
-        final SendWorker worker = new SendWorker(mContext, mReportSenders, onlySendSilentReports, approveReportsFirst);
-        worker.start();
-        return worker;
+    void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
+        final Intent intent = new Intent(mContext, SenderService.class);
+        intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+        intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
+        intent.putExtra(SenderService.EXTRA_REPORT_SENDERS, mReportSenders);
+        mContext.startService(intent);
     }
 
     /**
@@ -697,7 +709,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         try {
             exceptionHandlerInitializer.initializeExceptionHandler(this);
         } catch (Exception exceptionInRunnable) {
-            ACRA.log.d(LOG_TAG, "Failed to initlize " + exceptionHandlerInitializer + " from #handleException");
+            ACRA.log.d(LOG_TAG, "Failed to initialize " + exceptionHandlerInitializer + " from #handleException");
         }
 
         boolean sendOnlySilentReports = false;
@@ -756,15 +768,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
         }
 
-        SendWorker sender = null;
-
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
             || reportingInteractionMode == ReportingInteractionMode.TOAST
             || prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
 
             // Approve and then send reports now
             ACRA.log.d(LOG_TAG, "About to start ReportSenderWorker from #handleException");
-            sender = startSendingReports(sendOnlySilentReports, true);
+            startSendingReports(sendOnlySilentReports, true);
             if ((reportingInteractionMode == ReportingInteractionMode.SILENT) && !reportBuilder.mEndsApplication) {
                 // Report is being sent silently and the application is not ending.
                 // So no need to wait around for the sender to complete.
@@ -801,9 +811,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
 
-        // Start an AsyncTask waiting for the end of the sender.
-        // Once sent, call endApplication() if reportBuilder.mEndApplication
-        final SendWorker worker = sender;
         final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
             && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
@@ -821,19 +828,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     }
                 }
                 ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
-
-                // We have to wait for the worker job to be completed.
-                if (worker != null) {
-                    ACRA.log.d(LOG_TAG, "Waiting for Worker");
-                    while (worker.isAlive()) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e1) {
-                            ACRA.log.d(LOG_TAG, "Error : ", e1);
-                        }
-                    }
-                    ACRA.log.d(LOG_TAG, "Finished waiting for Worker");
-                }
 
                 if (showDirectDialog) {
                     // Create a new activity task with the confirmation dialog.
