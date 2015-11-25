@@ -82,6 +82,7 @@ import static org.acra.ReportField.IS_SILENT;
  */
 public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
+    private final boolean supportedAndroidVersion;
     private boolean enabled = false;
 
     private final Application mContext;
@@ -133,11 +134,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            Whether this ErrorReporter should capture Exceptions and
      *            forward their reports.
      */
-    ErrorReporter(Application context, SharedPreferences prefs, boolean enabled) {
+    ErrorReporter(Application context, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion) {
 
         this.mContext = context;
         this.prefs = prefs;
         this.enabled = enabled;
+        this.supportedAndroidVersion = supportedAndroidVersion;
 
         // Store the initial Configuration state.
         // This is expensive to gather, so only do so if we plan to report it.
@@ -510,8 +512,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            forward them as crash reports.
      */
     public void setEnabled(boolean enabled) {
-        ACRA.log.i(LOG_TAG, "ACRA is " + (enabled ? "enabled" : "disabled") + " for " + mContext.getPackageName());
-        this.enabled = enabled;
+        if (!supportedAndroidVersion) {
+            ACRA.log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
+        } else {
+            ACRA.log.i(LOG_TAG, "ACRA is " + (enabled ? "enabled" : "disabled") + " for " + mContext.getPackageName());
+            this.enabled = enabled;
+        }
     }
 
     /**
