@@ -41,6 +41,7 @@ ACRA v4.7
 - Support for Android M (6.0)
   - Using HtttpUrlConnection instead of Apache Http
   - Using com.android.support:support-v4 to provide support fro removed Notification methods.
+- Minimum Android version is Froyo (2.2). ACRA will disable itself for anything prior to that.  
 - Packaging as an AAR.
   In order to use com.android.support:support-v4 ACRA now needs to be packaged as an AAR instead of a JAR.
 - Removal of maxNumberOfRequestRetries config as HttpUrlConnection does not natively support retries on Socket timeout.

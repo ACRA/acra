@@ -15,9 +15,9 @@
  */
 package org.acra;
 
+import android.os.Build;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.log.ACRALog;
-import org.acra.log.HollowLog;
 import org.acra.log.AndroidLogDelegate;
 
 import android.app.Application;
@@ -154,6 +154,11 @@ public class ACRA {
      */
     public static void init(Application app, ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
+        boolean supportedAndroidVersion = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO);
+        if (!supportedAndroidVersion){
+            log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
+        }
+
         if (mApplication != null) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
             return;
@@ -171,11 +176,10 @@ public class ACRA {
         try {
             checkCrashResources(config);
 
-            log.d(LOG_TAG, "ACRA is enabled for " + mApplication.getPackageName() + ", initializing...");
-
             // Initialize ErrorReporter with all required data
-            final boolean enableAcra = !shouldDisableACRA(prefs);
-            final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra);
+            final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
+            log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
+            final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra, supportedAndroidVersion);
 
             // Append ReportSenders.
             errorReporter.setDefaultReportSenders();
