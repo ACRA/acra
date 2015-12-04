@@ -74,11 +74,15 @@ class LogFileCollector {
 
     private static BufferedReader getReader(Context context, String fileName) {
         try {
-            if (fileName.contains("/")) {
-                return new BufferedReader(new InputStreamReader(new FileInputStream(fileName)), 1024);
+            FileInputStream inputStream;
+            if (fileName.startsWith("/")) {
+                inputStream = new FileInputStream(fileName);
+            } else if (fileName.contains("/")) {
+                inputStream = new FileInputStream(context.getFilesDir() + File.separator + fileName);
             } else {
-                return new BufferedReader(new InputStreamReader(context.openFileInput(fileName)), 1024);
+                inputStream = context.openFileInput(fileName);
             }
+            return new BufferedReader(new InputStreamReader(inputStream), 1024);
         } catch (FileNotFoundException e) {
             ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + ACRA.getConfig().applicationLogFile() + "'");
             return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(new byte[0])));
