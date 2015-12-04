@@ -74,7 +74,7 @@ class LogFileCollector {
 
     private static BufferedReader getReader(Context context, String fileName) {
         try {
-            if (fileName.contains("/")) {
+            if (fileName.startsWith("/")) {
                 return new BufferedReader(new InputStreamReader(new FileInputStream(fileName)), 1024);
             } else {
                 return new BufferedReader(new InputStreamReader(context.openFileInput(fileName)), 1024);
