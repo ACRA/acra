@@ -148,6 +148,49 @@ public final class CrashReportDataFactory {
                 ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE data", e);
             }
 
+            // Collect DropBox and logcat. This is done first because some ROMs spam the log with every get on
+            // Settings.
+            final PackageManagerWrapper pm = new PackageManagerWrapper(context);
+
+            // Before JellyBean, this required the READ_LOGS permission
+            // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
+            // Though, we can call logcat without any permission and still get traces related to our app.
+            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
+            if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
+                ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                if (crashReportFields.contains(LOGCAT)) {
+                    try {
+                        crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving LOGCAT data", e);
+                    }
+                }
+                if (crashReportFields.contains(EVENTSLOG)) {
+                    try {
+                        crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving EVENTSLOG data", e);
+                    }
+                }
+                if (crashReportFields.contains(RADIOLOG)) {
+                    try {
+                        crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving RADIOLOG data", e);
+                    }
+                }
+                if (crashReportFields.contains(DROPBOX)) {
+                    try {
+                        crashReportData.put(DROPBOX,
+                                DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
+                    } catch (RuntimeException e){
+                        ACRA.log.e(LOG_TAG, "Error while retrieving DROPBOX data", e);
+                    }
+                }
+            } else {
+                ACRA.log.i(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
+            }
+
             try {
                 crashReportData.put(ReportField.USER_APP_START_DATE, ReportUtils.getTimeString(appStartDate));
             } catch (RuntimeException e){
@@ -389,10 +432,8 @@ public final class CrashReportDataFactory {
                 }
             }
 
-            // Now get all the crash data that relies on the PackageManager
+            // Now get all the crash data that relies on the PackageManager.getPackageInfo()
             // (which may or may not be here).
-            final PackageManagerWrapper pm = new PackageManagerWrapper(context);
-
             try {
                 final PackageInfo pi = pm.getPackageInfo();
                 if (pi != null) {
@@ -422,46 +463,6 @@ public final class CrashReportDataFactory {
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving DEVICE_ID data", e);
                 }
-            }
-
-            // Collect DropBox and logcat
-            // Before JellyBean, this required the READ_LOGS permission
-            // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
-            // Though, we can call logcat without any permission and still get traces related to our app.
-            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
-            if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
-                ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
-                if (crashReportFields.contains(LOGCAT)) {
-                    try {
-                        crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
-                    } catch (RuntimeException e){
-                        ACRA.log.e(LOG_TAG, "Error while retrieving LOGCAT data", e);
-                    }
-                }
-                if (crashReportFields.contains(EVENTSLOG)) {
-                    try {
-                        crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
-                    } catch (RuntimeException e){
-                        ACRA.log.e(LOG_TAG, "Error while retrieving EVENTSLOG data", e);
-                    }
-                }
-                if (crashReportFields.contains(RADIOLOG)) {
-                    try {
-                        crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
-                    } catch (RuntimeException e){
-                        ACRA.log.e(LOG_TAG, "Error while retrieving RADIOLOG data", e);
-                    }
-                }
-                if (crashReportFields.contains(DROPBOX)) {
-                    try {
-                        crashReportData.put(DROPBOX,
-                                            DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
-                    } catch (RuntimeException e){
-                        ACRA.log.e(LOG_TAG, "Error while retrieving DROPBOX data", e);
-                    }
-                }
-            } else {
-                ACRA.log.i(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
             }
 
             // Application specific log file
