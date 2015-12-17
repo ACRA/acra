@@ -18,6 +18,7 @@ package org.acra.collector;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,17 +45,18 @@ class LogFileCollector {
      * Private constructor to prevent instantiation.
      */
     private LogFileCollector() {
-    };
+    }
 
     /**
      * Reads the last lines of a custom log file. The file name is assumed as
      * located in the {@link Application#getFilesDir()} directory if it does not
      * contain any path separator.
      * 
-     * @param context
-     * @param fileName
-     * @param numberOfLines
-     * @return
+     * @param context       Application context.
+     * @param fileName      Log file to read. It can be an absolute path, or a relative path from the application
+     *                      files folder, or a file within the application files folder.
+     * @param numberOfLines Number of lines to retrieve.
+     * @return A single String containing all of the requested lines.
      * @throws IOException
      */
     public static String collectLogFile(Context context, String fileName, int numberOfLines) throws IOException {
@@ -74,12 +76,15 @@ class LogFileCollector {
 
     private static BufferedReader getReader(Context context, String fileName) {
         try {
-            FileInputStream inputStream;
+            final FileInputStream inputStream;
             if (fileName.startsWith("/")) {
+                // Absolute path
                 inputStream = new FileInputStream(fileName);
             } else if (fileName.contains("/")) {
-                inputStream = new FileInputStream(context.getFilesDir() + File.separator + fileName);
+                // Relative path from the application files folder (ie a sub folder)
+                inputStream = new FileInputStream(new File(context.getFilesDir(), fileName));
             } else {
+                // A file directly contained within the application files folder.
                 inputStream = context.openFileInput(fileName);
             }
             return new BufferedReader(new InputStreamReader(inputStream), 1024);
