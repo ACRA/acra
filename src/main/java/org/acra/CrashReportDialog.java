@@ -22,15 +22,27 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
+    private LinearLayout scrollable;
     private EditText userCommentView;
     private EditText userEmailView;
 
-    AlertDialog mDialog;
+    private AlertDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        scrollable = new LinearLayout(this);
+        scrollable.setOrientation(LinearLayout.VERTICAL);
+
+        buildAndShowDialog(savedInstanceState);
+    }
+
+    /**
+     * Build the dialog from the values in config
+     * @param savedInstanceState old state to restore
+     */
+    protected void buildAndShowDialog(Bundle savedInstanceState){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final int titleResourceId = ACRA.getConfig().resDialogTitle();
         if (titleResourceId != 0) {
@@ -60,64 +72,105 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         final ScrollView scroll = new ScrollView(this);
         root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
-        final LinearLayout scrollable = new LinearLayout(this);
-        scrollable.setOrientation(LinearLayout.VERTICAL);
         scroll.addView(scrollable);
 
-        final TextView text = new TextView(this);
-        final int dialogTextId = ACRA.getConfig().resDialogText();
-        if (dialogTextId != 0) {
-            text.setText(getText(dialogTextId));
-        }
-        scrollable.addView(text);
+        addViewToDialog(getMainView());
 
         // Add an optional prompt for user comments
         final int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
         if (commentPromptId != 0) {
-            final TextView label = new TextView(this);
-            label.setText(getText(commentPromptId));
-
-            label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            scrollable.addView(label, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-
-            userCommentView = new EditText(this);
-            userCommentView.setLines(2);
+            String savedComment = null;
             if (savedInstanceState != null) {
-                String savedValue = savedInstanceState.getString(STATE_COMMENT);
-                if (savedValue != null) {
-                    userCommentView.setText(savedValue);
-                }
+                savedComment = savedInstanceState.getString(STATE_COMMENT);
             }
-            scrollable.addView(userCommentView);
+            userCommentView = getCommentPrompt(getText(commentPromptId), savedComment);
+            addViewToDialog(userCommentView);
         }
 
         // Add an optional user email field
         final int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
         if (emailPromptId != 0) {
-            final TextView label = new TextView(this);
-            label.setText(getText(emailPromptId));
-
-            label.setPadding(label.getPaddingLeft(), 10, label.getPaddingRight(), label.getPaddingBottom());
-            scrollable.addView(label);
-
-            userEmailView = new EditText(this);
-            userEmailView.setSingleLine();
-            userEmailView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-
-            String savedValue = null;
+            String savedEmail = null;
             if (savedInstanceState != null) {
-                savedValue = savedInstanceState.getString(STATE_EMAIL);
+                savedEmail = savedInstanceState.getString(STATE_EMAIL);
             }
-            if (savedValue != null) {
-                userEmailView.setText(savedValue);
-            } else {
-                final SharedPreferences prefs = ACRA.getACRASharedPreferences();
-                userEmailView.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
-            }
-            scrollable.addView(userEmailView);
+            userEmailView = getEmailPrompt(getText(emailPromptId), savedEmail);
+            addViewToDialog(userEmailView);
         }
 
         return root;
+    }
+
+    /**
+     * adds a view to the end of the dialog
+     *
+     * @param v the view to add
+     */
+    protected final void addViewToDialog(View v) {
+        scrollable.addView(v);
+    }
+
+    /**
+     * Creates a main view containing text of resDialogText
+     *
+     * @return the main view
+     */
+    protected View getMainView() {
+        final TextView text = new TextView(this);
+        final int dialogTextId = ACRA.getConfig().resDialogText();
+        if (dialogTextId != 0) {
+            text.setText(getText(dialogTextId));
+        }
+        return text;
+    }
+
+    /**
+     * creates a comment prompt
+     *
+     * @param label        the label of the prompt
+     * @param savedComment the content of the prompt (usually from a saved state)
+     * @return the comment prompt
+     */
+    protected EditText getCommentPrompt(CharSequence label, CharSequence savedComment) {
+        final TextView labelView = new TextView(this);
+        labelView.setText(label);
+
+        labelView.setPadding(labelView.getPaddingLeft(), 10, labelView.getPaddingRight(), labelView.getPaddingBottom());
+        scrollable.addView(labelView, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+
+        EditText userCommentView = new EditText(this);
+        userCommentView.setLines(2);
+        if (savedComment != null) {
+            userCommentView.setText(savedComment);
+        }
+        return userCommentView;
+    }
+
+    /**
+     * creates an email prompt
+     *
+     * @param label      the label of the prompt
+     * @param savedEmail the content of the prompt (usually from a saved state)
+     * @return the email prompt
+     */
+    protected EditText getEmailPrompt(CharSequence label, CharSequence savedEmail) {
+        final TextView labelView = new TextView(this);
+        labelView.setText(label);
+
+        labelView.setPadding(labelView.getPaddingLeft(), 10, labelView.getPaddingRight(), labelView.getPaddingBottom());
+        scrollable.addView(labelView);
+
+        EditText userEmailView = new EditText(this);
+        userEmailView.setSingleLine();
+        userEmailView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+        if (savedEmail != null) {
+            userEmailView.setText(savedEmail);
+        } else {
+            final SharedPreferences prefs = ACRA.getACRASharedPreferences();
+            userEmailView.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
+        }
+        return userEmailView;
     }
 
     @Override
@@ -165,5 +218,12 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         if (userEmailView != null && userEmailView.getText() != null) {
             outState.putString(STATE_EMAIL, userEmailView.getText().toString());
         }
+    }
+
+    /**
+     * @return the AlertDialog displayed by this Activity
+     */
+    protected AlertDialog getDialog() {
+        return mDialog;
     }
 }
