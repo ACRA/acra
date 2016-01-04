@@ -33,18 +33,17 @@ public final class ACRAConstants {
      * Suffix to be added to report files when they have been approved by the
      * user in NOTIFICATION mode
      */
-    static final String APPROVED_SUFFIX = "-approved";
+    public static final String APPROVED_SUFFIX = "-approved";
     /**
      * This key is used to store the silent state of a report sent by
      * handleSilentException().
      */
-    static final String SILENT_SUFFIX = "-" + IS_SILENT;
+    public static final String SILENT_SUFFIX = "-" + IS_SILENT;
     /**
-     * This is the number of previously stored reports that we send in
-     * {@link SendWorker#checkAndSendReports(android.content.Context, boolean)}.
-     * The number of reports is limited to avoid ANR on application start.
+     * This is the maximum number of previously stored reports that we send
+     * in one batch to avoid overloading the network.
      */
-    static final int MAX_SEND_REPORTS = 5;
+    public static final int MAX_SEND_REPORTS = 5;
 
     /**
      * Used in the intent starting CrashReportDialog to provide the name of the
@@ -81,8 +80,6 @@ public final class ACRAConstants {
     public static final String NULL_VALUE = "ACRA-NULL-STRING";
 
     public static final boolean DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST = false;
-
-    public static final int DEFAULT_MAX_NUMBER_OF_REQUEST_RETRIES = 3;
 
     public static final int DEFAULT_SOCKET_TIMEOUT = 8000;
 
@@ -123,10 +120,6 @@ public final class ACRAConstants {
     public static final String DEFAULT_APPLICATION_LOGFILE = DEFAULT_STRING_VALUE;
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
-
-    public static final boolean DEFAULT_DISABLE_SSL_CERT_VALIDATION = false;
-
-    public static final String DEFAULT_HTTP_SOCKET_FACTORY_FACTORY_CLASS = "org.acra.util.DefaultHttpsSocketFactoryFactory";
 
     /**
      * Default list of {@link ReportField}s to be sent in email reports. You can

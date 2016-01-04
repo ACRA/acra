@@ -16,9 +16,11 @@
 package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
+import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
@@ -87,6 +89,8 @@ public class ACRAConfiguration implements ReportsCrashes {
     private Type mReportType = null;
     private Map<String, String> mHttpHeaders;
     private KeyStore mKeyStore;
+    private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
+
 
     /**
      * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
@@ -96,6 +100,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      *            A map associating HTTP header names to their values.
      * @return The updated ACRA configuration
      */
+    @SuppressWarnings( "unused" )
     public ACRAConfiguration setHttpHeaders(Map<String, String> headers) {
         this.mHttpHeaders = headers;
         return this;
@@ -220,13 +225,9 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * Modify the formUri of your backend server receiving reports. You need to
-     * call {@link ErrorReporter#setDefaultReportSenders()} after modifying this
-     * value if you were not using a formUri before (a mailTo or formKey
-     * instead).
+     * Modify the formUri of your backend server receiving reports.
      * 
-     * @param formUri
-     *            the formUri to set
+     * @param formUri   formUri to set.
      * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
@@ -280,13 +281,9 @@ public class ACRAConfiguration implements ReportsCrashes {
     }
 
     /**
-     * Modify the mailTo of the mail account receiving reports. You need to call
-     * {@link ErrorReporter#setDefaultReportSenders()} after modifying this
-     * value if you were not using a formKey before (a formKey or formUri
-     * instead).
+     * Modify the mailTo of the mail account receiving reports.
      * 
-     * @param mailTo
-     *            the mailTo to set
+     * @param mailTo    mailTo to set.
      * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )
@@ -1236,6 +1233,24 @@ public class ACRAConfiguration implements ReportsCrashes {
         return Type.FORM;
     }
 
+    public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
+        this.reportSenderFactoryClasses = reportSenderFactoryClasses;
+    }
+
+    @Override
+    public Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
+        if (reportSenderFactoryClasses != null) {
+            return reportSenderFactoryClasses;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.reportSenderFactoryClasses();
+        }
+
+        //noinspection unchecked
+        return new Class[] {DefaultReportSenderFactory.class};
+    }
+
     public KeyStore keyStore() {
         if (mKeyStore != null) {
             return mKeyStore;
@@ -1247,5 +1262,4 @@ public class ACRAConfiguration implements ReportsCrashes {
     public static boolean isNull(String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
-
 }

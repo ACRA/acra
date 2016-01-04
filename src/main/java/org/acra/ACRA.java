@@ -15,18 +15,16 @@
  */
 package org.acra;
 
+import android.app.ActivityManager;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
-
-import android.app.Application;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.preference.PreferenceManager;
 
 /**
  * Use this class to initialize the crash reporting feature using
@@ -40,11 +38,13 @@ import android.preference.PreferenceManager;
  */
 public class ACRA {
 
-    public static final boolean DEV_LOGGING = false; // Should be false for
-                                                     // release.
+    public static final boolean DEV_LOGGING = false; // Should be false for release.
+
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
     public static ACRALog log = new AndroidLogDelegate();
+
+    private static final String ACRA_PRIVATE_PROCESS_NAME= ":acra";
 
     /**
      * The key of the application default SharedPreference where you can put a
@@ -114,8 +114,7 @@ public class ACRA {
     public static void init(Application app) {
         final ReportsCrashes reportsCrashes = app.getClass().getAnnotation(ReportsCrashes.class);
         if (reportsCrashes == null) {
-            log.e(LOG_TAG,
-                    "ACRA#init called but no ReportsCrashes annotation on Application " + app.getPackageName());
+            log.e(LOG_TAG, "ACRA#init called but no ReportsCrashes annotation on Application " + app.getPackageName());
             return;
         }
         init(app, new ACRAConfiguration(reportsCrashes));
@@ -154,6 +153,11 @@ public class ACRA {
      */
     public static void init(Application app, ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
+        final boolean senderServiceProcess = isACRASenderServiceProcess(app);
+        if (senderServiceProcess) {
+            log.i(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
+        }
+
         boolean supportedAndroidVersion = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO);
         if (!supportedAndroidVersion){
             log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
@@ -179,10 +183,7 @@ public class ACRA {
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
             log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
-            final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra, supportedAndroidVersion);
-
-            // Append ReportSenders.
-            errorReporter.setDefaultReportSenders();
+            final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
 
             errorReporterSingleton = errorReporter;
 
@@ -213,6 +214,26 @@ public class ACRA {
         // NPE in ErrorReporter.disable() because
         // the context could be null at this moment.
         prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+    }
+
+    /**
+     * @return true if the current process is the process running the SenderService.
+     */
+    private static boolean isACRASenderServiceProcess(Application app) {
+        final String processName = getCurrentProcessName(app);
+        log.e(LOG_TAG, "ACRA processName='" + processName + "'");
+        return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
+    }
+
+    private static String getCurrentProcessName(Application app) {
+        final int processId = android.os.Process.myPid();
+        final ActivityManager manager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+        for (final ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()){
+            if(processInfo.pid == processId){
+                return processInfo.processName;
+            }
+        }
+        return null;
     }
 
     /**
@@ -335,20 +356,6 @@ public class ACRA {
 
     private static ACRAConfiguration configProxy;
 
-    /**
-     * Returns true if the application is debuggable.
-     * 
-     * @return true if the application is debuggable.
-     */
-    static boolean isDebuggable() {
-        PackageManager pm = mApplication.getPackageManager();
-        try {
-            return ((pm.getApplicationInfo(mApplication.getPackageName(), 0).flags & ApplicationInfo.FLAG_DEBUGGABLE) > 0);
-        } catch (NameNotFoundException e) {
-            return false;
-        }
-    }
-    
     static Application getApplication() {
         return mApplication;
     }

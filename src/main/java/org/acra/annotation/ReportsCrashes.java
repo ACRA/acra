@@ -28,12 +28,14 @@ import org.acra.BaseCrashReportDialog;
 import org.acra.CrashReportDialog;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
+import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import org.acra.sender.ReportSenderFactory;
 
 /**
  * Provide configuration elements to the
@@ -501,6 +503,16 @@ public @interface ReportsCrashes {
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
     Class buildConfigClass() default Object.class;
+
+    /**
+     * The default {@link org.acra.sender.ReportSenderFactory} creates an {@link org.acra.sender.EmailIntentSender}
+     * if the 'mailTo' parameter is defined or an {@link org.acra.sender.HttpSender} if the 'formUri' parameter
+     * is defined (and internet permission has been granted.
+     *
+     * @return List of the {@link org.acra.sender.ReportSenderFactory} with which to construct the
+     *         {@link org.acra.sender.ReportSender}s that will send the crash reports.
+     */
+    Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the

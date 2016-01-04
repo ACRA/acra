@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
 import org.acra.collector.CrashReportData;
+import org.acra.common.CrashReportPersister;
 import org.acra.util.ToastSender;
 
 import java.io.IOException;
@@ -78,7 +79,6 @@ public abstract class BaseCrashReportDialog extends Activity {
         }
 
         // Start the report sending task
-        ACRA.log.v(LOG_TAG, "About to start SenderWorker from CrashReportDialog");
         ACRA.getErrorReporter().startSendingReports(false, true);
 
         // Optional Toast to thank the user
