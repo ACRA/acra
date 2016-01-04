@@ -444,10 +444,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
             // We choose to close the process ourselves using the same actions.
-            ACRA.log.e(LOG_TAG, mContext.getPackageName() + " fatal error : " + th.getMessage(), th);
 
-            // Trying to solve
-            // https://github.com/ACRA/acra/issues/42#issuecomment-12134144
+            // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
             // Determine the current/last Activity that was started and close
             // it. Activity#finish (and maybe it's parent too).
             final Activity lastActivity = lastActivityCreated.get();
