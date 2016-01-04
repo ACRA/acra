@@ -20,9 +20,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import org.acra.annotation.ReportsCrashes;
@@ -187,9 +184,6 @@ public class ACRA {
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
             log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
             final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
-
-            // Append ReportSenders.
-            errorReporter.setDefaultReportSenders();
 
             errorReporterSingleton = errorReporter;
 

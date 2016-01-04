@@ -136,6 +136,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.prefs = prefs;
         this.enabled = enabled;
         this.supportedAndroidVersion = supportedAndroidVersion;
+        this.reportSenderFactories.addAll(Arrays.asList(ACRA.getConfig().reportSenderFactoryClasses()));
 
         // Store the initial Configuration state.
         // This is expensive to gather, so only do so if we plan to report it.
@@ -334,6 +335,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Adds a ReportSenderFactory to the list of factories that will construct {@link ReportSender}s when sending reports.
      *
+     * Note: you can declare your {@link ReportSenderFactory}s via {@link ReportsCrashes#reportSenderFactoryClasses()}.
+     *
      * @param senderFactory ReportSenderFactory to add tto the list of existing factories.
      * @since 4.8.0
      */
@@ -345,6 +348,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Remove a {@link ReportSenderFactory} from the list of factories
      * that will construct {@link ReportSender}s when sending reports.
+     *
+     * Note: you can declare your {@link ReportSenderFactory}s via {@link ReportsCrashes#reportSenderFactoryClasses()}.
      *
      * @param senderFactory The {@link ReportSender} class to be removed.
      * @since 4.8.0
@@ -359,6 +364,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *
      * You should then call {@link #addReportSenderFactory(Class)} or ACRA will not send any reports.
      */
+    @SuppressWarnings("unused")
     public void removeAllReportSenders() {
         reportSenderFactories.clear();
     }
@@ -366,8 +372,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Removes all previously set {@link ReportSenderFactory}s and set the given one as the sole {@link ReportSenderFactory}.
      *
+     * Note: you can declare your {@link ReportSenderFactory}s via {@link ReportsCrashes#reportSenderFactoryClasses()}.
+     *
      * @param senderFactory ReportSenderFactory to set as the creator of {@link ReportSender}s for this ErrorReporter.
      */
+    @SuppressWarnings("unused")
     public void setReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
         reportSenderFactories.clear();
         reportSenderFactories.add(senderFactory);
@@ -960,39 +969,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
         }
         return true;
-    }
-
-    /**
-     * Sets relevant ReportSenders to the ErrorReporter, replacing any
-     * previously set ReportSender.
-     */
-    public void setDefaultReportSenders() {
-        final ReportsCrashes conf = ACRA.getConfig();
-        final Application application = ACRA.getApplication();
-        removeAllReportSenders();
-
-        final PackageManagerWrapper pm = new PackageManagerWrapper(application);
-        if (!"".equals(conf.mailTo())) {
-            // Try to send by mail. If a mailTo address is provided, do not add other senders.
-            ACRA.log.w(LOG_TAG, application.getPackageName() + " reports will be sent by email (if accepted by user).");
-            setReportSenderFactory(EmailIntentSenderFactory.class);
-        } else if (!pm.hasPermission(permission.INTERNET)) {
-            // NB If the PackageManager has died then this will erroneously log
-            // the error that the App doesn't have Internet (even though it does).
-            // I think that is a small price to pay to ensure that ACRA doesn't
-            // crash if the PackageManager has died.
-            ACRA.log.e(LOG_TAG,
-                  application.getPackageName()
-                      + " should be granted permission "
-                      + permission.INTERNET
-                      + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
-        } else if (conf.formUri() != null && !"".equals(conf.formUri())) {
-            // If formUri is set, instantiate a sender for a generic HTTP POST form with default mapping.
-            ACRA.log.w(LOG_TAG, application.getPackageName() + " reports will be sent by Http.");
-            setReportSenderFactory(HttpSenderFactory.class);
-        } else {
-            ACRA.log.w(LOG_TAG, application.getPackageName() + " reports will NOT be sent - no sender is configured.");
-        }
     }
 
     /**
