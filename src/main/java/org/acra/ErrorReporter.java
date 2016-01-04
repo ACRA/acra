@@ -36,9 +36,10 @@ import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import org.acra.sender.EmailIntentSender;
-import org.acra.sender.HttpSender;
+import org.acra.sender.EmailIntentSenderFactory;
+import org.acra.sender.HttpSenderFactory;
 import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderFactory;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 
@@ -50,7 +51,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -91,15 +91,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Contains the active {@link ReportSender}s.
      */
-    private final List<ReportSender> mReportSenders = new ArrayList<ReportSender>();
+    private final ArrayList<Class<? extends ReportSenderFactory>> reportSenderFactories = new ArrayList<Class<? extends ReportSenderFactory>>();
 
     private final CrashReportDataFactory crashReportDataFactory;
 
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
 
     // A reference to the system's previous default UncaughtExceptionHandler
-    // kept in order to execute the default exception handling after sending the
-    // report.
+    // kept in order to execute the default exception handling after sending the report.
     private final Thread.UncaughtExceptionHandler mDfltExceptionHandler;
 
     private WeakReference<Activity> lastActivityCreated = new WeakReference<Activity>(null);
@@ -126,15 +125,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Can only be constructed from within this class.
      *
-     * @param context
-     *            Context for the application in which ACRA is running.
-     * @param prefs
-     *            SharedPreferences used by ACRA.
-     * @param enabled
-     *            Whether this ErrorReporter should capture Exceptions and
-     *            forward their reports.
+     * @param context   Context for the application in which ACRA is running.
+     * @param prefs     SharedPreferences used by ACRA.
+     * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
+     * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(Application context, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion) {
+    ErrorReporter(Application context, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.mContext = context;
         this.prefs = prefs;
@@ -151,8 +147,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         // Sets the application start date.
-        // This will be included in the reports, will be helpful compared to
-        // user_crash date.
+        // This will be included in the reports, will be helpful compared to user_crash date.
         final Calendar appStartDate = new GregorianCalendar();
 
         if (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.ICE_CREAM_SANDWICH) { // ActivityLifecycleCallback
@@ -164,8 +159,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
                     if (!(activity instanceof BaseCrashReportDialog)) {
                         // Ignore CrashReportDialog because we want the last
-                        // application Activity that was started so that we can
-                        // explicitly kill it off.
+                        // application Activity that was started so that we can explicitly kill it off.
                         lastActivityCreated = new WeakReference<Activity>(activity);
                     }
                 }
@@ -210,10 +204,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration);
 
-        // If mDfltExceptionHandler is not null, initialization is already done.
-        // Don't do it twice to avoid losing the original handler.
-        mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
+        if (listenForUncaughtExceptions) {
+            mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+            Thread.setDefaultUncaughtExceptionHandler(this);
+        } else {
+            mDfltExceptionHandler = null;
+        }
     }
 
     /**
@@ -224,6 +220,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @deprecated since 4.3.0 Use {@link org.acra.ACRA#getErrorReporter()}
      *             instead.
      */
+    @SuppressWarnings("unused")
     @Deprecated
     public static ErrorReporter getInstance() {
         return ACRA.getErrorReporter();
@@ -256,10 +253,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * "custom" column, as a text containing a 'key = value' pair on each line.
      * </p>
      *
-     * @param key
-     *            A key for your custom data.
-     * @param value
-     *            The value associated to your key.
+     * @param key   A key for your custom data.
+     * @param value The value associated to your key.
      * @return The previous value for this key if there was one, or null.
      * @see #removeCustomData(String)
      * @see #getCustomData(String)
@@ -286,7 +281,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * <p>
      * Example. Add to the {@link Application#onCreate()}:
      * </p>
-     * 
+     *
      * <pre>
      * ACRA.getErrorReporter().setExceptionHandlerInitializer(new ExceptionHandlerInitializer() {
      *     <code>@Override</code> public void initializeExceptionHandler(ErrorReporter reporter) {
@@ -294,7 +289,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *     }
      * });
      * </pre>
-     * 
+     *
      * @param initializer   The initializer. Can be <code>null</code>.
      */
     public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
@@ -304,8 +299,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Removes a key/value pair from your reports custom data field.
      *
-     * @param key
-     *            The key of the data to be removed.
+     * @param key   The key of the data to be removed.
      * @return The value for this key before removal.
      * @see #putCustomData(String, String)
      * @see #getCustomData(String)
@@ -338,63 +332,45 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Add a {@link ReportSender} to the list of active {@link ReportSender}s.
+     * Adds a ReportSenderFactory to the list of factories that will construct {@link ReportSender}s when sending reports.
      *
-     * @param sender
-     *            The {@link ReportSender} to be added.
-     */
-    public void addReportSender(ReportSender sender) {
-        mReportSenders.add(sender);
-    }
-
-    /**
-     * Remove a specific instance of {@link ReportSender} from the list of
-     * active {@link ReportSender}s.
-     *
-     * @param sender
-     *            The {@link ReportSender} instance to be removed.
+     * @param senderFactory ReportSenderFactory to add tto the list of existing factories.
+     * @since 4.8.0
      */
     @SuppressWarnings("unused")
-    public void removeReportSender(ReportSender sender) {
-        mReportSenders.remove(sender);
+    public void addReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
+        reportSenderFactories.add(senderFactory);
     }
 
     /**
-     * Remove all {@link ReportSender} instances from a specific class.
+     * Remove a {@link ReportSenderFactory} from the list of factories
+     * that will construct {@link ReportSender}s when sending reports.
      *
-     * @param senderClass
-     *            ReportSender class whose instances should be removed.
+     * @param senderFactory The {@link ReportSender} class to be removed.
+     * @since 4.8.0
      */
     @SuppressWarnings("unused")
-    public void removeReportSenders(Class<?> senderClass) {
-        if (ReportSender.class.isAssignableFrom(senderClass)) {
-            for (ReportSender sender : mReportSenders) {
-                if (senderClass.isInstance(sender)) {
-                    mReportSenders.remove(sender);
-                }
-            }
-        }
+    public void removeReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
+        reportSenderFactories.remove(senderFactory);
     }
 
     /**
-     * Clears the list of active {@link ReportSender}s. You should then call
-     * {@link #addReportSender(ReportSender)} or ACRA will not send any report
-     * anymore.
+     * Clears the list of active {@link ReportSender}s.
+     *
+     * You should then call {@link #addReportSenderFactory(Class)} or ACRA will not send any reports.
      */
     public void removeAllReportSenders() {
-        mReportSenders.clear();
+        reportSenderFactories.clear();
     }
 
     /**
-     * Removes all previously set {@link ReportSender}s and set the given one as
-     * the new {@link ReportSender}.
+     * Removes all previously set {@link ReportSenderFactory}s and set the given one as the sole {@link ReportSenderFactory}.
      *
-     * @param sender
-     *            ReportSender to set as the sole sender for this ErrorReporter.
+     * @param senderFactory ReportSenderFactory to set as the creator of {@link ReportSender}s for this ErrorReporter.
      */
-    public void setReportSender(ReportSender sender) {
-        removeAllReportSenders();
-        addReportSender(sender);
+    public void setReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
+        reportSenderFactories.clear();
+        reportSenderFactories.add(senderFactory);
     }
 
     /*
@@ -415,16 +391,13 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                         + " - forwarding uncaught Exception on to default ExceptionHandler");
                     mDfltExceptionHandler.uncaughtException(t, e);
                 } else {
-                    ACRA.log.e(LOG_TAG, "ACRA is disabled for " + mContext.getPackageName()
-                        + " - no default ExceptionHandler");
-                    ACRA.log.e(LOG_TAG,
-                          "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
+                    ACRA.log.e(LOG_TAG, "ACRA is disabled for " + mContext.getPackageName() + " - no default ExceptionHandler");
+                    ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
                 }
                 return;
             }
 
-            ACRA.log.e(LOG_TAG,
-                  "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
+            ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + mContext.getPackageName(), e);
             ACRA.log.d(LOG_TAG, "Building report");
 
             // Generate and send crash report
@@ -527,12 +500,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            If true then only send silent reports.
      * @param approveReportsFirst
      *            If true then approve unapproved reports first.
-     * @return SendWorker that will be sending the report.s
      */
-    SendWorker startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
-        final SendWorker worker = new SendWorker(mContext, mReportSenders, onlySendSilentReports, approveReportsFirst);
-        worker.start();
-        return worker;
+    void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
+        ACRA.log.v(LOG_TAG, "About to start SenderService");
+        final Intent intent = new Intent(mContext, SenderService.class);
+        intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+        intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
+        intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, reportSenderFactories);
+        mContext.startService(intent);
     }
 
     /**
@@ -602,7 +577,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     ToastSender.sendToast(mContext, ACRA.getConfig().resToastText(), Toast.LENGTH_LONG);
                 }
 
-                ACRA.log.v(LOG_TAG, "About to start ReportSenderWorker from #checkReportOnApplicationStart");
                 startSendingReports(false, false);
             }
 
@@ -703,7 +677,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         try {
             exceptionHandlerInitializer.initializeExceptionHandler(this);
         } catch (Exception exceptionInRunnable) {
-            ACRA.log.d(LOG_TAG, "Failed to initlize " + exceptionHandlerInitializer + " from #handleException");
+            ACRA.log.d(LOG_TAG, "Failed to initialize " + exceptionHandlerInitializer + " from #handleException");
         }
 
         boolean sendOnlySilentReports = false;
@@ -762,15 +736,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
         }
 
-        SendWorker sender = null;
-
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
             || reportingInteractionMode == ReportingInteractionMode.TOAST
             || prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
 
             // Approve and then send reports now
-            ACRA.log.d(LOG_TAG, "About to start ReportSenderWorker from #handleException");
-            sender = startSendingReports(sendOnlySilentReports, true);
+            startSendingReports(sendOnlySilentReports, true);
             if ((reportingInteractionMode == ReportingInteractionMode.SILENT) && !reportBuilder.mEndsApplication) {
                 // Report is being sent silently and the application is not ending.
                 // So no need to wait around for the sender to complete.
@@ -807,9 +778,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }.start();
         }
 
-        // Start an AsyncTask waiting for the end of the sender.
-        // Once sent, call endApplication() if reportBuilder.mEndApplication
-        final SendWorker worker = sender;
         final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
             && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
@@ -827,19 +795,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                     }
                 }
                 ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
-
-                // We have to wait for the worker job to be completed.
-                if (worker != null) {
-                    ACRA.log.d(LOG_TAG, "Waiting for Worker");
-                    while (worker.isAlive()) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e1) {
-                            ACRA.log.d(LOG_TAG, "Error : ", e1);
-                        }
-                    }
-                    ACRA.log.d(LOG_TAG, "Finished waiting for Worker");
-                }
 
                 if (showDirectDialog) {
                     // Create a new activity task with the confirmation dialog.
@@ -1012,37 +967,31 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * previously set ReportSender.
      */
     public void setDefaultReportSenders() {
-        ReportsCrashes conf = ACRA.getConfig();
-        Application mApplication = ACRA.getApplication();
+        final ReportsCrashes conf = ACRA.getConfig();
+        final Application application = ACRA.getApplication();
         removeAllReportSenders();
 
-        // Try to send by mail. If a mailTo address is provided, do not add
-        // other senders.
+        final PackageManagerWrapper pm = new PackageManagerWrapper(application);
         if (!"".equals(conf.mailTo())) {
-            ACRA.log.w(LOG_TAG, mApplication.getPackageName() + " reports will be sent by email (if accepted by user).");
-            setReportSender(new EmailIntentSender(mApplication));
-            return;
-        }
-
-        final PackageManagerWrapper pm = new PackageManagerWrapper(mApplication);
-        if (!pm.hasPermission(permission.INTERNET)) {
+            // Try to send by mail. If a mailTo address is provided, do not add other senders.
+            ACRA.log.w(LOG_TAG, application.getPackageName() + " reports will be sent by email (if accepted by user).");
+            setReportSenderFactory(EmailIntentSenderFactory.class);
+        } else if (!pm.hasPermission(permission.INTERNET)) {
             // NB If the PackageManager has died then this will erroneously log
-            // the error that the App doesn't have Internet (even though it
-            // does).
+            // the error that the App doesn't have Internet (even though it does).
             // I think that is a small price to pay to ensure that ACRA doesn't
             // crash if the PackageManager has died.
             ACRA.log.e(LOG_TAG,
-                  mApplication.getPackageName()
+                  application.getPackageName()
                       + " should be granted permission "
                       + permission.INTERNET
                       + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
-            return;
-        }
-
-        // If formUri is set, instantiate a sender for a generic HTTP POST form
-        // with default mapping.
-        if (conf.formUri() != null && !"".equals(conf.formUri())) {
-            setReportSender(new HttpSender(ACRA.getConfig().httpMethod(), ACRA.getConfig().reportType(), null));
+        } else if (conf.formUri() != null && !"".equals(conf.formUri())) {
+            // If formUri is set, instantiate a sender for a generic HTTP POST form with default mapping.
+            ACRA.log.w(LOG_TAG, application.getPackageName() + " reports will be sent by Http.");
+            setReportSenderFactory(HttpSenderFactory.class);
+        } else {
+            ACRA.log.w(LOG_TAG, application.getPackageName() + " reports will NOT be sent - no sender is configured.");
         }
     }
 

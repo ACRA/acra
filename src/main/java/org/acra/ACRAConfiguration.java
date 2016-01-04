@@ -225,8 +225,7 @@ public class ACRAConfiguration implements ReportsCrashes {
      * value if you were not using a formUri before (a mailTo or formKey
      * instead).
      * 
-     * @param formUri
-     *            the formUri to set
+     * @param formUri   formUri to set.
      * @return The updated ACRA configuration
      */
     @SuppressWarnings( "unused" )

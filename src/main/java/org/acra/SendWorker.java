@@ -15,25 +15,24 @@
  */
 package org.acra;
 
-import static org.acra.ACRA.LOG_TAG;
+import android.content.Context;
+import org.acra.collector.CrashReportData;
+import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.acra.collector.CrashReportData;
-import org.acra.sender.ReportSender;
-import org.acra.sender.ReportSenderException;
-
-import android.content.Context;
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Checks and send reports on a separate Thread.
- * 
+ *
  * @author Kevin Gaudin
  */
-final class SendWorker extends Thread {
+final class SendWorker {
 
     private final Context context;
     private final boolean sendOnlySilentReports;
@@ -43,7 +42,7 @@ final class SendWorker extends Thread {
 
     /**
      * Creates a new {@link SendWorker} to try sending pending reports.
-     * 
+     *
      * @param context
      *            ApplicationContext in which the reports are being sent.
      * @param reportSenders
@@ -55,8 +54,7 @@ final class SendWorker extends Thread {
      *            if this endWorker should approve pending reports before
      *            sending any reports.
      */
-    public SendWorker(Context context, List<ReportSender> reportSenders, boolean sendOnlySilentReports,
-            boolean approvePendingReports) {
+    public SendWorker(Context context, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
         this.context = context;
         this.reportSenders = reportSenders;
         this.sendOnlySilentReports = sendOnlySilentReports;
@@ -65,10 +63,9 @@ final class SendWorker extends Thread {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Thread#run()
      */
-    @Override
     public void run() {
         if (approvePendingReports) {
             approvePendingReports();
@@ -107,7 +104,7 @@ final class SendWorker extends Thread {
 
     /**
      * Send pending reports.
-     * 
+     *
      * @param context
      *            The application context.
      * @param sendOnlySilentReports
@@ -164,7 +161,7 @@ final class SendWorker extends Thread {
      * Sends the report with all configured ReportSenders. If at least one
      * sender completed its job, the report is considered as sent and will not
      * be sent again for failing senders.
-     * 
+     *
      * @param errorContent
      *            Crash data.
      * @throws ReportSenderException

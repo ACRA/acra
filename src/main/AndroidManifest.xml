@@ -39,4 +39,18 @@
         1.0     1
     -->
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="23"/>
+
+    <application>
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"/>
+
+        <service
+            android:name="org.acra.SenderService"
+            android:exported="false"
+            android:process=":acra" />
+    </application>
 </manifest>

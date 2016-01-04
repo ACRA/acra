@@ -78,7 +78,6 @@ public abstract class BaseCrashReportDialog extends Activity {
         }
 
         // Start the report sending task
-        ACRA.log.v(LOG_TAG, "About to start SenderWorker from CrashReportDialog");
         ACRA.getErrorReporter().startSendingReports(false, true);
 
         // Optional Toast to thank the user
