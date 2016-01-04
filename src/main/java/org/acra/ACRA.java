@@ -362,20 +362,6 @@ public class ACRA {
 
     private static ACRAConfiguration configProxy;
 
-    /**
-     * Returns true if the application is debuggable.
-     * 
-     * @return true if the application is debuggable.
-     */
-    static boolean isDebuggable() {
-        PackageManager pm = mApplication.getPackageManager();
-        try {
-            return ((pm.getApplicationInfo(mApplication.getPackageName(), 0).flags & ApplicationInfo.FLAG_DEBUGGABLE) > 0);
-        } catch (NameNotFoundException e) {
-            return false;
-        }
-    }
-    
     static Application getApplication() {
         return mApplication;
     }

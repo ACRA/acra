@@ -34,12 +34,12 @@ import org.acra.collector.Compatibility;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
+import org.acra.common.CrashReportFileNameParser;
+import org.acra.common.CrashReportFinder;
+import org.acra.common.CrashReportPersister;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import org.acra.sender.EmailIntentSenderFactory;
-import org.acra.sender.HttpSenderFactory;
-import org.acra.sender.ReportSender;
-import org.acra.sender.ReportSenderFactory;
+import org.acra.sender.*;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 

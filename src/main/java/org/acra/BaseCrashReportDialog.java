@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
 import org.acra.collector.CrashReportData;
+import org.acra.common.CrashReportPersister;
 import org.acra.util.ToastSender;
 
 import java.io.IOException;

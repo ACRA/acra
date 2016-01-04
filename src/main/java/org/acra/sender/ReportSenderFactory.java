@@ -6,7 +6,7 @@ import android.content.Context;
  * Factory for creating and configuring a {@link ReportSender} instance.
  * Implementations must have a no argument constructor.
  *
- * Each configured ReportSenderFactory is created within the {@link org.acra.SenderService}
+ * Each configured ReportSenderFactory is created within the {@link SenderService}
  * and is used to contruct and configure a single {@link ReportSender}.
  *
  * Created by William on 4-JAN-2016.

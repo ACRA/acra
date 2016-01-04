@@ -49,7 +49,7 @@
             android:finishOnTaskLaunch="true"/>
 
         <service
-            android:name="org.acra.SenderService"
+            android:name="org.acra.sender.SenderService"
             android:exported="false"
             android:process=":acra" />
     </application>

@@ -1,9 +1,8 @@
-package org.acra;
+package org.acra.sender;
 
 import android.app.IntentService;
 import android.content.Intent;
-import org.acra.sender.ReportSender;
-import org.acra.sender.ReportSenderFactory;
+import org.acra.ACRA;
 
 import java.io.Serializable;
 import java.util.ArrayList;
