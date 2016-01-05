@@ -509,12 +509,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            If true then approve unapproved reports first.
      */
     void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
-        ACRA.log.v(LOG_TAG, "About to start SenderService");
-        final Intent intent = new Intent(mContext, SenderService.class);
-        intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-        intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
-        intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, reportSenderFactories);
-        mContext.startService(intent);
+        if (enabled) {
+            ACRA.log.v(LOG_TAG, "About to start SenderService");
+            final Intent intent = new Intent(mContext, SenderService.class);
+            intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+            intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
+            intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, reportSenderFactories);
+            mContext.startService(intent);
+        } else {
+            ACRA.log.w(LOG_TAG, "Would be sending reports, but ACRA is disabled");
+        }
     }
 
     /**
@@ -670,8 +674,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Try to send a report, if an error occurs stores a report file for a later
-     * attempt.
+     * Try to send a report, if an error occurs stores a report file for a later attempt.
      *
      * @param reportBuilder The report builder used to assemble the report
      */
