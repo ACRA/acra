@@ -127,6 +127,11 @@
 				<artifactId>android-maven-plugin</artifactId>
 				<version>4.3.0</version>
 				<extensions>true</extensions>
+				<configuration>
+					<consumerProguardFiles>
+						<consumerProguardFile>src/main/proguard/proguard.cfg</consumerProguardFile>
+					</consumerProguardFiles>
+				</configuration>
 			</plugin>
 
 			<plugin>
