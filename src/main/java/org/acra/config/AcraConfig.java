@@ -3,6 +3,7 @@ package org.acra.config;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
+import java.io.Serializable;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Map;
  *
  * Programmatic versions can be configured using
  */
-public interface AcraConfig extends ReportsCrashes {
+public interface AcraConfig extends ReportsCrashes, Serializable {
 
     /**
      * Retrieve HTTP headers defined by the application developer. These should

@@ -183,7 +183,7 @@ public class ACRA {
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
             log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
-            final ErrorReporter errorReporter = new ErrorReporter(mApplication, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
+            final ErrorReporter errorReporter = new ErrorReporter(mApplication, configProxy, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
 
             errorReporterSingleton = errorReporter;
 
@@ -333,8 +333,7 @@ public class ACRA {
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
             if (mApplication == null) {
-                log.w(LOG_TAG,
-                        "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
+                log.w(LOG_TAG, "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
             }
             configProxy = getNewDefaultConfig(mApplication);
         }
