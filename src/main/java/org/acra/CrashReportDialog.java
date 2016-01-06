@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import org.acra.config.AcraConfig;
 
 
 /**
@@ -22,9 +23,11 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
+
     private LinearLayout scrollable;
     private EditText userCommentView;
     private EditText userEmailView;
+    private AcraConfig config;
 
     private AlertDialog mDialog;
 
@@ -34,6 +37,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         scrollable = new LinearLayout(this);
         scrollable.setOrientation(LinearLayout.VERTICAL);
+        config = (AcraConfig) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
 
         buildAndShowDialog(savedInstanceState);
     }
@@ -44,17 +48,17 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     protected void buildAndShowDialog(Bundle savedInstanceState){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final int titleResourceId = ACRA.getConfig().resDialogTitle();
+        final int titleResourceId = config.resDialogTitle();
         if (titleResourceId != 0) {
             dialogBuilder.setTitle(titleResourceId);
         }
-        final int iconResourceId = ACRA.getConfig().resDialogIcon();
+        final int iconResourceId = config.resDialogIcon();
         if (iconResourceId != 0) {
             dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
-        dialogBuilder.setPositiveButton(getText(ACRA.getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
-        dialogBuilder.setNegativeButton(getText(ACRA.getConfig().resDialogNegativeButtonText()), CrashReportDialog.this);
+        dialogBuilder.setPositiveButton(getText(config.resDialogPositiveButtonText()), CrashReportDialog.this);
+        dialogBuilder.setNegativeButton(getText(config.resDialogNegativeButtonText()), CrashReportDialog.this);
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
@@ -77,7 +81,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         addViewToDialog(getMainView());
 
         // Add an optional prompt for user comments
-        final int commentPromptId = ACRA.getConfig().resDialogCommentPrompt();
+        final int commentPromptId = config.resDialogCommentPrompt();
         if (commentPromptId != 0) {
             String savedComment = null;
             if (savedInstanceState != null) {
@@ -88,7 +92,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         }
 
         // Add an optional user email field
-        final int emailPromptId = ACRA.getConfig().resDialogEmailPrompt();
+        final int emailPromptId = config.resDialogEmailPrompt();
         if (emailPromptId != 0) {
             String savedEmail = null;
             if (savedInstanceState != null) {
@@ -117,7 +121,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     protected View getMainView() {
         final TextView text = new TextView(this);
-        final int dialogTextId = ACRA.getConfig().resDialogText();
+        final int dialogTextId = config.resDialogText();
         if (dialogTextId != 0) {
             text.setText(getText(dialogTextId));
         }

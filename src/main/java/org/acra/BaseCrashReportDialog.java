@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import org.acra.collector.CrashReportData;
 import org.acra.common.CrashReportPersister;
+import org.acra.config.AcraConfig;
 import org.acra.util.ToastSender;
 
 import java.io.IOException;
@@ -21,21 +22,25 @@ import static org.acra.ReportField.USER_EMAIL;
  * The methods sendCrash(comment, usrEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
  *
- * This Activity will be instantiated with 2 arguments:
+ * This Activity will be instantiated with 3 arguments:
  * <ol>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
+ *     <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
  * </ol>
  */
 public abstract class BaseCrashReportDialog extends Activity {
 
     private String mReportFileName;
+    private AcraConfig config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
+
+        config = (AcraConfig) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
 
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {
@@ -82,7 +87,7 @@ public abstract class BaseCrashReportDialog extends Activity {
         ACRA.getErrorReporter().startSendingReports(false, true);
 
         // Optional Toast to thank the user
-        final int toastId = ACRA.getConfig().resDialogOkToast();
+        final int toastId = config.resDialogOkToast();
         if (toastId != 0) {
             ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
         }

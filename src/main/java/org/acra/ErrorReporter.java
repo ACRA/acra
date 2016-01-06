@@ -830,6 +830,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         final Intent dialogIntent = new Intent(mContext, ACRA.getConfig().reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.mException);
+        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_CONFIG, ACRA.getConfig());
         return dialogIntent;
     }
 

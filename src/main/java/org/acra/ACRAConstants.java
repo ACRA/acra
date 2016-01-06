@@ -51,12 +51,20 @@ public final class ACRAConstants {
      * comment.
      */
     public static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
+
     /**
      * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
      *
      * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
      */
     public static final String EXTRA_REPORT_EXCEPTION = "REPORT_EXCEPTION";
+
+    /**
+     * Used in the intent starting CrashReportDialog to provide the AcraConfig to use when gathering the crash info.
+     *
+     * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
+     */
+    public static final String EXTRA_REPORT_CONFIG = "REPORT_CONFIG";
 
     /**
      * Set this extra to true to force the deletion of reports by the
