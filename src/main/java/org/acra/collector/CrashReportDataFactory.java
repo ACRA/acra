@@ -24,6 +24,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import org.acra.ACRA;
 import org.acra.ReportField;
+import org.acra.config.AcraConfig;
 import org.acra.util.Installation;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ReportUtils;
@@ -55,14 +56,17 @@ import static org.acra.ReportField.*;
 public final class CrashReportDataFactory {
 
     private final Context context;
+    private final AcraConfig config;
     private final SharedPreferences prefs;
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Calendar appStartDate;
     private final String initialConfiguration;
 
-    public CrashReportDataFactory(Context context, SharedPreferences prefs, Calendar appStartDate,
+    public CrashReportDataFactory(Context context, AcraConfig config,
+                                  SharedPreferences prefs, Calendar appStartDate,
                                   String initialConfiguration) {
         this.context = context;
+        this.config = config;
         this.prefs = prefs;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
@@ -135,7 +139,7 @@ public final class CrashReportDataFactory {
     public CrashReportData createCrashData(String msg, Throwable th, Map<String, String> customData, boolean isSilentReport, Thread brokenThread) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            final List<ReportField> crashReportFields = ACRA.getConfig().getReportFields();
+            final List<ReportField> crashReportFields = config.getReportFields();
 
             // Make every entry here bullet proof and move any slightly dodgy
             // ones to the end.
@@ -158,31 +162,31 @@ public final class CrashReportDataFactory {
             final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
             if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
                 ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                final LogCatCollector logCatCollector = new LogCatCollector();
                 if (crashReportFields.contains(LOGCAT)) {
                     try {
-                        crashReportData.put(LOGCAT, LogCatCollector.collectLogCat(null));
+                        crashReportData.put(LOGCAT, logCatCollector.collectLogCat(config, null));
                     } catch (RuntimeException e){
                         ACRA.log.e(LOG_TAG, "Error while retrieving LOGCAT data", e);
                     }
                 }
                 if (crashReportFields.contains(EVENTSLOG)) {
                     try {
-                        crashReportData.put(EVENTSLOG, LogCatCollector.collectLogCat("events"));
+                        crashReportData.put(EVENTSLOG, logCatCollector.collectLogCat(config, "events"));
                     } catch (RuntimeException e){
                         ACRA.log.e(LOG_TAG, "Error while retrieving EVENTSLOG data", e);
                     }
                 }
                 if (crashReportFields.contains(RADIOLOG)) {
                     try {
-                        crashReportData.put(RADIOLOG, LogCatCollector.collectLogCat("radio"));
+                        crashReportData.put(RADIOLOG, logCatCollector.collectLogCat(config, "radio"));
                     } catch (RuntimeException e){
                         ACRA.log.e(LOG_TAG, "Error while retrieving RADIOLOG data", e);
                     }
                 }
                 if (crashReportFields.contains(DROPBOX)) {
                     try {
-                        crashReportData.put(DROPBOX,
-                                DropBoxCollector.read(context, ACRA.getConfig().additionalDropBoxTags()));
+                        crashReportData.put(DROPBOX, new DropBoxCollector().read(context, config));
                     } catch (RuntimeException e){
                         ACRA.log.e(LOG_TAG, "Error while retrieving DROPBOX data", e);
                     }
@@ -395,10 +399,11 @@ public final class CrashReportDataFactory {
                 }
             }
 
+            final SettingsCollector settingsCollector = new SettingsCollector(context, config);
             // System settings
             if (crashReportFields.contains(SETTINGS_SYSTEM)) {
                 try {
-                    crashReportData.put(SETTINGS_SYSTEM, SettingsCollector.collectSystemSettings(context));
+                    crashReportData.put(SETTINGS_SYSTEM, settingsCollector.collectSystemSettings());
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_SYSTEM data", e);
                 }
@@ -407,7 +412,7 @@ public final class CrashReportDataFactory {
             // Secure settings
             if (crashReportFields.contains(SETTINGS_SECURE)) {
                 try {
-                    crashReportData.put(SETTINGS_SECURE, SettingsCollector.collectSecureSettings(context));
+                    crashReportData.put(SETTINGS_SECURE, settingsCollector.collectSecureSettings());
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_SECURE data", e);
                 }
@@ -417,7 +422,7 @@ public final class CrashReportDataFactory {
             if (crashReportFields.contains(SETTINGS_GLOBAL)) {
                 try {
 
-                    crashReportData.put(SETTINGS_GLOBAL, SettingsCollector.collectGlobalSettings(context));
+                    crashReportData.put(SETTINGS_GLOBAL, settingsCollector.collectGlobalSettings());
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving SETTINGS_GLOBAL data", e);
                 }
@@ -426,7 +431,7 @@ public final class CrashReportDataFactory {
             // SharedPreferences
             if (crashReportFields.contains(SHARED_PREFERENCES)) {
                 try {
-                    crashReportData.put(SHARED_PREFERENCES, SharedPreferencesCollector.collect(context));
+                    crashReportData.put(SHARED_PREFERENCES, new SharedPreferencesCollector(context, config).collect());
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving SHARED_PREFERENCES data", e);
                 }
@@ -468,12 +473,10 @@ public final class CrashReportDataFactory {
             // Application specific log file
             if (crashReportFields.contains(APPLICATION_LOG)) {
                 try {
-                    final String logFile = LogFileCollector.collectLogFile(context,
-                                                                           ACRA.getConfig().applicationLogFile(),
-                                                                           ACRA.getConfig().applicationLogFileLines());
+                    final String logFile = new LogFileCollector().collectLogFile(context, config.applicationLogFile(), config.applicationLogFileLines());
                     crashReportData.put(APPLICATION_LOG, logFile);
                 } catch (IOException e) {
-                    ACRA.log.e(LOG_TAG, "Error while reading application log file " + ACRA.getConfig().applicationLogFile(), e);
+                    ACRA.log.e(LOG_TAG, "Error while reading application log file " + config.applicationLogFile(), e);
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving APPLICATION_LOG data", e);
 
@@ -580,7 +583,7 @@ public final class CrashReportDataFactory {
     }
 
     private Class<?> getBuildConfigClass() throws ClassNotFoundException {
-        final Class configuredBuildConfig = ACRA.getConfig().buildConfigClass();
+        final Class configuredBuildConfig = config.buildConfigClass();
         if ((configuredBuildConfig != null) && !configuredBuildConfig.equals(Object.class)) {
             // If set via annotations or programatically then it will have a real value,
             // otherwise it will be Object.class (annotation default) or null (explicit programmatic).

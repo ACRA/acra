@@ -46,6 +46,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 
 import static org.acra.ACRA.LOG_TAG;
+import static org.acra.ACRA.getConfig;
 import static org.acra.ReportField.IS_SILENT;
 
 /**
@@ -195,7 +196,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             });
         }
 
-        crashReportDataFactory = new CrashReportDataFactory(mContext, prefs, appStartDate, initialConfiguration);
+        crashReportDataFactory = new CrashReportDataFactory(mContext, getConfig(), prefs, appStartDate, initialConfiguration);
 
         if (listenForUncaughtExceptions) {
             mDfltExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();

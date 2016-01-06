@@ -24,6 +24,7 @@ import org.acra.annotation.ReportsCrashes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import org.acra.config.AcraConfig;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -34,6 +35,14 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class SharedPreferencesCollector {
 
+    private final Context context;
+    private final AcraConfig config;
+
+    public SharedPreferencesCollector(Context context, AcraConfig config) {
+        this.context = context;
+        this.config = config;
+    }
+
     /**
      * Collects all key/value pairs in SharedPreferences and writes them in a
      * result String. The application default SharedPreferences are always
@@ -41,13 +50,9 @@ final class SharedPreferencesCollector {
      * names in the {@link ReportsCrashes#additionalSharedPreferences()}
      * configuration item.
      * 
-     * 
-     * 
-     * @param context
-     *            the application context.
      * @return A readable formatted String containing all key/value pairs.
      */
-    public static String collect(Context context) {
+    public String collect() {
         final StringBuilder result = new StringBuilder();
 
         // Include the default SharedPreferences
@@ -55,7 +60,7 @@ final class SharedPreferencesCollector {
         sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
 
         // Add in any additional SharedPreferences
-        final String[] sharedPrefIds = ACRA.getConfig().additionalSharedPreferences();
+        final String[] sharedPrefIds = config.additionalSharedPreferences();
         if (sharedPrefIds != null) {
             for (final String sharedPrefId : sharedPrefIds) {
                 sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
@@ -100,8 +105,8 @@ final class SharedPreferencesCollector {
      *            the name of the preference to be checked
      * @return true if the key has to be excluded from reports.
      */
-    private static boolean filteredKey(String key) {
-        for (String regex : ACRA.getConfig().excludeMatchingSharedPreferencesKeys()) {
+    private boolean filteredKey(String key) {
+        for (String regex : config.excludeMatchingSharedPreferencesKeys()) {
             if(key.matches(regex)) {
                return true; 
             }

@@ -1,8 +1,10 @@
 package org.acra.config;
 
+import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
 import java.security.KeyStore;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,4 +30,9 @@ public interface AcraConfig extends ReportsCrashes {
      * @return KeyStore to use (if any) when sending a HttpsRequest.
      */
     public KeyStore keyStore();
+
+    /**
+     * @return List of ReportField that ACRA will provide to the server.
+     */
+    public List<ReportField> getReportFields();
 }

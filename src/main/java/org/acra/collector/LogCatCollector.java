@@ -29,6 +29,7 @@ import java.util.List;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.config.AcraConfig;
 import org.acra.util.BoundedLinkedList;
 
 
@@ -48,10 +49,9 @@ class LogCatCollector {
     /**
      * Executes the logcat command with arguments taken from
      * {@link ReportsCrashes#logcatArguments()}
-     * 
-     * @param bufferName
-     *            The name of the buffer to be read: "main" (default), "radio"
-     *            or "events".
+     *
+     * @param config        AcraConfig to use when collecting logcat.
+     * @param bufferName    The name of the buffer to be read: "main" (default), "radio" or "events".
      * @return A {@link String} containing the latest lines of the output.
      *         Default is 100 lines, use "-t", "300" in
      *         {@link ReportsCrashes#logcatArguments()} if you want 300 lines.
@@ -59,10 +59,10 @@ class LogCatCollector {
      *         report generation time and a bigger footprint on the device data
      *         plan consumption.
      */
-    public static String collectLogCat(String bufferName) {
+    public String collectLogCat(AcraConfig config,  String bufferName) {
         final int myPid = android.os.Process.myPid();
         String myPidStr = null;
-        if (ACRA.getConfig().logcatFilterByPid() && myPid > 0) {
+        if (config.logcatFilterByPid() && myPid > 0) {
             myPidStr = Integer.toString(myPid) +"):";
         }
 
@@ -76,8 +76,7 @@ class LogCatCollector {
         // "-t n" argument has been introduced in FroYo (API level 8). For
         // devices with lower API level, we will have to emulate its job.
         final int tailCount;
-        final List<String> logcatArgumentsList = new ArrayList<String>(
-                Arrays.asList(ACRA.getConfig().logcatArguments()));
+        final List<String> logcatArgumentsList = new ArrayList<String>(Arrays.asList(config.logcatArguments()));
 
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {

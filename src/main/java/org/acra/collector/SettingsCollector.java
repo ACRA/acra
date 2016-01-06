@@ -27,6 +27,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
+import org.acra.config.AcraConfig;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -39,16 +40,22 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class SettingsCollector {
 
+    private final Context context;
+    private final AcraConfig config;
+
+    public SettingsCollector(Context context, AcraConfig config) {
+        this.context = context;
+        this.config = config;
+    }
+
     /**
      * Collect data from {@link android.provider.Settings.System}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      * 
-     * @param ctx
-     *            Application context.
      * @return A human readable String containing one key=value pair per line.
      */
-    public static String collectSystemSettings(Context ctx) {
+    public String collectSystemSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.System.class.getFields();
         for (final Field key : keys) {
@@ -57,7 +64,7 @@ final class SettingsCollector {
             // logcat.
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class) {
                 try {
-                    final Object value = Settings.System.getString(ctx.getContentResolver(), (String) key.get(null));
+                    final Object value = Settings.System.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
@@ -77,17 +84,15 @@ final class SettingsCollector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      * 
-     * @param ctx
-     *            Application context.
      * @return A human readable String containing one key=value pair per line.
      */
-    public static String collectSecureSettings(Context ctx) {
+    public String collectSecureSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.Secure.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                 try {
-                    final Object value = Settings.Secure.getString(ctx.getContentResolver(), (String) key.get(null));
+                    final Object value = Settings.Secure.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
@@ -107,11 +112,9 @@ final class SettingsCollector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      * 
-     * @param ctx
-     *            Application context.
      * @return A human readable String containing one key=value pair per line.
      */
-    public static String collectGlobalSettings(Context ctx) {
+    public String collectGlobalSettings() {
         if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
             return "";
         }
@@ -123,7 +126,7 @@ final class SettingsCollector {
             final Method getString = globalClass.getMethod("getString", ContentResolver.class, String.class);
             for (final Field key : keys) {
                 if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
-                    final Object value = getString.invoke(null, ctx.getContentResolver(), (String) key.get(null));
+                    final Object value = getString.invoke(null, context.getContentResolver(), key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
@@ -146,11 +149,11 @@ final class SettingsCollector {
         return result.toString();
     }
 
-    private static boolean isAuthorized(Field key) {
+    private boolean isAuthorized(Field key) {
         if (key == null || key.getName().startsWith("WIFI_AP")) {
             return false;
         }
-        for (String regex : ACRA.getConfig().excludeMatchingSettingsKeys()) {
+        for (String regex : config.excludeMatchingSettingsKeys()) {
             if(key.getName().matches(regex)) {
                return false; 
             }
