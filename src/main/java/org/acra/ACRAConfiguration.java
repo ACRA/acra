@@ -16,12 +16,14 @@
 package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
+import org.acra.config.AcraConfig;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
 import java.util.Arrays;
@@ -37,7 +39,7 @@ import static org.acra.ACRAConstants.*;
  * v14 where resource ids are not final anymore and can't be passed as
  * annotation parameters values.
  */
-public class ACRAConfiguration implements ReportsCrashes {
+public class ACRAConfiguration implements AcraConfig, Serializable {
 
     private String[] mAdditionalDropboxTags = null;
 
@@ -1233,6 +1235,7 @@ public class ACRAConfiguration implements ReportsCrashes {
         return Type.FORM;
     }
 
+    @SuppressWarnings( "unused" )
     public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
         this.reportSenderFactoryClasses = reportSenderFactoryClasses;
     }
@@ -1251,6 +1254,7 @@ public class ACRAConfiguration implements ReportsCrashes {
         return new Class[] {DefaultReportSenderFactory.class};
     }
 
+    @Override
     public KeyStore keyStore() {
         if (mKeyStore != null) {
             return mKeyStore;

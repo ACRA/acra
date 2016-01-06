@@ -15,28 +15,30 @@
  */
 package org.acra.sender;
 
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
-import org.acra.collector.CrashReportData;
-import org.acra.ReportField;
-import org.acra.annotation.ReportsCrashes;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import org.acra.ACRAConstants;
+import org.acra.ReportField;
+import org.acra.annotation.ReportsCrashes;
+import org.acra.collector.CrashReportData;
+import org.acra.config.AcraConfig;
 
 /**
- * Send reports through an email intent. The user will be asked to chose his
- * preferred email client. Included report fields can be defined using
+ * Send reports through an email intent.
+ *
+ * The user will be asked to chose his preferred email client. Included report fields can be defined using
  * {@link org.acra.annotation.ReportsCrashes#customReportContent()}. Crash receiving mailbox has to be
  * defined with {@link ReportsCrashes#mailTo()}.
  */
 public class EmailIntentSender implements ReportSender {
 
     private final Context mContext;
+    private final AcraConfig config;
 
-    public EmailIntentSender(Context ctx) {
+    public EmailIntentSender(Context ctx, AcraConfig config) {
         mContext = ctx;
+        this.config = config;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class EmailIntentSender implements ReportSender {
         final String body = buildBody(errorContent);
 
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SENDTO);
-        emailIntent.setData(Uri.fromParts("mailto", ACRA.getConfig().mailTo(), null));
+        emailIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
@@ -54,7 +56,7 @@ public class EmailIntentSender implements ReportSender {
     }
 
     private String buildBody(CrashReportData errorContent) {
-        ReportField[] fields = ACRA.getConfig().customReportContent();
+        ReportField[] fields = config.customReportContent();
         if(fields.length == 0) {
             fields = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
         }

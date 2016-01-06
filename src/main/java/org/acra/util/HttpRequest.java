@@ -7,6 +7,7 @@ package org.acra.util;
 
 import android.util.Base64;
 import org.acra.ACRA;
+import org.acra.config.AcraConfig;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
@@ -21,19 +22,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
 
+    private final AcraConfig config;
     private String login;
     private String password;
     private int connectionTimeOut = 3000;
     private int socketTimeOut = 3000;
     private Map<String,String> headers;
-    
+
+    public HttpRequest(AcraConfig config) {
+        this.config = config;
+    }
+
     public void setLogin(String login) {
         this.login = login;
     }
@@ -74,8 +79,7 @@ public final class HttpRequest {
                 final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
 
-                final KeyStore keyStore = ACRA.getConfig().keyStore();
-                tmf.init(keyStore);
+                tmf.init(config.keyStore());
 
                 final SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, tmf.getTrustManagers(), null);

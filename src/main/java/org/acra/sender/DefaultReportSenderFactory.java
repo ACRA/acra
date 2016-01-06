@@ -1,10 +1,9 @@
 package org.acra.sender;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
+import org.acra.config.AcraConfig;
 import org.acra.util.PackageManagerWrapper;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -19,14 +18,12 @@ import static org.acra.ACRA.LOG_TAG;
 public final class DefaultReportSenderFactory implements ReportSenderFactory {
 
     @Override
-    public ReportSender create(Context context) {
-        final ReportsCrashes conf = ACRA.getConfig();
-
+    public ReportSender create(Context context, AcraConfig config) {
         final PackageManagerWrapper pm = new PackageManagerWrapper(context);
-        if (!"".equals(conf.mailTo())) {
+        if (!"".equals(config.mailTo())) {
             // Try to send by mail. If a mailTo address is provided, do not add other senders.
             ACRA.log.w(LOG_TAG, context.getPackageName() + " reports will be sent by email (if accepted by user).");
-            return new EmailIntentSenderFactory().create(context);
+            return new EmailIntentSenderFactory().create(context, config);
         } else if (!pm.hasPermission(Manifest.permission.INTERNET)) {
             // NB If the PackageManager has died then this will erroneously log
             // the error that the App doesn't have Internet (even though it does).
@@ -36,12 +33,12 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
                     context.getPackageName()
                             + " should be granted permission "
                             + Manifest.permission.INTERNET
-                            + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @ReportsCrashes(mailTo=\"your.account@domain.com\"");
+                            + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @AcraConfig(mailTo=\"your.account@domain.com\"");
             return new NullSender();
-        } else if (conf.formUri() != null && !"".equals(conf.formUri())) {
+        } else if (config.formUri() != null && !"".equals(config.formUri())) {
             // If formUri is set, instantiate a sender for a generic HTTP POST form with default mapping.
             ACRA.log.w(LOG_TAG, context.getPackageName() + " reports will be sent by Http.");
-            return new HttpSenderFactory().create(context);
+            return new HttpSenderFactory().create(context, config);
         } else {
             return new NullSender();
         }

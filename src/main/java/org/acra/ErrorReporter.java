@@ -15,12 +15,7 @@
  */
 package org.acra;
 
-import android.Manifest.permission;
-import android.app.Activity;
-import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,19 +34,16 @@ import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import org.acra.sender.*;
+import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderFactory;
+import org.acra.sender.SenderService;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
@@ -515,6 +507,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
             intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
             intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, reportSenderFactories);
+            intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, ACRA.getConfig());
             mContext.startService(intent);
         } else {
             ACRA.log.w(LOG_TAG, "Would be sending reports, but ACRA is disabled");
@@ -991,6 +984,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
          * @param msg the error message
          * @return the updated {@code ReportBuilder}
          */
+        @SuppressWarnings( "unused" )
         public ReportBuilder message(String msg) {
             mMessage = msg;
             return this;

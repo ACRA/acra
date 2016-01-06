@@ -25,6 +25,7 @@ import org.acra.collector.CrashReportData;
 import org.acra.common.CrashReportFileNameParser;
 import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
+import org.acra.config.AcraConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import static org.acra.ACRA.LOG_TAG;
 final class SendWorker {
 
     private final Context context;
+    private final AcraConfig config;
     private final boolean sendOnlySilentReports;
     private final boolean approvePendingReports;
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
@@ -49,19 +51,15 @@ final class SendWorker {
     /**
      * Creates a new {@link SendWorker} to try sending pending reports.
      *
-     * @param context
-     *            ApplicationContext in which the reports are being sent.
-     * @param reportSenders
-     *            List of ReportSender to use to send the crash reports.
-     * @param sendOnlySilentReports
-     *            If set to true, will send only reports which have been
-     *            explicitly declared as silent by the application developer.
-     * @param approvePendingReports
-     *            if this endWorker should approve pending reports before
-     *            sending any reports.
+     * @param context               ApplicationContext in which the reports are being sent.
+     * @param config                Configuration to use while sending.
+     * @param reportSenders         List of ReportSender to use to send the crash reports.
+     * @param sendOnlySilentReports If set to true, will send only reports which have been explicitly declared as silent by the application developer.
+     * @param approvePendingReports If this SendWorker should approve pending reports before sending any reports.
      */
-    public SendWorker(Context context, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
+    public SendWorker(Context context, AcraConfig config, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
         this.context = context;
+        this.config = config;
         this.reportSenders = reportSenders;
         this.sendOnlySilentReports = sendOnlySilentReports;
         this.approvePendingReports = approvePendingReports;
@@ -173,7 +171,7 @@ final class SendWorker {
      *             if unable to send the crash report.
      */
     private void sendCrashReport(CrashReportData errorContent) throws ReportSenderException {
-        if (!isDebuggable() || ACRA.getConfig().sendReportsInDevMode()) {
+        if (!isDebuggable() || config.sendReportsInDevMode()) {
             boolean sentAtLeastOnce = false;
             ReportSenderException sendFailure = null;
             String failedSender = null;
