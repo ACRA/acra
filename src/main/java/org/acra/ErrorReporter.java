@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
@@ -738,6 +740,30 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         final String reportFileName = getReportFileName(crashReportData);
         saveCrashReportFile(reportFileName, crashReportData);
+        
+        // Init in Preference
+        // If preference("network.wifi.only") not defined then will be send via: Mobile network, WIMAX, Wi-Fi etc.
+        // If preference("network.wifi.only") is true then - allow only Wi-Fi network.
+/*
+        <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="network.wifi.only"
+        android:summaryOff="@string/pref_title_wifi_only_disabled"
+        android:summaryOn="@string/pref_title_wifi_only_enabled"
+        android:title="@string/pref_title_wifi_only" />
+*/
+        boolean networkWifiOnly = prefs.getBoolean("network.wifi.only", false);
+        Application mApplication = ACRA.getApplication();
+        final PackageManagerWrapper pm = new PackageManagerWrapper(mApplication);
+        if (networkWifiOnly && (pm.hasPermission(permission.ACCESS_NETWORK_STATE))) {
+            ConnectivityManager cm = (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = cm.getActiveNetworkInfo();
+            // Allow sending reports only via Wi-Fi
+            if (!(info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI)) {
+                ACRA.log.d(LOG_TAG, "Do not send report now. Network is not connected to Wi-Fi.");
+                return;
+            }
+        }
 
         if (reportBuilder.mEndsApplication && !config.sendReportsAtShutdown()) {
             endApplication(reportBuilder.mUncaughtExceptionThread, reportBuilder.mException);
