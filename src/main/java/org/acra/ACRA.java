@@ -93,6 +93,7 @@ public class ACRA {
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
     private static Application mApplication;
+    private static ACRAConfiguration configProxy;
 
     // Accessible via ACRA#getErrorReporter().
     private static ErrorReporter errorReporterSingleton;
@@ -317,9 +318,10 @@ public class ACRA {
      *         adjustable setting.
      */
     public static SharedPreferences getACRASharedPreferences() {
-        ReportsCrashes conf = getConfig();
-        if (!"".equals(conf.sharedPreferencesName())) {
-            return mApplication.getSharedPreferences(conf.sharedPreferencesName(), conf.sharedPreferencesMode());
+        if (mApplication == null) {
+            throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
+        } else if (!"".equals(configProxy.sharedPreferencesName())) {
+            return mApplication.getSharedPreferences(configProxy.sharedPreferencesName(), configProxy.sharedPreferencesMode());
         } else {
             return PreferenceManager.getDefaultSharedPreferences(mApplication);
         }
@@ -329,34 +331,26 @@ public class ACRA {
      * Provides the current ACRA configuration.
      * 
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
+     * @deprecated since 4.8.0 {@link org.acra.config.AcraConfig} should be passed into classes instead of retrieved statically.
      */
     public static ACRAConfiguration getConfig() {
-        if (configProxy == null) {
-            if (mApplication == null) {
-                log.w(LOG_TAG, "Calling ACRA.getConfig() before ACRA.init() gives you an empty configuration instance. You might prefer calling ACRA.getNewDefaultConfig(Application) to get an instance with default values taken from a @ReportsCrashes annotation.");
-            }
-            configProxy = getNewDefaultConfig(mApplication);
+        if (mApplication == null) {
+            throw new IllegalStateException("Cannot call ACRA.getConfig() before ACRA.init().");
         }
         return configProxy;
     }
 
     /**
      * @param app       Your Application class.
-     * @return new {@link ACRAConfiguration} instance with values initialized
-     *         from the {@link ReportsCrashes} annotation.
+     * @return new {@link ACRAConfiguration} instance with values initialized from the {@link ReportsCrashes} annotation.
      */
+    @SuppressWarnings( "unused" )
     public static ACRAConfiguration getNewDefaultConfig(Application app) {
         if(app != null) {
             return new ACRAConfiguration(app.getClass().getAnnotation(ReportsCrashes.class));
         } else {
             return new ACRAConfiguration(null);
         }
-    }
-
-    private static ACRAConfiguration configProxy;
-
-    static Application getApplication() {
-        return mApplication;
     }
 
     public static void setLog(ACRALog log) {
