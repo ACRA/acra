@@ -18,7 +18,6 @@ package org.acra.sender;
 import android.content.Context;
 import android.net.Uri;
 import org.acra.ACRA;
-import org.acra.ACRAConfiguration;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
@@ -189,8 +188,8 @@ public class HttpSender implements ReportSender {
             URL reportUrl = mFormUri == null ? new URL(config.formUri()) : new URL(mFormUri.toString());
             ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
-            final String login = mUsername != null ? mUsername : ACRAConfiguration.isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
-            final String password = mPassword != null ? mPassword : ACRAConfiguration.isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
+            final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
+            final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
 
             final HttpRequest request = new HttpRequest(config);
             request.setConnectionTimeOut(config.connectionTimeout());
@@ -251,4 +250,7 @@ public class HttpSender implements ReportSender {
         return finalReport;
     }
 
+    private boolean isNull(String aString) {
+        return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
+    }
 }

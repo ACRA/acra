@@ -23,7 +23,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.dialog.CrashReportDialog;
+import org.acra.config.ACRAConfiguration;
+import org.acra.config.ACRAConfigurationException;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 
@@ -180,7 +181,7 @@ public class ACRA {
         final SharedPreferences prefs = getACRASharedPreferences();
 
         try {
-            checkCrashResources(config);
+            config.checkCrashResources();
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
@@ -272,41 +273,6 @@ public class ACRA {
             // In case of a ClassCastException
         }
         return disableAcra;
-    }
-
-    /**
-     * Checks that mandatory configuration items have been provided.
-     * 
-     * @throws ACRAConfigurationException
-     *             if required values are missing.
-     */
-    static void checkCrashResources(ReportsCrashes conf) throws ACRAConfigurationException {
-        switch (conf.mode()) {
-        case TOAST:
-            if (conf.resToastText() == 0) {
-                throw new ACRAConfigurationException(
-                        "TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
-            }
-            break;
-        case NOTIFICATION:
-            if (conf.resNotifTickerText() == 0 || conf.resNotifTitle() == 0 || conf.resNotifText() == 0) {
-                throw new ACRAConfigurationException(
-                        "NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText parameters in your application @ReportsCrashes() annotation.");
-            }
-            if (CrashReportDialog.class.equals(conf.reportDialogClass()) && conf.resDialogText() == 0) {
-                throw new ACRAConfigurationException(
-                        "NOTIFICATION mode: using the (default) CrashReportDialog requires you have to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
-            }
-            break;
-        case DIALOG:
-            if (CrashReportDialog.class.equals(conf.reportDialogClass()) && conf.resDialogText() == 0) {
-                throw new ACRAConfigurationException(
-                        "DIALOG mode: using the (default) CrashReportDialog requires you to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
-            }
-            break;
-		default:
-			break;
-        }
     }
 
     /**
