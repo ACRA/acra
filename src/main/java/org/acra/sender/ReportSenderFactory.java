@@ -1,7 +1,7 @@
 package org.acra.sender;
 
 import android.content.Context;
-import org.acra.config.ACRAConfigX;
+import org.acra.config.ACRAConfig;
 
 /**
  * Factory for creating and configuring a {@link ReportSender} instance.
@@ -19,5 +19,5 @@ public interface ReportSenderFactory {
      * @param config    Configuration to use when sending reports.
      * @return Fully configured instance of the relevant ReportSender.
      */
-    ReportSender create(Context context, ACRAConfigX config);
+    ReportSender create(Context context, ACRAConfig config);
 }

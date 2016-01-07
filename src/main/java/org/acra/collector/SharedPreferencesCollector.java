@@ -24,7 +24,7 @@ import org.acra.annotation.ReportsCrashes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import org.acra.config.ACRAConfigX;
+import org.acra.config.ACRAConfig;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -36,9 +36,9 @@ import static org.acra.ACRA.LOG_TAG;
 final class SharedPreferencesCollector {
 
     private final Context context;
-    private final ACRAConfigX config;
+    private final ACRAConfig config;
 
-    public SharedPreferencesCollector(Context context, ACRAConfigX config) {
+    public SharedPreferencesCollector(Context context, ACRAConfig config) {
         this.context = context;
         this.config = config;
     }

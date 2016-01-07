@@ -8,7 +8,7 @@ import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.common.CrashReportPersister;
 import org.acra.common.PendingReportDeleter;
-import org.acra.config.ACRAConfigX;
+import org.acra.config.ACRAConfig;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
 
@@ -36,7 +36,7 @@ import static org.acra.ReportField.USER_EMAIL;
 public abstract class BaseCrashReportDialog extends Activity {
 
     private String mReportFileName;
-    private ACRAConfigX config;
+    private ACRAConfig config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public abstract class BaseCrashReportDialog extends Activity {
 
         ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
 
-        config = (ACRAConfigX) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        config = (ACRAConfig) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
 
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {

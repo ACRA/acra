@@ -44,7 +44,7 @@ import static org.acra.ACRAConstants.*;
  * v14 where resource ids are not final anymore and can't be passed as
  * annotation parameters values.
  */
-public class ACRAConfiguration implements ACRAConfigX, Serializable {
+public class ACRAConfiguration implements ACRAConfig, Serializable {
 
     private String[] mAdditionalDropboxTags = null;
 

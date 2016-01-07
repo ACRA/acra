@@ -22,7 +22,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ACRAConfigX;
+import org.acra.config.ACRAConfig;
 
 /**
  * Send reports through an email intent.
@@ -34,9 +34,9 @@ import org.acra.config.ACRAConfigX;
 public class EmailIntentSender implements ReportSender {
 
     private final Context mContext;
-    private final ACRAConfigX config;
+    private final ACRAConfig config;
 
-    public EmailIntentSender(Context ctx, ACRAConfigX config) {
+    public EmailIntentSender(Context ctx, ACRAConfig config) {
         mContext = ctx;
         this.config = config;
     }

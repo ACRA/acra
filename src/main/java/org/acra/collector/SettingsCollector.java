@@ -27,7 +27,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
-import org.acra.config.ACRAConfigX;
+import org.acra.config.ACRAConfig;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -41,9 +41,9 @@ import static org.acra.ACRA.LOG_TAG;
 final class SettingsCollector {
 
     private final Context context;
-    private final ACRAConfigX config;
+    private final ACRAConfig config;
 
-    public SettingsCollector(Context context, ACRAConfigX config) {
+    public SettingsCollector(Context context, ACRAConfig config) {
         this.context = context;
         this.config = config;
     }

@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * Programmatic versions can be configured using
  */
-public interface ACRAConfigX extends ReportsCrashes, Serializable {
+public interface ACRAConfig extends ReportsCrashes, Serializable {
 
     /**
      * Retrieve HTTP headers defined by the application developer. These should
