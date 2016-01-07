@@ -14,7 +14,7 @@ import android.widget.TextView;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.common.SharedPreferencesFactory;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 
 
 /**
@@ -30,7 +30,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     private LinearLayout scrollable;
     private EditText userCommentView;
     private EditText userEmailView;
-    private AcraConfig config;
+    private ACRAConfigX config;
     private SharedPreferencesFactory sharedPreferencesFactory;
 
     private AlertDialog mDialog;
@@ -41,7 +41,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         scrollable = new LinearLayout(this);
         scrollable.setOrientation(LinearLayout.VERTICAL);
-        config = (AcraConfig) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        config = (ACRAConfigX) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
         sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), config);
 
         buildAndShowDialog(savedInstanceState);

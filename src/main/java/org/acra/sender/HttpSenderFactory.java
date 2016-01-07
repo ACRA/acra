@@ -1,7 +1,7 @@
 package org.acra.sender;
 
 import android.content.Context;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 
 /**
  * Constructs a {@link HttpSender} with no report field mappings.
@@ -9,7 +9,7 @@ import org.acra.config.AcraConfig;
 public final class HttpSenderFactory implements ReportSenderFactory {
 
     @Override
-    public ReportSender create(Context context, AcraConfig config) {
+    public ReportSender create(Context context, ACRAConfigX config) {
         return new HttpSender(config, config.httpMethod(), config.reportType(), null);
     }
 }

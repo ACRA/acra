@@ -3,7 +3,7 @@ package org.acra.sender;
 import android.app.IntentService;
 import android.content.Intent;
 import org.acra.ACRA;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class SenderService extends IntentService {
         final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
         final boolean approveReportsFirst = intent.getBooleanExtra(EXTRA_APPROVE_REPORTS_FIRST, false);
         final Serializable reportSenderFactoryClasses = intent.getSerializableExtra(EXTRA_REPORT_SENDER_FACTORIES);
-        final AcraConfig config = (AcraConfig) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
+        final ACRAConfigX config = (ACRAConfigX) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
 
         ACRA.log.v(LOG_TAG, "About to start sending reports from SenderService");
         try {
@@ -41,7 +41,7 @@ public class SenderService extends IntentService {
         }
     }
 
-    private List<ReportSender> getSenderInstances(AcraConfig config, List<Class<? extends ReportSenderFactory>> factoryClasses) {
+    private List<ReportSender> getSenderInstances(ACRAConfigX config, List<Class<? extends ReportSenderFactory>> factoryClasses) {
         final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
         for (final Class<? extends ReportSenderFactory> factoryClass : factoryClasses) {
             try {

@@ -25,7 +25,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.common.SharedPreferencesFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 import org.acra.config.ACRAConfigurationFactory;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
@@ -290,7 +290,7 @@ public class ACRA {
      * Provides the current ACRA configuration.
      * 
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
-     * @deprecated since 4.8.0 {@link AcraConfig} should be passed into classes instead of retrieved statically.
+     * @deprecated since 4.8.0 {@link ACRAConfigX} should be passed into classes instead of retrieved statically.
      */
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {

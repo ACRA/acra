@@ -3,7 +3,7 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.Intent;
 import org.acra.ACRA;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -13,9 +13,9 @@ import static org.acra.ACRA.LOG_TAG;
 public class SenderServiceStarter {
 
     private final Context context;
-    private final AcraConfig config;
+    private final ACRAConfigX config;
 
-    public SenderServiceStarter(Context context, AcraConfig config) {
+    public SenderServiceStarter(Context context, ACRAConfigX config) {
         this.context = context;
         this.config = config;
     }

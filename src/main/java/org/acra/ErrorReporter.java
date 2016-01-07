@@ -33,7 +33,7 @@ import org.acra.common.CrashReportFileNameParser;
 import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
 import org.acra.common.PendingReportDeleter;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
@@ -82,7 +82,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private boolean enabled = false;
 
     private final Application mContext;
-    private final AcraConfig config;
+    private final ACRAConfigX config;
     private final SharedPreferences prefs;
 
     private final CrashReportDataFactory crashReportDataFactory;
@@ -123,7 +123,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(Application context, AcraConfig config,  SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
+    ErrorReporter(Application context, ACRAConfigX config, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.mContext = context;
         this.config = config;

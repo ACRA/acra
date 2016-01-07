@@ -25,7 +25,7 @@ import org.acra.collector.CrashReportData;
 import org.acra.common.CrashReportFileNameParser;
 import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
-import org.acra.config.AcraConfig;
+import org.acra.config.ACRAConfigX;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import static org.acra.ACRA.LOG_TAG;
 final class SendWorker {
 
     private final Context context;
-    private final AcraConfig config;
+    private final ACRAConfigX config;
     private final boolean sendOnlySilentReports;
     private final boolean approvePendingReports;
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
@@ -57,7 +57,7 @@ final class SendWorker {
      * @param sendOnlySilentReports If set to true, will send only reports which have been explicitly declared as silent by the application developer.
      * @param approvePendingReports If this SendWorker should approve pending reports before sending any reports.
      */
-    public SendWorker(Context context, AcraConfig config, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
+    public SendWorker(Context context, ACRAConfigX config, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;
