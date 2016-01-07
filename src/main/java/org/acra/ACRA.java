@@ -243,9 +243,7 @@ public class ACRA {
 
     /**
      * @return the current instance of ErrorReporter.
-     * @throws IllegalStateException
-     *             if {@link ACRA#init(android.app.Application)} has not yet
-     *             been called.
+     * @throws IllegalStateException if {@link ACRA#init(android.app.Application)} has not yet been called.
      */
     public static ErrorReporter getErrorReporter() {
         if (errorReporterSingleton == null) {

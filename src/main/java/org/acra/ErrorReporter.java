@@ -207,20 +207,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * @return the current instance of ErrorReporter.
-     * @throws IllegalStateException
-     *             if {@link ACRA#init(android.app.Application)} has not yet
-     *             been called.
-     * @deprecated since 4.3.0 Use {@link org.acra.ACRA#getErrorReporter()}
-     *             instead.
-     */
-    @SuppressWarnings("unused")
-    @Deprecated
-    public static ErrorReporter getInstance() {
-        return ACRA.getErrorReporter();
-    }
-
-    /**
      * Deprecated. Use {@link #putCustomData(String, String)}.
      *
      * @param key
