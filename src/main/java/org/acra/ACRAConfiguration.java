@@ -17,6 +17,8 @@ package org.acra;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.AcraConfig;
+import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.CrashReportDialog;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;

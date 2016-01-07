@@ -32,19 +32,22 @@ import org.acra.collector.CrashReportDataFactory;
 import org.acra.common.CrashReportFileNameParser;
 import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
+import org.acra.common.PendingReportDeleter;
 import org.acra.config.AcraConfig;
+import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.CrashReportDialog;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import org.acra.sender.ReportSender;
-import org.acra.sender.ReportSenderFactory;
-import org.acra.sender.SenderService;
+import org.acra.sender.SenderServiceStarter;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 
-import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
@@ -81,11 +84,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private final Application mContext;
     private final AcraConfig config;
     private final SharedPreferences prefs;
-
-    /**
-     * Contains the active {@link ReportSender}s.
-     */
-    private final ArrayList<Class<? extends ReportSenderFactory>> reportSenderFactories = new ArrayList<Class<? extends ReportSenderFactory>>();
 
     private final CrashReportDataFactory crashReportDataFactory;
 
@@ -132,7 +130,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.prefs = prefs;
         this.enabled = enabled;
         this.supportedAndroidVersion = supportedAndroidVersion;
-        this.reportSenderFactories.addAll(Arrays.asList(config.reportSenderFactoryClasses()));
 
         // Store the initial Configuration state.
         // This is expensive to gather, so only do so if we plan to report it.
@@ -328,56 +325,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         return crashReportDataFactory.getCustomData(key);
     }
 
-    /**
-     * Adds a ReportSenderFactory to the list of factories that will construct {@link ReportSender}s when sending reports.
-     *
-     * Note: you can declare your {@link ReportSenderFactory}s via {@link ReportsCrashes#reportSenderFactoryClasses()}.
-     *
-     * @param senderFactory ReportSenderFactory to add tto the list of existing factories.
-     * @since 4.8.0
-     */
-    @SuppressWarnings("unused")
-    public void addReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
-        reportSenderFactories.add(senderFactory);
-    }
-
-    /**
-     * Remove a {@link ReportSenderFactory} from the list of factories
-     * that will construct {@link ReportSender}s when sending reports.
-     *
-     * Note: you can declare your {@link ReportSenderFactory}s via {@link ReportsCrashes#reportSenderFactoryClasses()}.
-     *
-     * @param senderFactory The {@link ReportSender} class to be removed.
-     * @since 4.8.0
-     */
-    @SuppressWarnings("unused")
-    public void removeReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
-        reportSenderFactories.remove(senderFactory);
-    }
-
-    /**
-     * Clears the list of active {@link ReportSender}s.
-     *
-     * You should then call {@link #addReportSenderFactory(Class)} or ACRA will not send any reports.
-     */
-    @SuppressWarnings("unused")
-    public void removeAllReportSenders() {
-        reportSenderFactories.clear();
-    }
-
-    /**
-     * Removes all previously set {@link ReportSenderFactory}s and set the given one as the sole {@link ReportSenderFactory}.
-     *
-     * Note: you can declare your {@link ReportSenderFactory}s via {@link ReportsCrashes#reportSenderFactoryClasses()}.
-     *
-     * @param senderFactory ReportSenderFactory to set as the creator of {@link ReportSender}s for this ErrorReporter.
-     */
-    @SuppressWarnings("unused")
-    public void setReportSenderFactory(Class<? extends ReportSenderFactory> senderFactory) {
-        reportSenderFactories.clear();
-        reportSenderFactories.add(senderFactory);
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -499,30 +446,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Starts a Thread to start sending outstanding error reports.
      *
-     * @param onlySendSilentReports
-     *            If true then only send silent reports.
-     * @param approveReportsFirst
-     *            If true then approve unapproved reports first.
+     * @param onlySendSilentReports If true then only send silent reports.
+     * @param approveReportsFirst   If true then approve unapproved reports first.
      */
-    void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
+    private void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
         if (enabled) {
             ACRA.log.v(LOG_TAG, "About to start SenderService");
-            final Intent intent = new Intent(mContext, SenderService.class);
-            intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-            intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
-            intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, reportSenderFactories);
-            intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
-            mContext.startService(intent);
+            final SenderServiceStarter starter = new SenderServiceStarter(mContext, config);
+            starter.startService(onlySendSilentReports, approveReportsFirst);
         } else {
             ACRA.log.w(LOG_TAG, "Would be sending reports, but ACRA is disabled");
         }
-    }
-
-    /**
-     * Delete all report files stored.
-     */
-    void deletePendingReports() {
-        deletePendingReports(true, true, 0);
     }
 
     /**
@@ -540,7 +474,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             if (packageInfo != null) {
                 final boolean newVersion = packageInfo.versionCode > lastVersionNr;
                 if (newVersion) {
-                    deletePendingReports();
+                    new PendingReportDeleter(mContext, true, true, 0).execute();
                 }
                 final SharedPreferences.Editor prefsEditor = prefs.edit();
                 prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, packageInfo.versionCode);
@@ -553,12 +487,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if ((reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG)
             && config.deleteUnapprovedReportsOnApplicationStart()) {
             // NOTIFICATION or DIALOG mode, and there are unapproved reports to
-            // send (latest notification/dialog has been ignored: neither
-            // accepted
-            // nor refused). The application developer has decided that
-            // these reports should not be renotified ==> destroy them all but
-            // one.
-            deletePendingNonApprovedReports(true);
+            // send (latest notification/dialog has been ignored: neither accepted nor refused).
+            // The application developer has decided that these reports should not be renotified ==> destroy them all but one.
+            new PendingReportDeleter(mContext, false, true, 1).execute();
         }
 
         final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
@@ -589,20 +520,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             }
 
         }
-    }
-
-    /**
-     * Delete all pending non approved reports.
-     *
-     * @param keepOne
-     *            If you need to keep the latest report, set this to true.
-     */
-    void deletePendingNonApprovedReports(boolean keepOne) {
-        // In NOTIFICATION AND DIALOG mode, we have to keep the latest report
-        // which
-        // has been written before killing the app.
-        final int nbReportsToKeep = keepOne ? 1 : 0;
-        deletePendingReports(false, true, nbReportsToKeep);
     }
 
     /**
@@ -917,36 +834,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             persister.store(crashData, fileName);
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "An error occurred while writing the report file...", e);
-        }
-    }
-
-    /**
-     * Delete pending reports.
-     *
-     * @param deleteApprovedReports
-     *            Set to true to delete approved and silent reports.
-     * @param deleteNonApprovedReports
-     *            Set to true to delete non approved/silent reports.
-     * @param nbOfLatestToKeep
-     *            Number of pending reports to retain.
-     */
-    private void deletePendingReports(boolean deleteApprovedReports, boolean deleteNonApprovedReports,
-                                      int nbOfLatestToKeep) {
-        // TODO Check logic and instances where nbOfLatestToKeep = X, because
-        // that might stop us from deleting any reports.
-        final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
-        final String[] filesList = reportFinder.getCrashReportFiles();
-        Arrays.sort(filesList);
-        for (int iFile = 0; iFile < filesList.length - nbOfLatestToKeep; iFile++) {
-            final String fileName = filesList[iFile];
-            final boolean isReportApproved = fileNameParser.isApproved(fileName);
-            if ((isReportApproved && deleteApprovedReports) || (!isReportApproved && deleteNonApprovedReports)) {
-                final File fileToDelete = new File(mContext.getFilesDir(), fileName);
-                ACRA.log.d(LOG_TAG, "Deleting file " + fileName);
-                if (!fileToDelete.delete()) {
-                    ACRA.log.e(LOG_TAG, "Could not delete report : " + fileToDelete);
-                }
-            }
         }
     }
 

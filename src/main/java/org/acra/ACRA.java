@@ -23,6 +23,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.dialog.CrashReportDialog;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 

@@ -42,7 +42,7 @@
 
     <application>
         <activity
-            android:name="org.acra.CrashReportDialog"
+            android:name="org.acra.dialog.CrashReportDialog"
             android:theme="@android:style/Theme.Dialog"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"

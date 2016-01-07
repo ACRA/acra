@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.BaseCrashReportDialog;
-import org.acra.CrashReportDialog;
+import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.CrashReportDialog;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.sender.DefaultReportSenderFactory;

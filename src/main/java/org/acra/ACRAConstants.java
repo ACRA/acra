@@ -16,6 +16,7 @@
 package org.acra;
 
 import android.content.Context;
+import org.acra.dialog.CrashReportDialog;
 
 import static org.acra.ReportField.*;
 
@@ -67,13 +68,11 @@ public final class ACRAConstants {
     public static final String EXTRA_REPORT_CONFIG = "REPORT_CONFIG";
 
     /**
-     * Set this extra to true to force the deletion of reports by the
-     * {@link CrashReportDialog} activity.
+     * Set this extra to true to force the deletion of reports by the {@link CrashReportDialog} activity.
      */
-    protected static final String EXTRA_FORCE_CANCEL = "FORCE_CANCEL";
+    public static final String EXTRA_FORCE_CANCEL = "FORCE_CANCEL";
     /**
-     * This is the identifier (value = 666) use for the status bar notification
-     * issued when crashes occur.
+     * This is the identifier (value = 666) use for the status bar notification issued when crashes occur.
      */
     static final int NOTIF_CRASH_ID = 666;
     /**

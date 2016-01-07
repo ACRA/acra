@@ -1,11 +1,15 @@
-package org.acra;
+package org.acra.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.common.CrashReportPersister;
+import org.acra.common.PendingReportDeleter;
 import org.acra.config.AcraConfig;
+import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
 
 import java.io.IOException;
@@ -59,10 +63,10 @@ public abstract class BaseCrashReportDialog extends Activity {
 
 
     /**
-     * Cancel any pending crash reports
+     * Cancel any pending crash reports.
      */
     protected void cancelReports() {
-        ACRA.getErrorReporter().deletePendingNonApprovedReports(false);
+        new PendingReportDeleter(getApplicationContext(), false, true, 0).execute();
     }
 
 
@@ -84,7 +88,8 @@ public abstract class BaseCrashReportDialog extends Activity {
         }
 
         // Start the report sending task
-        ACRA.getErrorReporter().startSendingReports(false, true);
+        final SenderServiceStarter starter = new SenderServiceStarter(getApplicationContext(), config);
+        starter.startService(false, true);
 
         // Optional Toast to thank the user
         final int toastId = config.resDialogOkToast();
