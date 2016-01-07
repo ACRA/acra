@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
+import org.acra.common.SharedPreferencesFactory;
 import org.acra.config.AcraConfig;
 
 
@@ -30,6 +31,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     private EditText userCommentView;
     private EditText userEmailView;
     private AcraConfig config;
+    private SharedPreferencesFactory sharedPreferencesFactory;
 
     private AlertDialog mDialog;
 
@@ -40,6 +42,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         scrollable = new LinearLayout(this);
         scrollable.setOrientation(LinearLayout.VERTICAL);
         config = (AcraConfig) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), config);
 
         buildAndShowDialog(savedInstanceState);
     }
@@ -173,7 +176,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         if (savedEmail != null) {
             userEmailView.setText(savedEmail);
         } else {
-            final SharedPreferences prefs = ACRA.getACRASharedPreferences();
+            final SharedPreferences prefs = sharedPreferencesFactory.create();
             userEmailView.setText(prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ""));
         }
         return userEmailView;
@@ -187,7 +190,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
             // Store the user email
             final String userEmail;
-            final SharedPreferences prefs = ACRA.getACRASharedPreferences();
+            final SharedPreferences prefs = sharedPreferencesFactory.create();
             if (userEmailView != null) {
                 userEmail = userEmailView.getText().toString();
                 final SharedPreferences.Editor prefEditor = prefs.edit();

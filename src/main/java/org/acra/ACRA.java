@@ -23,6 +23,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.common.SharedPreferencesFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.log.ACRALog;
@@ -276,22 +277,11 @@ public class ACRA {
     }
 
     /**
-     * Retrieves the {@link SharedPreferences} instance where user adjustable
-     * settings for ACRA are stored. Default are the Application default
-     * SharedPreferences, but you can provide another SharedPreferences name
-     * with {@link ReportsCrashes#sharedPreferencesName()}.
-     * 
-     * @return The Shared Preferences where ACRA will retrieve its user
-     *         adjustable setting.
+     * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
+     * @deprecated since 4.8.0 use {@link SharedPreferencesFactory} instead.
      */
     public static SharedPreferences getACRASharedPreferences() {
-        if (mApplication == null) {
-            throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
-        } else if (!"".equals(configProxy.sharedPreferencesName())) {
-            return mApplication.getSharedPreferences(configProxy.sharedPreferencesName(), configProxy.sharedPreferencesMode());
-        } else {
-            return PreferenceManager.getDefaultSharedPreferences(mApplication);
-        }
+        return new SharedPreferencesFactory(mApplication, configProxy).create();
     }
 
     /**
