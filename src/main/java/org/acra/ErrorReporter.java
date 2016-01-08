@@ -333,7 +333,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             ACRA.log.d(LOG_TAG, "Building report");
 
             // Generate and send crash report
-            reportBuilder()
+            new ReportBuilder()
                 .uncaughtExceptionThread(t)
                 .exception(e)
                 .endsApplication()
@@ -396,7 +396,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void handleSilentException(Throwable e) {
         // Mark this report as silent.
         if (enabled) {
-            reportBuilder()
+            new ReportBuilder()
                 .exception(e)
                 .forceSilent()
                 .send();
@@ -463,7 +463,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @SuppressWarnings("unused")
     public void handleException(Throwable e, boolean endApplication) {
-        final ReportBuilder builder = reportBuilder();
+        final ReportBuilder builder = new ReportBuilder();
         builder.exception(e);
         if (endApplication) {
             builder.endsApplication();
@@ -483,15 +483,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     @SuppressWarnings("unused")
     public void handleException(Throwable e) {
         handleException(e, false);
-    }
-
-    /**
-     * Creates a new crash report builder
-     *
-     * @return the newly created {@code ReportBuilder}
-     */
-    public ReportBuilder reportBuilder() {
-        return new ReportBuilder();
     }
 
     /**
@@ -766,7 +757,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Fluent API used to assemble the different options used for a crash report
      */
-    public final class ReportBuilder {
+    private final class ReportBuilder {
 
         private String mMessage;
         private Thread mUncaughtExceptionThread;
