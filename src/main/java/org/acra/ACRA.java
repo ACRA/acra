@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.common.AvailableReportChecker;
 import org.acra.common.SharedPreferencesFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
@@ -192,9 +193,10 @@ public class ACRA {
 
             errorReporterSingleton = errorReporter;
 
-            // Check for pending reports
+            // Check for pending reports and send them (if enabled).
             if (checkReportsOnApplicationStart) {
-                errorReporter.checkReportsOnApplicationStart();
+                final AvailableReportChecker checker = new AvailableReportChecker(mApplication,  config, enableAcra);
+                checker.execute();
             }
 
         } catch (ACRAConfigurationException e) {

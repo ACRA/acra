@@ -19,7 +19,6 @@ import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
@@ -29,17 +28,14 @@ import org.acra.collector.Compatibility;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.common.CrashReportFileNameParser;
-import org.acra.common.CrashReportFinder;
+import org.acra.common.AvailableReportChecker;
 import org.acra.common.CrashReportPersister;
-import org.acra.common.PendingReportDeleter;
 import org.acra.config.ACRAConfig;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
 import org.acra.sender.SenderServiceStarter;
-import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -86,8 +82,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private final SharedPreferences prefs;
 
     private final CrashReportDataFactory crashReportDataFactory;
-
-    private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending the report.
@@ -446,66 +440,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * This method looks for pending reports and does the action required
-     * depending on the interaction mode set.
+     * This method looks for pending reports and does the action required depending on the interaction mode set.
+     *
+     * @deprecated since 4.8.0 No replacement.
      */
+    @SuppressWarnings( " unused" )
     public void checkReportsOnApplicationStart() {
-
-        if (config.deleteOldUnsentReportsOnApplicationStart()) {
-            // Delete any old unsent reports if this is a newer version of the app
-            // than when we last started.
-            final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
-            final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(mContext);
-            final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
-            if (packageInfo != null) {
-                final boolean newVersion = packageInfo.versionCode > lastVersionNr;
-                if (newVersion) {
-                    new PendingReportDeleter(mContext, true, true, 0).execute();
-                }
-                final SharedPreferences.Editor prefsEditor = prefs.edit();
-                prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, packageInfo.versionCode);
-                prefsEditor.commit();
-            }
-        }
-
-        final ReportingInteractionMode reportingInteractionMode = config.mode();
-
-        if ((reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG)
-            && config.deleteUnapprovedReportsOnApplicationStart()) {
-            // NOTIFICATION or DIALOG mode, and there are unapproved reports to
-            // send (latest notification/dialog has been ignored: neither accepted nor refused).
-            // The application developer has decided that these reports should not be renotified ==> destroy them all but one.
-            new PendingReportDeleter(mContext, false, true, 1).execute();
-        }
-
-        final CrashReportFinder reportFinder = new CrashReportFinder(mContext);
-        String[] filesList = reportFinder.getCrashReportFiles();
-
-        if (filesList != null && filesList.length > 0) {
-            // Immediately send reports for SILENT and TOAST modes.
-            // Immediately send reports in NOTIFICATION mode only if they are
-            // all silent or approved.
-            // If there is still one unapproved report in NOTIFICATION mode,
-            // notify it.
-            // If there are unapproved reports in DIALOG mode, show the dialog
-
-
-            final boolean onlySilentOrApprovedReports = containsOnlySilentOrApprovedReports(filesList);
-
-            if (reportingInteractionMode == ReportingInteractionMode.SILENT
-                || reportingInteractionMode == ReportingInteractionMode.TOAST
-                || (onlySilentOrApprovedReports && (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG))) {
-
-                if (reportingInteractionMode == ReportingInteractionMode.TOAST && !onlySilentOrApprovedReports) {
-                    // Display the Toast in TOAST mode only if there are
-                    // non-silent reports.
-                    ToastSender.sendToast(mContext, config.resToastText(), Toast.LENGTH_LONG);
-                }
-
-                startSendingReports(false, false);
-            }
-
-        }
+        final AvailableReportChecker checker = new AvailableReportChecker(mContext,  config, enabled);
+        checker.execute();
     }
 
     /**
@@ -521,8 +463,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @SuppressWarnings("unused")
     public void handleException(Throwable e, boolean endApplication) {
-        final ReportBuilder builder = reportBuilder()
-            .exception(e);
+        final ReportBuilder builder = reportBuilder();
+        builder.exception(e);
         if (endApplication) {
             builder.endsApplication();
         }
@@ -540,9 +482,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @SuppressWarnings("unused")
     public void handleException(Throwable e) {
-        reportBuilder()
-            .exception(e)
-            .send();
+        handleException(e, false);
     }
 
     /**
@@ -821,24 +761,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "An error occurred while writing the report file...", e);
         }
-    }
-
-    /**
-     * Checks if an array of reports files names contains only silent or
-     * approved reports.
-     *
-     * @param reportFileNames
-     *            Array of report locations to check.
-     * @return True if there are only silent or approved reports. False if there
-     *         is at least one non-approved report.
-     */
-    private boolean containsOnlySilentOrApprovedReports(String[] reportFileNames) {
-        for (String reportFileName : reportFileNames) {
-            if (!fileNameParser.isApproved(reportFileName)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
