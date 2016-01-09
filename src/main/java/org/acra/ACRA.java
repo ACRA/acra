@@ -194,7 +194,8 @@ public class ACRA {
             errorReporterSingleton = errorReporter;
 
             // Check for pending reports and send them (if enabled).
-            if (checkReportsOnApplicationStart) {
+            // NB don't check if senderServiceProcess as it will gather these reports itself.
+            if (checkReportsOnApplicationStart && !senderServiceProcess) {
                 final AvailableReportChecker checker = new AvailableReportChecker(mApplication,  config, enableAcra);
                 checker.execute();
             }
