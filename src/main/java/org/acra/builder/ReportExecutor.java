@@ -293,7 +293,6 @@ public final class ReportExecutor {
      */
     private void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
         if (enabled) {
-            ACRA.log.v(LOG_TAG, "About to start SenderService");
             final SenderServiceStarter starter = new SenderServiceStarter(context, config);
             starter.startService(onlySendSilentReports, approveReportsFirst);
         } else {

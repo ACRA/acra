@@ -68,7 +68,6 @@ public final class AvailableReportChecker {
                 }
 
                 if (sendReports) {
-                    ACRA.log.v(LOG_TAG, "About to start SenderService");
                     final SenderServiceStarter starter = new SenderServiceStarter(context, config);
                     starter.startService(false, false);
                 }
