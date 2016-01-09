@@ -24,6 +24,8 @@ import java.lang.annotation.Target;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
+import org.acra.builder.NoOpReportPrimer;
+import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.ReportField;
@@ -536,10 +538,15 @@ public @interface ReportsCrashes {
     int applicationLogFileLines() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 
     /**
-     * @return Class for the CrashReportDialog used when sending intent.
-     *  If not provided, defaults to CrashReportDialog.class
+     * @return Class for the CrashReportDialog used when prompting the user for crash details.
+     *          If not provided, defaults to CrashReportDialog.class
      */
     Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
+
+    /**
+     * @return Class that is ued to provide any extra details for a crash.
+     */
+    Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
 
     /**
      * <p>

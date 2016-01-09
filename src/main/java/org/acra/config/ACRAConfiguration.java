@@ -20,6 +20,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.builder.NoOpReportPrimer;
+import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.sender.DefaultReportSenderFactory;
@@ -65,6 +67,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
     private ReportingInteractionMode mMode = null;
     private ReportsCrashes mReportsCrashes = null;
     private Class<? extends BaseCrashReportDialog> mReportDialogClass = null;
+    private Class<? extends ReportPrimer> reportPrimerClass = null;
 
     private Integer mResDialogPositiveButtonText = null;
     private Integer mResDialogNegativeButtonText = null;
@@ -1212,6 +1215,19 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
         }
 
         return CrashReportDialog.class;
+    }
+
+    @Override
+    public Class<? extends ReportPrimer> reportPrimerClass() {
+        if (reportPrimerClass != null) {
+            return reportPrimerClass;
+        }
+
+        if (mReportsCrashes != null) {
+            return mReportsCrashes.reportPrimerClass();
+        }
+
+        return NoOpReportPrimer.class;
     }
 
     @Override

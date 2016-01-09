@@ -23,6 +23,7 @@ import android.content.pm.PackageInfo;
 import android.os.Environment;
 import android.text.TextUtils;
 import org.acra.ACRA;
+import org.acra.builder.ReportBuilder;
 import org.acra.ReportField;
 import org.acra.config.ACRAConfig;
 import org.acra.util.Installation;
@@ -33,13 +34,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.*;
@@ -124,19 +119,9 @@ public final class CrashReportDataFactory {
     /**
      * Collects crash data.
      *
-     * @param msg
-     *            A message to be associated with the crash report.
-     * @param th
-     *            Throwable that caused the crash.
-     * @param customData
-     *            Custom key/value pairs to be associated with the crash report.
-     * @param isSilentReport
-     *            Whether to report this report as being sent silently.
-     * @param brokenThread  Thread on which the error occurred.
-     * @return CrashReportData representing the current state of the application
-     *         at the instant of the Exception.
+     * @param builder   ReportBuilder for whom to crete the crash report.
      */
-    public CrashReportData createCrashData(String msg, Throwable th, Map<String, String> customData, boolean isSilentReport, Thread brokenThread) {
+    public CrashReportData createCrashData(ReportBuilder builder) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
             final List<ReportField> crashReportFields = config.getReportFields();
@@ -147,7 +132,7 @@ public final class CrashReportDataFactory {
             // something crashes the collection process.
 
             try {
-                crashReportData.put(STACK_TRACE, getStackTrace(msg, th));
+                crashReportData.put(STACK_TRACE, getStackTrace(builder.getMessage(), builder.getException()));
             } catch (RuntimeException e){
                 ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE data", e);
             }
@@ -201,14 +186,14 @@ public final class CrashReportDataFactory {
                 ACRA.log.e(LOG_TAG, "Error while retrieving USER_APP_START_DATE data", e);
             }
 
-            if (isSilentReport) {
+            if (builder.isSendSilently()) {
                 crashReportData.put(IS_SILENT, "true");
             }
 
             // StackTrace hash
             if (crashReportFields.contains(STACK_TRACE_HASH)) {
                 try {
-                    crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(th));
+                    crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(builder.getException()));
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE_HASH data", e);
                 }
@@ -249,7 +234,7 @@ public final class CrashReportDataFactory {
             }
 
             // Collect meminfo
-            if (!(th instanceof OutOfMemoryError) && crashReportFields.contains(DUMPSYS_MEMINFO)) {
+            if (!(builder.getException() instanceof OutOfMemoryError) && crashReportFields.contains(DUMPSYS_MEMINFO)) {
                 try {
                     crashReportData.put(DUMPSYS_MEMINFO, DumpSysCollector.collectMemInfo());
                 } catch (RuntimeException e){
@@ -355,7 +340,7 @@ public final class CrashReportDataFactory {
             // Add custom info, they are all stored in a single field
             if (crashReportFields.contains(CUSTOM_DATA)) {
                 try {
-                    crashReportData.put(CUSTOM_DATA, createCustomInfoString(customData));
+                    crashReportData.put(CUSTOM_DATA, createCustomInfoString(builder.getCustomData()));
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving CUSTOM_DATA data", e);
                 }
@@ -495,7 +480,7 @@ public final class CrashReportDataFactory {
             // Failing thread details
             if (crashReportFields.contains(THREAD_DETAILS)) {
                 try {
-                    crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(brokenThread));
+                    crashReportData.put(THREAD_DETAILS, ThreadCollector.collect(builder.getUncaughtExceptionThread()));
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving THREAD_DETAILS data", e);
                 }

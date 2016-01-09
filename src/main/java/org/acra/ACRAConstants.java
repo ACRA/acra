@@ -74,11 +74,11 @@ public final class ACRAConstants {
     /**
      * This is the identifier (value = 666) use for the status bar notification issued when crashes occur.
      */
-    static final int NOTIF_CRASH_ID = 666;
+    public static final int NOTIF_CRASH_ID = 666;
     /**
      * Number of milliseconds to wait after displaying a toast.
      */
-    static final int TOAST_WAIT_DURATION = 2000;
+    public static final int TOAST_WAIT_DURATION = 2000;
 
     /**
      * A special String value to allow the usage of a pseudo-null default value
