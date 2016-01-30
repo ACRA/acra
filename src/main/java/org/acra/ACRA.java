@@ -22,16 +22,16 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.common.AvailableReportChecker;
-import org.acra.prefs.PrefUtils;
-import org.acra.prefs.SharedPreferencesFactory;
+import org.acra.util.ApplicationStartupProcessor;
+import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
-import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfigurationFactory;
 import org.acra.legacy.ReportMigrator;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
+import org.acra.prefs.PrefUtils;
+import org.acra.prefs.SharedPreferencesFactory;
 
 /**
  * Use this class to initialize the crash reporting feature using
@@ -207,11 +207,19 @@ public class ACRA {
             log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
             errorReporterSingleton = new ErrorReporter(mApplication, configProxy, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
 
-            // Check for pending reports and send them (if enabled).
+            // Check for approved reports and send them (if enabled).
             // NB don't check if senderServiceProcess as it will gather these reports itself.
             if (checkReportsOnApplicationStart && !senderServiceProcess) {
-                final AvailableReportChecker checker = new AvailableReportChecker(mApplication,  config, enableAcra);
-                checker.execute();
+                final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(mApplication,  config);
+                if (config.deleteOldUnsentReportsOnApplicationStart()) {
+                    startupProcessor.deleteUnsentReportsFromOldAppVersion();
+                }
+                if (config.deleteUnapprovedReportsOnApplicationStart()) {
+                    startupProcessor.deleteAllUnapprovedReportsBarOne();
+                }
+                if (enableAcra) {
+                    startupProcessor.sendApprovedReports();
+                }
             }
 
         } catch (ACRAConfigurationException e) {

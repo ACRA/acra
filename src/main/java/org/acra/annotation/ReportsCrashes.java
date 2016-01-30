@@ -400,17 +400,21 @@ public @interface ReportsCrashes {
     String mailTo() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
-     * Controls whether unapproved reports are deleted on application start or
-     * not. Default is true. This is a change from versions of ACRA before 3.2
-     * as in {@link ReportingInteractionMode#NOTIFICATION} mode reports were
-     * previously kept until the user explicitly opens the Notification dialog
-     * AND choose to send or discard the report. Until then, on application
-     * restart, ACRA was issuing a new crash notification for previous reports
-     * pending for approval. This could be misunderstood by the user with a new
-     * crash, resulting in bad appreciation of the application.
-     * 
-     * @return true if ACRA should delete unapproved reports on application
-     *         start.
+     * Controls whether unapproved reports are deleted on application start or not.
+     * Default is true.
+     *
+     * Silent and Toast reports are automatically approved.
+     * Dialog and Notification reports required explicit approval by the user before they are sent.
+     *
+     * On application restart the user is prompted with approval for any unsent reports.
+     * So you generally don't want to accumulate unapproved reports, otherwise you will prompt them multiple times.
+     *
+     * If this is set to true then all unapproved reports bar one will be deleted on application start.
+     * The last report is always retained because that is the report that probably just happened.
+     *
+     * If set to false then on restart the user will be prompted with approval for each unapproved report.
+     *
+     * @return true if ACRA should delete unapproved reports on application start.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
 

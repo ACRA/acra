@@ -21,7 +21,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.*;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.common.AvailableReportChecker;
+import org.acra.util.ApplicationStartupProcessor;
 import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfiguration;
 
@@ -300,8 +300,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @SuppressWarnings( " unused" )
     public void checkReportsOnApplicationStart() {
-        final AvailableReportChecker checker = new AvailableReportChecker(context,  config, reportExecutor.isEnabled());
-        checker.execute();
+        final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(context,  config);
+        if (config.deleteOldUnsentReportsOnApplicationStart()) {
+            startupProcessor.deleteUnsentReportsFromOldAppVersion();
+        }
+        if (config.deleteUnapprovedReportsOnApplicationStart()) {
+            startupProcessor.deleteAllUnapprovedReportsBarOne();
+        }
+        if (reportExecutor.isEnabled()) {
+            startupProcessor.sendApprovedReports();
+        }
     }
 
     /**
