@@ -19,10 +19,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
-import org.acra.file.CrashReportFileNameParser;
-import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
 import org.acra.config.ACRAConfig;
 
@@ -42,7 +39,6 @@ final class ReportDistributor {
 
     private final Context context;
     private final ACRAConfig config;
-    private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
     private final List<ReportSender> reportSenders;
 
     /**
@@ -56,31 +52,6 @@ final class ReportDistributor {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;
-    }
-
-    /**
-     * Flag all pending reports as "approved" by the user. These reports can be sent.
-     */
-    // TODO USe this code to move existing reports to new report folders on first startup after 4.8
-    private void approvePendingReports() {
-        ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
-
-        final CrashReportFinder reportFinder = new CrashReportFinder(context);
-        final String[] reportFileNames = reportFinder.getCrashReportFiles();
-
-        for (String reportFileName : reportFileNames) {
-            if (!fileNameParser.isApproved(reportFileName)) {
-                final File reportFile = new File(context.getFilesDir(), reportFileName);
-
-                final String newName = reportFileName.replace(ACRAConstants.REPORTFILE_EXTENSION,
-                        ACRAConstants.APPROVED_SUFFIX + ACRAConstants.REPORTFILE_EXTENSION);
-
-                final File newFile = new File(context.getFilesDir(), newName);
-                if (!reportFile.renameTo(newFile)) {
-                    ACRA.log.e(LOG_TAG, "Could not rename approved report from " + reportFile + " to " + newFile);
-                }
-            }
-        }
     }
 
     /**

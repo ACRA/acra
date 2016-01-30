@@ -96,11 +96,6 @@ public class SenderService extends IntentService {
     private void markReportsAsApproved() {
         ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
 
-        // TODO Cater for old reports by on first ACRA startup with new version (save that as SharedPef),
-        // By moving all approved reports to approved folder.
-        // Then all unapproved (remaining) reports to unapproved folder.
-        // See SendWorker#approvePendingReports
-
         for (File report : locator.getUnapprovedReports()) {
             final File approvedReport = new File(locator.getApprovedFolder(), report.getName());
             if (!report.renameTo(approvedReport)) {
