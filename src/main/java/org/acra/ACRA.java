@@ -28,6 +28,7 @@ import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfigurationFactory;
+import org.acra.legacy.ReportMigrator;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 
@@ -97,6 +98,8 @@ public class ACRA {
      */
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
+    private static final String PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0 = "acra.legacyAlreadyConvertedTo4.8.0";
+
     private static Application mApplication;
     private static ACRAConfiguration configProxy;
 
@@ -105,7 +108,7 @@ public class ACRA {
 
     // NB don't convert to a local field because then it could be garbage
     // collected and then we would have no PreferenceListener.
-    private static OnSharedPreferenceChangeListener mPrefListener;
+    private static OnSharedPreferenceChangeListener mPrefListener; // TODO consider moving to ErrorReport so it doesn't need to be a static field.
 
     /**
      * <p>
@@ -186,6 +189,21 @@ public class ACRA {
         try {
             config.checkCrashResources();
 
+            // Check prefs to see if we have converted from legacy (pre 4.8.0) ACRA
+            if (!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, false)) {
+                log.i(LOG_TAG, "Migrating unsent ACRA reports to new file locations");
+                // If not then move reports to approved/unapproved folders and mark as converted.
+                new ReportMigrator(app).migrate();
+
+                // Mark as converted.
+                final SharedPreferences.Editor editor = prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    editor.apply();
+                } else {
+                    editor.commit(); // Synchronous, so avoid it if we are SDK 9 or above.
+                }
+            }
+
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
             log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
@@ -225,6 +243,7 @@ public class ACRA {
     /**
      * @return true is ACRA has been initialised.
      */
+    @SuppressWarnings("unused")
     public static boolean isInitialised() {
         return (configProxy != null);
     }

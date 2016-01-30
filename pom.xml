@@ -49,9 +49,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!--
-			NB ACRA supports back to API3.
+			NB ACRA supports back to API 8.
+
 			But in order to compile classes and method that will NOT be used except when the target platform is of sufficient version
-			we need to compile against version 23.
+			we need to compile against version 23. All such classes are in the org.acra.jraf package.
 		-->
         <android.version>23</android.version>
 	</properties>
