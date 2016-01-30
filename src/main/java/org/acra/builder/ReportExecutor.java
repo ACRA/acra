@@ -87,8 +87,16 @@ public final class ReportExecutor {
         }
     }
 
-    public Thread.UncaughtExceptionHandler getDefaultExceptionHandler() {
-        return defaultExceptionHandler;
+    public void handReportToDefaultExceptionHandler(Thread t, Throwable e) {
+        if (defaultExceptionHandler != null) {
+            ACRA.log.e(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
+                    + " - forwarding uncaught Exception on to default ExceptionHandler");
+            defaultExceptionHandler.uncaughtException(t, e);
+        } else {
+            ACRA.log.e(LOG_TAG, "ACRA is disabled for " + context.getPackageName() + " - no default ExceptionHandler");
+            ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + context.getPackageName(), e);
+        }
+
     }
 
     public boolean isEnabled() {

@@ -235,21 +235,14 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        try {
-            // If we're not enabled then just pass the Exception on to the defaultExceptionHandler.
-            if (!reportExecutor.isEnabled()) {
-                // TODO push into ReportExecutor
-                if (reportExecutor.getDefaultExceptionHandler() != null) {
-                    ACRA.log.e(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
-                        + " - forwarding uncaught Exception on to default ExceptionHandler");
-                    reportExecutor.getDefaultExceptionHandler().uncaughtException(t, e);
-                } else {
-                    ACRA.log.e(LOG_TAG, "ACRA is disabled for " + context.getPackageName() + " - no default ExceptionHandler");
-                    ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + context.getPackageName(), e);
-                }
-                return;
-            }
 
+        // If we're not enabled then just pass the Exception on to the defaultExceptionHandler.
+        if (!reportExecutor.isEnabled()) {
+            reportExecutor.handReportToDefaultExceptionHandler(t, e);
+            return;
+        }
+
+        try {
             ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + context.getPackageName(), e);
             ACRA.log.d(LOG_TAG, "Building report");
 
@@ -263,11 +256,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                 .build(reportExecutor);
 
         } catch (Throwable fatality) {
-            // ACRA failed. Prevent any recursive call to
-            // ACRA.uncaughtException(), let the native reporter do its job.
-            if (reportExecutor.getDefaultExceptionHandler() != null) {
-                reportExecutor.getDefaultExceptionHandler().uncaughtException(t, e);
-            }
+            // ACRA failed. Prevent any recursive call to ACRA.uncaughtException(), let the native reporter do its job.
+            ACRA.log.e(LOG_TAG, "ACRA failed to capture the error - handing off to native error reporter" , fatality);
+            reportExecutor.handReportToDefaultExceptionHandler(t, e);
         }
     }
 
@@ -358,7 +349,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         } catch (Exception exceptionInRunnable) {
             ACRA.log.d(LOG_TAG, "Failed to initialize " + exceptionHandlerInitializer + " from #handleException");
         }
-
     }
 
     private static ReportPrimer getReportPrimer(ACRAConfig config) {
