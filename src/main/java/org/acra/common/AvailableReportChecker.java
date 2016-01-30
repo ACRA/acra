@@ -7,8 +7,10 @@ import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.config.ACRAConfig;
-import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.BulkReportDeleter;
+import org.acra.file.CrashReportFileNameParser;
+import org.acra.prefs.PrefUtils;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
@@ -34,7 +36,7 @@ public final class AvailableReportChecker {
     public void execute() {
 
         if (config.deleteOldUnsentReportsOnApplicationStart()) {
-            deleteUnsentReports();
+            deleteUnsentReportsFromOldAppVersion();
         }
 
         final ReportingInteractionMode reportingInteractionMode = config.mode();
@@ -78,22 +80,29 @@ public final class AvailableReportChecker {
     /**
      * Delete any old unsent reports if this is a newer version of the app than when we last started.
      */
-    private void deleteUnsentReports() {
+    private void deleteUnsentReportsFromOldAppVersion() {
         final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
         final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
+        final int appVersion = getAppVersion();
+
+        if (appVersion > lastVersionNr) {
+            final BulkReportDeleter reportDeleter = new BulkReportDeleter(context);
+            reportDeleter.deleteReports(true, 0);
+            reportDeleter.deleteReports(false, 0);
+
+            final SharedPreferences.Editor prefsEditor = prefs.edit();
+            prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, appVersion);
+            PrefUtils.save(prefsEditor);
+        }
+    }
+
+    /**
+     * @return app version or 0 if PackageInfo was not available.
+     */
+    private int getAppVersion() {
         final PackageManagerWrapper packageManagerWrapper = new PackageManagerWrapper(context);
         final PackageInfo packageInfo = packageManagerWrapper.getPackageInfo();
-        if (packageInfo != null) {
-            final boolean newVersion = packageInfo.versionCode > lastVersionNr;
-            if (newVersion) {
-                final BulkReportDeleter reportDeleter = new BulkReportDeleter(context);
-                reportDeleter.deleteReports(true, 0);
-                reportDeleter.deleteReports(false, 0);
-            }
-            final SharedPreferences.Editor prefsEditor = prefs.edit();
-            prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, packageInfo.versionCode);
-            prefsEditor.commit();
-        }
+        return (packageInfo == null) ? 0 : packageInfo.versionCode;
     }
 
     /**

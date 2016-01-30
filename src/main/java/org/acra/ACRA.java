@@ -23,7 +23,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.common.AvailableReportChecker;
-import org.acra.common.SharedPreferencesFactory;
+import org.acra.prefs.PrefUtils;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.ACRAConfig;
@@ -198,11 +199,7 @@ public class ACRA {
 
                 // Mark as converted.
                 final SharedPreferences.Editor editor = prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, true);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-                    editor.apply();
-                } else {
-                    editor.commit(); // Synchronous, so avoid it if we are SDK 9 or above.
-                }
+                PrefUtils.save(editor);
             }
 
             // Initialize ErrorReporter with all required data

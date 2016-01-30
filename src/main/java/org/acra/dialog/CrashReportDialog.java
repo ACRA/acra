@@ -13,7 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.common.SharedPreferencesFactory;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.config.ACRAConfig;
 
 

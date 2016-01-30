@@ -1,4 +1,4 @@
-package org.acra.common;
+package org.acra.prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
