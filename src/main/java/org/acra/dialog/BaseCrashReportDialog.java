@@ -6,8 +6,8 @@ import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
-import org.acra.common.CrashReportPersister;
-import org.acra.common.PendingReportDeleter;
+import org.acra.file.CrashReportPersister;
+import org.acra.file.BulkReportDeleter;
 import org.acra.config.ACRAConfig;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
@@ -67,7 +67,7 @@ public abstract class BaseCrashReportDialog extends Activity {
      * Cancel any pending crash reports.
      */
     protected void cancelReports() {
-        new PendingReportDeleter(getApplicationContext(), false, true, 0).execute();
+        new BulkReportDeleter(getApplicationContext()).deleteReports(false, 0);
     }
 
 

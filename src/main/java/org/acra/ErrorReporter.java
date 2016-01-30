@@ -23,6 +23,7 @@ import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.common.AvailableReportChecker;
 import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
@@ -295,7 +296,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * This method looks for pending reports and does the action required depending on the interaction mode set.
      *
-     * @deprecated since 4.8.0 No replacement.
+     * @deprecated since 4.8.0 No replacement. Whether to send report on app start is controlled by {@link ACRA#init(Application, ACRAConfiguration, boolean)}.
      */
     @SuppressWarnings( " unused" )
     public void checkReportsOnApplicationStart() {

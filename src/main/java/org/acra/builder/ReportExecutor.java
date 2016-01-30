@@ -15,7 +15,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportingInteractionMode;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.common.CrashReportPersister;
+import org.acra.file.CrashReportPersister;
 import org.acra.common.SharedPreferencesFactory;
 import org.acra.config.ACRAConfig;
 import org.acra.dialog.CrashReportDialog;

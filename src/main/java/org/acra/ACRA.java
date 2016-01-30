@@ -112,9 +112,12 @@ public class ACRA {
 
     /**
      * <p>
-     * Initialize ACRA for a given Application. The call to this method should
-     * be placed as soon as possible in the {@link Application#onCreate()}
-     * method.
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#onCreate()} method.
+     *
+     * Uses the configuration as configured with the @ReportCrashes annotation.
+     * Sends any unsent reports.
      * </p>
      * 
      * @param app   Your Application class.
@@ -131,9 +134,11 @@ public class ACRA {
 
     /**
      * <p>
-     * Initialize ACRA for a given Application. The call to this method should
-     * be placed as soon as possible in the {@link Application#onCreate()}
-     * method.
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#onCreate()} method.
+     *
+     * Sends any unsent reports.
      * </p>
      *
      * @param app       Your Application class.
@@ -153,11 +158,7 @@ public class ACRA {
      *
      * @param app       Your Application class.
      * @param config    ACRAConfiguration to manually set up ACRA configuration.
-     * @param checkReportsOnApplicationStart    Whether to invoke
-     *     ErrorReporter.checkReportsOnApplicationStart(). Apps which adjust the
-     *     ReportSenders should set this to false and call
-     *     checkReportsOnApplicationStart() themselves to prevent a potential
-     *     race with the SendWorker and list of ReportSenders.
+     * @param checkReportsOnApplicationStart    Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      * @throws IllegalStateException if it is called more than once.
      */
     public static void init(Application app, ACRAConfiguration config, boolean checkReportsOnApplicationStart){

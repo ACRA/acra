@@ -8,6 +8,7 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.config.ACRAConfig;
 import org.acra.file.CrashReportFileNameParser;
+import org.acra.file.BulkReportDeleter;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
@@ -43,7 +44,7 @@ public final class AvailableReportChecker {
             // NOTIFICATION or DIALOG mode, and there are unapproved reports to
             // send (latest notification/dialog has been ignored: neither accepted nor refused).
             // The application developer has decided that these reports should not be renotified ==> destroy all reports bar one.
-            new PendingReportDeleter(context, false, true, 1).execute();
+            new BulkReportDeleter(context).deleteReports(false, 1);
         }
 
         final CrashReportFinder reportFinder = new CrashReportFinder(context);
@@ -85,7 +86,9 @@ public final class AvailableReportChecker {
         if (packageInfo != null) {
             final boolean newVersion = packageInfo.versionCode > lastVersionNr;
             if (newVersion) {
-                new PendingReportDeleter(context, true, true, 0).execute();
+                final BulkReportDeleter reportDeleter = new BulkReportDeleter(context);
+                reportDeleter.deleteReports(true, 0);
+                reportDeleter.deleteReports(false, 0);
             }
             final SharedPreferences.Editor prefsEditor = prefs.edit();
             prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, packageInfo.versionCode);

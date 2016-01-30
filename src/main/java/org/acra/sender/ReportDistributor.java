@@ -20,7 +20,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
-import org.acra.common.CrashReportPersister;
+import org.acra.file.CrashReportPersister;
 import org.acra.config.ACRAConfig;
 
 import java.io.File;

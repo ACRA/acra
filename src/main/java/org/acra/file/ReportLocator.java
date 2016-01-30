@@ -41,12 +41,10 @@ public final class ReportLocator {
      */
     public File[] getApprovedReports() {
         final File[] reports = getApprovedFolder().listFiles();
-        Arrays.sort(reports, new Comparator<File>() {
-            @Override
-            public int compare(File lhs, File rhs) {
-                return (int) (lhs.lastModified() - rhs.lastModified());
-            }
-        });
+        if (reports == null) {
+            return new File[0];
+        }
+        Arrays.sort(reports, new LastModifiedComparator());
         return reports;
     }
 }

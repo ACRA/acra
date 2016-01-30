@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package org.acra.common;
+package org.acra.file;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
