@@ -2,6 +2,7 @@ package org.acra.common;
 
 import android.content.Context;
 import org.acra.ACRA;
+import org.acra.file.CrashReportFileNameParser;
 
 import java.io.File;
 import java.util.Arrays;

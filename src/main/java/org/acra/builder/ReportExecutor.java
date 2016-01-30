@@ -19,14 +19,16 @@ import org.acra.common.CrashReportPersister;
 import org.acra.common.SharedPreferencesFactory;
 import org.acra.config.ACRAConfig;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.file.ReportLocator;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.io.File;
+import java.util.Date;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
+import static org.acra.ReportField.USER_CRASH_DATE;
 
 /**
  * Collates, records and initiates the sending of a report.
@@ -159,8 +161,8 @@ public final class ReportExecutor {
 
         // Always write the report file
 
-        final String reportFileName = getReportFileName(crashReportData);
-        saveCrashReportFile(reportFileName, crashReportData);
+        final File reportFile = getReportFileName(crashReportData);
+        saveCrashReportFile(reportFile, crashReportData);
 
         if (reportBuilder.isEndApplication() && !config.sendReportsAtShutdown()) {
             endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
@@ -181,7 +183,7 @@ public final class ReportExecutor {
 
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
             ACRA.log.d(LOG_TAG, "Creating Notification.");
-            createNotification(reportFileName, reportBuilder);
+            createNotification(reportFile, reportBuilder);
         }
 
         // This is used to wait for the crash toast to end it's display duration before killing the Application.
@@ -233,8 +235,8 @@ public final class ReportExecutor {
                     // Create a new activity task with the confirmation dialog.
                     // This new task will be persisted on application restart
                     // right after its death.
-                    ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFileName);
-                    final Intent dialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+                    ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
+                    final Intent dialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
                     dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(dialogIntent);
                 }
@@ -306,9 +308,9 @@ public final class ReportExecutor {
      * The action triggered when the notification is selected is to start the
      * {@link CrashReportDialog} Activity.
      *
-     * @param reportFileName Name of the report file to send.
+     * @param reportFile    Report file to send.
      */
-    private void createNotification(String reportFileName, ReportBuilder reportBuilder) {
+    private void createNotification(File reportFile, ReportBuilder reportBuilder) {
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -318,8 +320,8 @@ public final class ReportExecutor {
         final CharSequence tickerText = context.getText(config.resNotifTickerText());
         final long when = System.currentTimeMillis();
 
-        ACRA.log.d(LOG_TAG, "Creating Notification for " + reportFileName);
-        final Intent crashReportDialogIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+        ACRA.log.d(LOG_TAG, "Creating Notification for " + reportFile);
+        final Intent crashReportDialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
         final PendingIntent contentIntent = PendingIntent.getActivity(context, mNotificationCounter++, crashReportDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         final CharSequence contentTitle = context.getText(config.resNotifTitle());
@@ -341,7 +343,7 @@ public final class ReportExecutor {
         // The deleteIntent is invoked when the user swipes away the Notification.
         // In this case we invoke the CrashReportDialog with EXTRA_FORCE_CANCEL==true
         // which will cause BaseCrashReportDialog to clear the crash report and finish itself.
-        final Intent deleteIntent = createCrashReportDialogIntent(reportFileName, reportBuilder);
+        final Intent deleteIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
         deleteIntent.putExtra(ACRAConstants.EXTRA_FORCE_CANCEL, true);
         notification.deleteIntent = PendingIntent.getActivity(context, -1, deleteIntent, 0);
 
@@ -349,19 +351,22 @@ public final class ReportExecutor {
         notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification);
     }
 
-    private String getReportFileName(CrashReportData crashData) {
-        final Calendar now = new GregorianCalendar();
-        final long timestamp = now.getTimeInMillis();
+    private File getReportFileName(CrashReportData crashData) {
+        final String timestamp = crashData.getProperty(USER_CRASH_DATE);
         final String isSilent = crashData.getProperty(IS_SILENT);
-        return "" + timestamp + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "")
+        final String fileName =  ""
+                + (timestamp != null ? timestamp : new Date().getTime()) // Need to check for null because old version of ACRA did not always capture USER_CRASH_DATE
+                + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "")
                 + ACRAConstants.REPORTFILE_EXTENSION;
+        final ReportLocator reportLocator = new ReportLocator(context);
+        return new File(reportLocator.getUnapprovedFolder(), fileName);
     }
 
     /**
      * When a report can't be sent, it is saved here in a file in the root of
      * the application private directory.
      *
-     * @param fileName
+     * @param file
      *            In a few rare cases, we write the report again with additional
      *            data (user comment for example). In such cases, you can
      *            provide the already existing file name here to overwrite the
@@ -372,11 +377,11 @@ public final class ReportExecutor {
      *            user comment. If null, the default current crash data are
      *            used.
      */
-    private void saveCrashReportFile(String fileName, CrashReportData crashData) {
+    private void saveCrashReportFile(File file, CrashReportData crashData) {
         try {
-            ACRA.log.d(LOG_TAG, "Writing crash report file " + fileName + ".");
-            final CrashReportPersister persister = new CrashReportPersister(context);
-            persister.store(crashData, fileName);
+            ACRA.log.d(LOG_TAG, "Writing crash report file " + file);
+            final CrashReportPersister persister = new CrashReportPersister();
+            persister.store(crashData, file);
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "An error occurred while writing the report file...", e);
         }
@@ -386,13 +391,13 @@ public final class ReportExecutor {
     /**
      * Creates an Intent that can be used to create and show a CrashReportDialog.
      *
-     * @param reportFileName    Name of the error report to display in the crash report dialog.
+     * @param reportFile        Error report file to display in the crash report dialog.
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
-    private Intent createCrashReportDialogIntent(String reportFileName, ReportBuilder reportBuilder) {
-        ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFileName + " exception=" + reportBuilder.getException());
+    private Intent createCrashReportDialogIntent(File reportFile, ReportBuilder reportBuilder) {
+        ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, config.reportDialogClass());
-        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME, reportFileName);
+        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.getException());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_CONFIG, config);
         return dialogIntent;

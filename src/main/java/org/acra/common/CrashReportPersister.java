@@ -19,21 +19,12 @@
 
 package org.acra.common;
 
-import android.content.Context;
-
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.collector.CollectorUtil;
 import org.acra.collector.CrashReportData;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -48,27 +39,16 @@ public final class CrashReportPersister {
     private static final int NONE = 0, SLASH = 1, UNICODE = 2, CONTINUE = 3, KEY_DONE = 4, IGNORE = 5;
     private static final String LINE_SEPARATOR = "\n";
 
-    private final Context context;
-
-    public CrashReportPersister(Context context) {
-        this.context = context;
-    }
-
     /**
-     * Loads properties from the specified {@code InputStream}. The encoding is
-     * ISO8859-1.
+     * Loads properties from the specified {@code InputStream}. The encoding is ISO8859-1.
      *
-     * @param fileName  Name of the report file from which to load the CrashData.
+     * @param file  Report file from which to load the CrashData.
      * @return CrashReportData read from the supplied InputStream.
      * @throws java.io.IOException if error occurs during reading from the {@code InputStream}.
      */
-    public CrashReportData load(String fileName) throws IOException {
+    public CrashReportData load(File file) throws IOException {
 
-        final FileInputStream in = context.openFileInput(fileName);
-        if (in == null) {
-            throw new IllegalArgumentException("Invalid crash report fileName : " + fileName);
-        }
-
+        final FileInputStream in = new FileInputStream(file);
         try {
             final BufferedInputStream bis = new BufferedInputStream(in, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
             return load(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
@@ -82,13 +62,13 @@ public final class CrashReportPersister {
      * putting the specified comment at the beginning. The output from this
      * method is suitable for being read by the load() method.
      *
-     * @param crashData    CrashReportData to save.
-     * @param fileName      Name of the file to which to store the CrashReportData.
+     * @param crashData     CrashReportData to save.
+     * @param file          File into which to store the CrashReportData.
      * @throws java.io.IOException if the CrashReportData could not be written to the OutputStream.
      */
-    public void store(CrashReportData crashData, String fileName) throws IOException {
+    public void store(CrashReportData crashData, File file) throws IOException {
 
-        final OutputStream out = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+        final OutputStream out = new FileOutputStream(file);
         try {
             final StringBuilder buffer = new StringBuilder(200);
             final OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1"); //$NON-NLS-1$

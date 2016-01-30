@@ -51,6 +51,7 @@ public final class ACRAConstants {
      * latest generated report file in order to be able to associate the user
      * comment.
      */
+    public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
     public static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
     /**

@@ -190,21 +190,27 @@ public final class CrashReportDataFactory {
                 crashReportData.put(IS_SILENT, "true");
             }
 
+            // Always generate report uuid
+            try {
+                crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
+            } catch (RuntimeException e){
+                ACRA.log.e(LOG_TAG, "Error while retrieving REPORT_ID data", e);
+            }
+
+            // Always generate crash time
+            try {
+                final Calendar curDate = new GregorianCalendar();
+                crashReportData.put(ReportField.USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
+            } catch (RuntimeException e){
+                ACRA.log.e(LOG_TAG, "Error while retrieving USER_CRASH_DATE data", e);
+            }
+
             // StackTrace hash
             if (crashReportFields.contains(STACK_TRACE_HASH)) {
                 try {
                     crashReportData.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(builder.getException()));
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving STACK_TRACE_HASH data", e);
-                }
-            }
-
-            // Generate report uuid
-            if (crashReportFields.contains(REPORT_ID)) {
-                try {
-                    crashReportData.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
-                } catch (RuntimeException e){
-                    ACRA.log.e(LOG_TAG, "Error while retrieving REPORT_ID data", e);
                 }
             }
 
@@ -324,16 +330,6 @@ public final class CrashReportDataFactory {
                     crashReportData.put(DISPLAY, DisplayManagerCollector.collectDisplays(context));
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving DISPLAY data", e);
-                }
-            }
-
-            // User crash date with local timezone
-            if (crashReportFields.contains(USER_CRASH_DATE)) {
-                try {
-                    final Calendar curDate = new GregorianCalendar();
-                    crashReportData.put(USER_CRASH_DATE, ReportUtils.getTimeString(curDate));
-                } catch (RuntimeException e){
-                    ACRA.log.e(LOG_TAG, "Error while retrieving USER_CRASH_DATE data", e);
                 }
             }
 

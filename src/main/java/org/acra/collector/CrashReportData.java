@@ -26,10 +26,10 @@ import org.json.JSONObject;
 
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
+ *
  * This is basically the source of {@link Properties} adapted to extend an
  * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
- * amounts of android time in the generation of a date comment when storing to
- * file.
+ * amounts of android time in the generation of a date comment when storing to file.
  */
 public final class CrashReportData extends EnumMap<ReportField, String> {
 

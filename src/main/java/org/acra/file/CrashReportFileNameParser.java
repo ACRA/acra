@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.common;
+package org.acra.file;
 
 import org.acra.ACRAConstants;
 import org.acra.ErrorReporter;

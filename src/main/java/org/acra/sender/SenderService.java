@@ -3,8 +3,12 @@ package org.acra.sender;
 import android.app.IntentService;
 import android.content.Intent;
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.file.CrashReportFileNameParser;
 import org.acra.config.ACRAConfig;
+import org.acra.file.ReportLocator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +20,8 @@ public class SenderService extends IntentService {
     public static final String EXTRA_APPROVE_REPORTS_FIRST = "approveReportsFirst";
     public static final String EXTRA_REPORT_SENDER_FACTORIES = "reportSenderFactories";
     public static final String EXTRA_ACRA_CONFIG = "acraConfig";
+
+    private final ReportLocator locator = new ReportLocator(this);
 
     public SenderService() {
         super("ACRA SenderService");
@@ -36,10 +42,36 @@ public class SenderService extends IntentService {
         ACRA.log.v(LOG_TAG, "About to start sending reports from SenderService");
         try {
             final List<ReportSender> senderInstances = getSenderInstances(config, senderFactoryClasses);
-            new SendWorker(this, config, senderInstances, onlySendSilentReports, approveReportsFirst).run();
+
+            // Mark reports as approved
+            if (approveReportsFirst) {
+                markReportsAsApproved();
+            }
+
+            // Get approved reports
+            final File[] reports = locator.getApprovedReports();
+
+            final ReportDistributor reportDistributor = new ReportDistributor(this, config, senderInstances);
+
+            // Iterate over approved reports and send via all Senders.
+            int reportsSentCount = 0; // Use to rate limit sending
+            final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
+            for (final File report : reports) {
+                if (onlySendSilentReports && !fileNameParser.isSilent(report.getName())) {
+                    continue;
+                }
+
+                if (reportsSentCount >= ACRAConstants.MAX_SEND_REPORTS) {
+                    break; // send only a few reports to avoid overloading the network
+                }
+
+                reportDistributor.distribute(report);
+            }
         } catch (Exception e) {
             ACRA.log.e(ACRA.class.getSimpleName(), "", e);
         }
+
+        ACRA.log.d(LOG_TAG, "Finished sending reports from SenderService");
     }
 
     private List<ReportSender> getSenderInstances(ACRAConfig config, Class<? extends ReportSenderFactory>[] factoryClasses) {
@@ -56,5 +88,24 @@ public class SenderService extends IntentService {
             }
         }
         return reportSenders;
+    }
+
+    /**
+     * Flag all pending reports as "approved" by the user. These reports can be sent.
+     */
+    private void markReportsAsApproved() {
+        ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
+
+        // TODO Cater for old reports by on first ACRA startup with new version (save that as SharedPef),
+        // By moving all approved reports to approved folder.
+        // Then all unapproved (remaining) reports to unapproved folder.
+        // See SendWorker#approvePendingReports
+
+        for (File report : locator.getUnapprovedReports()) {
+            final File approvedReport = new File(locator.getApprovedFolder(), report.getName());
+            if (!report.renameTo(approvedReport)) {
+                ACRA.log.e(LOG_TAG, "Could not rename approved report from " + report + " to " + approvedReport);
+            }
+        }
     }
 }

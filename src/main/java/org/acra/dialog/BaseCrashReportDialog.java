@@ -12,6 +12,7 @@ import org.acra.config.ACRAConfig;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -35,7 +36,7 @@ import static org.acra.ReportField.USER_EMAIL;
  */
 public abstract class BaseCrashReportDialog extends Activity {
 
-    private String mReportFileName;
+    private File reportFile;
     private ACRAConfig config;
 
     @Override
@@ -54,9 +55,9 @@ public abstract class BaseCrashReportDialog extends Activity {
             return;
         }
 
-        mReportFileName = getIntent().getStringExtra(ACRAConstants.EXTRA_REPORT_FILE_NAME);
-        ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + mReportFileName);
-        if (mReportFileName == null) {
+        reportFile = (File) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
+        ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + reportFile);
+        if (reportFile == null) {
             finish();
         }
     }
@@ -76,13 +77,13 @@ public abstract class BaseCrashReportDialog extends Activity {
      * @param userEmail     Email address (may be null) provided by the client.
      */
     protected void sendCrash(String comment, String userEmail) {
-        final CrashReportPersister persister = new CrashReportPersister(getApplicationContext());
+        final CrashReportPersister persister = new CrashReportPersister();
         try {
-            ACRA.log.d(LOG_TAG, "Add user comment to " + mReportFileName);
-            final CrashReportData crashData = persister.load(mReportFileName);
+            ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+            final CrashReportData crashData = persister.load(reportFile);
             crashData.put(USER_COMMENT, comment == null ? "" : comment);
             crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
-            persister.store(crashData, mReportFileName);
+            persister.store(crashData, reportFile);
         } catch (IOException e) {
             ACRA.log.w(LOG_TAG, "User comment not added: ", e);
         }

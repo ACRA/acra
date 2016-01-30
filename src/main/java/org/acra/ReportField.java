@@ -27,7 +27,7 @@ import android.content.res.Configuration;
  */
 public enum ReportField {
     /**
-     * Report Identifier
+     * Report Identifier.
      */
     REPORT_ID,
     /**

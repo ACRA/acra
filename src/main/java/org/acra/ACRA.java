@@ -189,9 +189,7 @@ public class ACRA {
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
             log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
-            final ErrorReporter errorReporter = new ErrorReporter(mApplication, configProxy, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
-
-            errorReporterSingleton = errorReporter;
+            errorReporterSingleton = new ErrorReporter(mApplication, configProxy, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
 
             // Check for pending reports and send them (if enabled).
             // NB don't check if senderServiceProcess as it will gather these reports itself.
@@ -222,6 +220,13 @@ public class ACRA {
         // NPE in ErrorReporter.disable() because
         // the context could be null at this moment.
         prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+    }
+
+    /**
+     * @return true is ACRA has been initialised.
+     */
+    public static boolean isInitialised() {
+        return (configProxy != null);
     }
 
     /**

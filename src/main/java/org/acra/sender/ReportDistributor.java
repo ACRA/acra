@@ -20,67 +20,48 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.ErrorReporter;
 import org.acra.collector.CrashReportData;
-import org.acra.common.CrashReportFileNameParser;
+import org.acra.file.CrashReportFileNameParser;
 import org.acra.common.CrashReportFinder;
 import org.acra.common.CrashReportPersister;
 import org.acra.config.ACRAConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Checks and send reports on a separate Thread.
+ * Distributes reports to all Senders.
  *
- * @author Kevin Gaudin
+ * @author William Ferguson
+ * @since 4.8.0
  */
-final class SendWorker {
+final class ReportDistributor {
 
     private final Context context;
     private final ACRAConfig config;
-    private final boolean sendOnlySilentReports;
-    private final boolean approvePendingReports;
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
     private final List<ReportSender> reportSenders;
 
     /**
-     * Creates a new {@link SendWorker} to try sending pending reports.
+     * Creates a new {@link ReportDistributor} to try sending pending reports.
      *
      * @param context               ApplicationContext in which the reports are being sent.
      * @param config                Configuration to use while sending.
      * @param reportSenders         List of ReportSender to use to send the crash reports.
-     * @param sendOnlySilentReports If set to true, will send only reports which have been explicitly declared as silent by the application developer.
-     * @param approvePendingReports If this SendWorker should approve pending reports before sending any reports.
      */
-    public SendWorker(Context context, ACRAConfig config, List<ReportSender> reportSenders, boolean sendOnlySilentReports, boolean approvePendingReports) {
+    public ReportDistributor(Context context, ACRAConfig config, List<ReportSender> reportSenders) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;
-        this.sendOnlySilentReports = sendOnlySilentReports;
-        this.approvePendingReports = approvePendingReports;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Thread#run()
-     */
-    public void run() {
-        if (approvePendingReports) {
-            approvePendingReports();
-        }
-        checkAndSendReports(context, sendOnlySilentReports);
     }
 
     /**
-     * Flag all pending reports as "approved" by the user. These reports can be
-     * sent.
+     * Flag all pending reports as "approved" by the user. These reports can be sent.
      */
+    // TODO USe this code to move existing reports to new report folders on first startup after 4.8
     private void approvePendingReports() {
         ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
 
@@ -91,13 +72,9 @@ final class SendWorker {
             if (!fileNameParser.isApproved(reportFileName)) {
                 final File reportFile = new File(context.getFilesDir(), reportFileName);
 
-                // TODO look into how this could cause a file to go from
-                // -approved.stacktrace to -approved-approved.stacktrace
                 final String newName = reportFileName.replace(ACRAConstants.REPORTFILE_EXTENSION,
                         ACRAConstants.APPROVED_SUFFIX + ACRAConstants.REPORTFILE_EXTENSION);
 
-                // TODO Look into whether rename is atomic. Is there a better
-                // option?
                 final File newFile = new File(context.getFilesDir(), newName);
                 if (!reportFile.renameTo(newFile)) {
                     ACRA.log.e(LOG_TAG, "Could not rename approved report from " + reportFile + " to " + newFile);
@@ -107,57 +84,30 @@ final class SendWorker {
     }
 
     /**
-     * Send pending reports.
+     * Send report via all senders.
      *
-     * @param context
-     *            The application context.
-     * @param sendOnlySilentReports
-     *            Send only reports explicitly declared as SILENT by the
-     *            developer (sent via
-     *            {@link ErrorReporter#handleSilentException(Throwable)}.
+     * @param reportFile    Report to send.
      */
-    private void checkAndSendReports(Context context, boolean sendOnlySilentReports) {
-        ACRA.log.d(LOG_TAG, "#checkAndSendReports - start");
-        final CrashReportFinder reportFinder = new CrashReportFinder(context);
-        final String[] reportFiles = reportFinder.getCrashReportFiles();
-        Arrays.sort(reportFiles);
+    public void distribute(File reportFile) {
 
-        int reportsSentCount = 0;
-
-        for (String curFileName : reportFiles) {
-            if (sendOnlySilentReports && !fileNameParser.isSilent(curFileName)) {
-                continue;
-            }
-
-            if (reportsSentCount >= ACRAConstants.MAX_SEND_REPORTS) {
-                break; // send only a few reports to avoid overloading the network
-            }
-
-            ACRA.log.i(LOG_TAG, "Sending file " + curFileName);
-            try {
-                final CrashReportPersister persister = new CrashReportPersister(context);
-                final CrashReportData previousCrashReport = persister.load(curFileName);
-                sendCrashReport(previousCrashReport);
-                deleteFile(context, curFileName);
-            } catch (RuntimeException e) {
-                ACRA.log.e(LOG_TAG, "Failed to send crash reports for " + curFileName, e);
-                deleteFile(context, curFileName);
-                break; // Something really unexpected happened. Don't try to
-                       // send any more reports now.
-            } catch (IOException e) {
-                ACRA.log.e(LOG_TAG, "Failed to load crash report for " + curFileName, e);
-                deleteFile(context, curFileName);
-                break; // Something unexpected happened when reading the crash
-                       // report. Don't try to send any more reports now.
-            } catch (ReportSenderException e) {
-                ACRA.log.e(LOG_TAG, "Failed to send crash report for " + curFileName, e);
-                // An issue occurred while sending this report but we can still try to
-                // send other reports. Report sending is limited by ACRAConstants.MAX_SEND_REPORTS
-                // so there's not much to fear about overloading a failing server.
-            }
-            reportsSentCount++;
+        ACRA.log.i(LOG_TAG, "Sending report " + reportFile );
+        try {
+            final CrashReportPersister persister = new CrashReportPersister();
+            final CrashReportData previousCrashReport = persister.load(reportFile);
+            sendCrashReport(previousCrashReport);
+            deleteFile(reportFile);
+        } catch (RuntimeException e) {
+            ACRA.log.e(LOG_TAG, "Failed to send crash reports for " + reportFile, e);
+            deleteFile(reportFile);
+        } catch (IOException e) {
+            ACRA.log.e(LOG_TAG, "Failed to load crash report for " + reportFile, e);
+            deleteFile(reportFile);
+        } catch (ReportSenderException e) {
+            ACRA.log.e(LOG_TAG, "Failed to send crash report for " + reportFile, e);
+            // An issue occurred while sending this report but we can still try to
+            // send other reports. Report sending is limited by ACRAConstants.MAX_SEND_REPORTS
+            // so there's not much to fear about overloading a failing server.
         }
-        ACRA.log.d(LOG_TAG, "#checkAndSendReports - finish");
     }
 
     /**
@@ -165,10 +115,8 @@ final class SendWorker {
      * sender completed its job, the report is considered as sent and will not
      * be sent again for failing senders.
      *
-     * @param errorContent
-     *            Crash data.
-     * @throws ReportSenderException
-     *             if unable to send the crash report.
+     * @param errorContent  Crash data.
+     * @throws ReportSenderException if unable to send the crash report.
      */
     private void sendCrashReport(CrashReportData errorContent) throws ReportSenderException {
         if (!isDebuggable() || config.sendReportsInDevMode()) {
@@ -203,10 +151,10 @@ final class SendWorker {
         }
     }
 
-    private void deleteFile(Context context, String fileName) {
-        final boolean deleted = context.deleteFile(fileName);
+    private void deleteFile(File file) {
+        final boolean deleted = file.delete();
         if (!deleted) {
-            ACRA.log.w(LOG_TAG, "Could not delete error report : " + fileName);
+            ACRA.log.w(LOG_TAG, "Could not delete error report : " + file);
         }
     }
 

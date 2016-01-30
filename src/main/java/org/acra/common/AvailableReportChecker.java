@@ -7,11 +7,10 @@ import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.config.ACRAConfig;
+import org.acra.file.CrashReportFileNameParser;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ToastSender;
-
-import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Looks for any existing reports and starts sending them.
