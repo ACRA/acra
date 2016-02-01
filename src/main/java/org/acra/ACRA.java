@@ -259,7 +259,7 @@ public class ACRA {
      */
     private static boolean isACRASenderServiceProcess(Application app) {
         final String processName = getCurrentProcessName(app);
-        log.e(LOG_TAG, "ACRA processName='" + processName + "'");
+        log.i(LOG_TAG, "ACRA processName='" + processName + "'");
         return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
 
