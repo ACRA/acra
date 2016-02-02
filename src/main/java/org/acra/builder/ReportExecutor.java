@@ -89,7 +89,7 @@ public final class ReportExecutor {
 
     public void handReportToDefaultExceptionHandler(Thread t, Throwable e) {
         if (defaultExceptionHandler != null) {
-            ACRA.log.e(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
+            ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
                     + " - forwarding uncaught Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(t, e);
         } else {

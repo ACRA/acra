@@ -84,7 +84,7 @@ public class JSONReportBuilder {
                             addJSONFromProperty(subObject, line);
                         }
                     } catch (IOException e) {
-                        ACRA.log.e(LOG_TAG, "Error while converting " + key.name() + " to JSON.", e);
+                        ACRA.log.w(LOG_TAG, "Error while converting " + key.name() + " to JSON.", e);
                     }
                     jsonReport.accumulate(key.name(), subObject);
                 } else {
@@ -215,7 +215,7 @@ public class JSONReportBuilder {
                     }
 
                     if (intermediate == null) {
-                        ACRA.log.e(LOG_TAG, "Unknown json subtree type, see issue #186");
+                        ACRA.log.w(LOG_TAG, "Unknown json subtree type, see issue #186");
                         // We should never get here, but if we do, drop this value to still send the report
                         return;
                     }

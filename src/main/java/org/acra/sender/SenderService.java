@@ -68,7 +68,7 @@ public class SenderService extends IntentService {
                 reportDistributor.distribute(report);
             }
         } catch (Exception e) {
-            ACRA.log.e(ACRA.class.getSimpleName(), "", e);
+            ACRA.log.e(LOG_TAG, "", e);
         }
 
         ACRA.log.d(LOG_TAG, "Finished sending reports from SenderService");
@@ -99,7 +99,7 @@ public class SenderService extends IntentService {
         for (File report : locator.getUnapprovedReports()) {
             final File approvedReport = new File(locator.getApprovedFolder(), report.getName());
             if (!report.renameTo(approvedReport)) {
-                ACRA.log.e(LOG_TAG, "Could not rename approved report from " + report + " to " + approvedReport);
+                ACRA.log.w(LOG_TAG, "Could not rename approved report from " + report + " to " + approvedReport);
             }
         }
     }
