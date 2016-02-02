@@ -29,8 +29,7 @@ public final class LastActivityManager {
             ApplicationHelper.registerActivityLifecycleCallbacks(application, new ActivityLifecycleCallbacksCompat() {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
                     if (!(activity instanceof BaseCrashReportDialog)) {
                         // Ignore CrashReportDialog because we want the last
                         // application Activity that was started so that we can explicitly kill it off.
@@ -40,38 +39,32 @@ public final class LastActivityManager {
 
                 @Override
                 public void onActivityStarted(Activity activity) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "onActivityStarted " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityStarted " + activity.getClass());
                 }
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "onActivityResumed " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityResumed " + activity.getClass());
                 }
 
                 @Override
                 public void onActivityPaused(Activity activity) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "onActivityPaused " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityPaused " + activity.getClass());
                 }
 
                 @Override
                 public void onActivityStopped(Activity activity) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "onActivityStopped " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityStopped " + activity.getClass());
                 }
 
                 @Override
                 public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.i(LOG_TAG, "onActivitySaveInstanceState " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivitySaveInstanceState " + activity.getClass());
                 }
 
                 @Override
                 public void onActivityDestroyed(Activity activity) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.i(LOG_TAG, "onActivityDestroyed " + activity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityDestroyed " + activity.getClass());
                 }
             });
         }

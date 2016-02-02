@@ -63,7 +63,7 @@ public final class PackageManagerWrapper {
         try {
             return pm.getPackageInfo(context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
-            ACRA.log.v(LOG_TAG, "Failed to find PackageInfo for current App : " + context.getPackageName());
+            ACRA.log.w(LOG_TAG, "Failed to find PackageInfo for current App : " + context.getPackageName());
             return null;
         } catch (RuntimeException e) {
             // To catch RuntimeException("Package manager has died") that can occur on some version of Android,

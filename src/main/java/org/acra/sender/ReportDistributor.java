@@ -96,9 +96,9 @@ final class ReportDistributor {
             String failedSender = null;
             for (ReportSender sender : reportSenders) {
                 try {
-                    ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
                     sender.send(context, errorContent);
-                    ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
 
                     // If at least one sender worked, don't re-send the report later.
                     sentAtLeastOnce = true;

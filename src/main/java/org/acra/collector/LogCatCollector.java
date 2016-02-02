@@ -100,7 +100,7 @@ class LogCatCollector {
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
             bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
 
-            ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
             // Dump stderr to null
             new Thread(new Runnable() {

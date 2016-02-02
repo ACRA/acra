@@ -186,7 +186,7 @@ public class HttpSender implements ReportSender {
 
         try {
             URL reportUrl = mFormUri == null ? new URL(config.formUri()) : new URL(mFormUri.toString());
-            ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
             final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
             final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();

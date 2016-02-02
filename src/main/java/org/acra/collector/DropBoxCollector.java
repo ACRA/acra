@@ -15,17 +15,15 @@
  */
 package org.acra.collector;
 
-import java.lang.reflect.InvocationTargetException;
+import android.content.Context;
+import android.text.format.Time;
+import org.acra.ACRA;
+import org.acra.config.ACRAConfig;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.acra.ACRA;
-
-import android.content.Context;
-import android.text.format.Time;
-import org.acra.config.ACRAConfig;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -117,18 +115,8 @@ final class DropBoxCollector {
             }
             return dropboxContent.toString();
 
-        } catch (SecurityException e) {
-            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
-        } catch (NoSuchMethodException e) {
-            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
-        } catch (IllegalArgumentException e) {
-            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
-        } catch (IllegalAccessException e) {
-            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
-        } catch (InvocationTargetException e) {
-            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
-        } catch (NoSuchFieldException e) {
-            ACRA.log.i(LOG_TAG, "DropBoxManager not available.");
+        } catch (Exception e) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");
         }
 
         return NO_RESULT;

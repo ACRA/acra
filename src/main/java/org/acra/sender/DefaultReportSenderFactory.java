@@ -37,7 +37,7 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
             return new NullSender();
         } else if (config.formUri() != null && !"".equals(config.formUri())) {
             // If formUri is set, instantiate a sender for a generic HTTP POST form with default mapping.
-            ACRA.log.i(LOG_TAG, context.getPackageName() + " reports will be sent by Http.");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, context.getPackageName() + " reports will be sent by Http.");
             return new HttpSenderFactory().create(context, config);
         } else {
             return new NullSender();

@@ -135,13 +135,13 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
 
         final ReportField[] fieldsList;
         if (customReportFields.length != 0) {
-            ACRA.log.d(LOG_TAG, "Using custom Report Fields");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             fieldsList = customReportFields;
         } else if (mailTo() == null || "".equals(mailTo())) {
-            ACRA.log.d(LOG_TAG, "Using default Report Fields");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Report Fields");
             fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
         } else {
-            ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
             fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
         }
         return Arrays.asList(fieldsList);

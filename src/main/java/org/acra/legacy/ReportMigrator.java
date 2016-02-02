@@ -26,6 +26,8 @@ public final class ReportMigrator {
     }
 
     public void migrate() {
+        ACRA.log.i(LOG_TAG, "Migrating unsent ACRA reports to new file locations");
+
         final File[] reportFiles = getCrashReportFiles();
 
         for (final File file : reportFiles) {
@@ -33,11 +35,11 @@ public final class ReportMigrator {
             final String fileName = file.getName();
             if (fileNameParser.isApproved(fileName)) {
                 if (file.renameTo(new File(reportLocator.getApprovedFolder(), fileName))) {
-                    ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
                 }
             } else {
                 if (file.renameTo(new File(reportLocator.getUnapprovedFolder(), fileName))) {
-                    ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
                 }
             }
         }
@@ -56,7 +58,7 @@ public final class ReportMigrator {
             return new File[0];
         }
 
-        ACRA.log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
 
         // Filter for ".stacktrace" files
         final FilenameFilter filter = new FilenameFilter() {

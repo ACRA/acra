@@ -27,7 +27,7 @@ public class SenderServiceStarter {
      * @param approveReportsFirst   If true then approve unapproved reports first.
      */
     public void startService(boolean onlySendSilentReports, boolean approveReportsFirst) {
-        ACRA.log.v(LOG_TAG, "About to start SenderService");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start SenderService");
         final Intent intent = new Intent(context, SenderService.class);
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
         intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);

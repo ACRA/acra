@@ -146,7 +146,7 @@ public final class CrashReportDataFactory {
             // Though, we can call logcat without any permission and still get traces related to our app.
             final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.JELLY_BEAN);
             if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
-                ACRA.log.i(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
                 final LogCatCollector logCatCollector = new LogCatCollector();
                 if (crashReportFields.contains(LOGCAT)) {
                     try {
@@ -177,7 +177,7 @@ public final class CrashReportDataFactory {
                     }
                 }
             } else {
-                ACRA.log.i(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "READ_LOGS not allowed. ACRA will not include LogCat and DropBox data.");
             }
 
             try {

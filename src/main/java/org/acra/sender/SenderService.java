@@ -39,7 +39,7 @@ public class SenderService extends IntentService {
 
         final ACRAConfig config = (ACRAConfig) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
 
-        ACRA.log.v(LOG_TAG, "About to start sending reports from SenderService");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
             final List<ReportSender> senderInstances = getSenderInstances(config, senderFactoryClasses);
 
@@ -71,7 +71,7 @@ public class SenderService extends IntentService {
             ACRA.log.e(LOG_TAG, "", e);
         }
 
-        ACRA.log.d(LOG_TAG, "Finished sending reports from SenderService");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished sending reports from SenderService");
     }
 
     private List<ReportSender> getSenderInstances(ACRAConfig config, Class<? extends ReportSenderFactory>[] factoryClasses) {
@@ -94,7 +94,7 @@ public class SenderService extends IntentService {
      * Flag all pending reports as "approved" by the user. These reports can be sent.
      */
     private void markReportsAsApproved() {
-        ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
 
         for (File report : locator.getUnapprovedReports()) {
             final File approvedReport = new File(locator.getApprovedFolder(), report.getName());
