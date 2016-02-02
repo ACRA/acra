@@ -130,28 +130,26 @@ public final class HttpRequest {
         outputStream.flush();
         outputStream.close();
 
-        ACRA.log.d(LOG_TAG,"Sending request to " + url);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG,"Sending request to " + url);
         if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
         if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, content);
 
         final int responseCode = urlConnection.getResponseCode();
-        ACRA.log.d(LOG_TAG,"Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG,"Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
         if ((responseCode >= 200) && (responseCode < 300)) {
             // All is good
-            ACRA.log.d(LOG_TAG,"Request received by server");
+            ACRA.log.i(LOG_TAG,"Request received by server");
         } else if (responseCode == 403) {
             // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
-            ACRA.log.d(LOG_TAG, "Data validation error on server - request will be discarded");
+            ACRA.log.w(LOG_TAG, "Data validation error on server - request will be discarded");
         } else if (responseCode == 409) {
             // 409 means that the report has been received already. So we can discard it.
-            ACRA.log.d(LOG_TAG, "Server has already received this post - request will be discarded");
+            ACRA.log.w(LOG_TAG, "Server has already received this post - request will be discarded");
         } else if ((responseCode >= 400) && (responseCode < 600)) {
-            if (ACRA.DEV_LOGGING) {
-                ACRA.log.d(LOG_TAG, "Could not send ACRA Post");
-            }
+            ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
             throw new IOException("Host returned error code " + responseCode);
         } else {
-            ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded");
+            ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
         }
 
         urlConnection.disconnect();

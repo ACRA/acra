@@ -26,7 +26,7 @@ public final class ToastSender {
         try {
             Toast.makeText(context, toastResourceId, toastLength).show();
         } catch (RuntimeException e) {
-            ACRA.log.e(LOG_TAG, "Could not send crash Toast", e);
+            ACRA.log.w(LOG_TAG, "Could not send crash Toast", e);
         }
     }
 }

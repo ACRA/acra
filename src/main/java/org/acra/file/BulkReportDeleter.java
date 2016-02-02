@@ -32,7 +32,7 @@ public final class BulkReportDeleter {
 
         for (int i = 0; i < files.length - nrToKeep; i++) {
             if (!files[i].delete()) {
-                ACRA.log.e(LOG_TAG, "Could not delete report : " + files[i]);
+                ACRA.log.w(LOG_TAG, "Could not delete report : " + files[i]);
             }
         }
     }

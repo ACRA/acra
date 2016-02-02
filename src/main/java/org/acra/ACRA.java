@@ -45,7 +45,7 @@ import org.acra.prefs.SharedPreferencesFactory;
  */
 public class ACRA {
 
-    public static final boolean DEV_LOGGING = false; // Should be false for release.
+    public static boolean DEV_LOGGING = false; // Should be false for release.
 
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
@@ -166,7 +166,7 @@ public class ACRA {
 
         final boolean senderServiceProcess = isACRASenderServiceProcess(app);
         if (senderServiceProcess) {
-            log.i(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
+            if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
         }
 
         boolean supportedAndroidVersion = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO);
@@ -193,7 +193,6 @@ public class ACRA {
 
             // Check prefs to see if we have converted from legacy (pre 4.8.0) ACRA
             if (!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, false)) {
-                log.i(LOG_TAG, "Migrating unsent ACRA reports to new file locations");
                 // If not then move reports to approved/unapproved folders and mark as converted.
                 new ReportMigrator(app).migrate();
 
@@ -204,7 +203,7 @@ public class ACRA {
 
             // Initialize ErrorReporter with all required data
             final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
-            log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
+            if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
             errorReporterSingleton = new ErrorReporter(mApplication, configProxy, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
 
             // Check for approved reports and send them (if enabled).
@@ -259,7 +258,7 @@ public class ACRA {
      */
     private static boolean isACRASenderServiceProcess(Application app) {
         final String processName = getCurrentProcessName(app);
-        log.i(LOG_TAG, "ACRA processName='" + processName + "'");
+        if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + "'");
         return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
 

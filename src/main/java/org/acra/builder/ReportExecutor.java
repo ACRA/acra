@@ -89,7 +89,7 @@ public final class ReportExecutor {
 
     public void handReportToDefaultExceptionHandler(Thread t, Throwable e) {
         if (defaultExceptionHandler != null) {
-            ACRA.log.e(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
+            ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
                     + " - forwarding uncaught Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(t, e);
         } else {
@@ -115,7 +115,7 @@ public final class ReportExecutor {
     public void execute(final ReportBuilder reportBuilder) {
 
         if (!enabled) {
-            ACRA.log.d(LOG_TAG, "ACRA is disabled. Report not sent.");
+            ACRA.log.v(LOG_TAG, "ACRA is disabled. Report not sent.");
             return;
         }
 
@@ -190,7 +190,7 @@ public final class ReportExecutor {
             }
 
         } else if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION) {
-            ACRA.log.d(LOG_TAG, "Creating Notification.");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating Notification.");
             createNotification(reportFile, reportBuilder);
         }
 
@@ -205,7 +205,7 @@ public final class ReportExecutor {
 
                 @Override
                 public void run() {
-                    ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
                             + " millis from " + sentToastTimeMillis.initialTimeMillis
                             + " currentMillis=" + System.currentTimeMillis());
                     while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
@@ -213,7 +213,7 @@ public final class ReportExecutor {
                             // Wait a bit to let the user read the toast
                             Thread.sleep(100);
                         } catch (InterruptedException e1) {
-                            ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
+                            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                         }
                     }
                     toastWaitEnded = true;
@@ -229,27 +229,27 @@ public final class ReportExecutor {
             @Override
             public void run() {
                 // We have to wait for the toast display to be completed.
-                ACRA.log.d(LOG_TAG, "Waiting for Toast");
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for Toast");
                 while (!toastWaitEnded) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e1) {
-                        ACRA.log.d(LOG_TAG, "Error : ", e1);
+                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted waiting for Toast");
                     }
                 }
-                ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
 
                 if (showDirectDialog) {
                     // Create a new activity task with the confirmation dialog.
                     // This new task will be persisted on application restart
                     // right after its death.
-                    ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
                     final Intent dialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
                     dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(dialogIntent);
                 }
 
-                ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
                 if (reportBuilder.isEndApplication()) {
                     endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
@@ -272,7 +272,7 @@ public final class ReportExecutor {
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
         if (handlingUncaughtException && letDefaultHandlerEndApplication && (defaultExceptionHandler != null)) {
             // Let the system default handler do it's job and display the force close dialog.
-            ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
         } else {
             // If ACRA handles user notifications with a Toast or a Notification
@@ -284,9 +284,9 @@ public final class ReportExecutor {
             // it. Activity#finish (and maybe it's parent too).
             final Activity lastActivity = lastActivityManager.getLastActivity();
             if (lastActivity != null) {
-                ACRA.log.i(LOG_TAG, "Finishing the last Activity prior to killing the Process");
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
                 lastActivity.finish();
-                ACRA.log.i(LOG_TAG, "Finished " + lastActivity.getClass());
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
                 lastActivityManager.clearLastActivity();
             }
 
@@ -328,7 +328,7 @@ public final class ReportExecutor {
         final CharSequence tickerText = context.getText(config.resNotifTickerText());
         final long when = System.currentTimeMillis();
 
-        ACRA.log.d(LOG_TAG, "Creating Notification for " + reportFile);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating Notification for " + reportFile);
         final Intent crashReportDialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
         final PendingIntent contentIntent = PendingIntent.getActivity(context, mNotificationCounter++, crashReportDialogIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -387,7 +387,7 @@ public final class ReportExecutor {
      */
     private void saveCrashReportFile(File file, CrashReportData crashData) {
         try {
-            ACRA.log.d(LOG_TAG, "Writing crash report file " + file);
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Writing crash report file " + file);
             final CrashReportPersister persister = new CrashReportPersister();
             persister.store(crashData, file);
         } catch (Exception e) {
@@ -403,7 +403,7 @@ public final class ReportExecutor {
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
     private Intent createCrashReportDialogIntent(File reportFile, ReportBuilder reportBuilder) {
-        ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, config.reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.getException());

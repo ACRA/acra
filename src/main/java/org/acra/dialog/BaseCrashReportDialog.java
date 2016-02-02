@@ -43,20 +43,20 @@ public abstract class BaseCrashReportDialog extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
 
         config = (ACRAConfig) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
 
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {
-            ACRA.log.d(LOG_TAG, "Forced reports deletion.");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
             cancelReports();
             finish();
             return;
         }
 
         reportFile = (File) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
-        ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + reportFile);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + reportFile);
         if (reportFile == null) {
             finish();
         }
@@ -79,7 +79,7 @@ public abstract class BaseCrashReportDialog extends Activity {
     protected void sendCrash(String comment, String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister();
         try {
-            ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
             final CrashReportData crashData = persister.load(reportFile);
             crashData.put(USER_COMMENT, comment == null ? "" : comment);
             crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);

@@ -245,7 +245,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         try {
             ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + context.getPackageName(), e);
-            ACRA.log.d(LOG_TAG, "Building report");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Building report");
 
             performDeprecatedReportPriming();
 
@@ -356,7 +356,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         try {
             exceptionHandlerInitializer.initializeExceptionHandler(this);
         } catch (Exception exceptionInRunnable) {
-            ACRA.log.d(LOG_TAG, "Failed to initialize " + exceptionHandlerInitializer + " from #handleException");
+            ACRA.log.w(LOG_TAG, "Failed to initialize " + exceptionHandlerInitializer + " from #handleException");
         }
     }
 
