@@ -18,7 +18,7 @@ package org.acra.collector;
 import android.content.Context;
 import android.text.format.Time;
 import org.acra.ACRA;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ final class DropBoxCollector {
      * @param config    AcraConfig describe what to collect.
      * @return A readable formatted String listing messages retrieved.
      */
-    public String read(Context context, ACRAConfig config) {
+    public String read(Context context, ACRAConfiguration config) {
         try {
             // Use reflection API to allow compilation with API Level 5.
             final String serviceName = Compatibility.getDropBoxServiceName();

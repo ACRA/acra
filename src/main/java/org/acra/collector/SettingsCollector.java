@@ -16,18 +16,17 @@
 
 package org.acra.collector;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.acra.ACRA;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
-import org.acra.config.ACRAConfig;
+import org.acra.ACRA;
+import org.acra.config.ACRAConfiguration;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -41,9 +40,9 @@ import static org.acra.ACRA.LOG_TAG;
 final class SettingsCollector {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
 
-    public SettingsCollector(Context context, ACRAConfig config) {
+    public SettingsCollector(Context context, ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

@@ -20,8 +20,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
+import org.acra.config.ACRAConfiguration;
 import org.acra.file.CrashReportPersister;
-import org.acra.config.ACRAConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import static org.acra.ACRA.LOG_TAG;
 final class ReportDistributor {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
     private final List<ReportSender> reportSenders;
 
     /**
@@ -48,7 +48,7 @@ final class ReportDistributor {
      * @param config                Configuration to use while sending.
      * @param reportSenders         List of ReportSender to use to send the crash reports.
      */
-    public ReportDistributor(Context context, ACRAConfig config, List<ReportSender> reportSenders) {
+    public ReportDistributor(Context context, ACRAConfiguration config, List<ReportSender> reportSenders) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;

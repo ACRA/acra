@@ -3,7 +3,10 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.Intent;
 import org.acra.ACRA;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -13,9 +16,9 @@ import static org.acra.ACRA.LOG_TAG;
 public class SenderServiceStarter {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
 
-    public SenderServiceStarter(Context context, ACRAConfig config) {
+    public SenderServiceStarter(Context context, ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }
@@ -31,7 +34,9 @@ public class SenderServiceStarter {
         final Intent intent = new Intent(context, SenderService.class);
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
         intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
-        intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, config.reportSenderFactoryClasses());
+
+        intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, new ArrayList(Arrays.asList(config.reportSenderFactoryClasses())));
+
         intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
         context.startService(intent);
     }

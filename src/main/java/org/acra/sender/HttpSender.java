@@ -22,7 +22,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 import org.acra.util.HttpRequest;
 import org.acra.util.JSONReportBuilder.JSONReportException;
 
@@ -92,7 +92,7 @@ public class HttpSender implements ReportSender {
         public abstract String getContentType();
     }
 
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
     private final Uri mFormUri;
     private final Map<ReportField, String> mMapping;
     private final Method mMethod;
@@ -124,7 +124,7 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(ACRAConfig config, Method method, Type type, Map<ReportField, String> mapping) {
+    public HttpSender(ACRAConfiguration config, Method method, Type type, Map<ReportField, String> mapping) {
         this(config, method, type, null, mapping);
     }
 
@@ -154,7 +154,7 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(ACRAConfig config, Method method, Type type, String formUri, Map<ReportField, String> mapping) {
+    public HttpSender(ACRAConfiguration config, Method method, Type type, String formUri, Map<ReportField, String> mapping) {
         this.config = config;
         mMethod = method;
         mFormUri = (formUri == null) ? null : Uri.parse(formUri);

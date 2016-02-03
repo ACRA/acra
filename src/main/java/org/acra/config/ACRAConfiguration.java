@@ -46,60 +46,123 @@ import static org.acra.ACRAConstants.*;
  * v14 where resource ids are not final anymore and can't be passed as
  * annotation parameters values.
  */
-public class ACRAConfiguration implements ACRAConfig, Serializable {
+public class ACRAConfiguration implements Serializable {
 
-    private String[] mAdditionalDropboxTags = null;
+    private final Class<? extends Annotation> annotationType;
 
-    private String[] mAdditionalSharedPreferences = null;
-    private Integer mConnectionTimeout = null;
-    private ReportField[] mCustomReportContent = null;
-    private Boolean mDeleteUnapprovedReportsOnApplicationStart = null;
-    private Boolean mDeleteOldUnsentReportsOnApplicationStart = null;
-    private Integer mDropboxCollectionMinutes = null;
-    private Boolean mForceCloseDialogAfterToast = null;
-    private String mFormUri = null;
-    private String mFormUriBasicAuthLogin = null;
-    private String mFormUriBasicAuthPassword = null;
-    private Boolean mIncludeDropboxSystemTags = null;
+    private String[] additionalDropBoxTags;
+    private String[] additionalSharedPreferences;
+    private Integer connectionTimeout;
+    private ReportField[] customReportContent;
+    private Boolean deleteUnapprovedReportsOnApplicationStart;
+    private Boolean deleteOldUnsentReportsOnApplicationStart;
+    private Integer dropboxCollectionMinutes;
+    private Boolean forceCloseDialogAfterToast;
+    private String formUri = null;
+    private String formUriBasicAuthLogin = null;
+    private String formUriBasicAuthPassword = null;
+    private Boolean includeDropBoxSystemTags = null;
 
-    private String[] mLogcatArguments = null;
-    private String mMailTo = null;
-    private ReportingInteractionMode mMode = null;
-    private ReportsCrashes mReportsCrashes = null;
-    private Class<? extends BaseCrashReportDialog> mReportDialogClass = null;
+    private String[] logcatArguments = null;
+    private String mailTo = null;
+    private ReportingInteractionMode reportingInteractionMode = null;
+    private Class<? extends BaseCrashReportDialog> reportDialogClass = null;
     private Class<? extends ReportPrimer> reportPrimerClass = null;
 
-    private Integer mResDialogPositiveButtonText = null;
-    private Integer mResDialogNegativeButtonText = null;
-    private Integer mResDialogCommentPrompt = null;
-    private Integer mResDialogEmailPrompt = null;
-    private Integer mResDialogIcon = null;
-    private Integer mResDialogOkToast = null;
-    private Integer mResDialogText = null;
-    private Integer mResDialogTitle = null;
-    private Integer mResNotifIcon = null;
-    private Integer mResNotifText = null;
-    private Integer mResNotifTickerText = null;
-    private Integer mResNotifTitle = null;
-    private Integer mResToastText = null;
-    private Integer mSharedPreferenceMode = null;
-    private String mSharedPreferenceName = null;
-    private Integer mSocketTimeout = null;
-    private Boolean mLogcatFilterByPid = null;
-    private Boolean mSendReportsInDevMode = null;
-    private Boolean mSendReportsAtShutdown = null;
+    private Integer resDialogPositiveButtonText = null;
+    private Integer resDialogNegativeButtonText = null;
+    private Integer resDialogCommentPrompt = null;
+    private Integer resDialogEmailPrompt = null;
+    private Integer resDialogIcon = null;
+    private Integer resDialogOkToast = null;
+    private Integer resDialogText = null;
+    private Integer resDialogTitle = null;
+    private Integer resNotifIcon = null;
+    private Integer resNotifText = null;
+    private Integer resNotifTickerText = null;
+    private Integer resNotifTitle = null;
+    private Integer resToastText = null;
+    private Integer sharedPreferencesMode = null;
+    private String sharedPreferencesName = null;
+    private Integer socketTimeout = null;
+    private Boolean logcatFilterByPid = null;
+    private Boolean sendReportsInDevMode = null;
+    private Boolean sendReportsAtShutdown = null;
 
-    private String[] mExcludeMatchingSharedPreferencesKeys = null;
-    private String[] mExcludeMatchingSettingsKeys = null;
-    private Class mBuildConfigClass;
-    private String mApplicationLogFile = null;
-    private Integer mApplicationLogFileLines = null;
+    private String[] excludeMatchingSharedPreferencesKeys = null;
+    private String[] excludeMatchingSettingsKeys = null;
+    private Class buildConfigClass;
+    private String applicationLogFile = null;
+    private Integer applicationLogFileLines = null;
 
-    private Method mHttpMethod = null;
-    private Type mReportType = null;
-    private Map<String, String> mHttpHeaders;
-    private KeyStore mKeyStore;
+    private Method httpMethod = null;
+    private Type reportType = null;
+    private Map<String, String> httpHeaders;
+    private KeyStore keyStore;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
+
+    /**
+     * @param annotationConfig  AnnotationConfig with which to initialise this {@link ACRAConfiguration}.
+     */
+    public ACRAConfiguration(ReportsCrashes annotationConfig) {
+        if (annotationConfig != null) {
+            annotationType = annotationConfig.annotationType();
+
+            additionalDropBoxTags = annotationConfig.additionalDropBoxTags();
+            additionalSharedPreferences = annotationConfig.additionalSharedPreferences();
+            connectionTimeout = annotationConfig.connectionTimeout();
+            customReportContent = annotationConfig.customReportContent();
+            deleteUnapprovedReportsOnApplicationStart = annotationConfig.deleteUnapprovedReportsOnApplicationStart();
+            deleteOldUnsentReportsOnApplicationStart = annotationConfig.deleteOldUnsentReportsOnApplicationStart();
+            dropboxCollectionMinutes = annotationConfig.dropboxCollectionMinutes();
+            forceCloseDialogAfterToast = annotationConfig.forceCloseDialogAfterToast();
+            formUri = annotationConfig.formUri();
+            formUriBasicAuthLogin = annotationConfig.formUriBasicAuthLogin();
+            formUriBasicAuthPassword = annotationConfig.formUriBasicAuthPassword();
+            includeDropBoxSystemTags = annotationConfig.includeDropBoxSystemTags();
+            logcatArguments = annotationConfig.logcatArguments();
+            mailTo = annotationConfig.mailTo();
+            reportingInteractionMode = annotationConfig.mode();
+            resDialogIcon = annotationConfig.resDialogIcon();
+            resDialogPositiveButtonText = annotationConfig.resDialogPositiveButtonText();
+            resDialogNegativeButtonText = annotationConfig.resDialogNegativeButtonText();
+            resDialogEmailPrompt = annotationConfig.resDialogEmailPrompt();
+            resDialogOkToast = annotationConfig.resDialogOkToast();
+            resDialogText = annotationConfig.resDialogText();
+            resDialogTitle = annotationConfig.resDialogTitle();
+            resNotifIcon = annotationConfig.resNotifIcon();
+            resNotifText = annotationConfig.resNotifText();
+            resNotifTickerText = annotationConfig.resNotifTickerText();
+            resNotifTitle = annotationConfig.resNotifTitle();
+            resToastText = annotationConfig.resToastText();
+            sharedPreferencesMode = annotationConfig.sharedPreferencesMode();
+            sharedPreferencesName = annotationConfig.sharedPreferencesName();
+            socketTimeout = annotationConfig.socketTimeout();
+            logcatFilterByPid = annotationConfig.logcatFilterByPid();
+            sendReportsInDevMode = annotationConfig.sendReportsInDevMode();
+            sendReportsAtShutdown = annotationConfig.sendReportsAtShutdown();
+            excludeMatchingSharedPreferencesKeys = annotationConfig.excludeMatchingSharedPreferencesKeys();
+            excludeMatchingSettingsKeys = annotationConfig.excludeMatchingSettingsKeys();
+            buildConfigClass = annotationConfig.buildConfigClass();
+            applicationLogFile = annotationConfig.applicationLogFile();
+            applicationLogFileLines = annotationConfig.applicationLogFileLines();
+            reportDialogClass = annotationConfig.reportDialogClass();
+            reportPrimerClass = annotationConfig.reportPrimerClass();
+            httpMethod = annotationConfig.httpMethod();
+            reportType = annotationConfig.reportType();
+            reportSenderFactoryClasses = annotationConfig.reportSenderFactoryClasses();
+        } else {
+            annotationType = null;
+        }
+    }
+
+    /**
+     * Empty constructor which sets no defaults.
+     */
+    @SuppressWarnings( "unused" )
+    public ACRAConfiguration(){
+        this(null);
+    }
 
 
     /**
@@ -112,7 +175,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setHttpHeaders(Map<String, String> headers) {
-        this.mHttpHeaders = headers;
+        this.httpHeaders = headers;
         return this;
     }
 
@@ -123,13 +186,15 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      * 
      * @return A map associating http header names to their values.
      */
+    @SuppressWarnings("unused")
     public Map<String, String> getHttpHeaders() {
-        return mHttpHeaders;
+        return httpHeaders;
     }
 
     /**
      * @return List of ReportField that ACRA will provide to the server.
      */
+    @SuppressWarnings("unused")
     public List<ReportField> getReportFields() {
         final ReportField[] customReportFields = customReportContent();
 
@@ -154,7 +219,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalDropboxTags(String[] additionalDropboxTags) {
-        this.mAdditionalDropboxTags = additionalDropboxTags;
+        this.additionalDropBoxTags = additionalDropboxTags;
         return this;
     }
 
@@ -165,7 +230,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
-        this.mAdditionalSharedPreferences = additionalSharedPreferences;
+        this.additionalSharedPreferences = additionalSharedPreferences;
         return this;
     }
 
@@ -176,7 +241,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setConnectionTimeout(Integer connectionTimeout) {
-        this.mConnectionTimeout = connectionTimeout;
+        this.connectionTimeout = connectionTimeout;
         return this;
     }
 
@@ -187,7 +252,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setCustomReportContent(ReportField[] customReportContent) {
-        this.mCustomReportContent = customReportContent;
+        this.customReportContent = customReportContent;
         return this;
     }
 
@@ -198,7 +263,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
-        this.mDeleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
+        this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
     }
 
@@ -208,7 +273,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsentReportsOnApplicationStart) {
-        this.mDeleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
+        this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
         return this;
     }
 
@@ -219,7 +284,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
-        this.mDropboxCollectionMinutes = dropboxCollectionMinutes;
+        this.dropboxCollectionMinutes = dropboxCollectionMinutes;
         return this;
     }
 
@@ -230,7 +295,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
-        this.mForceCloseDialogAfterToast = forceCloseDialogAfterToast;
+        this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
         return this;
     }
 
@@ -242,7 +307,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUri(String formUri) {
-        this.mFormUri = formUri;
+        this.formUri = formUri;
         return this;
     }
 
@@ -253,7 +318,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
-        this.mFormUriBasicAuthLogin = formUriBasicAuthLogin;
+        this.formUriBasicAuthLogin = formUriBasicAuthLogin;
         return this;
     }
 
@@ -264,7 +329,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
-        this.mFormUriBasicAuthPassword = formUriBasicAuthPassword;
+        this.formUriBasicAuthPassword = formUriBasicAuthPassword;
         return this;
     }
 
@@ -275,7 +340,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
-        this.mIncludeDropboxSystemTags = includeDropboxSystemTags;
+        this.includeDropBoxSystemTags = includeDropboxSystemTags;
         return this;
     }
 
@@ -286,7 +351,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setLogcatArguments(String[] logcatArguments) {
-        this.mLogcatArguments = logcatArguments;
+        this.logcatArguments = logcatArguments;
         return this;
     }
 
@@ -298,7 +363,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMailTo(String mailTo) {
-        this.mMailTo = mailTo;
+        this.mailTo = mailTo;
         return this;
     }
 
@@ -314,26 +379,26 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
-        this.mMode = mode;
+        this.reportingInteractionMode = mode;
         checkCrashResources();
         return this;
     }
 
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogPositiveButtonText(int resId) {
-        mResDialogPositiveButtonText = resId;
+        resDialogPositiveButtonText = resId;
         return this;
     }
 
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
-        mResDialogNegativeButtonText = resId;
+        resDialogNegativeButtonText = resId;
         return this;
     }
 
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setReportDialogClass(Class<? extends BaseCrashReportDialog> reportDialogClass) {
-        mReportDialogClass = reportDialogClass;
+        this.reportDialogClass = reportDialogClass;
         return this;
     }
 
@@ -349,7 +414,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogCommentPrompt(int resId) {
-        mResDialogCommentPrompt = resId;
+        resDialogCommentPrompt = resId;
         return this;
     }
 
@@ -365,7 +430,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogEmailPrompt(int resId) {
-        mResDialogEmailPrompt = resId;
+        resDialogEmailPrompt = resId;
         return this;
     }
 
@@ -380,7 +445,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogIcon(int resId) {
-        mResDialogIcon = resId;
+        resDialogIcon = resId;
         return this;
     }
 
@@ -395,7 +460,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogOkToast(int resId) {
-        mResDialogOkToast = resId;
+        resDialogOkToast = resId;
         return this;
     }
 
@@ -410,7 +475,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogText(int resId) {
-        mResDialogText = resId;
+        resDialogText = resId;
         return this;
     }
 
@@ -425,7 +490,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogTitle(int resId) {
-        mResDialogTitle = resId;
+        resDialogTitle = resId;
         return this;
     }
 
@@ -440,7 +505,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifIcon(int resId) {
-        mResNotifIcon = resId;
+        resNotifIcon = resId;
         return this;
     }
 
@@ -455,7 +520,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifText(int resId) {
-        mResNotifText = resId;
+        resNotifText = resId;
         return this;
     }
 
@@ -471,7 +536,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifTickerText(int resId) {
-        mResNotifTickerText = resId;
+        resNotifTickerText = resId;
         return this;
     }
 
@@ -486,7 +551,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifTitle(int resId) {
-        mResNotifTitle = resId;
+        resNotifTitle = resId;
         return this;
     }
 
@@ -501,7 +566,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResToastText(int resId) {
-        mResToastText = resId;
+        resToastText = resId;
         return this;
     }
 
@@ -512,7 +577,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSharedPreferenceMode(Integer sharedPreferenceMode) {
-        this.mSharedPreferenceMode = sharedPreferenceMode;
+        this.sharedPreferencesMode = sharedPreferenceMode;
         return this;
     }
 
@@ -523,7 +588,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSharedPreferenceName(String sharedPreferenceName) {
-        this.mSharedPreferenceName = sharedPreferenceName;
+        this.sharedPreferencesName = sharedPreferenceName;
         return this;
     }
 
@@ -534,7 +599,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSocketTimeout(Integer socketTimeout) {
-        this.mSocketTimeout = socketTimeout;
+        this.socketTimeout = socketTimeout;
         return this;
     }
 
@@ -547,7 +612,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setLogcatFilterByPid(Boolean filterByPid) {
-        mLogcatFilterByPid = filterByPid;
+        logcatFilterByPid = filterByPid;
         return this;
     }
 
@@ -560,7 +625,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsInDevMode(Boolean sendReportsInDevMode) {
-        mSendReportsInDevMode = sendReportsInDevMode;
+        this.sendReportsInDevMode = sendReportsInDevMode;
         return this;
     }
 
@@ -574,7 +639,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
-        mSendReportsAtShutdown = sendReportsAtShutdown;
+        this.sendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }
 
@@ -588,7 +653,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
-        mExcludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
+        this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
         return this;
     }
 
@@ -602,13 +667,13 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
-        mExcludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
+        this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
     }
 
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setBuildConfigClass(Class buildConfigClass) {
-        mBuildConfigClass = buildConfigClass;
+        this.buildConfigClass = buildConfigClass;
         return this;
     }
     /**
@@ -620,7 +685,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setApplicationLogFile(String applicationLogFile) {
-        mApplicationLogFile = applicationLogFile;
+        this.applicationLogFile = applicationLogFile;
         return this;
     }
 
@@ -634,7 +699,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setApplicationLogFileLines(int applicationLogFileLines) {
-        mApplicationLogFileLines = applicationLogFileLines;
+        this.applicationLogFileLines = applicationLogFileLines;
         return this;
     }
 
@@ -646,7 +711,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setHttpMethod(Method httpMethod) {
-        mHttpMethod = httpMethod;
+        this.httpMethod = httpMethod;
         return this;
     }
 
@@ -659,7 +724,7 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setReportType(Type type) {
-        mReportType = type;
+        reportType = type;
         return this;
     }
 
@@ -668,620 +733,385 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
      * @param keyStore
      *            Set this to the keystore that contains the trusted certificates
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public void setKeyStore(KeyStore keyStore) {
-        mKeyStore = keyStore;
+        this.keyStore = keyStore;
     }
 
-    /**
-     * @param defaults  Defaults with which to initialise this {@link ACRAConfiguration}.
-     */
-    public ACRAConfiguration(ReportsCrashes defaults) {
-        mReportsCrashes = defaults;
-    }
-
-    /**
-     * Empty constructor which sets no defaults.
-     */
-    @SuppressWarnings( "unused" )
-    public ACRAConfiguration(){
-        this(null);
-    }
-
-    @Override
+    @SuppressWarnings("unused")
     public String[] additionalDropBoxTags() {
-        if (mAdditionalDropboxTags != null) {
-            return mAdditionalDropboxTags;
+        if (additionalDropBoxTags != null) {
+            return additionalDropBoxTags;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.additionalDropBoxTags();
-        }
-
         return new String[0];
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String[] additionalSharedPreferences() {
-        if (mAdditionalSharedPreferences != null) {
-            return mAdditionalSharedPreferences;
+        if (additionalSharedPreferences != null) {
+            return additionalSharedPreferences;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.additionalSharedPreferences();
-        }
-
         return new String[0];
     }
 
-    @Override
+    /**
+     * @deprecated since 4.8.1 no replacement.
+     */
+    @SuppressWarnings("unused")
     public Class<? extends Annotation> annotationType() {
-        return mReportsCrashes.annotationType();
+        return annotationType; // Why would this ever be needed?
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int connectionTimeout() {
-        if (mConnectionTimeout != null) {
-            return mConnectionTimeout;
+        if (connectionTimeout != null) {
+            return connectionTimeout;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.connectionTimeout();
-        }
-
         return DEFAULT_CONNECTION_TIMEOUT;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public ReportField[] customReportContent() {
-        if (mCustomReportContent != null) {
-            return mCustomReportContent;
+        if (customReportContent != null) {
+            return customReportContent;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.customReportContent();
-        }
-
         return new ReportField[0];
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean deleteUnapprovedReportsOnApplicationStart() {
-        if (mDeleteUnapprovedReportsOnApplicationStart != null) {
-            return mDeleteUnapprovedReportsOnApplicationStart;
+        if (deleteUnapprovedReportsOnApplicationStart != null) {
+            return deleteUnapprovedReportsOnApplicationStart;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.deleteUnapprovedReportsOnApplicationStart();
-        }
-
         return DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean deleteOldUnsentReportsOnApplicationStart() {
-        if (mDeleteOldUnsentReportsOnApplicationStart != null) {
-            return mDeleteOldUnsentReportsOnApplicationStart;
+        if (deleteOldUnsentReportsOnApplicationStart != null) {
+            return deleteOldUnsentReportsOnApplicationStart;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.deleteOldUnsentReportsOnApplicationStart();
-        }
-
         return DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int dropboxCollectionMinutes() {
-        if (mDropboxCollectionMinutes != null) {
-            return mDropboxCollectionMinutes;
+        if (dropboxCollectionMinutes != null) {
+            return dropboxCollectionMinutes;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.dropboxCollectionMinutes();
-        }
-
         return DEFAULT_DROPBOX_COLLECTION_MINUTES;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean forceCloseDialogAfterToast() {
-        if (mForceCloseDialogAfterToast != null) {
-            return mForceCloseDialogAfterToast;
+        if (forceCloseDialogAfterToast != null) {
+            return forceCloseDialogAfterToast;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.forceCloseDialogAfterToast();
-        }
-
         return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String formUri() {
-        if (mFormUri != null) {
-            return mFormUri;
+        if (formUri != null) {
+            return formUri;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.formUri();
-        }
-
         return DEFAULT_STRING_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String formUriBasicAuthLogin() {
-        if (mFormUriBasicAuthLogin != null) {
-            return mFormUriBasicAuthLogin;
+        if (formUriBasicAuthLogin != null) {
+            return formUriBasicAuthLogin;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.formUriBasicAuthLogin();
-        }
-
         return NULL_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String formUriBasicAuthPassword() {
-        if (mFormUriBasicAuthPassword != null) {
-            return mFormUriBasicAuthPassword;
+        if (formUriBasicAuthPassword != null) {
+            return formUriBasicAuthPassword;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.formUriBasicAuthPassword();
-        }
-
         return NULL_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean includeDropBoxSystemTags() {
-        if (mIncludeDropboxSystemTags != null) {
-            return mIncludeDropboxSystemTags;
+        if (includeDropBoxSystemTags != null) {
+            return includeDropBoxSystemTags;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.includeDropBoxSystemTags();
-        }
-
         return DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String[] logcatArguments() {
-        if (mLogcatArguments != null) {
-            return mLogcatArguments;
+        if (logcatArguments != null) {
+            return logcatArguments;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.logcatArguments();
-        }
-
         return new String[] { "-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time" };
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String mailTo() {
-        if (mMailTo != null) {
-            return mMailTo;
+        if (mailTo != null) {
+            return mailTo;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.mailTo();
-        }
-
         return DEFAULT_STRING_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public ReportingInteractionMode mode() {
-        if (mMode != null) {
-            return mMode;
+        if (reportingInteractionMode != null) {
+            return reportingInteractionMode;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.mode();
-        }
-
         return ReportingInteractionMode.SILENT;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogPositiveButtonText() {
-        if (mResDialogPositiveButtonText != null) {
-            return mResDialogPositiveButtonText;
+        if (resDialogPositiveButtonText != null) {
+            return resDialogPositiveButtonText;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogPositiveButtonText();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogNegativeButtonText() {
-        if (mResDialogNegativeButtonText != null) {
-            return mResDialogNegativeButtonText;
+        if (resDialogNegativeButtonText != null) {
+            return resDialogNegativeButtonText;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogNegativeButtonText();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogCommentPrompt() {
-        if (mResDialogCommentPrompt != null) {
-            return mResDialogCommentPrompt;
+        if (resDialogCommentPrompt != null) {
+            return resDialogCommentPrompt;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogCommentPrompt();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogEmailPrompt() {
-        if (mResDialogEmailPrompt != null) {
-            return mResDialogEmailPrompt;
+        if (resDialogEmailPrompt != null) {
+            return resDialogEmailPrompt;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogEmailPrompt();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogIcon() {
-        if (mResDialogIcon != null) {
-            return mResDialogIcon;
+        if (resDialogIcon != null) {
+            return resDialogIcon;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogIcon();
-        }
-
         return DEFAULT_DIALOG_ICON;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogOkToast() {
-        if (mResDialogOkToast != null) {
-            return mResDialogOkToast;
+        if (resDialogOkToast != null) {
+            return resDialogOkToast;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogOkToast();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogText() {
-        if (mResDialogText != null) {
-            return mResDialogText;
+        if (resDialogText != null) {
+            return resDialogText;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogText();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resDialogTitle() {
-        if (mResDialogTitle != null) {
-            return mResDialogTitle;
+        if (resDialogTitle != null) {
+            return resDialogTitle;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resDialogTitle();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resNotifIcon() {
-        if (mResNotifIcon != null) {
-            return mResNotifIcon;
+        if (resNotifIcon != null) {
+            return resNotifIcon;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resNotifIcon();
-        }
-
         return DEFAULT_NOTIFICATION_ICON;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resNotifText() {
-        if (mResNotifText != null) {
-            return mResNotifText;
+        if (resNotifText != null) {
+            return resNotifText;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resNotifText();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resNotifTickerText() {
-        if (mResNotifTickerText != null) {
-            return mResNotifTickerText;
+        if (resNotifTickerText != null) {
+            return resNotifTickerText;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resNotifTickerText();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resNotifTitle() {
-        if (mResNotifTitle != null) {
-            return mResNotifTitle;
+        if (resNotifTitle != null) {
+            return resNotifTitle;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resNotifTitle();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int resToastText() {
-        if (mResToastText != null) {
-            return mResToastText;
+        if (resToastText != null) {
+            return resToastText;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.resToastText();
-        }
-
         return DEFAULT_RES_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int sharedPreferencesMode() {
-        if (mSharedPreferenceMode != null) {
-            return mSharedPreferenceMode;
+        if (sharedPreferencesMode != null) {
+            return sharedPreferencesMode;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.sharedPreferencesMode();
-        }
-
         return DEFAULT_SHARED_PREFERENCES_MODE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String sharedPreferencesName() {
-        if (mSharedPreferenceName != null) {
-            return mSharedPreferenceName;
-        }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.sharedPreferencesName();
+        if (sharedPreferencesName != null) {
+            return sharedPreferencesName;
         }
 
         return DEFAULT_STRING_VALUE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int socketTimeout() {
-        if (mSocketTimeout != null) {
-            return mSocketTimeout;
+        if (socketTimeout != null) {
+            return socketTimeout;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.socketTimeout();
-        }
-
         return DEFAULT_SOCKET_TIMEOUT;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean logcatFilterByPid() {
-        if (mLogcatFilterByPid != null) {
-            return mLogcatFilterByPid;
+        if (logcatFilterByPid != null) {
+            return logcatFilterByPid;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.logcatFilterByPid();
-        }
-
         return DEFAULT_LOGCAT_FILTER_BY_PID;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean sendReportsInDevMode() {
-        if (mSendReportsInDevMode != null) {
-            return mSendReportsInDevMode;
+        if (sendReportsInDevMode != null) {
+            return sendReportsInDevMode;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.sendReportsInDevMode();
-        }
-
         return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public boolean sendReportsAtShutdown() {
-        if (mSendReportsAtShutdown != null) {
-            return mSendReportsAtShutdown;
+        if (sendReportsAtShutdown != null) {
+            return sendReportsAtShutdown;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.sendReportsAtShutdown();
-        }
-
         return DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String[] excludeMatchingSharedPreferencesKeys() {
-        if (mExcludeMatchingSharedPreferencesKeys != null) {
-            return mExcludeMatchingSharedPreferencesKeys;
+        if (excludeMatchingSharedPreferencesKeys != null) {
+            return excludeMatchingSharedPreferencesKeys;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.excludeMatchingSharedPreferencesKeys();
-        }
-
         return new String[0];
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String[] excludeMatchingSettingsKeys() {
-        if (mExcludeMatchingSettingsKeys != null) {
-            return mExcludeMatchingSettingsKeys;
+        if (excludeMatchingSettingsKeys != null) {
+            return excludeMatchingSettingsKeys;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.excludeMatchingSettingsKeys();
-        }
-
         return new String[0];
     }
 
-    @Override
     /**
      * Will return null if no value has been configured.
      * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
      */
+    @SuppressWarnings("unused")
     public Class buildConfigClass() {
-        if (mBuildConfigClass != null) {
-            return mBuildConfigClass;
+        if (buildConfigClass != null) {
+            return buildConfigClass;
         }
-
-        if ((mReportsCrashes != null) && (mReportsCrashes.buildConfigClass() != null)) {
-            return mReportsCrashes.buildConfigClass();
-        }
-
         return null;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public String applicationLogFile() {
-        if (mApplicationLogFile != null) {
-            return mApplicationLogFile;
+        if (applicationLogFile != null) {
+            return applicationLogFile;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.applicationLogFile();
-        }
-
         return DEFAULT_APPLICATION_LOGFILE;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public int applicationLogFileLines() {
-        if (mApplicationLogFileLines != null) {
-            return mApplicationLogFileLines;
+        if (applicationLogFileLines != null) {
+            return applicationLogFileLines;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.applicationLogFileLines();
-        }
-
         return DEFAULT_APPLICATION_LOGFILE_LINES;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public Class<? extends BaseCrashReportDialog> reportDialogClass() {
-        if (mReportDialogClass != null) {
-            return mReportDialogClass;
+        if (reportDialogClass != null) {
+            return reportDialogClass;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.reportDialogClass();
-        }
-
         return CrashReportDialog.class;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public Class<? extends ReportPrimer> reportPrimerClass() {
         if (reportPrimerClass != null) {
             return reportPrimerClass;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.reportPrimerClass();
-        }
-
         return NoOpReportPrimer.class;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public Method httpMethod() {
-        if (mHttpMethod != null) {
-            return mHttpMethod;
+        if (httpMethod != null) {
+            return httpMethod;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.httpMethod();
-        }
-
         return Method.POST;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public Type reportType() {
-        if (mReportType != null) {
-            return mReportType;
+        if (reportType != null) {
+            return reportType;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.reportType();
-        }
-
         return Type.FORM;
     }
 
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
         this.reportSenderFactoryClasses = reportSenderFactoryClasses;
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
         if (reportSenderFactoryClasses != null) {
             return reportSenderFactoryClasses;
         }
-
-        if (mReportsCrashes != null) {
-            return mReportsCrashes.reportSenderFactoryClasses();
-        }
-
         //noinspection unchecked
         return new Class[] {DefaultReportSenderFactory.class};
     }
 
-    @Override
+    @SuppressWarnings("unused")
     public KeyStore keyStore() {
-        if (mKeyStore != null) {
-            return mKeyStore;
-        }
-
-        return null;
+        return keyStore;
     }
 
     /**
@@ -1317,6 +1147,4 @@ public class ACRAConfiguration implements ACRAConfig, Serializable {
                 break;
         }
     }
-
-
 }

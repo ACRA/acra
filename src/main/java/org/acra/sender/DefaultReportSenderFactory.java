@@ -3,7 +3,7 @@ package org.acra.sender;
 import android.Manifest;
 import android.content.Context;
 import org.acra.ACRA;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 import org.acra.util.PackageManagerWrapper;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -18,7 +18,7 @@ import static org.acra.ACRA.LOG_TAG;
 public final class DefaultReportSenderFactory implements ReportSenderFactory {
 
     @Override
-    public ReportSender create(Context context, ACRAConfig config) {
+    public ReportSender create(Context context, ACRAConfiguration config) {
         final PackageManagerWrapper pm = new PackageManagerWrapper(context);
         if (!"".equals(config.mailTo())) {
             // Try to send by mail. If a mailTo address is provided, do not add other senders.
