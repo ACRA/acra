@@ -571,7 +571,7 @@ public final class CrashReportDataFactory {
             return configuredBuildConfig;
         }
 
-        final String className = context.getClass().getPackage().getName() + ".BuildConfig";
+        final String className = context.getPackageName() + ".BuildConfig";
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
