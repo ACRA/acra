@@ -22,15 +22,15 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.util.ApplicationStartupProcessor;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
-import org.acra.config.ACRAConfigurationFactory;
+import org.acra.config.ConfigurationBuilder;
 import org.acra.legacy.ReportMigrator;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
+import org.acra.util.ApplicationStartupProcessor;
 
 /**
  * Use this class to initialize the crash reporting feature using
@@ -126,10 +126,10 @@ public class ACRA {
     public static void init(Application app) {
         final ReportsCrashes reportsCrashes = app.getClass().getAnnotation(ReportsCrashes.class);
         if (reportsCrashes == null) {
-            log.e(LOG_TAG, "ACRA#init called but no ReportsCrashes annotation on Application " + app.getPackageName());
+            log.e(LOG_TAG, "ACRA#init(Application) called but no ReportsCrashes annotation on Application " + app.getPackageName());
             return;
         }
-        init(app, new ACRAConfiguration(reportsCrashes));
+        init(app, new ConfigurationBuilder(app).build());
     }
 
     /**
@@ -322,7 +322,7 @@ public class ACRA {
      * Provides the current ACRA configuration.
      * 
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
-     * @deprecated since 4.8.0 {@link org.acra.config.ACRAConfig} should be passed into classes instead of retrieved statically.
+     * @deprecated since 4.8.0 {@link ACRAConfiguration} should be passed into classes instead of retrieved statically.
      */
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {
@@ -335,11 +335,11 @@ public class ACRA {
     /**
      * @param app       Your Application class.
      * @return new {@link ACRAConfiguration} instance with values initialized from the {@link ReportsCrashes} annotation.
-     * @deprecated since 4.8.0 use {@link ACRAConfigurationFactory} instead.
+     * @deprecated since 4.8.0 use {@link ConfigurationBuilder} instead.
      */
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getNewDefaultConfig(Application app) {
-        return new ACRAConfigurationFactory().create(app);
+        return new ConfigurationBuilder(app).build();
     }
 
     public static void setLog(ACRALog log) {
