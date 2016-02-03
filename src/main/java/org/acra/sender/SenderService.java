@@ -4,8 +4,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
+import org.acra.config.ACRAConfiguration;
 import org.acra.file.CrashReportFileNameParser;
-import org.acra.config.ACRAConfig;
 import org.acra.file.ReportLocator;
 
 import java.io.File;
@@ -34,10 +34,9 @@ public class SenderService extends IntentService {
         final boolean approveReportsFirst = intent.getBooleanExtra(EXTRA_APPROVE_REPORTS_FIRST, false);
 
         //noinspection unchecked
-        final Class<? extends ReportSenderFactory>[] senderFactoryClasses =
-                (Class<? extends ReportSenderFactory>[]) intent.getSerializableExtra(EXTRA_REPORT_SENDER_FACTORIES);
+        final List<Class<? extends ReportSenderFactory>> senderFactoryClasses = (List<Class<? extends ReportSenderFactory>>) intent.getSerializableExtra(EXTRA_REPORT_SENDER_FACTORIES);
 
-        final ACRAConfig config = (ACRAConfig) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
+        final ACRAConfiguration config = (ACRAConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
@@ -74,7 +73,7 @@ public class SenderService extends IntentService {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished sending reports from SenderService");
     }
 
-    private List<ReportSender> getSenderInstances(ACRAConfig config, Class<? extends ReportSenderFactory>[] factoryClasses) {
+    private List<ReportSender> getSenderInstances(ACRAConfiguration config, List<Class<? extends ReportSenderFactory>> factoryClasses) {
         final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
         for (final Class<? extends ReportSenderFactory> factoryClass : factoryClasses) {
             try {

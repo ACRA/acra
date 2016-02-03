@@ -15,16 +15,15 @@
  */
 package org.acra.collector;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import org.acra.config.ACRAConfig;
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
+import org.acra.config.ACRAConfiguration;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -36,9 +35,9 @@ import static org.acra.ACRA.LOG_TAG;
 final class SharedPreferencesCollector {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
 
-    public SharedPreferencesCollector(Context context, ACRAConfig config) {
+    public SharedPreferencesCollector(Context context, ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

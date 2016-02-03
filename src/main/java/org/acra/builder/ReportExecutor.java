@@ -15,11 +15,11 @@ import org.acra.ACRAConstants;
 import org.acra.ReportingInteractionMode;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.file.CrashReportPersister;
-import org.acra.prefs.SharedPreferencesFactory;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
 
@@ -38,7 +38,7 @@ import static org.acra.ReportField.USER_CRASH_DATE;
 public final class ReportExecutor {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;
     private final LastActivityManager lastActivityManager;
 
@@ -59,7 +59,7 @@ public final class ReportExecutor {
      */
     private static int mNotificationCounter = 0;
 
-    public ReportExecutor(Context context, ACRAConfig config, CrashReportDataFactory crashReportDataFactory, LastActivityManager lastActivityManager, Thread.UncaughtExceptionHandler defaultExceptionHandler, ReportPrimer reportPrimer) {
+    public ReportExecutor(Context context, ACRAConfiguration config, CrashReportDataFactory crashReportDataFactory, LastActivityManager lastActivityManager, Thread.UncaughtExceptionHandler defaultExceptionHandler, ReportPrimer reportPrimer) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;

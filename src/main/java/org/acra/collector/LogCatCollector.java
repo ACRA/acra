@@ -15,7 +15,11 @@
  */
 package org.acra.collector;
 
-import static org.acra.ACRA.LOG_TAG;
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.annotation.ReportsCrashes;
+import org.acra.config.ACRAConfiguration;
+import org.acra.util.BoundedLinkedList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,11 +30,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
-import org.acra.annotation.ReportsCrashes;
-import org.acra.config.ACRAConfig;
-import org.acra.util.BoundedLinkedList;
+import static org.acra.ACRA.LOG_TAG;
 
 
 /**
@@ -59,7 +59,7 @@ class LogCatCollector {
      *         report generation time and a bigger footprint on the device data
      *         plan consumption.
      */
-    public String collectLogCat(ACRAConfig config, String bufferName) {
+    public String collectLogCat(ACRAConfiguration config, String bufferName) {
         final int myPid = android.os.Process.myPid();
         String myPidStr = null;
         if (config.logcatFilterByPid() && myPid > 0) {

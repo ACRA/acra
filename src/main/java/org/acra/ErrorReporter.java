@@ -22,7 +22,6 @@ import org.acra.builder.*;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.util.ApplicationStartupProcessor;
-import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfiguration;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -60,7 +59,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private final boolean supportedAndroidVersion;
 
     private final Application context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
 
     private final CrashReportDataFactory crashReportDataFactory;
     private final ReportExecutor reportExecutor;
@@ -81,7 +80,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(Application context, ACRAConfig config, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
+    ErrorReporter(Application context, ACRAConfiguration config, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.context = context;
         this.config = config;
@@ -360,7 +359,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    private static ReportPrimer getReportPrimer(ACRAConfig config) {
+    private static ReportPrimer getReportPrimer(ACRAConfiguration config) {
         try {
             return config.reportPrimerClass().newInstance();
         } catch (InstantiationException e) {

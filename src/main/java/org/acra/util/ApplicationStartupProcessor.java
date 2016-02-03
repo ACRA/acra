@@ -6,15 +6,13 @@ import android.content.pm.PackageInfo;
 import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.sender.SenderServiceStarter;
-import org.acra.util.PackageManagerWrapper;
-import org.acra.util.ToastSender;
 
 import java.io.File;
 
@@ -24,9 +22,9 @@ import java.io.File;
 public final class ApplicationStartupProcessor {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
 
-    public ApplicationStartupProcessor(Context context, ACRAConfig config) {
+    public ApplicationStartupProcessor(Context context, ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

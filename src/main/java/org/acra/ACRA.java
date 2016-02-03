@@ -23,7 +23,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.util.ApplicationStartupProcessor;
-import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.ACRAConfigurationFactory;
@@ -320,7 +319,7 @@ public class ACRA {
      * Provides the current ACRA configuration.
      * 
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
-     * @deprecated since 4.8.0 {@link ACRAConfig} should be passed into classes instead of retrieved statically.
+     * @deprecated since 4.8.0 {@link org.acra.config.ACRAConfig} should be passed into classes instead of retrieved statically.
      */
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {

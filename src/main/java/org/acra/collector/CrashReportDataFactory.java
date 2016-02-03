@@ -23,9 +23,9 @@ import android.content.pm.PackageInfo;
 import android.os.Environment;
 import android.text.TextUtils;
 import org.acra.ACRA;
-import org.acra.builder.ReportBuilder;
 import org.acra.ReportField;
-import org.acra.config.ACRAConfig;
+import org.acra.builder.ReportBuilder;
+import org.acra.config.ACRAConfiguration;
 import org.acra.util.Installation;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.ReportUtils;
@@ -51,13 +51,13 @@ import static org.acra.ReportField.*;
 public final class CrashReportDataFactory {
 
     private final Context context;
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
     private final SharedPreferences prefs;
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Calendar appStartDate;
     private final String initialConfiguration;
 
-    public CrashReportDataFactory(Context context, ACRAConfig config,
+    public CrashReportDataFactory(Context context, ACRAConfiguration config,
                                   SharedPreferences prefs, Calendar appStartDate,
                                   String initialConfiguration) {
         this.context = context;

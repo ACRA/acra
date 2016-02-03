@@ -14,7 +14,7 @@ import java.util.Map;
  * Declarative forms of this are made using the <pre>@ReportsCrashes</pre> annotation
  * on the Application class.
  *
- * Programmatic versions can be configured using
+ * @deprecated since 4.8.1 no replacement.
  */
 public interface ACRAConfig extends ReportsCrashes, Serializable {
 
@@ -30,7 +30,7 @@ public interface ACRAConfig extends ReportsCrashes, Serializable {
     /**
      * @return KeyStore to use (if any) when sending a HttpsRequest.
      */
-    public KeyStore keyStore();
+    KeyStore keyStore();
 
     /**
      * @return List of ReportField that ACRA will provide to the server.

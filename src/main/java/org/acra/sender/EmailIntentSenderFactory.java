@@ -1,7 +1,7 @@
 package org.acra.sender;
 
 import android.content.Context;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 
 /**
  * Constructs an {@link EmailIntentSender}.
@@ -9,7 +9,7 @@ import org.acra.config.ACRAConfig;
 public final class EmailIntentSenderFactory implements ReportSenderFactory {
 
     @Override
-    public ReportSender create(Context context, ACRAConfig config) {
+    public ReportSender create(Context context, ACRAConfiguration config) {
         return new EmailIntentSender(context, config);
     }
 }

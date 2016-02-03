@@ -7,7 +7,7 @@ package org.acra.util;
 
 import android.util.Base64;
 import org.acra.ACRA;
-import org.acra.config.ACRAConfig;
+import org.acra.config.ACRAConfiguration;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
@@ -28,14 +28,14 @@ import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
 
-    private final ACRAConfig config;
+    private final ACRAConfiguration config;
     private String login;
     private String password;
     private int connectionTimeOut = 3000;
     private int socketTimeOut = 3000;
     private Map<String,String> headers;
 
-    public HttpRequest(ACRAConfig config) {
+    public HttpRequest(ACRAConfiguration config) {
         this.config = config;
     }
 
