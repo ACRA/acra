@@ -41,12 +41,14 @@ import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.*;
 
 /**
- * This class is to be used if you need to apply dynamic settings. This is
- * needed for example when using ACRA in an Android Library Project since ADT
- * v14 where resource ids are not final anymore and can't be passed as
- * annotation parameters values.
+ * Represents the configuration that ACRA will use when handling crash reports.
+ *
+ * ACRAConfiguration should be considered immutable. To that end, as of 4.8.1
+ * all of the set methods have been deprecated.
+ *
+ * Use {@link ConfigurationBuilder} to programmatically construct an ACRAConfiguration.
  */
-public class ACRAConfiguration implements Serializable {
+public final class ACRAConfiguration implements Serializable {
 
     private final Class<? extends Annotation> annotationType;
 
@@ -58,45 +60,45 @@ public class ACRAConfiguration implements Serializable {
     private Boolean deleteOldUnsentReportsOnApplicationStart;
     private Integer dropboxCollectionMinutes;
     private Boolean forceCloseDialogAfterToast;
-    private String formUri = null;
-    private String formUriBasicAuthLogin = null;
-    private String formUriBasicAuthPassword = null;
-    private Boolean includeDropBoxSystemTags = null;
+    private String formUri;
+    private String formUriBasicAuthLogin;
+    private String formUriBasicAuthPassword;
+    private Boolean includeDropBoxSystemTags;
 
-    private String[] logcatArguments = null;
-    private String mailTo = null;
-    private ReportingInteractionMode reportingInteractionMode = null;
-    private Class<? extends BaseCrashReportDialog> reportDialogClass = null;
-    private Class<? extends ReportPrimer> reportPrimerClass = null;
+    private String[] logcatArguments;
+    private String mailTo;
+    private ReportingInteractionMode reportingInteractionMode;
+    private Class<? extends BaseCrashReportDialog> reportDialogClass;
+    private Class<? extends ReportPrimer> reportPrimerClass;
 
-    private Integer resDialogPositiveButtonText = null;
-    private Integer resDialogNegativeButtonText = null;
-    private Integer resDialogCommentPrompt = null;
-    private Integer resDialogEmailPrompt = null;
-    private Integer resDialogIcon = null;
-    private Integer resDialogOkToast = null;
-    private Integer resDialogText = null;
-    private Integer resDialogTitle = null;
-    private Integer resNotifIcon = null;
-    private Integer resNotifText = null;
-    private Integer resNotifTickerText = null;
-    private Integer resNotifTitle = null;
-    private Integer resToastText = null;
-    private Integer sharedPreferencesMode = null;
-    private String sharedPreferencesName = null;
-    private Integer socketTimeout = null;
-    private Boolean logcatFilterByPid = null;
-    private Boolean sendReportsInDevMode = null;
-    private Boolean sendReportsAtShutdown = null;
+    private Integer resDialogPositiveButtonText;
+    private Integer resDialogNegativeButtonText;
+    private Integer resDialogCommentPrompt;
+    private Integer resDialogEmailPrompt;
+    private Integer resDialogIcon;
+    private Integer resDialogOkToast;
+    private Integer resDialogText;
+    private Integer resDialogTitle;
+    private Integer resNotifIcon;
+    private Integer resNotifText;
+    private Integer resNotifTickerText;
+    private Integer resNotifTitle;
+    private Integer resToastText;
+    private Integer sharedPreferencesMode;
+    private String sharedPreferencesName;
+    private Integer socketTimeout;
+    private Boolean logcatFilterByPid;
+    private Boolean sendReportsInDevMode;
+    private Boolean sendReportsAtShutdown;
 
-    private String[] excludeMatchingSharedPreferencesKeys = null;
-    private String[] excludeMatchingSettingsKeys = null;
+    private String[] excludeMatchingSharedPreferencesKeys;
+    private String[] excludeMatchingSettingsKeys;
     private Class buildConfigClass;
-    private String applicationLogFile = null;
-    private Integer applicationLogFileLines = null;
+    private String applicationLogFile;
+    private Integer applicationLogFileLines;
 
-    private Method httpMethod = null;
-    private Type reportType = null;
+    private Method httpMethod;
+    private Type reportType;
     private Map<String, String> httpHeaders;
     private KeyStore keyStore;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
@@ -104,53 +106,54 @@ public class ACRAConfiguration implements Serializable {
     /**
      * @param annotationConfig  AnnotationConfig with which to initialise this {@link ACRAConfiguration}.
      */
-    public ACRAConfiguration(ReportsCrashes annotationConfig) {
+    public ACRAConfiguration(ConfigurationBuilder annotationConfig) {
         if (annotationConfig != null) {
-            annotationType = annotationConfig.annotationType();
+            annotationType = annotationConfig.annotationType;
 
-            additionalDropBoxTags = annotationConfig.additionalDropBoxTags();
-            additionalSharedPreferences = annotationConfig.additionalSharedPreferences();
-            connectionTimeout = annotationConfig.connectionTimeout();
-            customReportContent = annotationConfig.customReportContent();
-            deleteUnapprovedReportsOnApplicationStart = annotationConfig.deleteUnapprovedReportsOnApplicationStart();
-            deleteOldUnsentReportsOnApplicationStart = annotationConfig.deleteOldUnsentReportsOnApplicationStart();
-            dropboxCollectionMinutes = annotationConfig.dropboxCollectionMinutes();
-            forceCloseDialogAfterToast = annotationConfig.forceCloseDialogAfterToast();
-            formUri = annotationConfig.formUri();
-            formUriBasicAuthLogin = annotationConfig.formUriBasicAuthLogin();
-            formUriBasicAuthPassword = annotationConfig.formUriBasicAuthPassword();
-            includeDropBoxSystemTags = annotationConfig.includeDropBoxSystemTags();
-            logcatArguments = annotationConfig.logcatArguments();
-            mailTo = annotationConfig.mailTo();
-            reportingInteractionMode = annotationConfig.mode();
-            resDialogIcon = annotationConfig.resDialogIcon();
-            resDialogPositiveButtonText = annotationConfig.resDialogPositiveButtonText();
-            resDialogNegativeButtonText = annotationConfig.resDialogNegativeButtonText();
-            resDialogEmailPrompt = annotationConfig.resDialogEmailPrompt();
-            resDialogOkToast = annotationConfig.resDialogOkToast();
-            resDialogText = annotationConfig.resDialogText();
-            resDialogTitle = annotationConfig.resDialogTitle();
-            resNotifIcon = annotationConfig.resNotifIcon();
-            resNotifText = annotationConfig.resNotifText();
-            resNotifTickerText = annotationConfig.resNotifTickerText();
-            resNotifTitle = annotationConfig.resNotifTitle();
-            resToastText = annotationConfig.resToastText();
-            sharedPreferencesMode = annotationConfig.sharedPreferencesMode();
-            sharedPreferencesName = annotationConfig.sharedPreferencesName();
-            socketTimeout = annotationConfig.socketTimeout();
-            logcatFilterByPid = annotationConfig.logcatFilterByPid();
-            sendReportsInDevMode = annotationConfig.sendReportsInDevMode();
-            sendReportsAtShutdown = annotationConfig.sendReportsAtShutdown();
-            excludeMatchingSharedPreferencesKeys = annotationConfig.excludeMatchingSharedPreferencesKeys();
-            excludeMatchingSettingsKeys = annotationConfig.excludeMatchingSettingsKeys();
-            buildConfigClass = annotationConfig.buildConfigClass();
-            applicationLogFile = annotationConfig.applicationLogFile();
-            applicationLogFileLines = annotationConfig.applicationLogFileLines();
-            reportDialogClass = annotationConfig.reportDialogClass();
-            reportPrimerClass = annotationConfig.reportPrimerClass();
-            httpMethod = annotationConfig.httpMethod();
-            reportType = annotationConfig.reportType();
-            reportSenderFactoryClasses = annotationConfig.reportSenderFactoryClasses();
+            additionalDropBoxTags = copyArray(annotationConfig.additionalDropBoxTags);
+            additionalSharedPreferences = copyArray(annotationConfig.additionalSharedPreferences);
+            connectionTimeout = annotationConfig.connectionTimeout;
+            customReportContent = copyArray(annotationConfig.customReportContent);
+            deleteUnapprovedReportsOnApplicationStart = annotationConfig.deleteUnapprovedReportsOnApplicationStart;
+            deleteOldUnsentReportsOnApplicationStart = annotationConfig.deleteOldUnsentReportsOnApplicationStart;
+            dropboxCollectionMinutes = annotationConfig.dropboxCollectionMinutes;
+            forceCloseDialogAfterToast = annotationConfig.forceCloseDialogAfterToast;
+            formUri = annotationConfig.formUri;
+            formUriBasicAuthLogin = annotationConfig.formUriBasicAuthLogin;
+            formUriBasicAuthPassword = annotationConfig.formUriBasicAuthPassword;
+            includeDropBoxSystemTags = annotationConfig.includeDropBoxSystemTags;
+            logcatArguments = copyArray(annotationConfig.logcatArguments);
+            mailTo = annotationConfig.mailTo;
+            reportingInteractionMode = annotationConfig.reportingInteractionMode;
+            resDialogIcon = annotationConfig.resDialogIcon;
+            resDialogPositiveButtonText = annotationConfig.resDialogPositiveButtonText;
+            resDialogNegativeButtonText = annotationConfig.resDialogNegativeButtonText;
+            resDialogCommentPrompt = annotationConfig.resDialogCommentPrompt;
+            resDialogEmailPrompt = annotationConfig.resDialogEmailPrompt;
+            resDialogOkToast = annotationConfig.resDialogOkToast;
+            resDialogText = annotationConfig.resDialogText;
+            resDialogTitle = annotationConfig.resDialogTitle;
+            resNotifIcon = annotationConfig.resNotifIcon;
+            resNotifText = annotationConfig.resNotifText;
+            resNotifTickerText = annotationConfig.resNotifTickerText;
+            resNotifTitle = annotationConfig.resNotifTitle;
+            resToastText = annotationConfig.resToastText;
+            sharedPreferencesMode = annotationConfig.sharedPreferencesMode;
+            sharedPreferencesName = annotationConfig.sharedPreferencesName;
+            socketTimeout = annotationConfig.socketTimeout;
+            logcatFilterByPid = annotationConfig.logcatFilterByPid;
+            sendReportsInDevMode = annotationConfig.sendReportsInDevMode;
+            sendReportsAtShutdown = annotationConfig.sendReportsAtShutdown;
+            excludeMatchingSharedPreferencesKeys = copyArray(annotationConfig.excludeMatchingSharedPreferencesKeys);
+            excludeMatchingSettingsKeys = copyArray(annotationConfig.excludeMatchingSettingsKeys);
+            buildConfigClass = annotationConfig.buildConfigClass;
+            applicationLogFile = annotationConfig.applicationLogFile;
+            applicationLogFileLines = annotationConfig.applicationLogFileLines;
+            reportDialogClass = annotationConfig.reportDialogClass;
+            reportPrimerClass = annotationConfig.reportPrimerClass;
+            httpMethod = annotationConfig.httpMethod;
+            reportType = annotationConfig.reportType;
+            reportSenderFactoryClasses = copyArray(annotationConfig.reportSenderFactoryClasses);
         } else {
             annotationType = null;
         }
@@ -216,6 +219,8 @@ public class ACRAConfiguration implements Serializable {
      * @param additionalDropboxTags
      *            the additionalDropboxTags to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalDropboxTags(String[] additionalDropboxTags) {
@@ -227,6 +232,8 @@ public class ACRAConfiguration implements Serializable {
      * @param additionalSharedPreferences
      *            the additionalSharedPreferences to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
@@ -238,6 +245,8 @@ public class ACRAConfiguration implements Serializable {
      * @param connectionTimeout
      *            the connectionTimeout to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setConnectionTimeout(Integer connectionTimeout) {
@@ -249,6 +258,8 @@ public class ACRAConfiguration implements Serializable {
      * @param customReportContent
      *            the customReportContent to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setCustomReportContent(ReportField[] customReportContent) {
@@ -260,6 +271,8 @@ public class ACRAConfiguration implements Serializable {
      * @param deleteUnapprovedReportsOnApplicationStart
      *            the deleteUnapprovedReportsOnApplicationStart to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
@@ -270,6 +283,8 @@ public class ACRAConfiguration implements Serializable {
     /**
      * @param deleteOldUnsentReportsOnApplicationStart    When to delete old (unsent) reports on startup.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsentReportsOnApplicationStart) {
@@ -281,6 +296,8 @@ public class ACRAConfiguration implements Serializable {
      * @param dropboxCollectionMinutes
      *            the dropboxCollectionMinutes to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
@@ -292,6 +309,8 @@ public class ACRAConfiguration implements Serializable {
      * @param forceCloseDialogAfterToast
      *            the forceCloseDialogAfterToast to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
@@ -304,6 +323,8 @@ public class ACRAConfiguration implements Serializable {
      * 
      * @param formUri   formUri to set.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUri(String formUri) {
@@ -315,6 +336,8 @@ public class ACRAConfiguration implements Serializable {
      * @param formUriBasicAuthLogin
      *            the formUriBasicAuthLogin to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
@@ -326,6 +349,8 @@ public class ACRAConfiguration implements Serializable {
      * @param formUriBasicAuthPassword
      *            the formUriBasicAuthPassword to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
@@ -337,6 +362,8 @@ public class ACRAConfiguration implements Serializable {
      * @param includeDropboxSystemTags
      *            the includeDropboxSystemTags to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
@@ -348,6 +375,8 @@ public class ACRAConfiguration implements Serializable {
      * @param logcatArguments
      *            the logcatArguments to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setLogcatArguments(String[] logcatArguments) {
@@ -360,6 +389,8 @@ public class ACRAConfiguration implements Serializable {
      * 
      * @param mailTo    mailTo to set.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMailTo(String mailTo) {
@@ -376,6 +407,8 @@ public class ACRAConfiguration implements Serializable {
      * @return The updated ACRA configuration
      * @throws ACRAConfigurationException
      *             if a configuration item is missing for this mode.
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
@@ -384,18 +417,27 @@ public class ACRAConfiguration implements Serializable {
         return this;
     }
 
+    /**
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
+     */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogPositiveButtonText(int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
 
+    /**
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
+     */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
 
+    /**
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
+     */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setReportDialogClass(Class<? extends BaseCrashReportDialog> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
@@ -411,6 +453,8 @@ public class ACRAConfiguration implements Serializable {
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogCommentPrompt()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogCommentPrompt(int resId) {
@@ -427,6 +471,8 @@ public class ACRAConfiguration implements Serializable {
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogEmailPrompt()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogEmailPrompt(int resId) {
@@ -442,6 +488,8 @@ public class ACRAConfiguration implements Serializable {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogIcon(int resId) {
@@ -457,6 +505,8 @@ public class ACRAConfiguration implements Serializable {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogOkToast(int resId) {
@@ -472,6 +522,8 @@ public class ACRAConfiguration implements Serializable {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogText()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogText(int resId) {
@@ -487,6 +539,8 @@ public class ACRAConfiguration implements Serializable {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResDialogTitle(int resId) {
@@ -502,6 +556,8 @@ public class ACRAConfiguration implements Serializable {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifIcon(int resId) {
@@ -517,6 +573,8 @@ public class ACRAConfiguration implements Serializable {
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifText()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifText(int resId) {
@@ -533,6 +591,8 @@ public class ACRAConfiguration implements Serializable {
      *            The resource id, see
      *            {@link ReportsCrashes#resNotifTickerText()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifTickerText(int resId) {
@@ -545,9 +605,10 @@ public class ACRAConfiguration implements Serializable {
      * {@link ReportsCrashes#resNotifTitle()} comes from an Android Library
      * Project.
      * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resNotifTitle()}
+     * @param resId The resource id, see {@link ReportsCrashes#resNotifTitle()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResNotifTitle(int resId) {
@@ -560,9 +621,10 @@ public class ACRAConfiguration implements Serializable {
      * {@link ReportsCrashes#resToastText()} comes from an Android Library
      * Project.
      * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resToastText()}
+     * @param resId The resource id, see {@link ReportsCrashes#resToastText()}
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setResToastText(int resId) {
@@ -571,9 +633,10 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * @param sharedPreferenceMode
-     *            the sharedPreferenceMode to set
+     * @param sharedPreferenceMode the sharedPreferenceMode to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSharedPreferenceMode(Integer sharedPreferenceMode) {
@@ -582,9 +645,10 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * @param sharedPreferenceName
-     *            the sharedPreferenceName to set
+     * @param sharedPreferenceName the sharedPreferenceName to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSharedPreferenceName(String sharedPreferenceName) {
@@ -593,9 +657,10 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * @param socketTimeout
-     *            the socketTimeout to set
+     * @param socketTimeout the socketTimeout to set
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSocketTimeout(Integer socketTimeout) {
@@ -609,6 +674,8 @@ public class ACRAConfiguration implements Serializable {
      *            true if you want to collect only logcat lines related to your
      *            application process.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setLogcatFilterByPid(Boolean filterByPid) {
@@ -617,11 +684,12 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
      * @param sendReportsInDevMode
      *            false if you want to disable sending reports in development
      *            mode. Reports will be sent only on signed applications.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsInDevMode(Boolean sendReportsInDevMode) {
@@ -630,12 +698,13 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
      * @param sendReportsAtShutdown
      *            false if you want to disable sending reports at the time the
      *            exception is caught. Reports will be sent when the application
      *            is restarted.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
@@ -650,6 +719,8 @@ public class ACRAConfiguration implements Serializable {
      *            SharedPreferences keys that should be excluded from the data
      *            collection.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
@@ -658,12 +729,13 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
      * @param excludeMatchingSettingsKeys
      *            an array of Strings containing regexp defining
      *            Settings.System, Settings.Secure and Settings.Global keys that
      *            should be excluded from the data collection.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
@@ -671,17 +743,22 @@ public class ACRAConfiguration implements Serializable {
         return this;
     }
 
+    /**
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
+     */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setBuildConfigClass(Class buildConfigClass) {
         this.buildConfigClass = buildConfigClass;
         return this;
     }
+
     /**
-     * 
      * @param applicationLogFile
      *            The path and file name of your application log file, to be
      *            used with {@link ReportField#APPLICATION_LOG}.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setApplicationLogFile(String applicationLogFile) {
@@ -690,12 +767,13 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
      * @param applicationLogFileLines
      *            The number of lines of your application log to be collected,
      *            to be used with {@link ReportField#APPLICATION_LOG} and
      *            {@link ReportsCrashes#applicationLogFile()}.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setApplicationLogFileLines(int applicationLogFileLines) {
@@ -704,10 +782,10 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
-     * @param httpMethod
-     *            The method to be used to send data to the server.
+     * @param httpMethod    The method to be used to send data to the server.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setHttpMethod(Method httpMethod) {
@@ -716,11 +794,10 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
-     * @param type
-     *            The type of content encoding to be used to send data to the
-     *            server.
+     * @param type  The type of content encoding to be used to send data to the server.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setReportType(Type type) {
@@ -729,13 +806,21 @@ public class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
-     * @param keyStore
-     *            Set this to the keystore that contains the trusted certificates
+     * @param keyStore  Set this to the keystore that contains the trusted certificates
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings("unused")
     public void setKeyStore(KeyStore keyStore) {
         this.keyStore = keyStore;
+    }
+
+    /**
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
+     */
+    @SuppressWarnings("unused")
+    public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
+        this.reportSenderFactoryClasses = reportSenderFactoryClasses;
     }
 
     @SuppressWarnings("unused")
@@ -1096,11 +1181,6 @@ public class ACRAConfiguration implements Serializable {
     }
 
     @SuppressWarnings("unused")
-    public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
-        this.reportSenderFactoryClasses = reportSenderFactoryClasses;
-    }
-
-    @SuppressWarnings("unused")
     public Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
         if (reportSenderFactoryClasses != null) {
             return reportSenderFactoryClasses;
@@ -1146,5 +1226,29 @@ public class ACRAConfiguration implements Serializable {
             default:
                 break;
         }
+    }
+
+    private static String[] copyArray(String[] source) {
+        final String[] target = new String[source.length];
+        for (int i = 0; i < source.length; i++) { // NB manual array copy because auto requires API 9
+            target[i] = source[i];
+        }
+        return target;
+    }
+
+    private static ReportField[] copyArray(ReportField[] source) {
+        final ReportField[] target = new ReportField[source.length];
+        for (int i = 0; i < source.length; i++) { // NB manual array copy because auto requires API 9
+            target[i] = source[i];
+        }
+        return target;
+    }
+
+    private static Class<? extends ReportSenderFactory>[] copyArray(Class<? extends ReportSenderFactory>[] source) {
+        final Class<? extends ReportSenderFactory>[] target = new Class[source.length];
+        for (int i = 0; i < source.length; i++) { // NB manual array copy because auto requires API 9
+            target[i] = source[i];
+        }
+        return target;
     }
 }
