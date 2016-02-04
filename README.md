@@ -36,14 +36,19 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
-ACRA v4.8
+
+ACRA v4.8.1
 ===============================
 - SenderService now invoked to send all report in a separate process.
 - AAR contains Proguard config
 - AAR contains AndroidManifest with condig for RpoertDialog and SenderService.
+- Introduced ConfigurationBuilder to allow ACRAConfiguration to become immutable.
 - Substantial refactoring to simplify internals.
   NB ACRAConfiguration has moved to org.acra.config package.
 
+ACRA v4.8
+===============================
+- DO NOT USE. Lots of good changes but one major flaw https://github.com/ACRA/acra/issues/354
 
 ACRA v4.7
 ===============================
