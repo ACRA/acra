@@ -41,7 +41,7 @@ ACRA v4.8.1
 ===============================
 - SenderService now invoked to send all report in a separate process.
 - AAR contains Proguard config
-- AAR contains AndroidManifest with condig for RpoertDialog and SenderService.
+- AAR contains AndroidManifest with config for RpoertDialog and SenderService.
 - Introduced ConfigurationBuilder to allow ACRAConfiguration to become immutable.
 - Substantial refactoring to simplify internals.
   NB ACRAConfiguration has moved to org.acra.config package.
