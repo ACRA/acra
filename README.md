@@ -16,11 +16,11 @@ See [BasicSetup](http://github.com/ACRA/acra/wiki/BasicSetup) for a step-by-step
 A crash reporting feature for android apps is native since Android 2.2 (FroYo) but only available through the official Android Market (and with limited data). ACRA is a great help for Android developers :
 
   * [developer configurable user interaction](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
-  * usable with ALL versions of android (compiled with 1.5, not tested on 1.0/1.1 but might work... but who does really care ?) and capable of retrieving data from latest versions through reflection.
+  * usable with ALL versions of Android from 2.2 onwards.
   * more [detailed crash reports](http://github.com/ACRA/acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
   * you can [add your own variables content or debug traces](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
   * you can send [error reports even if the application doesn't crash](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
-  * works for any application even if not delivered through Google's Android Market => great for devices/regions where the Android Market is not available, beta releases or for enterprise private apps
+  * works for any application even if not delivered through Google PLay => great for devices/regions where the Google Play is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
   * can be used with [your own self-hosted report receiver script](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Reports_destination)
   * google doc reports can be shared with a whole development team. Other benefits from the Google Docs platform are still to be investigated (stats, macros...)
