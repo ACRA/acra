@@ -36,6 +36,9 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
+ACRA v4.8.2
+===============================
+- Fix for bug when building without @ReportCrashes annotation.
 
 ACRA v4.8.1
 ===============================

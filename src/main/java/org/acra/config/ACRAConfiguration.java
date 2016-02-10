@@ -33,9 +33,7 @@ import org.acra.sender.ReportSenderFactory;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.*;
@@ -52,6 +50,7 @@ public final class ACRAConfiguration implements Serializable {
 
     private final Class<? extends Annotation> annotationType;
 
+    // TODO Make all of these attributes final in ACRA 4.9 or 5.0
     private String[] additionalDropBoxTags;
     private String[] additionalSharedPreferences;
     private Integer connectionTimeout;
@@ -99,64 +98,65 @@ public final class ACRAConfiguration implements Serializable {
 
     private Method httpMethod;
     private Type reportType;
-    private Map<String, String> httpHeaders;
+    private final Map<String, String> httpHeaders = new HashMap<String, String>();
     private KeyStore keyStore;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
     /**
-     * @param annotationConfig  AnnotationConfig with which to initialise this {@link ACRAConfiguration}.
+     * @param builder  ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
      */
-    public ACRAConfiguration(ConfigurationBuilder annotationConfig) {
-        if (annotationConfig != null) {
-            annotationType = annotationConfig.annotationType;
-
-            additionalDropBoxTags = copyArray(annotationConfig.additionalDropBoxTags);
-            additionalSharedPreferences = copyArray(annotationConfig.additionalSharedPreferences);
-            connectionTimeout = annotationConfig.connectionTimeout;
-            customReportContent = copyArray(annotationConfig.customReportContent);
-            deleteUnapprovedReportsOnApplicationStart = annotationConfig.deleteUnapprovedReportsOnApplicationStart;
-            deleteOldUnsentReportsOnApplicationStart = annotationConfig.deleteOldUnsentReportsOnApplicationStart;
-            dropboxCollectionMinutes = annotationConfig.dropboxCollectionMinutes;
-            forceCloseDialogAfterToast = annotationConfig.forceCloseDialogAfterToast;
-            formUri = annotationConfig.formUri;
-            formUriBasicAuthLogin = annotationConfig.formUriBasicAuthLogin;
-            formUriBasicAuthPassword = annotationConfig.formUriBasicAuthPassword;
-            includeDropBoxSystemTags = annotationConfig.includeDropBoxSystemTags;
-            logcatArguments = copyArray(annotationConfig.logcatArguments);
-            mailTo = annotationConfig.mailTo;
-            reportingInteractionMode = annotationConfig.reportingInteractionMode;
-            resDialogIcon = annotationConfig.resDialogIcon;
-            resDialogPositiveButtonText = annotationConfig.resDialogPositiveButtonText;
-            resDialogNegativeButtonText = annotationConfig.resDialogNegativeButtonText;
-            resDialogCommentPrompt = annotationConfig.resDialogCommentPrompt;
-            resDialogEmailPrompt = annotationConfig.resDialogEmailPrompt;
-            resDialogOkToast = annotationConfig.resDialogOkToast;
-            resDialogText = annotationConfig.resDialogText;
-            resDialogTitle = annotationConfig.resDialogTitle;
-            resNotifIcon = annotationConfig.resNotifIcon;
-            resNotifText = annotationConfig.resNotifText;
-            resNotifTickerText = annotationConfig.resNotifTickerText;
-            resNotifTitle = annotationConfig.resNotifTitle;
-            resToastText = annotationConfig.resToastText;
-            sharedPreferencesMode = annotationConfig.sharedPreferencesMode;
-            sharedPreferencesName = annotationConfig.sharedPreferencesName;
-            socketTimeout = annotationConfig.socketTimeout;
-            logcatFilterByPid = annotationConfig.logcatFilterByPid;
-            sendReportsInDevMode = annotationConfig.sendReportsInDevMode;
-            sendReportsAtShutdown = annotationConfig.sendReportsAtShutdown;
-            excludeMatchingSharedPreferencesKeys = copyArray(annotationConfig.excludeMatchingSharedPreferencesKeys);
-            excludeMatchingSettingsKeys = copyArray(annotationConfig.excludeMatchingSettingsKeys);
-            buildConfigClass = annotationConfig.buildConfigClass;
-            applicationLogFile = annotationConfig.applicationLogFile;
-            applicationLogFileLines = annotationConfig.applicationLogFileLines;
-            reportDialogClass = annotationConfig.reportDialogClass;
-            reportPrimerClass = annotationConfig.reportPrimerClass;
-            httpMethod = annotationConfig.httpMethod;
-            reportType = annotationConfig.reportType;
-            reportSenderFactoryClasses = copyArray(annotationConfig.reportSenderFactoryClasses);
-        } else {
-            annotationType = null;
+    ACRAConfiguration(ConfigurationBuilder builder) {
+        if (builder == null) {
+            throw new NullPointerException("A ConfigurationBuilder must be supplied to ACRAConfiguration");
         }
+
+        annotationType = builder.annotationType;
+
+        additionalDropBoxTags = copyArray(builder.additionalDropBoxTags());
+        additionalSharedPreferences = copyArray(builder.additionalSharedPreferences());
+        connectionTimeout = builder.connectionTimeout();
+        customReportContent = copyArray(builder.customReportContent());
+        deleteUnapprovedReportsOnApplicationStart = builder.deleteUnapprovedReportsOnApplicationStart();
+        deleteOldUnsentReportsOnApplicationStart = builder.deleteOldUnsentReportsOnApplicationStart();
+        dropboxCollectionMinutes = builder.dropboxCollectionMinutes();
+        forceCloseDialogAfterToast = builder.forceCloseDialogAfterToast();
+        formUri = builder.formUri();
+        formUriBasicAuthLogin = builder.formUriBasicAuthLogin();
+        formUriBasicAuthPassword = builder.formUriBasicAuthPassword();
+        includeDropBoxSystemTags = builder.includeDropBoxSystemTags();
+        logcatArguments = copyArray(builder.logcatArguments());
+        mailTo = builder.mailTo();
+        reportingInteractionMode = builder.reportingInteractionMode();
+        resDialogIcon = builder.resDialogIcon();
+        resDialogPositiveButtonText = builder.resDialogPositiveButtonText();
+        resDialogNegativeButtonText = builder.resDialogNegativeButtonText();
+        resDialogCommentPrompt = builder.resDialogCommentPrompt();
+        resDialogEmailPrompt = builder.resDialogEmailPrompt();
+        resDialogOkToast = builder.resDialogOkToast();
+        resDialogText = builder.resDialogText();
+        resDialogTitle = builder.resDialogTitle();
+        resNotifIcon = builder.resNotifIcon();
+        resNotifText = builder.resNotifText();
+        resNotifTickerText = builder.resNotifTickerText();
+        resNotifTitle = builder.resNotifTitle();
+        resToastText = builder.resToastText();
+        sharedPreferencesMode = builder.sharedPreferencesMode();
+        sharedPreferencesName = builder.sharedPreferencesName();
+        socketTimeout = builder.socketTimeout();
+        logcatFilterByPid = builder.logcatFilterByPid();
+        sendReportsInDevMode = builder.sendReportsInDevMode();
+        sendReportsAtShutdown = builder.sendReportsAtShutdown();
+        excludeMatchingSharedPreferencesKeys = copyArray(builder.excludeMatchingSharedPreferencesKeys());
+        excludeMatchingSettingsKeys = copyArray(builder.excludeMatchingSettingsKeys());
+        buildConfigClass = builder.buildConfigClass();
+        applicationLogFile = builder.applicationLogFile();
+        applicationLogFileLines = builder.applicationLogFileLines();
+        reportDialogClass = builder.reportDialogClass();
+        reportPrimerClass = builder.reportPrimerClass();
+        httpMethod = builder.httpMethod();
+        httpHeaders.putAll(builder.httpHeaders());
+        reportType = builder.reportType();
+        reportSenderFactoryClasses = copyArray(builder.reportSenderFactoryClasses());
     }
 
     /**
@@ -175,10 +175,13 @@ public final class ACRAConfiguration implements Serializable {
      * @param headers
      *            A map associating HTTP header names to their values.
      * @return The updated ACRA configuration
+     *
+     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setHttpHeaders(Map<String, String> headers) {
-        this.httpHeaders = headers;
+        this.httpHeaders.clear();
+        this.httpHeaders.putAll(headers);
         return this;
     }
 
@@ -191,7 +194,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @SuppressWarnings("unused")
     public Map<String, String> getHttpHeaders() {
-        return httpHeaders;
+        return Collections.unmodifiableMap(httpHeaders);
     }
 
     /**
@@ -825,18 +828,12 @@ public final class ACRAConfiguration implements Serializable {
 
     @SuppressWarnings("unused")
     public String[] additionalDropBoxTags() {
-        if (additionalDropBoxTags != null) {
-            return additionalDropBoxTags;
-        }
-        return new String[0];
+        return additionalDropBoxTags;
     }
 
     @SuppressWarnings("unused")
     public String[] additionalSharedPreferences() {
-        if (additionalSharedPreferences != null) {
-            return additionalSharedPreferences;
-        }
-        return new String[0];
+        return additionalSharedPreferences;
     }
 
     /**
@@ -849,275 +846,172 @@ public final class ACRAConfiguration implements Serializable {
 
     @SuppressWarnings("unused")
     public int connectionTimeout() {
-        if (connectionTimeout != null) {
-            return connectionTimeout;
-        }
-        return DEFAULT_CONNECTION_TIMEOUT;
+        return connectionTimeout;
     }
 
     @SuppressWarnings("unused")
     public ReportField[] customReportContent() {
-        if (customReportContent != null) {
-            return customReportContent;
-        }
-        return new ReportField[0];
+        return customReportContent;
     }
 
     @SuppressWarnings("unused")
     public boolean deleteUnapprovedReportsOnApplicationStart() {
-        if (deleteUnapprovedReportsOnApplicationStart != null) {
-            return deleteUnapprovedReportsOnApplicationStart;
-        }
-        return DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
+        return deleteUnapprovedReportsOnApplicationStart;
     }
 
     @SuppressWarnings("unused")
     public boolean deleteOldUnsentReportsOnApplicationStart() {
-        if (deleteOldUnsentReportsOnApplicationStart != null) {
-            return deleteOldUnsentReportsOnApplicationStart;
-        }
-        return DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+        return deleteOldUnsentReportsOnApplicationStart;
     }
 
     @SuppressWarnings("unused")
     public int dropboxCollectionMinutes() {
-        if (dropboxCollectionMinutes != null) {
-            return dropboxCollectionMinutes;
-        }
-        return DEFAULT_DROPBOX_COLLECTION_MINUTES;
+        return dropboxCollectionMinutes;
     }
 
     @SuppressWarnings("unused")
     public boolean forceCloseDialogAfterToast() {
-        if (forceCloseDialogAfterToast != null) {
-            return forceCloseDialogAfterToast;
-        }
-        return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+        return forceCloseDialogAfterToast;
     }
 
     @SuppressWarnings("unused")
     public String formUri() {
-        if (formUri != null) {
-            return formUri;
-        }
-        return DEFAULT_STRING_VALUE;
+        return formUri;
     }
 
     @SuppressWarnings("unused")
     public String formUriBasicAuthLogin() {
-        if (formUriBasicAuthLogin != null) {
-            return formUriBasicAuthLogin;
-        }
-        return NULL_VALUE;
+        return formUriBasicAuthLogin;
     }
 
     @SuppressWarnings("unused")
     public String formUriBasicAuthPassword() {
-        if (formUriBasicAuthPassword != null) {
-            return formUriBasicAuthPassword;
-        }
-        return NULL_VALUE;
+        return formUriBasicAuthPassword;
     }
 
     @SuppressWarnings("unused")
     public boolean includeDropBoxSystemTags() {
-        if (includeDropBoxSystemTags != null) {
-            return includeDropBoxSystemTags;
-        }
-        return DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
+        return includeDropBoxSystemTags;
     }
 
     @SuppressWarnings("unused")
     public String[] logcatArguments() {
-        if (logcatArguments != null) {
-            return logcatArguments;
-        }
-        return new String[] { "-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time" };
+        return logcatArguments;
     }
 
     @SuppressWarnings("unused")
     public String mailTo() {
-        if (mailTo != null) {
-            return mailTo;
-        }
-        return DEFAULT_STRING_VALUE;
+        return mailTo;
     }
 
     @SuppressWarnings("unused")
     public ReportingInteractionMode mode() {
-        if (reportingInteractionMode != null) {
-            return reportingInteractionMode;
-        }
-        return ReportingInteractionMode.SILENT;
+        return reportingInteractionMode;
     }
 
     @SuppressWarnings("unused")
     public int resDialogPositiveButtonText() {
-        if (resDialogPositiveButtonText != null) {
-            return resDialogPositiveButtonText;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogPositiveButtonText;
     }
 
     @SuppressWarnings("unused")
     public int resDialogNegativeButtonText() {
-        if (resDialogNegativeButtonText != null) {
-            return resDialogNegativeButtonText;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogNegativeButtonText;
     }
 
     @SuppressWarnings("unused")
     public int resDialogCommentPrompt() {
-        if (resDialogCommentPrompt != null) {
-            return resDialogCommentPrompt;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogCommentPrompt;
     }
 
     @SuppressWarnings("unused")
     public int resDialogEmailPrompt() {
-        if (resDialogEmailPrompt != null) {
-            return resDialogEmailPrompt;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogEmailPrompt;
     }
 
     @SuppressWarnings("unused")
     public int resDialogIcon() {
-        if (resDialogIcon != null) {
-            return resDialogIcon;
-        }
-        return DEFAULT_DIALOG_ICON;
+        return resDialogIcon;
     }
 
     @SuppressWarnings("unused")
     public int resDialogOkToast() {
-        if (resDialogOkToast != null) {
-            return resDialogOkToast;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogOkToast;
     }
 
     @SuppressWarnings("unused")
     public int resDialogText() {
-        if (resDialogText != null) {
-            return resDialogText;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogText;
     }
 
     @SuppressWarnings("unused")
     public int resDialogTitle() {
-        if (resDialogTitle != null) {
-            return resDialogTitle;
-        }
-        return DEFAULT_RES_VALUE;
+        return resDialogTitle;
     }
 
     @SuppressWarnings("unused")
     public int resNotifIcon() {
-        if (resNotifIcon != null) {
-            return resNotifIcon;
-        }
-        return DEFAULT_NOTIFICATION_ICON;
+        return resNotifIcon;
     }
 
     @SuppressWarnings("unused")
     public int resNotifText() {
-        if (resNotifText != null) {
-            return resNotifText;
-        }
-        return DEFAULT_RES_VALUE;
+        return resNotifText;
     }
 
     @SuppressWarnings("unused")
     public int resNotifTickerText() {
-        if (resNotifTickerText != null) {
-            return resNotifTickerText;
-        }
-        return DEFAULT_RES_VALUE;
+        return resNotifTickerText;
     }
 
     @SuppressWarnings("unused")
     public int resNotifTitle() {
-        if (resNotifTitle != null) {
-            return resNotifTitle;
-        }
-        return DEFAULT_RES_VALUE;
+        return resNotifTitle;
     }
 
     @SuppressWarnings("unused")
     public int resToastText() {
-        if (resToastText != null) {
-            return resToastText;
-        }
-        return DEFAULT_RES_VALUE;
+        return resToastText;
     }
 
     @SuppressWarnings("unused")
     public int sharedPreferencesMode() {
-        if (sharedPreferencesMode != null) {
-            return sharedPreferencesMode;
-        }
-        return DEFAULT_SHARED_PREFERENCES_MODE;
+        return sharedPreferencesMode;
     }
 
     @SuppressWarnings("unused")
     public String sharedPreferencesName() {
-        if (sharedPreferencesName != null) {
-            return sharedPreferencesName;
-        }
-
-        return DEFAULT_STRING_VALUE;
+        return sharedPreferencesName;
     }
 
     @SuppressWarnings("unused")
     public int socketTimeout() {
-        if (socketTimeout != null) {
-            return socketTimeout;
-        }
-        return DEFAULT_SOCKET_TIMEOUT;
+        return socketTimeout;
     }
 
     @SuppressWarnings("unused")
     public boolean logcatFilterByPid() {
-        if (logcatFilterByPid != null) {
-            return logcatFilterByPid;
-        }
-        return DEFAULT_LOGCAT_FILTER_BY_PID;
+        return logcatFilterByPid;
     }
 
     @SuppressWarnings("unused")
     public boolean sendReportsInDevMode() {
-        if (sendReportsInDevMode != null) {
-            return sendReportsInDevMode;
-        }
-        return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+        return sendReportsInDevMode;
     }
 
     @SuppressWarnings("unused")
     public boolean sendReportsAtShutdown() {
-        if (sendReportsAtShutdown != null) {
-            return sendReportsAtShutdown;
-        }
-        return DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
+        return sendReportsAtShutdown;
     }
 
     @SuppressWarnings("unused")
     public String[] excludeMatchingSharedPreferencesKeys() {
-        if (excludeMatchingSharedPreferencesKeys != null) {
-            return excludeMatchingSharedPreferencesKeys;
-        }
-        return new String[0];
+        return excludeMatchingSharedPreferencesKeys;
     }
 
     @SuppressWarnings("unused")
     public String[] excludeMatchingSettingsKeys() {
-        if (excludeMatchingSettingsKeys != null) {
-            return excludeMatchingSettingsKeys;
-        }
-        return new String[0];
+        return excludeMatchingSettingsKeys;
     }
 
     /**
@@ -1126,67 +1020,42 @@ public final class ACRAConfiguration implements Serializable {
      */
     @SuppressWarnings("unused")
     public Class buildConfigClass() {
-        if (buildConfigClass != null) {
-            return buildConfigClass;
-        }
-        return null;
+        return buildConfigClass;
     }
 
     @SuppressWarnings("unused")
     public String applicationLogFile() {
-        if (applicationLogFile != null) {
-            return applicationLogFile;
-        }
-        return DEFAULT_APPLICATION_LOGFILE;
+        return applicationLogFile;
     }
 
     @SuppressWarnings("unused")
     public int applicationLogFileLines() {
-        if (applicationLogFileLines != null) {
-            return applicationLogFileLines;
-        }
-        return DEFAULT_APPLICATION_LOGFILE_LINES;
+        return applicationLogFileLines;
     }
 
     @SuppressWarnings("unused")
     public Class<? extends BaseCrashReportDialog> reportDialogClass() {
-        if (reportDialogClass != null) {
-            return reportDialogClass;
-        }
-        return CrashReportDialog.class;
+        return reportDialogClass;
     }
 
     @SuppressWarnings("unused")
     public Class<? extends ReportPrimer> reportPrimerClass() {
-        if (reportPrimerClass != null) {
-            return reportPrimerClass;
-        }
-        return NoOpReportPrimer.class;
+        return reportPrimerClass;
     }
 
     @SuppressWarnings("unused")
     public Method httpMethod() {
-        if (httpMethod != null) {
-            return httpMethod;
-        }
-        return Method.POST;
+        return httpMethod;
     }
 
     @SuppressWarnings("unused")
     public Type reportType() {
-        if (reportType != null) {
-            return reportType;
-        }
-        return Type.FORM;
+        return reportType;
     }
 
     @SuppressWarnings("unused")
     public Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
-        if (reportSenderFactoryClasses != null) {
-            return reportSenderFactoryClasses;
-        }
-        //noinspection unchecked
-        return new Class[] {DefaultReportSenderFactory.class};
+        return reportSenderFactoryClasses;
     }
 
     @SuppressWarnings("unused")

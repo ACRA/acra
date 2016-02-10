@@ -19,8 +19,11 @@ import android.app.Application;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.CrashReportDialog;
+import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -28,7 +31,10 @@ import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.acra.ACRAConstants.*;
 
 /**
  * Builder responsible for programmatic construction of an {@link ACRAConfiguration}.
@@ -42,56 +48,56 @@ public final class ConfigurationBuilder {
 
     final Class<? extends Annotation> annotationType;
 
-    String[] additionalDropBoxTags;
-    String[] additionalSharedPreferences;
-    Integer connectionTimeout;
-    ReportField[] customReportContent;
-    Boolean deleteUnapprovedReportsOnApplicationStart;
-    Boolean deleteOldUnsentReportsOnApplicationStart;
-    Integer dropboxCollectionMinutes;
-    Boolean forceCloseDialogAfterToast;
-    String formUri;
-    String formUriBasicAuthLogin;
-    String formUriBasicAuthPassword;
-    Boolean includeDropBoxSystemTags;
+    private String[] additionalDropBoxTags;
+    private String[] additionalSharedPreferences;
+    private Integer connectionTimeout;
+    private ReportField[] customReportContent;
+    private Boolean deleteUnapprovedReportsOnApplicationStart;
+    private Boolean deleteOldUnsentReportsOnApplicationStart;
+    private Integer dropboxCollectionMinutes;
+    private Boolean forceCloseDialogAfterToast;
+    private String formUri;
+    private String formUriBasicAuthLogin;
+    private String formUriBasicAuthPassword;
+    private Boolean includeDropBoxSystemTags;
 
-    String[] logcatArguments;
-    String mailTo;
-    ReportingInteractionMode reportingInteractionMode;
-    Class<? extends BaseCrashReportDialog> reportDialogClass;
-    Class<? extends ReportPrimer> reportPrimerClass;
+    private String[] logcatArguments;
+    private String mailTo;
+    private ReportingInteractionMode reportingInteractionMode;
+    private Class<? extends BaseCrashReportDialog> reportDialogClass;
+    private Class<? extends ReportPrimer> reportPrimerClass;
 
-    Integer resDialogPositiveButtonText;
-    Integer resDialogNegativeButtonText;
-    Integer resDialogCommentPrompt;
-    Integer resDialogEmailPrompt;
-    Integer resDialogIcon;
-    Integer resDialogOkToast;
-    Integer resDialogText;
-    Integer resDialogTitle;
-    Integer resNotifIcon;
-    Integer resNotifText;
-    Integer resNotifTickerText;
-    Integer resNotifTitle;
-    Integer resToastText;
-    Integer sharedPreferencesMode;
-    String sharedPreferencesName;
-    Integer socketTimeout;
-    Boolean logcatFilterByPid;
-    Boolean sendReportsInDevMode;
-    Boolean sendReportsAtShutdown;
+    private Integer resDialogPositiveButtonText;
+    private Integer resDialogNegativeButtonText;
+    private Integer resDialogCommentPrompt;
+    private Integer resDialogEmailPrompt;
+    private Integer resDialogIcon;
+    private Integer resDialogOkToast;
+    private Integer resDialogText;
+    private Integer resDialogTitle;
+    private Integer resNotifIcon;
+    private Integer resNotifText;
+    private Integer resNotifTickerText;
+    private Integer resNotifTitle;
+    private Integer resToastText;
+    private Integer sharedPreferencesMode;
+    private String sharedPreferencesName;
+    private Integer socketTimeout;
+    private Boolean logcatFilterByPid;
+    private Boolean sendReportsInDevMode;
+    private Boolean sendReportsAtShutdown;
 
-    String[] excludeMatchingSharedPreferencesKeys;
-    String[] excludeMatchingSettingsKeys;
-    Class buildConfigClass;
-    String applicationLogFile;
-    Integer applicationLogFileLines;
+    private String[] excludeMatchingSharedPreferencesKeys;
+    private String[] excludeMatchingSettingsKeys;
+    private Class buildConfigClass;
+    private String applicationLogFile;
+    private Integer applicationLogFileLines;
 
-    Method httpMethod;
-    Type reportType;
-    Map<String, String> httpHeaders;
-    KeyStore keyStore;
-    Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
+    private Method httpMethod;
+    private Type reportType;
+    private final Map<String, String> httpHeaders = new HashMap<String, String>();
+    private KeyStore keyStore;
+    private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
     /**
      * Constructs a ConfigurationBuilder that is prepopulated with any
@@ -173,7 +179,8 @@ public final class ConfigurationBuilder {
      */
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setHttpHeaders(Map<String, String> headers) {
-        this.httpHeaders = headers;
+        this.httpHeaders.clear();
+        this.httpHeaders.putAll(headers);
         return this;
     }
 
@@ -332,17 +339,29 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * Change the current {@link ReportingInteractionMode}. You must set
-     * required configuration items first.
+     * Change the current {@link ReportingInteractionMode}.
      * 
-     * @param mode
-     *            the new mode to set.
+     * @param mode  ReportingInteractionMode to set.
      * @return The updated ACRA configuration
-     * @throws ACRAConfigurationException
-     *             if a configuration item is missing for this mode.
+     * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
+     *
+     * @deprecated since 4.8.2 use {@link #setReportingInteractionMode(ReportingInteractionMode)} instead.
      */
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
+        this.reportingInteractionMode = mode;
+        return this;
+    }
+
+    /**
+     * Change the current {@link ReportingInteractionMode}.
+     *
+     * @param mode  ReportingInteractionMode to set.
+     * @return The updated ACRA configuration
+     * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
+     */
+    @SuppressWarnings( "unused" )
+    public ConfigurationBuilder setReportingInteractionMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
     }
@@ -707,5 +726,383 @@ public final class ConfigurationBuilder {
     @SuppressWarnings("unused")
     public void setReportPrimerClass(Class<? extends ReportPrimer> reportPrimerClass) {
         this.reportPrimerClass = reportPrimerClass;
+    }
+
+
+    // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
+
+    @SuppressWarnings("unused")
+    String[] additionalDropBoxTags() {
+        if (additionalDropBoxTags != null) {
+            return additionalDropBoxTags;
+        }
+        return new String[0];
+    }
+
+    @SuppressWarnings("unused")
+    String[] additionalSharedPreferences() {
+        if (additionalSharedPreferences != null) {
+            return additionalSharedPreferences;
+        }
+        return new String[0];
+    }
+
+    /**
+     * @deprecated since 4.8.1 no replacement.
+     */
+    @SuppressWarnings("unused")
+    Class<? extends Annotation> annotationType() {
+        return annotationType; // Why would this ever be needed?
+    }
+
+    @SuppressWarnings("unused")
+    int connectionTimeout() {
+        if (connectionTimeout != null) {
+            return connectionTimeout;
+        }
+        return DEFAULT_CONNECTION_TIMEOUT;
+    }
+
+    @SuppressWarnings("unused")
+    ReportField[] customReportContent() {
+        if (customReportContent != null) {
+            return customReportContent;
+        }
+        return new ReportField[0];
+    }
+
+    @SuppressWarnings("unused")
+    boolean deleteUnapprovedReportsOnApplicationStart() {
+        if (deleteUnapprovedReportsOnApplicationStart != null) {
+            return deleteUnapprovedReportsOnApplicationStart;
+        }
+        return DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
+    }
+
+    @SuppressWarnings("unused")
+    boolean deleteOldUnsentReportsOnApplicationStart() {
+        if (deleteOldUnsentReportsOnApplicationStart != null) {
+            return deleteOldUnsentReportsOnApplicationStart;
+        }
+        return DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+    }
+
+    @SuppressWarnings("unused")
+    int dropboxCollectionMinutes() {
+        if (dropboxCollectionMinutes != null) {
+            return dropboxCollectionMinutes;
+        }
+        return DEFAULT_DROPBOX_COLLECTION_MINUTES;
+    }
+
+    @SuppressWarnings("unused")
+    boolean forceCloseDialogAfterToast() {
+        if (forceCloseDialogAfterToast != null) {
+            return forceCloseDialogAfterToast;
+        }
+        return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+    }
+
+    @SuppressWarnings("unused")
+    String formUri() {
+        if (formUri != null) {
+            return formUri;
+        }
+        return DEFAULT_STRING_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    String formUriBasicAuthLogin() {
+        if (formUriBasicAuthLogin != null) {
+            return formUriBasicAuthLogin;
+        }
+        return NULL_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    String formUriBasicAuthPassword() {
+        if (formUriBasicAuthPassword != null) {
+            return formUriBasicAuthPassword;
+        }
+        return NULL_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    boolean includeDropBoxSystemTags() {
+        if (includeDropBoxSystemTags != null) {
+            return includeDropBoxSystemTags;
+        }
+        return DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
+    }
+
+    @SuppressWarnings("unused")
+    String[] logcatArguments() {
+        if (logcatArguments != null) {
+            return logcatArguments;
+        }
+        return new String[] { "-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time" };
+    }
+
+    @SuppressWarnings("unused")
+    String mailTo() {
+        if (mailTo != null) {
+            return mailTo;
+        }
+        return DEFAULT_STRING_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    ReportingInteractionMode reportingInteractionMode() {
+        if (reportingInteractionMode != null) {
+            return reportingInteractionMode;
+        }
+        return ReportingInteractionMode.SILENT;
+    }
+
+    @SuppressWarnings("unused")
+    public int resDialogPositiveButtonText() {
+        if (resDialogPositiveButtonText != null) {
+            return resDialogPositiveButtonText;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogNegativeButtonText() {
+        if (resDialogNegativeButtonText != null) {
+            return resDialogNegativeButtonText;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogCommentPrompt() {
+        if (resDialogCommentPrompt != null) {
+            return resDialogCommentPrompt;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogEmailPrompt() {
+        if (resDialogEmailPrompt != null) {
+            return resDialogEmailPrompt;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogIcon() {
+        if (resDialogIcon != null) {
+            return resDialogIcon;
+        }
+        return DEFAULT_DIALOG_ICON;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogOkToast() {
+        if (resDialogOkToast != null) {
+            return resDialogOkToast;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogText() {
+        if (resDialogText != null) {
+            return resDialogText;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resDialogTitle() {
+        if (resDialogTitle != null) {
+            return resDialogTitle;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resNotifIcon() {
+        if (resNotifIcon != null) {
+            return resNotifIcon;
+        }
+        return DEFAULT_NOTIFICATION_ICON;
+    }
+
+    @SuppressWarnings("unused")
+    int resNotifText() {
+        if (resNotifText != null) {
+            return resNotifText;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resNotifTickerText() {
+        if (resNotifTickerText != null) {
+            return resNotifTickerText;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resNotifTitle() {
+        if (resNotifTitle != null) {
+            return resNotifTitle;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int resToastText() {
+        if (resToastText != null) {
+            return resToastText;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int sharedPreferencesMode() {
+        if (sharedPreferencesMode != null) {
+            return sharedPreferencesMode;
+        }
+        return DEFAULT_SHARED_PREFERENCES_MODE;
+    }
+
+    @SuppressWarnings("unused")
+    String sharedPreferencesName() {
+        if (sharedPreferencesName != null) {
+            return sharedPreferencesName;
+        }
+
+        return DEFAULT_STRING_VALUE;
+    }
+
+    @SuppressWarnings("unused")
+    int socketTimeout() {
+        if (socketTimeout != null) {
+            return socketTimeout;
+        }
+        return DEFAULT_SOCKET_TIMEOUT;
+    }
+
+    @SuppressWarnings("unused")
+    boolean logcatFilterByPid() {
+        if (logcatFilterByPid != null) {
+            return logcatFilterByPid;
+        }
+        return DEFAULT_LOGCAT_FILTER_BY_PID;
+    }
+
+    @SuppressWarnings("unused")
+    boolean sendReportsInDevMode() {
+        if (sendReportsInDevMode != null) {
+            return sendReportsInDevMode;
+        }
+        return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+    }
+
+    @SuppressWarnings("unused")
+    boolean sendReportsAtShutdown() {
+        if (sendReportsAtShutdown != null) {
+            return sendReportsAtShutdown;
+        }
+        return DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
+    }
+
+    @SuppressWarnings("unused")
+    String[] excludeMatchingSharedPreferencesKeys() {
+        if (excludeMatchingSharedPreferencesKeys != null) {
+            return excludeMatchingSharedPreferencesKeys;
+        }
+        return new String[0];
+    }
+
+    @SuppressWarnings("unused")
+    String[] excludeMatchingSettingsKeys() {
+        if (excludeMatchingSettingsKeys != null) {
+            return excludeMatchingSettingsKeys;
+        }
+        return new String[0];
+    }
+
+    /**
+     * Will return null if no value has been configured.
+     * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
+     */
+    @SuppressWarnings("unused")
+    Class buildConfigClass() {
+        if (buildConfigClass != null) {
+            return buildConfigClass;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unused")
+    String applicationLogFile() {
+        if (applicationLogFile != null) {
+            return applicationLogFile;
+        }
+        return DEFAULT_APPLICATION_LOGFILE;
+    }
+
+    @SuppressWarnings("unused")
+    int applicationLogFileLines() {
+        if (applicationLogFileLines != null) {
+            return applicationLogFileLines;
+        }
+        return DEFAULT_APPLICATION_LOGFILE_LINES;
+    }
+
+    @SuppressWarnings("unused")
+    Class<? extends BaseCrashReportDialog> reportDialogClass() {
+        if (reportDialogClass != null) {
+            return reportDialogClass;
+        }
+        return CrashReportDialog.class;
+    }
+
+    @SuppressWarnings("unused")
+    Class<? extends ReportPrimer> reportPrimerClass() {
+        if (reportPrimerClass != null) {
+            return reportPrimerClass;
+        }
+        return NoOpReportPrimer.class;
+    }
+
+    @SuppressWarnings("unused")
+    Method httpMethod() {
+        if (httpMethod != null) {
+            return httpMethod;
+        }
+        return Method.POST;
+    }
+
+    @SuppressWarnings("unused")
+    Type reportType() {
+        if (reportType != null) {
+            return reportType;
+        }
+        return Type.FORM;
+    }
+
+    @SuppressWarnings("unused")
+    Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
+        if (reportSenderFactoryClasses != null) {
+            return reportSenderFactoryClasses;
+        }
+        //noinspection unchecked
+        return new Class[] {DefaultReportSenderFactory.class};
+    }
+
+    @SuppressWarnings("unused")
+    KeyStore keyStore() {
+        return keyStore;
+    }
+
+    Map<String, String> httpHeaders() {
+        return httpHeaders;
     }
 }
