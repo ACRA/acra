@@ -551,6 +551,7 @@ public final class CrashReportDataFactory {
      *
      * @return A string with a 'key = value' pair on each line.
      */
+    @NonNull
     private String createCustomInfoString(@Nullable Map<String, String> reportCustomData) {
         Map<String, String> params = customParameters;
 
@@ -560,9 +561,9 @@ public final class CrashReportDataFactory {
         }
 
         final StringBuilder customInfo = new StringBuilder();
-        for (final String currentKey : params.keySet()) {
-            String currentVal = params.get(currentKey);
-            customInfo.append(currentKey);
+        for (final Map.Entry<String, String> currentEntry : params.entrySet()) {
+            String currentVal = currentEntry.getValue();
+            customInfo.append(currentEntry.getKey());
             customInfo.append(" = ");
             // We need to escape new lines in values or they are transformed into new
             // custom fields. => let's replace all '\n' with "\\n"

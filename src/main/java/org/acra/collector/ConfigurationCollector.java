@@ -25,6 +25,7 @@ import org.acra.ACRA;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -56,7 +57,7 @@ public final class ConfigurationCollector {
     private static final String PREFIX_KEYBOARD = "KEYBOARD_";
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
-    private final HashMap<String, SparseArray<String>> mValueArrays = new HashMap<>();
+    private final Map<String, SparseArray<String>> mValueArrays = new HashMap<>();
 
     private ConfigurationCollector() {
 

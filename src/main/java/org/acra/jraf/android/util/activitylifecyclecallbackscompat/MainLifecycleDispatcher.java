@@ -32,6 +32,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Keeps a list of {@link ActivityLifecycleCallbacksCompat}s that will be called following the life cycle of the application's {@link Activity activities}.
@@ -49,7 +50,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
 
     private MainLifecycleDispatcher() {}
 
-    private final ArrayList<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<>();
+    private final List<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<>();
 
     /* package */void registerActivityLifecycleCallbacks(ActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {

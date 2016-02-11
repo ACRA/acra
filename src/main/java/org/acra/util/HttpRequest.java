@@ -7,14 +7,12 @@ package org.acra.util;
 
 import android.support.annotation.NonNull;
 import android.util.Base64;
+
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,6 +23,10 @@ import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
@@ -34,7 +36,7 @@ public final class HttpRequest {
     private String password;
     private int connectionTimeOut = 3000;
     private int socketTimeOut = 3000;
-    private Map<String,String> headers;
+    private Map<String, String> headers;
 
     public HttpRequest(ACRAConfiguration config) {
         this.config = config;
@@ -56,16 +58,16 @@ public final class HttpRequest {
         this.socketTimeOut = socketTimeOut;
     }
 
-    public void setHeaders(Map<String,String> headers) {
-       this.headers = headers;
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
-    
+
     /**
      * Posts to a URL.
-     * 
-     * @param url       URL to which to post.
-     * @param content   Map of parameters to post to a URL.
+     *
+     * @param url     URL to which to post.
+     * @param content Map of parameters to post to a URL.
      * @throws IOException if the data cannot be posted.
      */
     public void send(@NonNull URL url, @NonNull Method method, @NonNull String content, @NonNull Type type) throws IOException {
@@ -107,10 +109,9 @@ public final class HttpRequest {
                 "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
         urlConnection.setRequestProperty("Content-Type", type.getContentType());
 
-        if(headers != null) {
-            for (final String header : headers.keySet()) {
-                final String value = headers.get(header);
-                urlConnection.setRequestProperty(header, value);
+        if (headers != null) {
+            for (final Map.Entry<String, String> header : headers.entrySet()) {
+                urlConnection.setRequestProperty(header.getKey(), header.getValue());
             }
         }
 
@@ -131,15 +132,16 @@ public final class HttpRequest {
         outputStream.flush();
         outputStream.close();
 
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG,"Sending request to " + url);
-        if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
-        if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, content);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending request to " + url);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, content);
 
         final int responseCode = urlConnection.getResponseCode();
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG,"Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
+        if (ACRA.DEV_LOGGING)
+            ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
         if ((responseCode >= 200) && (responseCode < 300)) {
             // All is good
-            ACRA.log.i(LOG_TAG,"Request received by server");
+            ACRA.log.i(LOG_TAG, "Request received by server");
         } else if (responseCode == 403) {
             // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
             ACRA.log.w(LOG_TAG, "Data validation error on server - request will be discarded");
@@ -158,23 +160,21 @@ public final class HttpRequest {
 
     /**
      * Converts a Map of parameters into a URL encoded Sting.
-     * 
-     * @param parameters
-     *            Map of parameters to convert.
+     *
+     * @param parameters Map of parameters to convert.
      * @return URL encoded String representing the parameters.
-     * @throws UnsupportedEncodingException
-     *             if one of the parameters couldn't be converted to UTF-8.
+     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
      */
     public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();
-        for (final Object key : parameters.keySet()) {
+        for (final Map.Entry<?,?> entry : parameters.entrySet()) {
             if (dataBfr.length() != 0) {
                 dataBfr.append('&');
             }
-            final Object preliminaryValue = parameters.get(key);
+            final Object preliminaryValue = entry.getValue();
             final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(key.toString(), "UTF-8"));
+            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), "UTF-8"));
             dataBfr.append('=');
             dataBfr.append(URLEncoder.encode(value.toString(), "UTF-8"));
         }
