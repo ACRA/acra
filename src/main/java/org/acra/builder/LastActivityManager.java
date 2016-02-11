@@ -2,9 +2,10 @@ package org.acra.builder;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import android.os.Bundle;
+
 import org.acra.ACRA;
-import org.acra.collector.Compatibility;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
 import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
@@ -23,7 +24,7 @@ public final class LastActivityManager {
     private WeakReference<Activity> lastActivityCreated = new WeakReference<>(null);
 
     public LastActivityManager(Application application) {
-        if (Compatibility.getAPILevel() >= Compatibility.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 
             // ActivityLifecycleCallback only available for API14+
             ApplicationHelper.registerActivityLifecycleCallbacks(application, new ActivityLifecycleCallbacksCompat() {

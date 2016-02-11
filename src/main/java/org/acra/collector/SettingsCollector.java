@@ -18,9 +18,11 @@ package org.acra.collector;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Build;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
+
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
@@ -110,7 +112,7 @@ final class SettingsCollector {
      * @return A human readable String containing one key=value pair per line.
      */
     public String collectGlobalSettings() {
-        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return "";
         }
 

@@ -1,10 +1,12 @@
 package org.acra.util;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
 import android.util.SparseArray;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 
@@ -37,8 +39,17 @@ public final class ReportUtils {
     public static long getAvailableInternalMemorySize() {
         final File path = Environment.getDataDirectory();
         final StatFs stat = new StatFs(path.getPath());
-        final long blockSize = stat.getBlockSize();
-        final long availableBlocks = stat.getAvailableBlocks();
+        final long blockSize;
+        final long availableBlocks;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSizeLong();
+            availableBlocks = stat.getAvailableBlocksLong();
+        } else {
+            //noinspection deprecation
+            blockSize = stat.getBlockSize();
+            //noinspection deprecation
+            availableBlocks = stat.getAvailableBlocks();
+        }
         return availableBlocks * blockSize;
     }
 

@@ -16,56 +16,21 @@
 package org.acra.collector;
 
 import android.content.Context;
-import android.os.Build;
 
 import java.lang.reflect.Field;
 
 /**
  * Utility class containing methods enabling backward compatibility.
- * 
+ *
  * @author Normal
- * 
  */
 public final class Compatibility {
-
-    public class VERSION_CODES {
-        public final static int ECLAIR = 5;
-        public final static int FROYO = 8;
-        public final static int ICE_CREAM_SANDWICH = 14;
-        public final static int JELLY_BEAN = 16;
-        public final static int JELLY_BEAN_MR1 = 17;
-        public final static int LOLLIPOP = 21;
-    }
-
-    /**
-     * Retrieves Android SDK API level using the best possible method.
-     * 
-     * @return The Android SDK API int level.
-     */
-    public static int getAPILevel() {
-        int apiLevel;
-        try {
-            // This field has been added in Android 1.6
-            final Field SDK_INT = Build.VERSION.class.getField("SDK_INT");
-            apiLevel = SDK_INT.getInt(null);
-        } catch (SecurityException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        } catch (NoSuchFieldException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        } catch (IllegalArgumentException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        } catch (IllegalAccessException e) {
-            apiLevel = Integer.parseInt(Build.VERSION.SDK);
-        }
-
-        return apiLevel;
-    }
 
     /**
      * Retrieve the DropBoxManager service name using reflection API.
      *
      * @return Name of the DropBox service regardless of Android version.
-     * @throws NoSuchFieldException if the field DROPBOX_SERVICE doesn't exist.
+     * @throws NoSuchFieldException   if the field DROPBOX_SERVICE doesn't exist.
      * @throws IllegalAccessException if the DROPBOX_SERVICE field is inaccessible.
      */
     public static String getDropBoxServiceName() throws NoSuchFieldException, IllegalAccessException {

@@ -35,7 +35,7 @@ final class DeviceFeaturesCollector {
 
     public static String getFeatures(Context ctx) {
 
-        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.ECLAIR) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR) {
             return "Data available only with API Level >= 5";
         }
 
