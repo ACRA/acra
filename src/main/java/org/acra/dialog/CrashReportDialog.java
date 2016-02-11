@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -35,8 +38,9 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     private AlertDialog mDialog;
 
+    @CallSuper
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         scrollable = new LinearLayout(this);
@@ -51,7 +55,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      * Build the dialog from the values in config
      * @param savedInstanceState old state to restore
      */
-    protected void buildAndShowDialog(Bundle savedInstanceState){
+    protected void buildAndShowDialog(@Nullable Bundle savedInstanceState){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final int titleResourceId = config.resDialogTitle();
         if (titleResourceId != 0) {
@@ -71,7 +75,8 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         mDialog.show();
     }
 
-    protected View buildCustomView(Bundle savedInstanceState) {
+    @NonNull
+    protected View buildCustomView(@Nullable Bundle savedInstanceState) {
         final LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(10, 10, 10, 10);
@@ -124,6 +129,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      *
      * @return the main view
      */
+    @NonNull
     protected View getMainView() {
         final TextView text = new TextView(this);
         final int dialogTextId = config.resDialogText();
@@ -140,7 +146,8 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      * @param savedComment the content of the prompt (usually from a saved state)
      * @return the comment prompt
      */
-    protected EditText getCommentPrompt(CharSequence label, CharSequence savedComment) {
+    @NonNull
+    protected EditText getCommentPrompt(CharSequence label, @Nullable CharSequence savedComment) {
         final TextView labelView = new TextView(this);
         labelView.setText(label);
 
@@ -162,7 +169,8 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      * @param savedEmail the content of the prompt (usually from a saved state)
      * @return the email prompt
      */
-    protected EditText getEmailPrompt(CharSequence label, CharSequence savedEmail) {
+    @NonNull
+    protected EditText getEmailPrompt(CharSequence label, @Nullable CharSequence savedEmail) {
         final TextView labelView = new TextView(this);
         labelView.setText(label);
 
@@ -218,8 +226,9 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      * 
      * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
      */
+    @CallSuper
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (userCommentView != null && userCommentView.getText() != null) {
             outState.putString(STATE_COMMENT, userCommentView.getText().toString());

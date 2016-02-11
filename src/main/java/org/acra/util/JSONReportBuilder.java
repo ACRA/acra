@@ -1,5 +1,7 @@
 package org.acra.util;
 
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.collector.CollectorUtil;
@@ -65,7 +67,8 @@ public class JSONReportBuilder {
      *         JSON.
      * @throws JSONReportException
      */
-    public static JSONObject buildJSONReport(CrashReportData errorContent) throws JSONReportException {
+    @NonNull
+    public static JSONObject buildJSONReport(@NonNull CrashReportData errorContent) throws JSONReportException {
         JSONObject jsonReport = new JSONObject();
         BufferedReader reader = null;
         for (ReportField key : errorContent.keySet()) {
@@ -136,7 +139,7 @@ public class JSONReportBuilder {
      *            A string containing "some.key.name=Any value"
      * @throws JSONException
      */
-    private static void addJSONFromProperty(JSONObject destination, String propertyString) throws JSONException {
+    private static void addJSONFromProperty(@NonNull JSONObject destination, @NonNull String propertyString) throws JSONException {
         int equalsIndex = propertyString.indexOf('=');
         if (equalsIndex > 0) {
             String currentKey = propertyString.substring(0, equalsIndex).trim();
@@ -156,7 +159,7 @@ public class JSONReportBuilder {
         }
     }
 
-    private static Object guessType(String value) {
+    private static Object guessType(@NonNull String value) {
         if (value.equalsIgnoreCase("true"))
             return true;
         if (value.equalsIgnoreCase("false"))
@@ -186,7 +189,7 @@ public class JSONReportBuilder {
      *            The value to be inserted.
      * @throws JSONException
      */
-    private static void addJSONSubTree(JSONObject destination, String[] keys, Object value) throws JSONException {
+    private static void addJSONSubTree(@NonNull JSONObject destination, @NonNull String[] keys, Object value) throws JSONException {
         for (int i = 0; i < keys.length; i++) {
             String subKey = keys[i];
             if (i < keys.length - 1) {

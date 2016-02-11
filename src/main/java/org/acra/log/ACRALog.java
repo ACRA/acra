@@ -1,5 +1,7 @@
 package org.acra.log;
 
+import android.support.annotation.Nullable;
+
 /**
  * Responsible for providing ACRA classes with a platform neutral way of logging.
  * <p>
@@ -22,6 +24,7 @@ public interface ACRALog {
     int w(java.lang.String tag, java.lang.Throwable tr);
     int e(java.lang.String tag, java.lang.String msg);
     int e(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
+    @Nullable
     java.lang.String getStackTraceString(java.lang.Throwable tr);
     //public native  int println(int priority, java.lang.String tag, java.lang.String msg);
 }

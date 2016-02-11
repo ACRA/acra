@@ -16,6 +16,9 @@
 package org.acra.config;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -46,6 +49,7 @@ import static org.acra.ACRAConstants.*;
 @SuppressWarnings("unused")
 public final class ConfigurationBuilder {
 
+    @Nullable
     final Class<? extends Annotation> annotationType;
 
     private String[] additionalDropBoxTags;
@@ -105,7 +109,7 @@ public final class ConfigurationBuilder {
      *
      * @param app   Current Application, from which any annotated config will be gleaned.
      */
-    public ConfigurationBuilder(Application app) {
+    public ConfigurationBuilder(@NonNull Application app) {
 
         // Populate with annotated config
         final ReportsCrashes annotationConfig = app.getClass().getAnnotation(ReportsCrashes.class);
@@ -165,6 +169,7 @@ public final class ConfigurationBuilder {
     /**
      * @return new ACRAConfiguration containing all the properties configured on this builder.
      */
+    @NonNull
     public ACRAConfiguration build() {
         return new ACRAConfiguration(this);
     }
@@ -177,8 +182,9 @@ public final class ConfigurationBuilder {
      *            A map associating HTTP header names to their values.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setHttpHeaders(Map<String, String> headers) {
+    public ConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
         this.httpHeaders.clear();
         this.httpHeaders.putAll(headers);
         return this;
@@ -189,6 +195,7 @@ public final class ConfigurationBuilder {
      *            the additionalDropboxTags to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setAdditionalDropboxTags(String[] additionalDropboxTags) {
         this.additionalDropBoxTags = additionalDropboxTags;
@@ -200,6 +207,7 @@ public final class ConfigurationBuilder {
      *            the additionalSharedPreferences to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
         this.additionalSharedPreferences = additionalSharedPreferences;
@@ -211,6 +219,7 @@ public final class ConfigurationBuilder {
      *            the connectionTimeout to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setConnectionTimeout(Integer connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
@@ -222,6 +231,7 @@ public final class ConfigurationBuilder {
      *            the customReportContent to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setCustomReportContent(ReportField[] customReportContent) {
         this.customReportContent = customReportContent;
@@ -232,6 +242,7 @@ public final class ConfigurationBuilder {
      * @param deleteUnapprovedReportsOnApplicationStart the deleteUnapprovedReportsOnApplicationStart to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
@@ -242,6 +253,7 @@ public final class ConfigurationBuilder {
      * @param deleteOldUnsentReportsOnApplicationStart    When to delete old (unsent) reports on startup.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsentReportsOnApplicationStart) {
         this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
@@ -253,6 +265,7 @@ public final class ConfigurationBuilder {
      *            the dropboxCollectionMinutes to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
         this.dropboxCollectionMinutes = dropboxCollectionMinutes;
@@ -264,6 +277,7 @@ public final class ConfigurationBuilder {
      *            the forceCloseDialogAfterToast to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
         this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
@@ -276,6 +290,7 @@ public final class ConfigurationBuilder {
      * @param formUri   formUri to set.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setFormUri(String formUri) {
         this.formUri = formUri;
@@ -287,6 +302,7 @@ public final class ConfigurationBuilder {
      *            the formUriBasicAuthLogin to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
         this.formUriBasicAuthLogin = formUriBasicAuthLogin;
@@ -298,6 +314,7 @@ public final class ConfigurationBuilder {
      *            the formUriBasicAuthPassword to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
         this.formUriBasicAuthPassword = formUriBasicAuthPassword;
@@ -309,6 +326,7 @@ public final class ConfigurationBuilder {
      *            the includeDropboxSystemTags to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
         this.includeDropBoxSystemTags = includeDropboxSystemTags;
@@ -320,6 +338,7 @@ public final class ConfigurationBuilder {
      *            the logcatArguments to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setLogcatArguments(String[] logcatArguments) {
         this.logcatArguments = logcatArguments;
@@ -332,6 +351,7 @@ public final class ConfigurationBuilder {
      * @param mailTo    mailTo to set.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setMailTo(String mailTo) {
         this.mailTo = mailTo;
@@ -347,6 +367,7 @@ public final class ConfigurationBuilder {
      *
      * @deprecated since 4.8.2 use {@link #setReportingInteractionMode(ReportingInteractionMode)} instead.
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
@@ -360,24 +381,28 @@ public final class ConfigurationBuilder {
      * @return The updated ACRA configuration
      * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setReportingInteractionMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
     }
 
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogPositiveButtonText(int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
 
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogNegativeButtonText(int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
 
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setReportDialogClass(Class<? extends BaseCrashReportDialog> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
@@ -392,6 +417,7 @@ public final class ConfigurationBuilder {
      * @param resId The resource id, see {@link ReportsCrashes#resDialogCommentPrompt()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogCommentPrompt(int resId) {
         resDialogCommentPrompt = resId;
@@ -407,6 +433,7 @@ public final class ConfigurationBuilder {
      *            {@link ReportsCrashes#resDialogEmailPrompt()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogEmailPrompt(int resId) {
         resDialogEmailPrompt = resId;
@@ -422,6 +449,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogIcon(int resId) {
         resDialogIcon = resId;
@@ -437,6 +465,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogOkToast(int resId) {
         resDialogOkToast = resId;
@@ -452,6 +481,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resDialogText()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogText(int resId) {
         resDialogText = resId;
@@ -467,6 +497,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogTitle(int resId) {
         resDialogTitle = resId;
@@ -482,6 +513,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifIcon(int resId) {
         resNotifIcon = resId;
@@ -497,6 +529,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resNotifText()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifText(int resId) {
         resNotifText = resId;
@@ -513,6 +546,7 @@ public final class ConfigurationBuilder {
      *            {@link ReportsCrashes#resNotifTickerText()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifTickerText(int resId) {
         resNotifTickerText = resId;
@@ -528,6 +562,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resNotifTitle()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifTitle(int resId) {
         resNotifTitle = resId;
@@ -543,6 +578,7 @@ public final class ConfigurationBuilder {
      *            The resource id, see {@link ReportsCrashes#resToastText()}
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResToastText(int resId) {
         resToastText = resId;
@@ -554,6 +590,7 @@ public final class ConfigurationBuilder {
      *            the sharedPreferenceMode to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSharedPreferenceMode(Integer sharedPreferenceMode) {
         this.sharedPreferencesMode = sharedPreferenceMode;
@@ -565,6 +602,7 @@ public final class ConfigurationBuilder {
      *            the sharedPreferenceName to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSharedPreferenceName(String sharedPreferenceName) {
         this.sharedPreferencesName = sharedPreferenceName;
@@ -576,6 +614,7 @@ public final class ConfigurationBuilder {
      *            the socketTimeout to set
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSocketTimeout(Integer socketTimeout) {
         this.socketTimeout = socketTimeout;
@@ -589,6 +628,7 @@ public final class ConfigurationBuilder {
      *            application process.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setLogcatFilterByPid(Boolean filterByPid) {
         logcatFilterByPid = filterByPid;
@@ -602,6 +642,7 @@ public final class ConfigurationBuilder {
      *            mode. Reports will be sent only on signed applications.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSendReportsInDevMode(Boolean sendReportsInDevMode) {
         this.sendReportsInDevMode = sendReportsInDevMode;
@@ -616,6 +657,7 @@ public final class ConfigurationBuilder {
      *            is restarted.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
         this.sendReportsAtShutdown = sendReportsAtShutdown;
@@ -630,6 +672,7 @@ public final class ConfigurationBuilder {
      *            collection.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
         this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
@@ -644,12 +687,14 @@ public final class ConfigurationBuilder {
      *            should be excluded from the data collection.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
         this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
     }
 
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setBuildConfigClass(Class buildConfigClass) {
         this.buildConfigClass = buildConfigClass;
@@ -662,6 +707,7 @@ public final class ConfigurationBuilder {
      *            used with {@link ReportField#APPLICATION_LOG}.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setApplicationLogFile(String applicationLogFile) {
         this.applicationLogFile = applicationLogFile;
@@ -676,6 +722,7 @@ public final class ConfigurationBuilder {
      *            {@link ReportsCrashes#applicationLogFile()}.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setApplicationLogFileLines(int applicationLogFileLines) {
         this.applicationLogFileLines = applicationLogFileLines;
@@ -688,6 +735,7 @@ public final class ConfigurationBuilder {
      *            The method to be used to send data to the server.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setHttpMethod(Method httpMethod) {
         this.httpMethod = httpMethod;
@@ -701,6 +749,7 @@ public final class ConfigurationBuilder {
      *            server.
      * @return The updated ACRA configuration
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setReportType(Type type) {
         reportType = type;
@@ -750,6 +799,7 @@ public final class ConfigurationBuilder {
     /**
      * @deprecated since 4.8.1 no replacement.
      */
+    @Nullable
     @SuppressWarnings("unused")
     Class<? extends Annotation> annotationType() {
         return annotationType; // Why would this ever be needed?
@@ -1102,6 +1152,7 @@ public final class ConfigurationBuilder {
         return keyStore;
     }
 
+    @NonNull
     Map<String, String> httpHeaders() {
         return httpHeaders;
     }

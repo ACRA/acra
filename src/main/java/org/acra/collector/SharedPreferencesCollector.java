@@ -18,6 +18,8 @@ package org.acra.collector;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
@@ -51,6 +53,7 @@ final class SharedPreferencesCollector {
      * 
      * @return A readable formatted String containing all key/value pairs.
      */
+    @NonNull
     public String collect() {
         final StringBuilder result = new StringBuilder();
 
@@ -104,7 +107,7 @@ final class SharedPreferencesCollector {
      *            the name of the preference to be checked
      * @return true if the key has to be excluded from reports.
      */
-    private boolean filteredKey(String key) {
+    private boolean filteredKey(@NonNull String key) {
         for (String regex : config.excludeMatchingSharedPreferencesKeys()) {
             if(key.matches(regex)) {
                return true; 

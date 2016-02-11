@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 /**
  * Helper for accessing {@link Application#registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} and
@@ -45,7 +46,7 @@ public final class ApplicationHelper {
      * @param callback The callback to register.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public static void registerActivityLifecycleCallbacks(Application application, ActivityLifecycleCallbacksCompat callback) {
+    public static void registerActivityLifecycleCallbacks(@NonNull Application application, ActivityLifecycleCallbacksCompat callback) {
         application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacksWrapper(callback));
     }
 
@@ -61,7 +62,7 @@ public final class ApplicationHelper {
      * @param callback The callback to unregister.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void unregisterActivityLifecycleCallbacks(Application application, ActivityLifecycleCallbacksCompat callback) {
+    public void unregisterActivityLifecycleCallbacks(@NonNull Application application, ActivityLifecycleCallbacksCompat callback) {
         application.unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacksWrapper(callback));
     }
 }

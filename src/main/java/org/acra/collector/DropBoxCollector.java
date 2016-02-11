@@ -17,6 +17,7 @@ package org.acra.collector;
 
 import android.content.Context;
 import android.os.DropBoxManager;
+import android.support.annotation.NonNull;
 import android.text.format.Time;
 
 import org.acra.ACRA;
@@ -54,7 +55,8 @@ final class DropBoxCollector {
      * @param config  AcraConfig describe what to collect.
      * @return A readable formatted String listing messages retrieved.
      */
-    public String read(Context context, ACRAConfiguration config) {
+    @NonNull
+    public String read(@NonNull Context context, @NonNull ACRAConfiguration config) {
         try {
             final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 

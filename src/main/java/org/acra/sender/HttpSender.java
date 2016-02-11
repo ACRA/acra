@@ -17,6 +17,9 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
@@ -74,6 +77,7 @@ public class HttpSender implements ReportSender {
          * @see <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4">Form content types</a>
          */
         FORM {
+            @NonNull
             @Override
             public String getContentType() {
                 return "application/x-www-form-urlencoded";
@@ -83,21 +87,26 @@ public class HttpSender implements ReportSender {
          * Send data as a structured JSON tree.
          */
         JSON {
+            @NonNull
             @Override
             public String getContentType() {
                 return "application/json";
             }
         };
 
+        @NonNull
         public abstract String getContentType();
     }
 
     private final ACRAConfiguration config;
+    @Nullable
     private final Uri mFormUri;
     private final Map<ReportField, String> mMapping;
     private final Method mMethod;
     private final Type mType;
+    @Nullable
     private String mUsername;
+    @Nullable
     private String mPassword;
 
     /**
@@ -154,7 +163,7 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(ACRAConfiguration config, Method method, Type type, String formUri, Map<ReportField, String> mapping) {
+    public HttpSender(ACRAConfiguration config, Method method, Type type, @Nullable String formUri, Map<ReportField, String> mapping) {
         this.config = config;
         mMethod = method;
         mFormUri = (formUri == null) ? null : Uri.parse(formUri);
@@ -182,7 +191,7 @@ public class HttpSender implements ReportSender {
     }    
 
     @Override
-    public void send(Context context, CrashReportData report) throws ReportSenderException {
+    public void send(Context context, @NonNull CrashReportData report) throws ReportSenderException {
 
         try {
             URL reportUrl = mFormUri == null ? new URL(config.formUri()) : new URL(mFormUri.toString());
@@ -223,13 +232,14 @@ public class HttpSender implements ReportSender {
             }
             request.send(reportUrl, mMethod, reportAsString, mType);
 
-        } catch (IOException | JSONReportException e) {
+        } catch (@NonNull IOException | JSONReportException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
                     + " report via Http " + mMethod.name(), e);
         }
     }
 
-    private Map<String, String> remap(Map<ReportField, String> report) {
+    @NonNull
+    private Map<String, String> remap(@NonNull Map<ReportField, String> report) {
 
         ReportField[] fields = config.customReportContent();
         if (fields.length == 0) {
@@ -247,7 +257,7 @@ public class HttpSender implements ReportSender {
         return finalReport;
     }
 
-    private boolean isNull(String aString) {
+    private boolean isNull(@Nullable String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
 }

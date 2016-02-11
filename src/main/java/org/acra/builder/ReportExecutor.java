@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 import org.acra.ACRA;
@@ -87,7 +89,7 @@ public final class ReportExecutor {
         }
     }
 
-    public void handReportToDefaultExceptionHandler(Thread t, Throwable e) {
+    public void handReportToDefaultExceptionHandler(Thread t, @NonNull Throwable e) {
         if (defaultExceptionHandler != null) {
             ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
                     + " - forwarding uncaught Exception on to default ExceptionHandler");
@@ -112,7 +114,7 @@ public final class ReportExecutor {
      *
      * @param reportBuilder The report builder used to assemble the report
      */
-    public void execute(final ReportBuilder reportBuilder) {
+    public void execute(@NonNull final ReportBuilder reportBuilder) {
 
         if (!enabled) {
             ACRA.log.v(LOG_TAG, "ACRA is disabled. Report not sent.");
@@ -261,7 +263,7 @@ public final class ReportExecutor {
     /**
      * End the application.
      */
-    private void endApplication(Thread uncaughtExceptionThread, Throwable th) {
+    private void endApplication(@Nullable Thread uncaughtExceptionThread, Throwable th) {
         // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
         // as the intent is clearer and would allows you to switch it off for SILENT.
         final boolean letDefaultHandlerEndApplication = (
@@ -318,7 +320,7 @@ public final class ReportExecutor {
      *
      * @param reportFile    Report file to send.
      */
-    private void createNotification(File reportFile, ReportBuilder reportBuilder) {
+    private void createNotification(File reportFile, @NonNull ReportBuilder reportBuilder) {
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -359,7 +361,8 @@ public final class ReportExecutor {
         notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification);
     }
 
-    private File getReportFileName(CrashReportData crashData) {
+    @NonNull
+    private File getReportFileName(@NonNull CrashReportData crashData) {
         final String timestamp = crashData.getProperty(USER_CRASH_DATE);
         final String isSilent = crashData.getProperty(IS_SILENT);
         final String fileName =  ""
@@ -385,7 +388,7 @@ public final class ReportExecutor {
      *            user comment. If null, the default current crash data are
      *            used.
      */
-    private void saveCrashReportFile(File file, CrashReportData crashData) {
+    private void saveCrashReportFile(@NonNull File file, @NonNull CrashReportData crashData) {
         try {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Writing crash report file " + file);
             final CrashReportPersister persister = new CrashReportPersister();
@@ -402,7 +405,8 @@ public final class ReportExecutor {
      * @param reportFile        Error report file to display in the crash report dialog.
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
-    private Intent createCrashReportDialogIntent(File reportFile, ReportBuilder reportBuilder) {
+    @NonNull
+    private Intent createCrashReportDialogIntent(File reportFile, @NonNull ReportBuilder reportBuilder) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, config.reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);

@@ -16,6 +16,8 @@
 package org.acra.collector;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -61,7 +63,7 @@ class LogCatCollector {
      *         report generation time and a bigger footprint on the device data
      *         plan consumption.
      */
-    public String collectLogCat(ACRAConfiguration config, String bufferName) {
+    public String collectLogCat(@NonNull ACRAConfiguration config, @Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
         String myPidStr = null;
         if (config.logcatFilterByPid() && myPid > 0) {

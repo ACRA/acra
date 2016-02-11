@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
 
@@ -32,7 +33,7 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class DeviceFeaturesCollector {
 
-    public static String getFeatures(Context ctx) {
+    public static String getFeatures(@NonNull Context ctx) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR) {
             return "Data available only with API Level >= 5";

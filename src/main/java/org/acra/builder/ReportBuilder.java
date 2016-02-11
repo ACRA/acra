@@ -1,5 +1,7 @@
 package org.acra.builder;
 
+import android.support.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public final class ReportBuilder {
      * @param msg the error message
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     @SuppressWarnings( "unused" )
     public ReportBuilder message(String msg) {
         message = msg;
@@ -40,6 +43,7 @@ public final class ReportBuilder {
      * @param thread    Thread on which an uncaught Exception occurred.
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     public ReportBuilder uncaughtExceptionThread(Thread thread) {
         uncaughtExceptionThread = thread;
         return this;
@@ -55,6 +59,7 @@ public final class ReportBuilder {
      * @param e The exception that should be associated with this report
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     public ReportBuilder exception(Throwable e) {
         exception = e;
         return this;
@@ -71,8 +76,9 @@ public final class ReportBuilder {
      * @param customData a map of custom key-values to be attached to the report
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     @SuppressWarnings("unused")
-    public ReportBuilder customData(Map<String, String> customData) {
+    public ReportBuilder customData(@NonNull Map<String, String> customData) {
         this.customData.putAll(customData);
         return this;
     }
@@ -85,12 +91,14 @@ public final class ReportBuilder {
      * @param value the value for the custom data entry
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     @SuppressWarnings("unused")
     public ReportBuilder customData(String key, String value) {
         customData.put(key, value);
         return this;
     }
 
+    @NonNull
     public Map<String, String> getCustomData() {
         return customData;
     }
@@ -100,6 +108,7 @@ public final class ReportBuilder {
      *
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     public ReportBuilder sendSilently() {
         sendSilently = true;
         return this;
@@ -114,6 +123,7 @@ public final class ReportBuilder {
      *
      * @return the updated {@code ReportBuilder}
      */
+    @NonNull
     public ReportBuilder endApplication() {
         endApplication = true;
         return this;
@@ -126,7 +136,7 @@ public final class ReportBuilder {
     /**
      * Assembles and sends the crash report
      */
-    public void build(ReportExecutor reportExecutor) {
+    public void build(@NonNull ReportExecutor reportExecutor) {
         if (message == null && exception == null) {
             message = "Report requested by developer";
         }

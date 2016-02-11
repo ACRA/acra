@@ -28,6 +28,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat {
     private static final MainLifecycleDispatcher INSTANCE = new MainLifecycleDispatcher();
 
+    @NonNull
     public static MainLifecycleDispatcher get() {
         return INSTANCE;
     }
@@ -60,6 +63,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         }
     }
 
+    @Nullable
     private Object[] collectActivityLifecycleCallbacks() {
         Object[] callbacks = null;
         synchronized (mActivityLifecycleCallbacks) {

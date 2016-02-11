@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Display;
@@ -18,7 +19,7 @@ final class DisplayManagerCollector {
     final static SparseArray<String> mFlagsNames = new SparseArray<>();
     final static SparseArray<String> mDensities = new SparseArray<>();
 
-    public static String collectDisplays(Context ctx) {
+    public static String collectDisplays(@NonNull Context ctx) {
         Display[] displays;
         final StringBuilder result = new StringBuilder();
 
@@ -43,7 +44,8 @@ final class DisplayManagerCollector {
         return result.toString();
     }
 
-    private static Object collectDisplayData(Display display) {
+    @NonNull
+    private static Object collectDisplayData(@NonNull Display display) {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
@@ -65,17 +67,20 @@ final class DisplayManagerCollector {
                 collectIsValid(display);
     }
 
-    private static String collectIsValid(Display display) {
+    @NonNull
+    private static String collectIsValid(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return display.getDisplayId() + ".isValid=" + display.isValid() + '\n';
         }
         return "";
     }
 
-    private static String collectRotation(Display display) {
+    @NonNull
+    private static String collectRotation(@NonNull Display display) {
         return display.getDisplayId() + ".rotation=ROTATION_" + rotationToString(display.getRotation()) + '\n';
     }
 
+    @NonNull
     private static String rotationToString(int rotation) {
         switch (rotation) {
             case Surface.ROTATION_0:
@@ -91,7 +96,8 @@ final class DisplayManagerCollector {
         }
     }
 
-    private static String collectRectSize(Display display) {
+    @NonNull
+    private static String collectRectSize(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             Rect size = new Rect();
             display.getRectSize(size);
@@ -101,7 +107,8 @@ final class DisplayManagerCollector {
         return "";
     }
 
-    private static String collectSize(Display display, String methodName) {
+    @NonNull
+    private static String collectSize(@NonNull Display display, String methodName) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             Point size = new Point();
             display.getRealSize(size);
@@ -111,7 +118,8 @@ final class DisplayManagerCollector {
         return "";
     }
 
-    private static String collectCurrentSizeRange(Display display) {
+    @NonNull
+    private static String collectCurrentSizeRange(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             Point smallest = new Point(), largest = new Point();
             display.getCurrentSizeRange(smallest, largest);
@@ -121,7 +129,8 @@ final class DisplayManagerCollector {
         return "";
     }
 
-    private static String collectFlags(Display display) {
+    @NonNull
+    private static String collectFlags(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
@@ -137,20 +146,23 @@ final class DisplayManagerCollector {
         return "";
     }
 
-    private static String collectName(Display display) {
+    @NonNull
+    private static String collectName(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return display.getDisplayId() + ".name=" + display.getName() + '\n';
         }
         return "";
     }
 
-    private static String collectMetrics(Display display) {
+    @NonNull
+    private static String collectMetrics(@NonNull Display display) {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         return collectMetrics(display.getDisplayId() + ".metrics", metrics);
     }
 
-    private static String collectRealMetrics(Display display) {
+    @NonNull
+    private static String collectRealMetrics(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             DisplayMetrics metrics = new DisplayMetrics();
             display.getRealMetrics(metrics);
@@ -159,7 +171,8 @@ final class DisplayManagerCollector {
         return "";
     }
 
-    private static String collectMetrics(String prefix, DisplayMetrics metrics) {
+    @NonNull
+    private static String collectMetrics(String prefix, @NonNull DisplayMetrics metrics) {
         //TODO: densities seem to be unused, is something missing here?
         for (Field field : DisplayMetrics.class.getFields()) {
             if (field.getType().equals(Integer.class) && field.getName().startsWith("DENSITY_")
@@ -190,7 +203,8 @@ final class DisplayManagerCollector {
      * @return The names of the different values contained in the bitfield,
      * separated by '+'.
      */
-    private static String activeFlags(SparseArray<String> valueNames, int bitfield) {
+    @NonNull
+    private static String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
         final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value

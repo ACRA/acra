@@ -1,6 +1,8 @@
 package org.acra.legacy;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.file.CrashReportFileNameParser;
@@ -18,6 +20,7 @@ public final class ReportMigrator {
 
     private final Context context;
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
+    @NonNull
     private final ReportLocator reportLocator;
 
     public ReportMigrator(Context context) {
@@ -51,6 +54,7 @@ public final class ReportMigrator {
      *
      * @return an array containing the names of pending crash report files.
      */
+    @NonNull
     private File[] getCrashReportFiles() {
         final File dir = context.getFilesDir();
         if (dir == null) {
@@ -62,7 +66,7 @@ public final class ReportMigrator {
 
         // Filter for ".stacktrace" files
         final FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+            public boolean accept(File dir, @NonNull String name) {
                 return name.endsWith(ACRAConstants.REPORTFILE_EXTENSION);
             }
         };

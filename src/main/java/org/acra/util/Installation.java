@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.acra.ACRA;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -32,7 +33,7 @@ public class Installation {
     private static String sID;
     private static final String INSTALLATION = "ACRA-INSTALLATION";
 
-    public synchronized static String id(Context context) {
+    public synchronized static String id(@NonNull Context context) {
         if (sID == null) {
             final File installation = new File(context.getFilesDir(), INSTALLATION);
             try {
@@ -51,6 +52,7 @@ public class Installation {
         return sID;
     }
 
+    @NonNull
     private static String readInstallationFile(File installation) throws IOException {
         final RandomAccessFile f = new RandomAccessFile(installation, "r");
         final byte[] bytes = new byte[(int) f.length()];
@@ -62,7 +64,7 @@ public class Installation {
         return new String(bytes);
     }
 
-    private static void writeInstallationFile(File installation) throws IOException {
+    private static void writeInstallationFile(@NonNull File installation) throws IOException {
         final FileOutputStream out = new FileOutputStream(installation);
         try {
             final String id = UUID.randomUUID().toString();

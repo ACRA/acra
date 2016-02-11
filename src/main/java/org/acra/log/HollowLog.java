@@ -1,5 +1,7 @@
 package org.acra.log;
 
+import android.support.annotation.Nullable;
+
 /**
  * Stub implementation of {@link org.acra.log.ACRALog}, quenches all logging.
  */
@@ -59,6 +61,7 @@ public class HollowLog implements ACRALog {
         return 0;
     }
 
+    @Nullable
     @Override
     public String getStackTraceString(Throwable tr) {
         return null;

@@ -15,6 +15,8 @@
  */
 package org.acra.util;
 
+import android.support.annotation.NonNull;
+
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -29,6 +31,7 @@ class NaiveTrustManager implements X509TrustManager {
      * 
      * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
      */
+    @NonNull
     @Override
     public X509Certificate[] getAcceptedIssuers() {
         return new X509Certificate[0];

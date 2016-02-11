@@ -16,13 +16,15 @@
 
 package org.acra.collector;
 
-import java.util.EnumMap;
-import java.util.Properties;
+import android.support.annotation.NonNull;
 
 import org.acra.ReportField;
 import org.acra.util.JSONReportBuilder;
 import org.acra.util.JSONReportBuilder.JSONReportException;
 import org.json.JSONObject;
+
+import java.util.EnumMap;
+import java.util.Properties;
 
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
@@ -52,6 +54,7 @@ public final class CrashReportData extends EnumMap<ReportField, String> {
         return super.get(key);
     }
 
+    @NonNull
     public JSONObject toJSON() throws JSONReportException {
         return JSONReportBuilder.buildJSONReport(this);
     }

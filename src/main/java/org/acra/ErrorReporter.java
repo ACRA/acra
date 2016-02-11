@@ -17,6 +17,9 @@ package org.acra;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.*;
 import org.acra.collector.ConfigurationCollector;
@@ -59,11 +62,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private final boolean supportedAndroidVersion;
 
     private final Application context;
+    @NonNull
     private final ACRAConfiguration config;
 
+    @NonNull
     private final CrashReportDataFactory crashReportDataFactory;
+    @NonNull
     private final ReportExecutor reportExecutor;
 
+    @NonNull
     private volatile ExceptionHandlerInitializer exceptionHandlerInitializer = new ExceptionHandlerInitializer() {
         @Override
         public void initializeExceptionHandler(ErrorReporter reporter) {
@@ -80,7 +87,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(Application context, ACRAConfiguration config, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
+    ErrorReporter(Application context, @NonNull ACRAConfiguration config, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.context = context;
         this.config = config;
@@ -181,7 +188,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param initializer   The initializer. Can be <code>null</code>.
      * @deprecated since 4.8.0 use {@link ReportPrimer} mechanism instead.
      */
-    public void setExceptionHandlerInitializer(ExceptionHandlerInitializer initializer) {
+    public void setExceptionHandlerInitializer(@Nullable ExceptionHandlerInitializer initializer) {
         exceptionHandlerInitializer = (initializer != null)
                 ? initializer
                 : new ExceptionHandlerInitializer() {
@@ -234,7 +241,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     @Override
-    public void uncaughtException(Thread t, Throwable e) {
+    public void uncaughtException(Thread t, @NonNull Throwable e) {
 
         // If we're not enabled then just pass the Exception on to the defaultExceptionHandler.
         if (!reportExecutor.isEnabled()) {
@@ -359,7 +366,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
-    private static ReportPrimer getReportPrimer(ACRAConfiguration config) {
+    private static ReportPrimer getReportPrimer(@NonNull ACRAConfiguration config) {
         //noinspection TryWithIdenticalCatches
         try {
             return config.reportPrimerClass().newInstance();

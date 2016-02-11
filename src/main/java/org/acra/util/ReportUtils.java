@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.util.SparseArray;
 
@@ -83,7 +85,7 @@ public final class ReportUtils {
      * @param context Context for the application being reported.
      * @return Returns the DeviceId according to the TelephonyManager or null if there is no TelephonyManager.
      */
-    public static String getDeviceId(Context context) {
+    public static String getDeviceId(@NonNull Context context) {
         try {
             final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             return tm.getDeviceId();
@@ -93,7 +95,7 @@ public final class ReportUtils {
         }
     }
 
-    public static String getApplicationFilePath(Context context) {
+    public static String getApplicationFilePath(@NonNull Context context) {
         final File filesDir = context.getFilesDir();
         if (filesDir != null) {
             return filesDir.getAbsolutePath();
@@ -109,7 +111,7 @@ public final class ReportUtils {
      * @param sparseArray //TODO describe param
      * @return "{ key1 => value1, key2 => value2, ...}"
      */
-    public static String sparseArrayToString(SparseArray<?> sparseArray) {
+    public static String sparseArrayToString(@Nullable SparseArray<?> sparseArray) {
         StringBuilder result = new StringBuilder();
         if (sparseArray == null) {
             return "null";
@@ -155,7 +157,7 @@ public final class ReportUtils {
         return result.toString();
     }
 
-    public static String getTimeString(Calendar time) {
+    public static String getTimeString(@NonNull Calendar time) {
         SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
         return format.format(time.getTimeInMillis());
     }

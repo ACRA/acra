@@ -21,6 +21,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
@@ -48,6 +51,7 @@ public class ACRA {
 
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
+    @NonNull
     public static ACRALog log = new AndroidLogDelegate();
 
     private static final String ACRA_PRIVATE_PROCESS_NAME= ":acra";
@@ -101,9 +105,11 @@ public class ACRA {
     private static final String PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0 = "acra.legacyAlreadyConvertedTo4.8.0";
 
     private static Application mApplication;
+    @Nullable
     private static ACRAConfiguration configProxy;
 
     // Accessible via ACRA#getErrorReporter().
+    @Nullable
     private static ErrorReporter errorReporterSingleton;
 
     // NB don't convert to a local field because then it could be garbage
@@ -123,7 +129,7 @@ public class ACRA {
      * @param app   Your Application class.
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(Application app) {
+    public static void init(@NonNull Application app) {
         final ReportsCrashes reportsCrashes = app.getClass().getAnnotation(ReportsCrashes.class);
         if (reportsCrashes == null) {
             log.e(LOG_TAG, "ACRA#init(Application) called but no ReportsCrashes annotation on Application " + app.getPackageName());
@@ -145,7 +151,7 @@ public class ACRA {
      * @param config    ACRAConfiguration to manually set up ACRA configuration.
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(Application app, ACRAConfiguration config) {
+    public static void init(@NonNull Application app, ACRAConfiguration config) {
         init(app, config, true);
     }
 
@@ -161,7 +167,7 @@ public class ACRA {
      * @param checkReportsOnApplicationStart    Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(Application app, ACRAConfiguration config, boolean checkReportsOnApplicationStart){
+    public static void init(@NonNull Application app, @Nullable ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
         final boolean senderServiceProcess = isACRASenderServiceProcess(app);
         if (senderServiceProcess) {
@@ -233,7 +239,7 @@ public class ACRA {
         mPrefListener = new OnSharedPreferenceChangeListener() {
 
             @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            public void onSharedPreferenceChanged(@NonNull SharedPreferences sharedPreferences, String key) {
                 if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
                     final boolean enableAcra = !shouldDisableACRA(sharedPreferences);
                     getErrorReporter().setEnabled(enableAcra);
@@ -258,13 +264,13 @@ public class ACRA {
     /**
      * @return true if the current process is the process running the SenderService.
      */
-    private static boolean isACRASenderServiceProcess(Application app) {
+    private static boolean isACRASenderServiceProcess(@NonNull Application app) {
         final String processName = getCurrentProcessName(app);
         if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + "'");
         return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
 
-    private static String getCurrentProcessName(Application app) {
+    private static String getCurrentProcessName(@NonNull Application app) {
         final int processId = android.os.Process.myPid();
         final ActivityManager manager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
         for (final ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()){
@@ -279,6 +285,7 @@ public class ACRA {
      * @return the current instance of ErrorReporter.
      * @throws IllegalStateException if {@link ACRA#init(android.app.Application)} has not yet been called.
      */
+    @NonNull
     public static ErrorReporter getErrorReporter() {
         if (errorReporterSingleton == null) {
             throw new IllegalStateException("Cannot access ErrorReporter before ACRA#init");
@@ -298,7 +305,7 @@ public class ACRA {
      *            disabled.
      * @return true if prefs indicate that ACRA should be disabled.
      */
-    private static boolean shouldDisableACRA(SharedPreferences prefs) {
+    private static boolean shouldDisableACRA(@NonNull SharedPreferences prefs) {
         boolean disableAcra = false;
         try {
             final boolean enableAcra = prefs.getBoolean(PREF_ENABLE_ACRA, true);
@@ -324,6 +331,7 @@ public class ACRA {
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
      * @deprecated since 4.8.0 {@link ACRAConfiguration} should be passed into classes instead of retrieved statically.
      */
+    @Nullable
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {
         if (mApplication == null) {
@@ -337,12 +345,14 @@ public class ACRA {
      * @return new {@link ACRAConfiguration} instance with values initialized from the {@link ReportsCrashes} annotation.
      * @deprecated since 4.8.0 use {@link ConfigurationBuilder} instead.
      */
+    @NonNull
     @SuppressWarnings( "unused" )
-    public static ACRAConfiguration getNewDefaultConfig(Application app) {
+    public static ACRAConfiguration getNewDefaultConfig(@NonNull Application app) {
         return new ConfigurationBuilder(app).build();
     }
 
-    public static void setLog(ACRALog log) {
+    public static void setLog(@NonNull ACRALog log) {
+        //noinspection ConstantConditions (do not rely on annotation alone)
         if (log == null) {
             throw new NullPointerException("ACRALog cannot be null");
         }

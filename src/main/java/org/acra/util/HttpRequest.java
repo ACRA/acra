@@ -5,6 +5,7 @@
  */
 package org.acra.util;
 
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
@@ -67,7 +68,7 @@ public final class HttpRequest {
      * @param content   Map of parameters to post to a URL.
      * @throws IOException if the data cannot be posted.
      */
-    public void send(URL url, Method method, String content, Type type) throws IOException {
+    public void send(@NonNull URL url, @NonNull Method method, @NonNull String content, @NonNull Type type) throws IOException {
 
         final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -164,7 +165,7 @@ public final class HttpRequest {
      * @throws UnsupportedEncodingException
      *             if one of the parameters couldn't be converted to UTF-8.
      */
-    public static String getParamsAsFormString(Map<?, ?> parameters) throws UnsupportedEncodingException {
+    public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();
         for (final Object key : parameters.keySet()) {

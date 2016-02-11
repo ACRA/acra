@@ -21,6 +21,8 @@ import android.annotation.TargetApi;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import java.lang.reflect.Field;
@@ -45,13 +47,21 @@ public class MediaCodecListCollector {
     private static final String[] H263_TYPES = { "h263", "H263" };
     private static final String[] AAC_TYPES = { "aac", "AAC" };
 
+    @NonNull
     private static SparseArray<String> mColorFormatValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mAVCLevelValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mAVCProfileValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mH263LevelValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mH263ProfileValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mMPEG4LevelValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<>();
+    @NonNull
     private static SparseArray<String> mAACProfileValues = new SparseArray<>();
 
     // static init where nearly all reflection inspection is done.
@@ -88,7 +98,7 @@ public class MediaCodecListCollector {
                     }
                 }
             }
-        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException ignored) {
+        } catch (@NonNull ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException ignored) {
             // NOOP
         }
 
@@ -101,6 +111,7 @@ public class MediaCodecListCollector {
      *
      * @return The media codecs information
      */
+    @NonNull
     @SuppressLint("NewApi") //lint doesn't check complex NewApi blocks correctly
     public static String collectMediaCodecList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -142,8 +153,9 @@ public class MediaCodecListCollector {
      * @return A string describing the color formats and codec profile levels
      * available for a specific codec type.
      */
+    @NonNull
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static String collectCapabilitiesForType(final MediaCodecInfo codecInfo, String type){
+    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, String type){
 
         final StringBuilder result = new StringBuilder();
         MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);
@@ -214,8 +226,9 @@ public class MediaCodecListCollector {
      * @param codecInfo //TODO describe param
      * @return //TODO describe return
      */
+    @Nullable
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static CodecType identifyCodecType(MediaCodecInfo codecInfo)  {
+    private static CodecType identifyCodecType(@NonNull MediaCodecInfo codecInfo)  {
 
         String name = codecInfo.getName();
         for (String token : AVC_TYPES) {

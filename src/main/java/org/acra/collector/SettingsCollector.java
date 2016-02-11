@@ -22,6 +22,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
@@ -56,6 +58,7 @@ final class SettingsCollector {
      * 
      * @return A human readable String containing one key=value pair per line.
      */
+    @NonNull
     public String collectSystemSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.System.class.getFields();
@@ -69,7 +72,7 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (IllegalArgumentException | IllegalAccessException e) {
+                } catch (@NonNull IllegalArgumentException | IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -85,6 +88,7 @@ final class SettingsCollector {
      * 
      * @return A human readable String containing one key=value pair per line.
      */
+    @NonNull
     public String collectSecureSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.Secure.class.getFields();
@@ -95,7 +99,7 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (IllegalArgumentException | IllegalAccessException e) {
+                } catch (@NonNull IllegalArgumentException | IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -111,6 +115,7 @@ final class SettingsCollector {
      * 
      * @return A human readable String containing one key=value pair per line.
      */
+    @NonNull
     public String collectGlobalSettings() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return "";
@@ -129,14 +134,14 @@ final class SettingsCollector {
                     }
                 }
             }
-        } catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException e) {
+        } catch (@NonNull IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
         }
 
         return result.toString();
     }
 
-    private boolean isAuthorized(Field key) {
+    private boolean isAuthorized(@Nullable Field key) {
         if (key == null || key.getName().startsWith("WIFI_AP")) {
             return false;
         }
