@@ -74,8 +74,9 @@ public class SenderService extends IntentService {
     }
 
     private List<ReportSender> getSenderInstances(ACRAConfiguration config, List<Class<? extends ReportSenderFactory>> factoryClasses) {
-        final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
+        final List<ReportSender> reportSenders = new ArrayList<>();
         for (final Class<? extends ReportSenderFactory> factoryClass : factoryClasses) {
+            //noinspection TryWithIdenticalCatches
             try {
                 final ReportSenderFactory factory = factoryClass.newInstance();
                 final ReportSender sender = factory.create(this.getApplication(), config);

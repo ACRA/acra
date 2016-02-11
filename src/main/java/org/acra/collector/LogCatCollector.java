@@ -15,6 +15,8 @@
  */
 package org.acra.collector;
 
+import android.os.Build;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.annotation.ReportsCrashes;
@@ -66,7 +68,7 @@ class LogCatCollector {
             myPidStr = Integer.toString(myPid) +"):";
         }
 
-        final List<String> commandLine = new ArrayList<String>();
+        final List<String> commandLine = new ArrayList<>();
         commandLine.add("logcat");
         if (bufferName != null) {
             commandLine.add("-b");
@@ -76,7 +78,7 @@ class LogCatCollector {
         // "-t n" argument has been introduced in FroYo (API level 8). For
         // devices with lower API level, we will have to emulate its job.
         final int tailCount;
-        final List<String> logcatArgumentsList = new ArrayList<String>(Arrays.asList(config.logcatArguments()));
+        final List<String> logcatArgumentsList = new ArrayList<>(Arrays.asList(config.logcatArguments()));
 
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
@@ -90,7 +92,7 @@ class LogCatCollector {
             tailCount = -1;
         }
 
-        final LinkedList<String> logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount
+        final LinkedList<String> logcatBuf = new BoundedLinkedList<>(tailCount > 0 ? tailCount
                 : DEFAULT_TAIL_COUNT);
         commandLine.addAll(logcatArgumentsList);
         

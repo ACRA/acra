@@ -67,9 +67,7 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, "Error : ", e);
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -95,9 +93,7 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, "Error : ", e);
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -131,17 +127,7 @@ final class SettingsCollector {
                     }
                 }
             }
-        } catch (IllegalArgumentException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (IllegalAccessException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (ClassNotFoundException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (SecurityException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (NoSuchMethodException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
         }
 

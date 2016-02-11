@@ -1,36 +1,32 @@
 package org.acra.collector;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.acra.ACRA;
-
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import static org.acra.ACRA.LOG_TAG;
+import java.lang.reflect.Field;
 
 final class DisplayManagerCollector {
 
-    final static SparseArray<String> mFlagsNames = new SparseArray<String>();
-    final static SparseArray<String> mDensities = new SparseArray<String>();
+    final static SparseArray<String> mFlagsNames = new SparseArray<>();
+    final static SparseArray<String> mDensities = new SparseArray<>();
 
     public static String collectDisplays(Context ctx) {
-        Display[] displays = null;
+        Display[] displays;
         final StringBuilder result = new StringBuilder();
 
         if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
             // Before Android 4.2, there was a single display available from the
             // window manager
             final WindowManager windowManager = (WindowManager) ctx
-                    .getSystemService(android.content.Context.WINDOW_SERVICE);
+                    .getSystemService(Context.WINDOW_SERVICE);
             displays = new Display[1];
             displays[0] = windowManager.getDefaultDisplay();
         } else {

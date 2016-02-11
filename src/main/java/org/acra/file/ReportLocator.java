@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  * Locates crash reports.

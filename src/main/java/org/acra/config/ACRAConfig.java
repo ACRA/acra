@@ -35,5 +35,5 @@ public interface ACRAConfig extends ReportsCrashes, Serializable {
     /**
      * @return List of ReportField that ACRA will provide to the server.
      */
-    public List<ReportField> getReportFields();
+    List<ReportField> getReportFields();
 }

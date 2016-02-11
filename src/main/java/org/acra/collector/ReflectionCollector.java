@@ -58,9 +58,7 @@ final class ReflectionCollector {
                         result.append(value.toString());
                     }
                 }
-            } catch (IllegalArgumentException e) {
-                result.append("N/A");
-            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 result.append("N/A");
             }
             result.append("\n");
@@ -87,11 +85,7 @@ final class ReflectionCollector {
                     result.append('=');
                     result.append(method.invoke(null, (Object[]) null));
                     result.append("\n");
-                } catch (IllegalArgumentException e) {
-                    // NOOP
-                } catch (IllegalAccessException e) {
-                    // NOOP
-                } catch (InvocationTargetException e) {
+                } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
                     // NOOP
                 }
             }

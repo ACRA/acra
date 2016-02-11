@@ -16,11 +16,12 @@
 package org.acra.collector;
 
 import android.content.Context;
+import android.os.DropBoxManager;
 import android.text.format.Time;
+
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,25 +34,24 @@ import static org.acra.ACRA.LOG_TAG;
  * collect data associated to these tags with hope that some of them could help
  * debugging applications. Application specific tags can be provided by the app
  * dev to track his own usage of the DropBoxManager.
- * 
+ *
  * @author Kevin Gaudin
- * 
  */
 final class DropBoxCollector {
 
-    private static final String[] SYSTEM_TAGS = { "system_app_anr", "system_app_wtf", "system_app_crash",
+    private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
             "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
-            "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode" };
+            "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
     private static final String NO_RESULT = "N/A";
 
     /**
      * Read latest messages contained in the DropBox for system related tags and
      * optional developer-set tags.
-     * 
-     * @param context   The application context.
-     * @param config    AcraConfig describe what to collect.
+     *
+     * @param context The application context.
+     * @param config  AcraConfig describe what to collect.
      * @return A readable formatted String listing messages retrieved.
      */
     public String read(Context context, ACRAConfiguration config) {
@@ -74,7 +74,7 @@ final class DropBoxCollector {
             timer.normalize(false);
             final long time = timer.toMillis(false);
 
-            final List<String> tags = new ArrayList<String>();
+            final List<String> tags = new ArrayList<>();
             if (config.includeDropBoxSystemTags()) {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }

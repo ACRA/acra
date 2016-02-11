@@ -16,13 +16,13 @@
 
 package org.acra.collector;
 
+import android.util.SparseArray;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-
-import android.util.SparseArray;
 
 /**
  * Collects data about available codecs on the device through the MediaCodecList
@@ -55,14 +55,14 @@ public class MediaCodecListCollector {
     private static Field profileLevelsField = null;
     private static Field profileField = null;
     private static Field levelField = null;
-    private static SparseArray<String> mColorFormatValues = new SparseArray<String>();
-    private static SparseArray<String> mAVCLevelValues = new SparseArray<String>();
-    private static SparseArray<String> mAVCProfileValues = new SparseArray<String>();
-    private static SparseArray<String> mH263LevelValues = new SparseArray<String>();
-    private static SparseArray<String> mH263ProfileValues = new SparseArray<String>();
-    private static SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
-    private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
-    private static SparseArray<String> mAACProfileValues = new SparseArray<String>();
+    private static SparseArray<String> mColorFormatValues = new SparseArray<>();
+    private static SparseArray<String> mAVCLevelValues = new SparseArray<>();
+    private static SparseArray<String> mAVCProfileValues = new SparseArray<>();
+    private static SparseArray<String> mH263LevelValues = new SparseArray<>();
+    private static SparseArray<String> mH263ProfileValues = new SparseArray<>();
+    private static SparseArray<String> mMPEG4LevelValues = new SparseArray<>();
+    private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<>();
+    private static SparseArray<String> mAACProfileValues = new SparseArray<>();
 
     // static init where nearly all reflection inspection is done.
     static {
@@ -112,17 +112,7 @@ public class MediaCodecListCollector {
             profileField = codecProfileLevelClass.getField("profile");
             levelField = codecProfileLevelClass.getField("level");
 
-        } catch (ClassNotFoundException e) {
-            // NOOP
-        } catch (NoSuchMethodException e) {
-            // NOOP
-        } catch (IllegalArgumentException e) {
-            // NOOP
-        } catch (IllegalAccessException e) {
-            // NOOP
-        } catch (SecurityException e) {
-            // NOOP
-        } catch (NoSuchFieldException e) {
+        } catch (ClassNotFoundException | NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException e) {
             // NOOP
         }
 
@@ -138,12 +128,13 @@ public class MediaCodecListCollector {
     public static String collecMediaCodecList() {
         StringBuilder result = new StringBuilder();
         if (mediaCodecListClass != null && mediaCodecInfoClass != null) {
+            //noinspection TryWithIdenticalCatches
             try {
                 // Retrieve list of available media codecs
                 int codecCount = (Integer) (mediaCodecListClass.getMethod("getCodecCount").invoke(null));
 
                 // Go through each available media codec
-                Object codecInfo = null;
+                Object codecInfo;
                 for (int codecIdx = 0; codecIdx < codecCount; codecIdx++) {
                     result.append("\n");
                     codecInfo = getCodecInfoAtMethod.invoke(null, codecIdx);
@@ -171,8 +162,8 @@ public class MediaCodecListCollector {
      * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a
      * specific codec type.
      * 
-     * @param codecInfo
-     * @param type
+     * @param codecInfo //TODO describe param
+     * @param type //TODO describe param
      * @return A string describing the color formats and codec profile levels
      *         available for a specific codec type.
      * @throws IllegalArgumentException
@@ -247,8 +238,8 @@ public class MediaCodecListCollector {
 
     /**
      * Looks for keywords in the codec name to identify its nature ({@link CodecType}).
-     * @param codecInfo
-     * @return
+     * @param codecInfo //TODO describe param
+     * @return //TODO describe return
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InvocationTargetException

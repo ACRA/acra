@@ -1,20 +1,19 @@
 package org.acra.util;
 
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.collector.CollectorUtil;
+import org.acra.collector.CrashReportData;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-
-import org.acra.ACRA;
-import org.acra.ReportField;
-import org.acra.collector.CollectorUtil;
-import org.acra.collector.CrashReportData;
-import org.acra.sender.ReportSenderException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -64,7 +63,6 @@ public class JSONReportBuilder {
      *            The ACRA report data structure.
      * @return A JSONObject containing all fields from the report converted to
      *         JSON.
-     * @throws ReportSenderException
      * @throws JSONReportException
      */
     public static JSONObject buildJSONReport(CrashReportData errorContent) throws JSONReportException {
@@ -78,7 +76,7 @@ public class JSONReportBuilder {
                     JSONObject subObject = new JSONObject();
                     String strContent = errorContent.getProperty(key);
                     reader = new BufferedReader(new StringReader(strContent), 1024);
-                    String line = null;
+                    String line;
                     try {
                         while ((line = reader.readLine()) != null) {
                             addJSONFromProperty(subObject, line);
@@ -141,7 +139,6 @@ public class JSONReportBuilder {
     private static void addJSONFromProperty(JSONObject destination, String propertyString) throws JSONException {
         int equalsIndex = propertyString.indexOf('=');
         if (equalsIndex > 0) {
-            JSONObject finalObject = destination;
             String currentKey = propertyString.substring(0, equalsIndex).trim();
             String currentValue = propertyString.substring(equalsIndex + 1).trim();
             Object value = guessType(currentValue);
@@ -150,9 +147,9 @@ public class JSONReportBuilder {
             }
             String[] splitKey = currentKey.split("\\.");
             if (splitKey.length > 1) {
-                addJSONSubTree(finalObject, splitKey, value);
+                addJSONSubTree(destination, splitKey, value);
             } else {
-                finalObject.accumulate(currentKey, value);
+                destination.accumulate(currentKey, value);
             }
         } else {
             destination.put(propertyString.trim(), true);
@@ -168,8 +165,7 @@ public class JSONReportBuilder {
         if (value.matches("(?:^|\\s)([1-9](?:\\d*|(?:\\d{0,2})(?:,\\d{3})*)(?:\\.\\d*[1-9])?|0?\\.\\d*[1-9]|0)(?:\\s|$)")) {
             NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
-                Number number = format.parse(value);
-                return number;
+                return format.parse(value);
             } catch (ParseException e) {
                 // never mind
             }
@@ -233,5 +229,5 @@ public class JSONReportBuilder {
         public JSONReportException(String message, Throwable e) {
             super(message, e);
         }
-    };
+    }
 }

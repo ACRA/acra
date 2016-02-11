@@ -55,7 +55,7 @@ final class SharedPreferencesCollector {
         final StringBuilder result = new StringBuilder();
 
         // Include the default SharedPreferences
-        final Map<String, SharedPreferences> sharedPrefs = new TreeMap<String, SharedPreferences>();
+        final Map<String, SharedPreferences> sharedPrefs = new TreeMap<>();
         sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
 
         // Add in any additional SharedPreferences

@@ -360,6 +360,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     private static ReportPrimer getReportPrimer(ACRAConfiguration config) {
+        //noinspection TryWithIdenticalCatches
         try {
             return config.reportPrimerClass().newInstance();
         } catch (InstantiationException e) {

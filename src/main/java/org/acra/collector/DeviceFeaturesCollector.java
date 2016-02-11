@@ -15,14 +15,15 @@
  */
 package org.acra.collector;
 
-import static org.acra.ACRA.LOG_TAG;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
+import org.acra.ACRA;
 
 import java.lang.reflect.Method;
 
-import android.content.Context;
-import android.content.pm.PackageManager;
-
-import org.acra.ACRA;
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Features declared as available on the device. Available only with API level > 5.

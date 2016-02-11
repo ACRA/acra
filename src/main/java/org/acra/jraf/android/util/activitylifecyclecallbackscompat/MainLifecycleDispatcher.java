@@ -24,12 +24,12 @@
  */
 package org.acra.jraf.android.util.activitylifecyclecallbackscompat;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
+
+import java.util.ArrayList;
 
 /**
  * Keeps a list of {@link ActivityLifecycleCallbacksCompat}s that will be called following the life cycle of the application's {@link Activity activities}.
@@ -46,7 +46,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
 
     private MainLifecycleDispatcher() {}
 
-    private ArrayList<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<ActivityLifecycleCallbacksCompat>();
+    private final ArrayList<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<>();
 
     /* package */void registerActivityLifecycleCallbacks(ActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {

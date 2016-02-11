@@ -20,11 +20,9 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
-import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -33,10 +31,13 @@ import org.acra.sender.ReportSenderFactory;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.security.KeyStore;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ACRAConstants.*;
 
 /**
  * Represents the configuration that ACRA will use when handling crash reports.
@@ -98,7 +99,7 @@ public final class ACRAConfiguration implements Serializable {
 
     private Method httpMethod;
     private Type reportType;
-    private final Map<String, String> httpHeaders = new HashMap<String, String>();
+    private final Map<String, String> httpHeaders = new HashMap<>();
     private KeyStore keyStore;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
@@ -1099,25 +1100,19 @@ public final class ACRAConfiguration implements Serializable {
 
     private static String[] copyArray(String[] source) {
         final String[] target = new String[source.length];
-        for (int i = 0; i < source.length; i++) { // NB manual array copy because auto requires API 9
-            target[i] = source[i];
-        }
+        System.arraycopy(source, 0, target, 0, source.length);
         return target;
     }
 
     private static ReportField[] copyArray(ReportField[] source) {
         final ReportField[] target = new ReportField[source.length];
-        for (int i = 0; i < source.length; i++) { // NB manual array copy because auto requires API 9
-            target[i] = source[i];
-        }
+        System.arraycopy(source, 0, target, 0, source.length);
         return target;
     }
 
     private static Class<? extends ReportSenderFactory>[] copyArray(Class<? extends ReportSenderFactory>[] source) {
         final Class<? extends ReportSenderFactory>[] target = new Class[source.length];
-        for (int i = 0; i < source.length; i++) { // NB manual array copy because auto requires API 9
-            target[i] = source[i];
-        }
+        System.arraycopy(source, 0, target, 0, source.length);
         return target;
     }
 }

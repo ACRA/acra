@@ -15,17 +15,17 @@
  */
 package org.acra.collector;
 
-import static org.acra.ACRA.LOG_TAG;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.util.SparseArray;
+
+import org.acra.ACRA;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
-import org.acra.ACRA;
-
-import android.content.Context;
-import android.content.res.Configuration;
-import android.util.SparseArray;
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Inspects a {@link Configuration} object through reflection API in order to
@@ -55,19 +55,19 @@ public final class ConfigurationCollector {
     private static final String PREFIX_KEYBOARD = "KEYBOARD_";
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
-    private final HashMap<String, SparseArray<String>> mValueArrays = new HashMap<String, SparseArray<String>>();
+    private final HashMap<String, SparseArray<String>> mValueArrays = new HashMap<>();
 
     private ConfigurationCollector() {
 
-        final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<String>();
-        final SparseArray<String> keyboardValues = new SparseArray<String>();
-        final SparseArray<String> keyboardHiddenValues = new SparseArray<String>();
-        final SparseArray<String> navigationValues = new SparseArray<String>();
-        final SparseArray<String> navigationHiddenValues = new SparseArray<String>();
-        final SparseArray<String> orientationValues = new SparseArray<String>();
-        final SparseArray<String> screenLayoutValues = new SparseArray<String>();
-        final SparseArray<String> touchScreenValues = new SparseArray<String>();
-        final SparseArray<String> uiModeValues = new SparseArray<String>();
+        final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<>();
+        final SparseArray<String> keyboardValues = new SparseArray<>();
+        final SparseArray<String> keyboardHiddenValues = new SparseArray<>();
+        final SparseArray<String> navigationValues = new SparseArray<>();
+        final SparseArray<String> navigationHiddenValues = new SparseArray<>();
+        final SparseArray<String> orientationValues = new SparseArray<>();
+        final SparseArray<String> screenLayoutValues = new SparseArray<>();
+        final SparseArray<String> touchScreenValues = new SparseArray<>();
+        final SparseArray<String> uiModeValues = new SparseArray<>();
 
         for (final Field f : Configuration.class.getFields()) {
             if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())) {
@@ -92,9 +92,7 @@ public final class ConfigurationCollector {
                     } else if (fieldName.startsWith(PREFIX_UI_MODE)) {
                         uiModeValues.put(f.getInt(null), fieldName);
                     }
-                } catch (IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
-                } catch (IllegalAccessException e) {
+                } catch (IllegalArgumentException | IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
                 }
             }
@@ -134,9 +132,7 @@ public final class ConfigurationCollector {
                     }
                     result.append('\n');
                 }
-            } catch (IllegalArgumentException e) {
-                ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
-            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
             }
         }
@@ -160,25 +156,27 @@ public final class ConfigurationCollector {
      */
     private String getFieldValueName(Configuration conf, Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
-        if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
-            return Integer.toString(f.getInt(conf));
-        } else if (fieldName.equals(FIELD_UIMODE)) {
-            return activeFlags(mValueArrays.get(PREFIX_UI_MODE), f.getInt(conf));
-        } else if (fieldName.equals(FIELD_SCREENLAYOUT)) {
-            return activeFlags(mValueArrays.get(PREFIX_SCREENLAYOUT), f.getInt(conf));
-        } else {
-            final SparseArray<String> values = mValueArrays.get(fieldName.toUpperCase() + '_');
-            if (values == null) {
-                // Unknown field, return the raw int as String
+        switch (fieldName) {
+            case FIELD_MCC:
+            case FIELD_MNC:
                 return Integer.toString(f.getInt(conf));
-            }
+            case FIELD_UIMODE:
+                return activeFlags(mValueArrays.get(PREFIX_UI_MODE), f.getInt(conf));
+            case FIELD_SCREENLAYOUT:
+                return activeFlags(mValueArrays.get(PREFIX_SCREENLAYOUT), f.getInt(conf));
+            default:
+                final SparseArray<String> values = mValueArrays.get(fieldName.toUpperCase() + '_');
+                if (values == null) {
+                    // Unknown field, return the raw int as String
+                    return Integer.toString(f.getInt(conf));
+                }
 
-            final String value = values.get(f.getInt(conf));
-            if (value == null) {
-                // Unknown value, return the raw int as String
-                return Integer.toString(f.getInt(conf));
-            }
-            return value;
+                final String value = values.get(f.getInt(conf));
+                if (value == null) {
+                    // Unknown value, return the raw int as String
+                    return Integer.toString(f.getInt(conf));
+                }
+                return value;
         }
     }
 

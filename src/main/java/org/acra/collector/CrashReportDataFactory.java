@@ -53,7 +53,7 @@ public final class CrashReportDataFactory {
     private final Context context;
     private final ACRAConfiguration config;
     private final SharedPreferences prefs;
-    private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
+    private final Map<String, String> customParameters = new LinkedHashMap<>();
     private final Calendar appStartDate;
     private final String initialConfiguration;
 
@@ -508,7 +508,7 @@ public final class CrashReportDataFactory {
         Map<String, String> params = customParameters;
 
         if (reportCustomData != null) {
-            params = new HashMap<String, String>(params);
+            params = new HashMap<>(params);
             params.putAll(reportCustomData);
         }
 
