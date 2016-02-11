@@ -468,7 +468,7 @@ public final class CrashReportDataFactory {
             // Media Codecs list
             if (crashReportFields.contains(MEDIA_CODEC_LIST)) {
                 try {
-                    crashReportData.put(MEDIA_CODEC_LIST, MediaCodecListCollector.collecMediaCodecList());
+                    crashReportData.put(MEDIA_CODEC_LIST, MediaCodecListCollector.collectMediaCodecList());
                 } catch (RuntimeException e){
                     ACRA.log.e(LOG_TAG, "Error while retrieving MEDIA_CODEC_LIST data", e);
                 }

@@ -16,12 +16,11 @@
 package org.acra.collector;
 
 import android.content.Context;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
 import org.acra.ACRA;
-
-import java.lang.reflect.Method;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -42,17 +41,13 @@ final class DeviceFeaturesCollector {
         final StringBuilder result = new StringBuilder();
         try {
             final PackageManager pm = ctx.getPackageManager();
-            final Method getSystemAvailableFeatures = PackageManager.class.getMethod("getSystemAvailableFeatures", (Class[]) null);
-            final Object[] features = (Object[]) getSystemAvailableFeatures.invoke(pm);
-            for (final Object feature : features) {
-                final String featureName = (String) feature.getClass().getField("name").get(feature);
+            final FeatureInfo[] features = pm.getSystemAvailableFeatures();
+            for (final FeatureInfo feature : features) {
+                final String featureName = feature.name;
                 if(featureName != null) {
                     result.append(featureName);
                 } else {
-                    final Method getGlEsVersion = feature.getClass().getMethod("getGlEsVersion", (Class[]) null);
-                    final String glEsVersion = (String) getGlEsVersion.invoke(feature);
-                    result.append("glEsVersion = ");
-                    result.append(glEsVersion);
+                    result.append("glEsVersion = ").append(feature.getGlEsVersion());
                 }
                 result.append("\n");
             }

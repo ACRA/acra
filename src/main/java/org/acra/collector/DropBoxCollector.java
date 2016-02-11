@@ -56,18 +56,9 @@ final class DropBoxCollector {
      */
     public String read(Context context, ACRAConfiguration config) {
         try {
-            // Use reflection API to allow compilation with API Level 5.
-            final String serviceName = Compatibility.getDropBoxServiceName();
-            if (serviceName == null) {
-                return NO_RESULT;
-            }
+            final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
-            final Object dropbox = context.getSystemService(serviceName);
-            final Method getNextEntry = dropbox.getClass().getMethod("getNextEntry", String.class, long.class);
-            if (getNextEntry == null) {
-                return "";
-            }
-
+            //TODO: replace Time with Calendar
             final Time timer = new Time();
             timer.setToNow();
             timer.minute -= config.dropboxCollectionMinutes();
@@ -90,27 +81,23 @@ final class DropBoxCollector {
             final StringBuilder dropboxContent = new StringBuilder();
             for (String tag : tags) {
                 dropboxContent.append("Tag: ").append(tag).append('\n');
-                Object entry = getNextEntry.invoke(dropbox, tag, time);
+                DropBoxManager.Entry entry = dropbox.getNextEntry(tag, time);
                 if (entry == null) {
                     dropboxContent.append("Nothing.").append('\n');
                     continue;
                 }
-
-                final Method getText = entry.getClass().getMethod("getText", int.class);
-                final Method getTimeMillis = entry.getClass().getMethod("getTimeMillis", (Class[]) null);
-                final Method close = entry.getClass().getMethod("close", (Class[]) null);
                 while (entry != null) {
-                    final long msec = (Long) getTimeMillis.invoke(entry, (Object[]) null);
+                    final long msec = entry.getTimeMillis();
                     timer.set(msec);
                     dropboxContent.append("@").append(timer.format2445()).append('\n');
-                    final String text = (String) getText.invoke(entry, 500);
+                    final String text = entry.getText(500);
                     if (text != null) {
                         dropboxContent.append("Text: ").append(text).append('\n');
                     } else {
                         dropboxContent.append("Not Text!").append('\n');
                     }
-                    close.invoke(entry, (Object[]) null);
-                    entry = getNextEntry.invoke(dropbox, tag, msec);
+                    entry.close();
+                    entry = dropbox.getNextEntry(tag, msec);
                 }
             }
             return dropboxContent.toString();

@@ -61,7 +61,7 @@ final class SettingsCollector {
         final Field[] keys = Settings.System.class.getFields();
         for (final Field key : keys) {
             // Avoid retrieving deprecated fields... it is useless, has an
-            // impact on perfs, and the system writes many warnings in the
+            // impact on prefs, and the system writes many warnings in the
             // logcat.
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class) {
                 try {

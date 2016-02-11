@@ -85,7 +85,7 @@ final class ReflectionCollector {
                     result.append('=');
                     result.append(method.invoke(null, (Object[]) null));
                     result.append("\n");
-                } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
+                } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
                     // NOOP
                 }
             }

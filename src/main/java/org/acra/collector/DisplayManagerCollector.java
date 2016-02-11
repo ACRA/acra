@@ -32,24 +32,8 @@ final class DisplayManagerCollector {
         } else {
             // Since Android 4.2, we can fetch multiple displays with the
             // DisplayManager.
-            try {
-                Object displayManager = ctx.getSystemService((String) (ctx.getClass().getField("DISPLAY_SERVICE")
-                        .get(null)));
-                Method getDisplays = displayManager.getClass().getMethod("getDisplays");
-                displays = (Display[]) getDisplays.invoke(displayManager);
-            } catch (IllegalArgumentException e) {
-                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
-            } catch (SecurityException e) {
-                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
-            } catch (IllegalAccessException e) {
-                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
-            } catch (NoSuchFieldException e) {
-                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
-            } catch (NoSuchMethodException e) {
-                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
-            } catch (InvocationTargetException e) {
-                ACRA.log.w(LOG_TAG, "Error while collecting DisplayManager data: ", e);
-            }
+            DisplayManager displayManager = (DisplayManager) ctx.getSystemService(Context.DISPLAY_SERVICE);
+            displays = displayManager.getDisplays();
         }
 
         for (Display display : displays) {
@@ -63,217 +47,148 @@ final class DisplayManagerCollector {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
-        final StringBuilder result = new StringBuilder();
-
-        result.append(collectCurrentSizeRange(display));
-        result.append(collectFlags(display));
-        result.append(display.getDisplayId()).append(".height=").append(display.getHeight()).append('\n');
-        result.append(collectMetrics(display, "getMetrics"));
-        result.append(collectName(display));
-        result.append(display.getDisplayId()).append(".orientation=").append(display.getOrientation()).append('\n');
-        result.append(display.getDisplayId()).append(".pixelFormat=").append(display.getPixelFormat()).append('\n');
-        result.append(collectMetrics(display, "getRealMetrics"));
-        result.append(collectSize(display, "getRealSize"));
-        result.append(collectRectSize(display));
-        result.append(display.getDisplayId()).append(".refreshRate=").append(display.getRefreshRate()).append('\n');
-        result.append(collectRotation(display));
-        result.append(collectSize(display, "getSize"));
-        result.append(display.getDisplayId()).append(".width=").append(display.getWidth()).append('\n');
-        result.append(collectIsValid(display));
-
-        return result.toString();
+        //noinspection deprecation
+        return collectCurrentSizeRange(display) +
+                collectFlags(display) +
+                display.getDisplayId() + ".height=" + display.getHeight() + '\n' +
+                collectMetrics(display) +
+                collectName(display) +
+                display.getDisplayId() + ".orientation=" + display.getRotation() + '\n' +
+                display.getDisplayId() + ".pixelFormat=" + display.getPixelFormat() + '\n' +
+                collectRealMetrics(display) +
+                collectSize(display, "getRealSize") +
+                collectRectSize(display) +
+                display.getDisplayId() + ".refreshRate=" + display.getRefreshRate() + '\n' +
+                collectRotation(display) +
+                collectSize(display, "getSize") +
+                display.getDisplayId() + ".width=" + display.getWidth() + '\n' +
+                collectIsValid(display);
     }
 
-    private static Object collectIsValid(Display display) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method isValid = display.getClass().getMethod("isValid");
-            Boolean value = (Boolean) isValid.invoke(display);
-            result.append(display.getDisplayId()).append(".isValid=").append(value).append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+    private static String collectIsValid(Display display) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return display.getDisplayId() + ".isValid=" + display.isValid() + '\n';
         }
-        return result.toString();
+        return "";
     }
 
-    private static Object collectRotation(Display display) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getRotation = display.getClass().getMethod("getRotation");
-            int rotation = (Integer) getRotation.invoke(display);
-            result.append(display.getDisplayId()).append(".rotation=");
-            switch (rotation) {
+    private static String collectRotation(Display display) {
+        return display.getDisplayId() + ".rotation=ROTATION_" + rotationToString(display.getRotation()) + '\n';
+    }
+
+    private static String rotationToString(int rotation) {
+        switch (rotation) {
             case Surface.ROTATION_0:
-                result.append("ROTATION_0");
-                break;
+                return "ROTATION_0";
             case Surface.ROTATION_90:
-                result.append("ROTATION_90");
-                break;
+                return "ROTATION_90";
             case Surface.ROTATION_180:
-                result.append("ROTATION_180");
-                break;
+                return "ROTATION_180";
             case Surface.ROTATION_270:
-                result.append("ROTATION_270");
-                break;
+                return "ROTATION_270";
             default:
-                result.append(rotation);
-                break;
-            }
-            result.append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+                return String.valueOf(rotation);
         }
-        return result.toString();
     }
 
-    private static Object collectRectSize(Display display) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getRectSize = display.getClass().getMethod("getRectSize", Rect.class);
+    private static String collectRectSize(Display display) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             Rect size = new Rect();
-            getRectSize.invoke(display, size);
-            result.append(display.getDisplayId()).append(".rectSize=[").append(size.top).append(',').append(size.left)
-                    .append(',').append(size.width()).append(',').append(size.height()).append(']').append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+            display.getRectSize(size);
+            return display.getDisplayId() + ".rectSize=[" + size.top + ',' + size.left +
+                    ',' + size.width() + ',' + size.height() + ']' + '\n';
         }
-        return result.toString();
+        return "";
     }
 
-    private static Object collectSize(Display display, String methodName) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getRealSize = display.getClass().getMethod(methodName, Point.class);
+    private static String collectSize(Display display, String methodName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             Point size = new Point();
-            getRealSize.invoke(display, size);
-            result.append(display.getDisplayId()).append('.').append(methodName).append("=[").append(size.x)
-                    .append(',').append(size.y).append(']').append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+            display.getRealSize(size);
+            return display.getDisplayId() + '.' + (methodName + "=[" + size.x
+                    + ',' + size.y + ']' + '\n');
         }
-        return result.toString();
+        return "";
     }
 
     private static String collectCurrentSizeRange(Display display) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getCurrentSizeRange = display.getClass().getMethod("getCurrentSizeRange", Point.class, Point.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             Point smallest = new Point(), largest = new Point();
-            getCurrentSizeRange.invoke(display, smallest, largest);
-            result.append(display.getDisplayId()).append(".currentSizeRange.smallest=[").append(smallest.x).append(',')
-                    .append(smallest.y).append(']').append('\n');
-            result.append(display.getDisplayId()).append(".currentSizeRange.largest=[").append(largest.x).append(',')
-                    .append(largest.y).append(']').append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+            display.getCurrentSizeRange(smallest, largest);
+            return display.getDisplayId() + ".currentSizeRange.smallest=[" + smallest.x + ',' + smallest.y + "]\n"
+                    + display.getDisplayId() + ".currentSizeRange.largest=[" + largest.x + ',' + largest.y + "]\n";
         }
-        return result.toString();
+        return "";
     }
 
     private static String collectFlags(Display display) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getFlags = display.getClass().getMethod("getFlags");
-            int flags = (Integer) getFlags.invoke(display);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
                 if (field.getName().startsWith("FLAG_")) {
-                    mFlagsNames.put(field.getInt(null), field.getName());
+                    try {
+                        mFlagsNames.put(field.getInt(null), field.getName());
+                    } catch (IllegalAccessException ignored) {
+                    }
                 }
             }
-
-            result.append(display.getDisplayId()).append(".flags=").append(activeFlags(mFlagsNames, flags))
-                    .append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+            return display.getDisplayId() + ".flags=" + activeFlags(mFlagsNames, flags) + '\n';
         }
-        return result.toString();
+        return "";
     }
 
     private static String collectName(Display display) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getName = display.getClass().getMethod("getName");
-            String name = (String) getName.invoke(display);
-
-            result.append(display.getDisplayId()).append(".name=").append(name).append('\n');
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return display.getDisplayId() + ".name=" + display.getName() + '\n';
         }
-        return result.toString();
+        return "";
     }
 
-    private static Object collectMetrics(Display display, String methodName) {
-        StringBuilder result = new StringBuilder();
-        try {
-            Method getMetrics = display.getClass().getMethod(methodName);
-            DisplayMetrics metrics = (DisplayMetrics) getMetrics.invoke(display);
+    private static String collectMetrics(Display display) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        return collectMetrics(display.getDisplayId() + ".metrics", metrics);
+    }
 
-            for (Field field : DisplayMetrics.class.getFields()) {
-                if (field.getType().equals(Integer.class) && field.getName().startsWith("DENSITY_")
-                        && !field.getName().equals("DENSITY_DEFAULT")) {
+    private static String collectRealMetrics(Display display) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            display.getRealMetrics(metrics);
+            return collectMetrics(display.getDisplayId() + ".realMetrics", metrics);
+        }
+        return "";
+    }
+
+    private static String collectMetrics(String prefix, DisplayMetrics metrics) {
+        //TODO: densities seem to be unused, is something missing here?
+        for (Field field : DisplayMetrics.class.getFields()) {
+            if (field.getType().equals(Integer.class) && field.getName().startsWith("DENSITY_")
+                    && !field.getName().equals("DENSITY_DEFAULT")) {
+                try {
                     mDensities.put(field.getInt(null), field.getName());
+                } catch (IllegalAccessException ignored) {
                 }
             }
-
-            result.append(display.getDisplayId()).append('.').append(methodName).append(".density=")
-                    .append(metrics.density).append('\n');
-            result.append(display.getDisplayId()).append('.').append(methodName).append(".densityDpi=")
-                    .append(metrics.getClass().getField("densityDpi")).append('\n');
-            result.append(display.getDisplayId()).append('.').append(methodName).append("scaledDensity=x")
-                    .append(metrics.scaledDensity).append('\n');
-            result.append(display.getDisplayId()).append('.').append(methodName).append(".widthPixels=")
-                    .append(metrics.widthPixels).append('\n');
-            result.append(display.getDisplayId()).append('.').append(methodName).append(".heightPixels=")
-                    .append(metrics.heightPixels).append('\n');
-            result.append(display.getDisplayId()).append('.').append(methodName).append(".xdpi=").append(metrics.xdpi)
-                    .append('\n');
-            result.append(display.getDisplayId()).append('.').append(methodName).append(".ydpi=").append(metrics.ydpi)
-                    .append('\n');
-
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        } catch (NoSuchFieldException e) {
         }
-        return result.toString();
+        return prefix + ".density=" + metrics.density + '\n'
+                + prefix + ".densityDpi=" + metrics.densityDpi + '\n'
+                + prefix + ".scaledDensity=x" + metrics.scaledDensity + '\n'
+                + prefix + ".widthPixels=" + metrics.widthPixels + '\n'
+                + prefix + ".heightPixels=" + metrics.heightPixels + '\n'
+                + prefix + ".xdpi=" + metrics.xdpi + '\n'
+                + prefix + ".ydpi=" + metrics.ydpi + '\n';
     }
 
     /**
      * Some fields contain multiple value types which can be isolated by
      * applying a bitmask. That method returns the concatenation of active
      * values.
-     * 
-     * @param valueNames
-     *            The array containing the different values and names for this
-     *            field. Must contain mask values too.
-     * @param bitfield
-     *            The bitfield to inspect.
+     *
+     * @param valueNames The array containing the different values and names for this
+     *                   field. Must contain mask values too.
+     * @param bitfield   The bitfield to inspect.
      * @return The names of the different values contained in the bitfield,
-     *         separated by '+'.
+     * separated by '+'.
      */
     private static String activeFlags(SparseArray<String> valueNames, int bitfield) {
         final StringBuilder result = new StringBuilder();

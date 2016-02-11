@@ -1,9 +1,8 @@
 package org.acra.file;
 
 import android.content.Context;
+
 import org.acra.ACRA;
-import org.acra.file.LastModifiedComparator;
-import org.acra.file.ReportLocator;
 
 import java.io.File;
 import java.util.Arrays;
