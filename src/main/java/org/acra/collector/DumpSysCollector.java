@@ -48,7 +48,7 @@ final class DumpSysCollector {
         final StringBuilder meminfo = new StringBuilder();
 		BufferedReader bufferedReader = null;
         try {
-            final List<String> commandLine = new ArrayList<>();
+            final List<String> commandLine = new ArrayList<String>();
             commandLine.add("dumpsys");
             commandLine.add("meminfo");
             commandLine.add(Integer.toString(android.os.Process.myPid()));

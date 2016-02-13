@@ -104,7 +104,7 @@ public final class ACRAConfiguration implements Serializable {
 
     private Method httpMethod;
     private Type reportType;
-    private final Map<String, String> httpHeaders = new HashMap<>();
+    private final Map<String, String> httpHeaders = new HashMap<String, String>();
     private KeyStore keyStore;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 

@@ -50,7 +50,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
 
     private MainLifecycleDispatcher() {}
 
-    private final List<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<>();
+    private final List<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<ActivityLifecycleCallbacksCompat>();
 
     /* package */void registerActivityLifecycleCallbacks(ActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {

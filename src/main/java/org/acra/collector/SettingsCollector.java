@@ -72,7 +72,9 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (@NonNull IllegalArgumentException | IllegalAccessException e) {
+                } catch (@NonNull IllegalArgumentException e) {
+                    ACRA.log.w(LOG_TAG, "Error : ", e);
+                } catch (@NonNull IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -99,7 +101,9 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (@NonNull IllegalArgumentException | IllegalAccessException e) {
+                } catch (@NonNull IllegalArgumentException e) {
+                    ACRA.log.w(LOG_TAG, "Error : ", e);
+                } catch (@NonNull IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -134,7 +138,17 @@ final class SettingsCollector {
                     }
                 }
             }
-        } catch (@NonNull IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException e) {
+        } catch (@NonNull IllegalArgumentException e) {
+            ACRA.log.w(LOG_TAG, "Error : ", e);
+        } catch (@NonNull InvocationTargetException e) {
+            ACRA.log.w(LOG_TAG, "Error : ", e);
+        } catch (@NonNull NoSuchMethodException e) {
+            ACRA.log.w(LOG_TAG, "Error : ", e);
+        } catch (@NonNull SecurityException e) {
+            ACRA.log.w(LOG_TAG, "Error : ", e);
+        } catch (@NonNull ClassNotFoundException e) {
+            ACRA.log.w(LOG_TAG, "Error : ", e);
+        } catch (@NonNull IllegalAccessException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
         }
 

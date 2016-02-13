@@ -232,7 +232,10 @@ public class HttpSender implements ReportSender {
             }
             request.send(reportUrl, mMethod, reportAsString, mType);
 
-        } catch (@NonNull IOException | JSONReportException e) {
+        } catch (@NonNull IOException e) {
+            throw new ReportSenderException("Error while sending " + config.reportType()
+                    + " report via Http " + mMethod.name(), e);
+        } catch (@NonNull JSONReportException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
                     + " report via Http " + mMethod.name(), e);
         }
@@ -246,7 +249,7 @@ public class HttpSender implements ReportSender {
             fields = ACRAConstants.DEFAULT_REPORT_FIELDS;
         }
 
-        final Map<String, String> finalReport = new HashMap<>(report.size());
+        final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), report.get(field));

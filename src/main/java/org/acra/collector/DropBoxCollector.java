@@ -67,7 +67,7 @@ final class DropBoxCollector {
             timer.normalize(false);
             final long time = timer.toMillis(false);
 
-            final List<String> tags = new ArrayList<>();
+            final List<String> tags = new ArrayList<String>();
             if (config.includeDropBoxSystemTags()) {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }

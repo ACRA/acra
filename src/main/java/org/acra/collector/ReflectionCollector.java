@@ -62,7 +62,9 @@ final class ReflectionCollector {
                         result.append(value.toString());
                     }
                 }
-            } catch (@NonNull IllegalArgumentException | IllegalAccessException e) {
+            } catch (@NonNull IllegalArgumentException e) {
+                result.append("N/A");
+            } catch (@NonNull IllegalAccessException e) {
                 result.append("N/A");
             }
             result.append("\n");
@@ -90,7 +92,11 @@ final class ReflectionCollector {
                     result.append('=');
                     result.append(method.invoke(null, (Object[]) null));
                     result.append("\n");
-                } catch (@NonNull IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
+                } catch (@NonNull IllegalArgumentException ignored) {
+                    // NOOP
+                } catch (@NonNull InvocationTargetException ignored) {
+                    // NOOP
+                } catch (@NonNull IllegalAccessException ignored) {
                     // NOOP
                 }
             }

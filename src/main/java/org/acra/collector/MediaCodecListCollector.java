@@ -48,21 +48,21 @@ public class MediaCodecListCollector {
     private static final String[] AAC_TYPES = { "aac", "AAC" };
 
     @NonNull
-    private static SparseArray<String> mColorFormatValues = new SparseArray<>();
+    private static SparseArray<String> mColorFormatValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mAVCLevelValues = new SparseArray<>();
+    private static SparseArray<String> mAVCLevelValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mAVCProfileValues = new SparseArray<>();
+    private static SparseArray<String> mAVCProfileValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mH263LevelValues = new SparseArray<>();
+    private static SparseArray<String> mH263LevelValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mH263ProfileValues = new SparseArray<>();
+    private static SparseArray<String> mH263ProfileValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mMPEG4LevelValues = new SparseArray<>();
+    private static SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<>();
+    private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
     @NonNull
-    private static SparseArray<String> mAACProfileValues = new SparseArray<>();
+    private static SparseArray<String> mAACProfileValues = new SparseArray<String>();
 
     // static init where nearly all reflection inspection is done.
     static {
@@ -98,7 +98,13 @@ public class MediaCodecListCollector {
                     }
                 }
             }
-        } catch (@NonNull ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException ignored) {
+        } catch (@NonNull ClassNotFoundException ignored) {
+            // NOOP
+        } catch (@NonNull SecurityException ignored) {
+            // NOOP
+        } catch (@NonNull IllegalAccessException ignored) {
+            // NOOP
+        } catch (@NonNull IllegalArgumentException ignored) {
             // NOOP
         }
 

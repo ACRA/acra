@@ -50,7 +50,7 @@ class LogFileCollector {
      */
     @NonNull
     public String collectLogFile(@NonNull Context context, @NonNull String fileName, int numberOfLines) throws IOException {
-        final BoundedLinkedList<String> resultBuffer = new BoundedLinkedList<>(numberOfLines);
+        final BoundedLinkedList<String> resultBuffer = new BoundedLinkedList<String>(numberOfLines);
         final BufferedReader reader = getReader(context, fileName);
         try {
             String line = reader.readLine();

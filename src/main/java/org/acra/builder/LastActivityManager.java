@@ -24,7 +24,7 @@ import static org.acra.ACRA.LOG_TAG;
 public final class LastActivityManager {
 
     @NonNull
-    private WeakReference<Activity> lastActivityCreated = new WeakReference<>(null);
+    private WeakReference<Activity> lastActivityCreated = new WeakReference<Activity>(null);
 
     public LastActivityManager(@NonNull Application application) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -37,7 +37,7 @@ public final class LastActivityManager {
                     if (!(activity instanceof BaseCrashReportDialog)) {
                         // Ignore CrashReportDialog because we want the last
                         // application Activity that was started so that we can explicitly kill it off.
-                        lastActivityCreated = new WeakReference<>(activity);
+                        lastActivityCreated = new WeakReference<Activity>(activity);
                     }
                 }
 

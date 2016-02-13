@@ -15,7 +15,7 @@ public final class ReportBuilder {
     private String message;
     private Thread uncaughtExceptionThread;
     private Throwable exception;
-    private final Map<String, String> customData = new HashMap<>();
+    private final Map<String, String> customData = new HashMap<String, String>();
 
     private boolean sendSilently = false;
     private boolean endApplication = false;
