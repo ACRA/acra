@@ -29,7 +29,11 @@ public final class ReportLocator {
     }
 
     public File[] getUnapprovedReports() {
-        return getUnapprovedFolder().listFiles();
+        final File[] reports = getUnapprovedFolder().listFiles();
+        if (reports == null) {
+            return new File[0];
+        }
+        return reports;
     }
 
     public File getApprovedFolder() {
