@@ -55,6 +55,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      * Build the dialog from the values in config
      * @param savedInstanceState old state to restore
      */
+    @CallSuper
     protected void buildAndShowDialog(@Nullable Bundle savedInstanceState){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final int titleResourceId = config.resDialogTitle();
@@ -241,7 +242,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     /**
      * @return the AlertDialog displayed by this Activity
      */
-    protected AlertDialog getDialog() {
+    protected final AlertDialog getDialog() {
         return mDialog;
     }
 }

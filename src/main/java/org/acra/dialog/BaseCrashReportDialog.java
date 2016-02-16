@@ -69,6 +69,7 @@ public abstract class BaseCrashReportDialog extends Activity {
     /**
      * Cancel any pending crash reports.
      */
+    @CallSuper
     protected void cancelReports() {
         new BulkReportDeleter(getApplicationContext()).deleteReports(false, 0);
     }
@@ -79,6 +80,7 @@ public abstract class BaseCrashReportDialog extends Activity {
      * @param comment       Comment (may be null) provided by the user.
      * @param userEmail     Email address (may be null) provided by the client.
      */
+    @CallSuper
     protected void sendCrash(@Nullable String comment, @Nullable String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister();
         try {
