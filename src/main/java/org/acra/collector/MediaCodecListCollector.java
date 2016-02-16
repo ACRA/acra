@@ -16,7 +16,6 @@
 
 package org.acra.collector;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
