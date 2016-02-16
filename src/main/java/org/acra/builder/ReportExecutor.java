@@ -39,6 +39,8 @@ import static org.acra.ReportField.USER_CRASH_DATE;
  */
 public final class ReportExecutor {
 
+    private static final int THREAD_SLEEP_INTERVAL_MILLIS = 100;
+
     private final Context context;
     private final ACRAConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;
@@ -213,7 +215,7 @@ public final class ReportExecutor {
                     while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
                         try {
                             // Wait a bit to let the user read the toast
-                            Thread.sleep(100);
+                            Thread.sleep(THREAD_SLEEP_INTERVAL_MILLIS);
                         } catch (InterruptedException e1) {
                             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                         }
@@ -234,7 +236,7 @@ public final class ReportExecutor {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for Toast");
                 while (!toastWaitEnded) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(THREAD_SLEEP_INTERVAL_MILLIS);
                     } catch (InterruptedException e1) {
                         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted waiting for Toast");
                     }
