@@ -15,6 +15,7 @@
  */
 package org.acra.config;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -33,6 +34,7 @@ import org.acra.sender.ReportSenderFactory;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1148,24 +1150,13 @@ public final class ACRAConfiguration implements Serializable {
         }
     }
 
-    @NonNull
-    private static String[] copyArray(@NonNull String[] source) {
-        final String[] target = new String[source.length];
-        System.arraycopy(source, 0, target, 0, source.length);
-        return target;
-    }
-
-    @NonNull
-    private static ReportField[] copyArray(@NonNull ReportField[] source) {
-        final ReportField[] target = new ReportField[source.length];
-        System.arraycopy(source, 0, target, 0, source.length);
-        return target;
-    }
-
-    @NonNull
-    private static Class<? extends ReportSenderFactory>[] copyArray(@NonNull Class<? extends ReportSenderFactory>[] source) {
-        final Class<? extends ReportSenderFactory>[] target = new Class[source.length];
-        System.arraycopy(source, 0, target, 0, source.length);
-        return target;
+    private static <T> T[] copyArray(@NonNull T[] source) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            return Arrays.copyOf(source, source.length);
+        }
+        //noinspection unchecked
+        T[] result = (T[]) Array.newInstance(source.getClass().getComponentType(), source.length);
+        System.arraycopy(source, 0, result, 0, source.length);
+        return result;
     }
 }

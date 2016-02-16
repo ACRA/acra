@@ -47,7 +47,7 @@ import org.acra.util.ApplicationStartupProcessor;
  */
 public class ACRA {
 
-    public static boolean DEV_LOGGING = false; // Should be false for release.
+    public static final boolean DEV_LOGGING = false; // Should be false for release.
 
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
