@@ -31,12 +31,13 @@ import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
 
-    private static final int HTTP_SUCCESS = 200;
-    private static final int HTTP_REDIRECT = 300;
-    private static final int HTTP_CLIENT_ERROR = 400;
+    private static final int PRIMARY_DIGIT_DIVIDER = 100;
+
+    private static final int HTTP_PRIMARY_SUCCESS = 2;
+    private static final int HTTP_PRIMARY_CLIENT_ERROR = 4;
+    private static final int HTTP_PRIMARY_SERVER_ERROR = 5;
     private static final int HTTP_FORBIDDEN = 403;
     private static final int HTTP_CONFLICT = 409;
-    private static final int MAX_HTTP_CODE = 600;
 
     private final ACRAConfiguration config;
     private String login;
@@ -146,20 +147,30 @@ public final class HttpRequest {
         final int responseCode = urlConnection.getResponseCode();
         if (ACRA.DEV_LOGGING)
             ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
-        if (responseCode >= HTTP_SUCCESS && responseCode < HTTP_REDIRECT) {
-            // All is good
-            ACRA.log.i(LOG_TAG, "Request received by server");
-        } else if (responseCode == HTTP_FORBIDDEN) {
-            // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
-            ACRA.log.w(LOG_TAG, "Data validation error on server - request will be discarded");
-        } else if (responseCode == HTTP_CONFLICT) {
-            // 409 means that the report has been received already. So we can discard it.
-            ACRA.log.w(LOG_TAG, "Server has already received this post - request will be discarded");
-        } else if ((responseCode >= HTTP_CLIENT_ERROR) && (responseCode < MAX_HTTP_CODE)) {
-            ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
-            throw new IOException("Host returned error code " + responseCode);
-        } else {
-            ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
+        int primaryCode = responseCode / PRIMARY_DIGIT_DIVIDER;
+        outer: switch (primaryCode) {
+            case HTTP_PRIMARY_SUCCESS:
+                // All is good
+                ACRA.log.i(LOG_TAG, "Request received by server");
+                break;
+            case HTTP_PRIMARY_CLIENT_ERROR:
+                switch (responseCode) {
+                    case HTTP_FORBIDDEN:
+                        // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
+                        ACRA.log.w(LOG_TAG, "Data validation error on server - request will be discarded");
+                        break outer;
+                    case HTTP_CONFLICT:
+                        // 409 means that the report has been received already. So we can discard it.
+                        ACRA.log.w(LOG_TAG, "Server has already received this post - request will be discarded");
+                        break outer;
+                }
+                //if none of the special cases, continue to next block
+            case HTTP_PRIMARY_SERVER_ERROR:
+                ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
+                throw new IOException("Host returned error code " + responseCode);
+            default:
+                ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
+                break;
         }
 
         urlConnection.disconnect();
@@ -175,7 +186,7 @@ public final class HttpRequest {
     public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?,?> entry : parameters.entrySet()) {
+        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
             if (dataBfr.length() != 0) {
                 dataBfr.append('&');
             }
