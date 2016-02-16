@@ -46,6 +46,7 @@ import org.acra.util.ApplicationStartupProcessor;
  * 
  */
 public class ACRA {
+    private ACRA(){}
 
     public static final boolean DEV_LOGGING = false; // Should be false for release.
 

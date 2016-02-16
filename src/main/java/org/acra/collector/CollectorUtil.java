@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 public final class CollectorUtil {
+    private CollectorUtil(){}
 
     /**
      * Closes a Reader.

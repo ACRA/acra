@@ -15,8 +15,9 @@ import android.view.WindowManager;
 import java.lang.reflect.Field;
 
 final class DisplayManagerCollector {
+    private DisplayManagerCollector(){}
 
-    final static SparseArray<String> mFlagsNames = new SparseArray<String>();
+    static final SparseArray<String> mFlagsNames = new SparseArray<String>();
 
     public static String collectDisplays(@NonNull Context ctx) {
         final Display[] displays;

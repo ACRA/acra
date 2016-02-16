@@ -4,16 +4,16 @@
  */
 package org.acra.util;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import org.acra.ACRA;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.UUID;
-
-import org.acra.ACRA;
-
-import android.content.Context;
-import android.support.annotation.NonNull;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -29,11 +29,12 @@ import static org.acra.ACRA.LOG_TAG;
  * </p>
  */
 public class Installation {
+    private Installation(){}
 
     private static String sID;
     private static final String INSTALLATION = "ACRA-INSTALLATION";
 
-    public synchronized static String id(@NonNull Context context) {
+    public static synchronized String id(@NonNull Context context) {
         if (sID == null) {
             final File installation = new File(context.getFilesDir(), INSTALLATION);
             try {
