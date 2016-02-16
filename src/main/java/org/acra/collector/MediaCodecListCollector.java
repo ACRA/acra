@@ -111,7 +111,6 @@ public class MediaCodecListCollector {
      * @return The media codecs information
      */
     @NonNull
-    @SuppressLint("NewApi") //lint doesn't check complex NewApi blocks correctly
     public static String collectMediaCodecList() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             return "";

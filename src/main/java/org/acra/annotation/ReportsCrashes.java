@@ -18,7 +18,9 @@ package org.acra.annotation;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -95,68 +97,68 @@ public @interface ReportsCrashes {
      * @return Resource id for the label of positive button in the crash dialog.
      *         If not provided, defaults to 'OK'.
      */
-    int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
+    @StringRes int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
 
     /**
      * @return Resource id for the label of negative button in the crash dialog.
      *         If not provided, defaults to 'cancel'.
      */
-    int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
+    @StringRes int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
 
     /**
      * @return Resource id for the user comment input label in the crash dialog.
      *         If not provided, disables the input field.
      */
-    int resDialogCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the user email address input label in the crash
      *         dialog. If not provided, disables the input field.
      */
-    int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the crash dialog. Default value is
      *         the system alert icon.
      */
-    int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
+    @DrawableRes int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
 
     /**
      * @return Resource id for the Toast text triggered when the user accepts to
      *         send a report in the crash dialog.
      */
-    int resDialogOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the text in the crash dialog.
      */
-    int resDialogText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the crash dialog.
      */
-    int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the status bar notification. Default
      *         is the system error notification icon.
      */
-    int resNotifIcon() default ACRAConstants.DEFAULT_NOTIFICATION_ICON;
+    @DrawableRes int resNotifIcon() default ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 
     /**
      * @return Resource id for the text in the status bar notification.
      */
-    int resNotifText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resNotifText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the ticker text in the status bar notification.
      */
-    int resNotifTickerText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resNotifTickerText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the status bar notification.
      */
-    int resNotifTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resNotifTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * Resource id for the Toast text triggered when the application crashes if
@@ -170,7 +172,7 @@ public @interface ReportsCrashes {
      * @return Resource id for the Toast text triggered when the application
      *         crashes.
      */
-    int resToastText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resToastText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Name of the SharedPreferences that will host ACRA settings you

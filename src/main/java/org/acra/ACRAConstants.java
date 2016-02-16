@@ -16,6 +16,8 @@
 package org.acra;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
+
 import org.acra.dialog.CrashReportDialog;
 
 import static org.acra.ReportField.*;
@@ -108,6 +110,7 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_DIALOG_ICON = android.R.drawable.ic_dialog_alert;
 
+    @StringRes
     public static final int DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT = android.R.string.ok;
 
     public static final int DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT = android.R.string.cancel;

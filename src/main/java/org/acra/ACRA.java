@@ -185,7 +185,8 @@ public class ACRA {
             return;
         }
         mApplication = app;
-        
+
+        //noinspection ConstantConditions
         if (config == null) {
             log.e(LOG_TAG, "ACRA#init called but no ACRAConfiguration provided");
             return;

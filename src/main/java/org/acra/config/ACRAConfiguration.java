@@ -16,8 +16,10 @@
 package org.acra.config;
 
 import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -77,19 +79,19 @@ public final class ACRAConfiguration implements Serializable {
     private Class<? extends BaseCrashReportDialog> reportDialogClass;
     private Class<? extends ReportPrimer> reportPrimerClass;
 
-    private Integer resDialogPositiveButtonText;
-    private Integer resDialogNegativeButtonText;
-    private Integer resDialogCommentPrompt;
-    private Integer resDialogEmailPrompt;
-    private Integer resDialogIcon;
-    private Integer resDialogOkToast;
-    private Integer resDialogText;
-    private Integer resDialogTitle;
-    private Integer resNotifIcon;
-    private Integer resNotifText;
-    private Integer resNotifTickerText;
-    private Integer resNotifTitle;
-    private Integer resToastText;
+    @StringRes private Integer resDialogPositiveButtonText;
+    @StringRes private Integer resDialogNegativeButtonText;
+    @StringRes private Integer resDialogCommentPrompt;
+    @StringRes private Integer resDialogEmailPrompt;
+    @DrawableRes private Integer resDialogIcon;
+    @StringRes private Integer resDialogOkToast;
+    @StringRes private Integer resDialogText;
+    @StringRes private Integer resDialogTitle;
+    @DrawableRes private Integer resNotifIcon;
+    @StringRes private Integer resNotifText;
+    @StringRes private Integer resNotifTickerText;
+    @StringRes private Integer resNotifTitle;
+    @StringRes private Integer resToastText;
     private Integer sharedPreferencesMode;
     private String sharedPreferencesName;
     private Integer socketTimeout;
@@ -173,6 +175,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @SuppressWarnings( "unused" )
     public ACRAConfiguration(){
+        //TODO this will always throw a NPE! Modify/remove!
         this(null);
     }
 
@@ -180,7 +183,7 @@ public final class ACRAConfiguration implements Serializable {
     /**
      * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
      * This should be used also by third party senders.
-     * 
+     *
      * @param headers
      *            A map associating HTTP header names to their values.
      * @return The updated ACRA configuration
@@ -199,7 +202,7 @@ public final class ACRAConfiguration implements Serializable {
      * Retrieve HTTP headers defined by the application developer. These should
      * be added to requests sent by any third-party sender (over HTTP of
      * course).
-     * 
+     *
      * @return A map associating http header names to their values.
      */
     @SuppressWarnings("unused")
@@ -341,7 +344,7 @@ public final class ACRAConfiguration implements Serializable {
 
     /**
      * Modify the formUri of your backend server receiving reports.
-     * 
+     *
      * @param formUri   formUri to set.
      * @return The updated ACRA configuration
      *
@@ -412,7 +415,7 @@ public final class ACRAConfiguration implements Serializable {
 
     /**
      * Modify the mailTo of the mail account receiving reports.
-     * 
+     *
      * @param mailTo    mailTo to set.
      * @return The updated ACRA configuration
      *
@@ -428,7 +431,7 @@ public final class ACRAConfiguration implements Serializable {
     /**
      * Change the current {@link ReportingInteractionMode}. You must set
      * required configuration items first.
-     * 
+     *
      * @param mode
      *            the new mode to set.
      * @return The updated ACRA configuration
@@ -450,7 +453,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogPositiveButtonText(int resId) {
+    public ACRAConfiguration setResDialogPositiveButtonText(@StringRes int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
@@ -460,7 +463,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogNegativeButtonText(int resId) {
+    public ACRAConfiguration setResDialogNegativeButtonText(@StringRes int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
@@ -479,7 +482,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogCommentPrompt()} comes from an Android
      * Library Project.
-     * 
+     *
      * @param resId
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogCommentPrompt()}
@@ -489,7 +492,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogCommentPrompt(int resId) {
+    public ACRAConfiguration setResDialogCommentPrompt(@StringRes int resId) {
         resDialogCommentPrompt = resId;
         return this;
     }
@@ -498,7 +501,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogEmailPrompt()} comes from an Android
      * Library Project.
-     * 
+     *
      * @param resId
      *            The resource id, see
      *            {@link ReportsCrashes#resDialogEmailPrompt()}
@@ -508,7 +511,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogEmailPrompt(int resId) {
+    public ACRAConfiguration setResDialogEmailPrompt(@StringRes int resId) {
         resDialogEmailPrompt = resId;
         return this;
     }
@@ -517,7 +520,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogIcon()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
      * @return The updated ACRA configuration
@@ -526,7 +529,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogIcon(int resId) {
+    public ACRAConfiguration setResDialogIcon(@DrawableRes int resId) {
         resDialogIcon = resId;
         return this;
     }
@@ -535,7 +538,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method BEFORE if the id you wanted to give to
      * {@link ReportsCrashes#resDialogOkToast()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
      * @return The updated ACRA configuration
@@ -544,7 +547,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogOkToast(int resId) {
+    public ACRAConfiguration setResDialogOkToast(@StringRes int resId) {
         resDialogOkToast = resId;
         return this;
     }
@@ -553,7 +556,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogText()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogText()}
      * @return The updated ACRA configuration
@@ -562,7 +565,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogText(int resId) {
+    public ACRAConfiguration setResDialogText(@StringRes int resId) {
         resDialogText = resId;
         return this;
     }
@@ -571,7 +574,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogTitle()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
      * @return The updated ACRA configuration
@@ -580,7 +583,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResDialogTitle(int resId) {
+    public ACRAConfiguration setResDialogTitle(@StringRes int resId) {
         resDialogTitle = resId;
         return this;
     }
@@ -589,7 +592,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifIcon()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
      * @return The updated ACRA configuration
@@ -598,7 +601,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResNotifIcon(int resId) {
+    public ACRAConfiguration setResNotifIcon(@DrawableRes int resId) {
         resNotifIcon = resId;
         return this;
     }
@@ -607,7 +610,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifText()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see {@link ReportsCrashes#resNotifText()}
      * @return The updated ACRA configuration
@@ -616,7 +619,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResNotifText(int resId) {
+    public ACRAConfiguration setResNotifText(@StringRes int resId) {
         resNotifText = resId;
         return this;
     }
@@ -625,7 +628,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifTickerText()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId
      *            The resource id, see
      *            {@link ReportsCrashes#resNotifTickerText()}
@@ -635,7 +638,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResNotifTickerText(int resId) {
+    public ACRAConfiguration setResNotifTickerText(@StringRes int resId) {
         resNotifTickerText = resId;
         return this;
     }
@@ -644,7 +647,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifTitle()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId The resource id, see {@link ReportsCrashes#resNotifTitle()}
      * @return The updated ACRA configuration
      *
@@ -652,7 +655,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResNotifTitle(int resId) {
+    public ACRAConfiguration setResNotifTitle(@StringRes int resId) {
         resNotifTitle = resId;
         return this;
     }
@@ -661,7 +664,7 @@ public final class ACRAConfiguration implements Serializable {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resToastText()} comes from an Android Library
      * Project.
-     * 
+     *
      * @param resId The resource id, see {@link ReportsCrashes#resToastText()}
      * @return The updated ACRA configuration
      *
@@ -669,7 +672,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setResToastText(int resId) {
+    public ACRAConfiguration setResToastText(@StringRes int resId) {
         resToastText = resId;
         return this;
     }
@@ -714,7 +717,7 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param filterByPid
      *            true if you want to collect only logcat lines related to your
      *            application process.
@@ -761,7 +764,7 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param excludeMatchingSharedPreferencesKeys
      *            an array of Strings containing regexp defining
      *            SharedPreferences keys that should be excluded from the data
@@ -963,66 +966,79 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogPositiveButtonText() {
         return resDialogPositiveButtonText;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogNegativeButtonText() {
         return resDialogNegativeButtonText;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogCommentPrompt() {
         return resDialogCommentPrompt;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogEmailPrompt() {
         return resDialogEmailPrompt;
     }
 
     @SuppressWarnings("unused")
+    @DrawableRes
     public int resDialogIcon() {
         return resDialogIcon;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogOkToast() {
         return resDialogOkToast;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogText() {
         return resDialogText;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogTitle() {
         return resDialogTitle;
     }
 
     @SuppressWarnings("unused")
+    @DrawableRes
     public int resNotifIcon() {
         return resNotifIcon;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resNotifText() {
         return resNotifText;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resNotifTickerText() {
         return resNotifTickerText;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resNotifTitle() {
         return resNotifTitle;
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resToastText() {
         return resToastText;
     }
@@ -1125,23 +1141,23 @@ public final class ACRAConfiguration implements Serializable {
     public void checkCrashResources() throws ACRAConfigurationException {
         switch (mode()) {
             case TOAST:
-                if (resToastText() == 0) {
+                if (resToastText() == ACRAConstants.DEFAULT_RES_VALUE) {
                     throw new ACRAConfigurationException(
                             "TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
                 }
                 break;
             case NOTIFICATION:
-                if (resNotifTickerText() == 0 || resNotifTitle() == 0 || resNotifText() == 0) {
+                if (resNotifTickerText() == ACRAConstants.DEFAULT_RES_VALUE || resNotifTitle() == ACRAConstants.DEFAULT_RES_VALUE || resNotifText() == ACRAConstants.DEFAULT_RES_VALUE) {
                     throw new ACRAConfigurationException(
                             "NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText parameters in your application @ReportsCrashes() annotation.");
                 }
-                if (CrashReportDialog.class.equals(reportDialogClass()) && resDialogText() == 0) {
+                if (CrashReportDialog.class.equals(reportDialogClass()) && resDialogText() == ACRAConstants.DEFAULT_RES_VALUE) {
                     throw new ACRAConfigurationException(
                             "NOTIFICATION mode: using the (default) CrashReportDialog requires you have to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
                 }
                 break;
             case DIALOG:
-                if (CrashReportDialog.class.equals(reportDialogClass()) && resDialogText() == 0) {
+                if (CrashReportDialog.class.equals(reportDialogClass()) && resDialogText() == ACRAConstants.DEFAULT_RES_VALUE) {
                     throw new ACRAConfigurationException(
                             "DIALOG mode: using the (default) CrashReportDialog requires you to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
                 }

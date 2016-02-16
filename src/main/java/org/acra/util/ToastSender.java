@@ -1,6 +1,7 @@
 package org.acra.util;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 import org.acra.ACRA;
@@ -23,7 +24,7 @@ public final class ToastSender {
      * @param toastResourceId   Id of the resource to send as the Toast message.
      * @param toastLength       Length of the Toast.
      */
-    public static void sendToast(Context context, int toastResourceId, int toastLength) {
+    public static void sendToast(Context context, @StringRes int toastResourceId, int toastLength) {
         try {
             Toast.makeText(context, toastResourceId, toastLength).show();
         } catch (RuntimeException e) {

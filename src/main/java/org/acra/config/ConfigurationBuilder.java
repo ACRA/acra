@@ -16,8 +16,10 @@
 package org.acra.config;
 
 import android.app.Application;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -71,19 +73,19 @@ public final class ConfigurationBuilder {
     private Class<? extends BaseCrashReportDialog> reportDialogClass;
     private Class<? extends ReportPrimer> reportPrimerClass;
 
-    private Integer resDialogPositiveButtonText;
-    private Integer resDialogNegativeButtonText;
-    private Integer resDialogCommentPrompt;
-    private Integer resDialogEmailPrompt;
-    private Integer resDialogIcon;
-    private Integer resDialogOkToast;
-    private Integer resDialogText;
-    private Integer resDialogTitle;
-    private Integer resNotifIcon;
-    private Integer resNotifText;
-    private Integer resNotifTickerText;
-    private Integer resNotifTitle;
-    private Integer resToastText;
+    @StringRes private Integer resDialogPositiveButtonText;
+    @StringRes private Integer resDialogNegativeButtonText;
+    @StringRes private Integer resDialogCommentPrompt;
+    @StringRes  private Integer resDialogEmailPrompt;
+    @DrawableRes private Integer resDialogIcon;
+    @StringRes private Integer resDialogOkToast;
+    @StringRes private Integer resDialogText;
+    @StringRes private Integer resDialogTitle;
+    @DrawableRes private Integer resNotifIcon;
+    @StringRes private Integer resNotifText;
+    @StringRes private Integer resNotifTickerText;
+    @StringRes  private Integer resNotifTitle;
+    @StringRes   private Integer resToastText;
     private Integer sharedPreferencesMode;
     private String sharedPreferencesName;
     private Integer socketTimeout;
@@ -390,14 +392,14 @@ public final class ConfigurationBuilder {
 
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogPositiveButtonText(int resId) {
+    public ConfigurationBuilder setResDialogPositiveButtonText(@StringRes int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
 
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogNegativeButtonText(int resId) {
+    public ConfigurationBuilder setResDialogNegativeButtonText(@StringRes int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
@@ -419,7 +421,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogCommentPrompt(int resId) {
+    public ConfigurationBuilder setResDialogCommentPrompt(@StringRes int resId) {
         resDialogCommentPrompt = resId;
         return this;
     }
@@ -435,7 +437,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogEmailPrompt(int resId) {
+    public ConfigurationBuilder setResDialogEmailPrompt(@StringRes int resId) {
         resDialogEmailPrompt = resId;
         return this;
     }
@@ -451,7 +453,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogIcon(int resId) {
+    public ConfigurationBuilder setResDialogIcon(@DrawableRes int resId) {
         resDialogIcon = resId;
         return this;
     }
@@ -467,7 +469,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogOkToast(int resId) {
+    public ConfigurationBuilder setResDialogOkToast(@StringRes int resId) {
         resDialogOkToast = resId;
         return this;
     }
@@ -483,7 +485,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogText(int resId) {
+    public ConfigurationBuilder setResDialogText(@StringRes int resId) {
         resDialogText = resId;
         return this;
     }
@@ -499,7 +501,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogTitle(int resId) {
+    public ConfigurationBuilder setResDialogTitle(@StringRes int resId) {
         resDialogTitle = resId;
         return this;
     }
@@ -515,7 +517,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifIcon(int resId) {
+    public ConfigurationBuilder setResNotifIcon(@DrawableRes int resId) {
         resNotifIcon = resId;
         return this;
     }
@@ -531,7 +533,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifText(int resId) {
+    public ConfigurationBuilder setResNotifText(@StringRes int resId) {
         resNotifText = resId;
         return this;
     }
@@ -548,7 +550,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifTickerText(int resId) {
+    public ConfigurationBuilder setResNotifTickerText(@StringRes int resId) {
         resNotifTickerText = resId;
         return this;
     }
@@ -564,7 +566,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifTitle(int resId) {
+    public ConfigurationBuilder setResNotifTitle(@StringRes int resId) {
         resNotifTitle = resId;
         return this;
     }
@@ -580,7 +582,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResToastText(int resId) {
+    public ConfigurationBuilder setResToastText(@StringRes int resId) {
         resToastText = resId;
         return this;
     }
@@ -910,6 +912,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogPositiveButtonText() {
         if (resDialogPositiveButtonText != null) {
             return resDialogPositiveButtonText;
@@ -918,6 +921,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogNegativeButtonText() {
         if (resDialogNegativeButtonText != null) {
             return resDialogNegativeButtonText;
@@ -926,6 +930,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogCommentPrompt() {
         if (resDialogCommentPrompt != null) {
             return resDialogCommentPrompt;
@@ -934,6 +939,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogEmailPrompt() {
         if (resDialogEmailPrompt != null) {
             return resDialogEmailPrompt;
@@ -942,6 +948,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @DrawableRes
     int resDialogIcon() {
         if (resDialogIcon != null) {
             return resDialogIcon;
@@ -950,6 +957,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogOkToast() {
         if (resDialogOkToast != null) {
             return resDialogOkToast;
@@ -958,6 +966,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogText() {
         if (resDialogText != null) {
             return resDialogText;
@@ -966,6 +975,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogTitle() {
         if (resDialogTitle != null) {
             return resDialogTitle;
@@ -974,6 +984,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @DrawableRes
     int resNotifIcon() {
         if (resNotifIcon != null) {
             return resNotifIcon;
@@ -982,6 +993,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resNotifText() {
         if (resNotifText != null) {
             return resNotifText;
@@ -990,6 +1002,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resNotifTickerText() {
         if (resNotifTickerText != null) {
             return resNotifTickerText;
@@ -998,6 +1011,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resNotifTitle() {
         if (resNotifTitle != null) {
             return resNotifTitle;
@@ -1006,6 +1020,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resToastText() {
         if (resToastText != null) {
             return resToastText;

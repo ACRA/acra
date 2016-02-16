@@ -146,7 +146,7 @@ public final class HttpRequest {
         final int responseCode = urlConnection.getResponseCode();
         if (ACRA.DEV_LOGGING)
             ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
-        if ((responseCode >= HTTP_SUCCESS) && (responseCode < HTTP_REDIRECT)) {
+        if (responseCode >= HTTP_SUCCESS && responseCode < HTTP_REDIRECT) {
             // All is good
             ACRA.log.i(LOG_TAG, "Request received by server");
         } else if (responseCode == HTTP_FORBIDDEN) {
