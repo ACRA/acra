@@ -23,14 +23,19 @@
  */
 package org.acra.jraf.android.util.activitylifecyclecallbackscompat;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
+import android.os.Build;
 import android.os.Bundle;
 
 /**
  * Wraps an {@link ActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
  */
-/* package */class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
+
+/* package */
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
 
     private final ActivityLifecycleCallbacksCompat mCallback;
 

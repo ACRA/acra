@@ -2,6 +2,8 @@ package org.acra.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -39,6 +41,7 @@ public abstract class BaseCrashReportDialog extends Activity {
     private File reportFile;
     private ACRAConfiguration config;
 
+    @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +79,7 @@ public abstract class BaseCrashReportDialog extends Activity {
      * @param comment       Comment (may be null) provided by the user.
      * @param userEmail     Email address (may be null) provided by the client.
      */
-    protected void sendCrash(String comment, String userEmail) {
+    protected void sendCrash(@Nullable String comment, @Nullable String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister();
         try {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);

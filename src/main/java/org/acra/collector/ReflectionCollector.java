@@ -16,6 +16,9 @@
 
 package org.acra.collector;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,7 +42,8 @@ final class ReflectionCollector {
      * 
      * @return A human readable string with a key=value pair on each line.
      */
-    public static String collectConstants(Class<?> someClass, String prefix) {
+    @NonNull
+    public static String collectConstants(@NonNull Class<?> someClass, @Nullable String prefix) {
 
         final StringBuilder result = new StringBuilder();
 
@@ -58,9 +62,9 @@ final class ReflectionCollector {
                         result.append(value.toString());
                     }
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (@NonNull IllegalArgumentException e) {
                 result.append("N/A");
-            } catch (IllegalAccessException e) {
+            } catch (@NonNull IllegalAccessException e) {
                 result.append("N/A");
             }
             result.append("\n");
@@ -75,7 +79,8 @@ final class ReflectionCollector {
      * @param someClass the class to be inspected.
      * @return A human readable string with a key=value pair on each line.
      */
-    public static String collectStaticGettersResults(Class<?> someClass) {
+    @NonNull
+    public static String collectStaticGettersResults(@NonNull Class<?> someClass) {
         final StringBuilder result = new StringBuilder();
         final Method[] methods = someClass.getMethods();
         for (final Method method : methods) {
@@ -87,11 +92,11 @@ final class ReflectionCollector {
                     result.append('=');
                     result.append(method.invoke(null, (Object[]) null));
                     result.append("\n");
-                } catch (IllegalArgumentException e) {
+                } catch (@NonNull IllegalArgumentException ignored) {
                     // NOOP
-                } catch (IllegalAccessException e) {
+                } catch (@NonNull InvocationTargetException ignored) {
                     // NOOP
-                } catch (InvocationTargetException e) {
+                } catch (@NonNull IllegalAccessException ignored) {
                     // NOOP
                 }
             }
@@ -100,7 +105,8 @@ final class ReflectionCollector {
         return result.toString();
     }
 
-    public static String collectConstants(Class<?> someClass) {
+    @NonNull
+    public static String collectConstants(@NonNull Class<?> someClass) {
         return collectConstants(someClass, "");
     }
 }

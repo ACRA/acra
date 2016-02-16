@@ -18,9 +18,13 @@ package org.acra.collector;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Build;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
@@ -54,12 +58,13 @@ final class SettingsCollector {
      * 
      * @return A human readable String containing one key=value pair per line.
      */
+    @NonNull
     public String collectSystemSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.System.class.getFields();
         for (final Field key : keys) {
             // Avoid retrieving deprecated fields... it is useless, has an
-            // impact on perfs, and the system writes many warnings in the
+            // impact on prefs, and the system writes many warnings in the
             // logcat.
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class) {
                 try {
@@ -67,9 +72,9 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
-                } catch (IllegalAccessException e) {
+                } catch (@NonNull IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -85,6 +90,7 @@ final class SettingsCollector {
      * 
      * @return A human readable String containing one key=value pair per line.
      */
+    @NonNull
     public String collectSecureSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.Secure.class.getFields();
@@ -95,9 +101,9 @@ final class SettingsCollector {
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
-                } catch (IllegalAccessException e) {
+                } catch (@NonNull IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error : ", e);
                 }
             }
@@ -113,8 +119,9 @@ final class SettingsCollector {
      * 
      * @return A human readable String containing one key=value pair per line.
      */
+    @NonNull
     public String collectGlobalSettings() {
-        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return "";
         }
 
@@ -131,24 +138,24 @@ final class SettingsCollector {
                     }
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (@NonNull IllegalArgumentException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (IllegalAccessException e) {
+        } catch (@NonNull InvocationTargetException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (ClassNotFoundException e) {
+        } catch (@NonNull NoSuchMethodException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (SecurityException e) {
+        } catch (@NonNull SecurityException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (NoSuchMethodException e) {
+        } catch (@NonNull ClassNotFoundException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
-        } catch (InvocationTargetException e) {
+        } catch (@NonNull IllegalAccessException e) {
             ACRA.log.w(LOG_TAG, "Error : ", e);
         }
 
         return result.toString();
     }
 
-    private boolean isAuthorized(Field key) {
+    private boolean isAuthorized(@Nullable Field key) {
         if (key == null || key.getName().startsWith("WIFI_AP")) {
             return false;
         }

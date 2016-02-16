@@ -1,5 +1,7 @@
 package org.acra.collector;
 
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.Reader;
 
@@ -10,7 +12,7 @@ public final class CollectorUtil {
      *
      * @param reader    Reader to close. If reader is null then method just returns.
      */
-    public static void safeClose(Reader reader) {
+    public static void safeClose(@Nullable Reader reader) {
     	if (reader == null) return;
     	
         try {

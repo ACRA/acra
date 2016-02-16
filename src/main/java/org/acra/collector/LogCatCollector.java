@@ -15,6 +15,10 @@
  */
 package org.acra.collector;
 
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.annotation.ReportsCrashes;
@@ -59,7 +63,7 @@ class LogCatCollector {
      *         report generation time and a bigger footprint on the device data
      *         plan consumption.
      */
-    public String collectLogCat(ACRAConfiguration config, String bufferName) {
+    public String collectLogCat(@NonNull ACRAConfiguration config, @Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
         String myPidStr = null;
         if (config.logcatFilterByPid() && myPid > 0) {
@@ -81,7 +85,7 @@ class LogCatCollector {
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
             tailCount = Integer.parseInt(logcatArgumentsList.get(tailIndex + 1));
-            if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.FROYO) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
                 logcatArgumentsList.remove(tailIndex + 1);
                 logcatArgumentsList.remove(tailIndex);
                 logcatArgumentsList.add("-d");
@@ -108,9 +112,10 @@ class LogCatCollector {
                     try {
                         InputStream stderr = process.getErrorStream();
                         byte[] dummy = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
+                        //noinspection StatementWithEmptyBody
                         while (stderr.read(dummy) >= 0)
                             ;
-                    } catch (IOException e) {
+                    } catch (IOException ignored) {
                     }
                 }
             }).start();

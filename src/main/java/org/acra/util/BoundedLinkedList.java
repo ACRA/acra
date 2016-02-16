@@ -15,6 +15,8 @@
  */
 package org.acra.util;
 
+import android.support.annotation.NonNull;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -68,7 +70,7 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
      * @see java.util.LinkedList#addAll(java.util.Collection)
      */
     @Override
-    public boolean addAll(Collection<? extends E> collection) {
+    public boolean addAll(@NonNull Collection<? extends E> collection) {
         final int totalNeededSize = size() + collection.size();
         final int overhead = totalNeededSize - maxSize;
         if (overhead > 0) {
@@ -119,6 +121,7 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
      * 
      * @see java.util.AbstractCollection#toString()
      */
+    @NonNull
     @Override
     public String toString() {
         final StringBuilder result = new StringBuilder();

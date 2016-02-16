@@ -15,17 +15,19 @@
  */
 package org.acra.collector;
 
-import static org.acra.ACRA.LOG_TAG;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.support.annotation.NonNull;
+import android.util.SparseArray;
+
+import org.acra.ACRA;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.acra.ACRA;
-
-import android.content.Context;
-import android.content.res.Configuration;
-import android.util.SparseArray;
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Inspects a {@link Configuration} object through reflection API in order to
@@ -55,7 +57,7 @@ public final class ConfigurationCollector {
     private static final String PREFIX_KEYBOARD = "KEYBOARD_";
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
-    private final HashMap<String, SparseArray<String>> mValueArrays = new HashMap<String, SparseArray<String>>();
+    private final Map<String, SparseArray<String>> mValueArrays = new HashMap<String, SparseArray<String>>();
 
     private ConfigurationCollector() {
 
@@ -92,9 +94,9 @@ public final class ConfigurationCollector {
                     } else if (fieldName.startsWith(PREFIX_UI_MODE)) {
                         uiModeValues.put(f.getInt(null), fieldName);
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
-                } catch (IllegalAccessException e) {
+                } catch (@NonNull IllegalAccessException e) {
                     ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
                 }
             }
@@ -120,7 +122,7 @@ public final class ConfigurationCollector {
      * @return A String describing all the fields of the given Configuration,
      *         with values replaced by constant names.
      */
-    private String toString(Configuration conf) {
+    private String toString(@NonNull Configuration conf) {
         final StringBuilder result = new StringBuilder();
         for (final Field f : conf.getClass().getFields()) {
             try {
@@ -134,9 +136,9 @@ public final class ConfigurationCollector {
                     }
                     result.append('\n');
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (@NonNull IllegalArgumentException e) {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
-            } catch (IllegalAccessException e) {
+            } catch (@NonNull IllegalAccessException e) {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
             }
         }
@@ -158,7 +160,7 @@ public final class ConfigurationCollector {
      *         constant name.
      * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private String getFieldValueName(Configuration conf, Field f) throws IllegalAccessException {
+    private String getFieldValueName(@NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
             return Integer.toString(f.getInt(conf));
@@ -195,7 +197,7 @@ public final class ConfigurationCollector {
      * @return The names of the different values contained in the bitfield,
      *         separated by '+'.
      */
-    private static String activeFlags(SparseArray<String> valueNames, int bitfield) {
+    private static String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
         final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value
@@ -220,7 +222,7 @@ public final class ConfigurationCollector {
      * @param context   Context for the application being reported.
      * @return A String representation of the current configuration for the application.
      */
-    public static String collectConfiguration(Context context) {
+    public static String collectConfiguration(@NonNull Context context) {
         try {
             final ConfigurationCollector collector = new ConfigurationCollector();
             final Configuration crashConf = context.getResources().getConfiguration();

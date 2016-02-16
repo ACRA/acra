@@ -3,13 +3,13 @@ package org.acra.prefs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import org.acra.annotation.ReportsCrashes;
-import org.acra.config.ACRAConfig;
 import org.acra.config.ACRAConfiguration;
 
 /**
  * Responsible for creating a SharedPreferences instance which stores ACRA settings.
- *
+ * <p/>
  * Retrieves the {@link SharedPreferences} instance where user adjustable
  * settings for ACRA are stored. Default are the Application default
  * SharedPreferences, but you can provide another SharedPreferences name

@@ -16,11 +16,13 @@
 package org.acra.collector;
 
 import android.content.Context;
+import android.os.DropBoxManager;
+import android.support.annotation.NonNull;
 import android.text.format.Time;
+
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,41 +35,32 @@ import static org.acra.ACRA.LOG_TAG;
  * collect data associated to these tags with hope that some of them could help
  * debugging applications. Application specific tags can be provided by the app
  * dev to track his own usage of the DropBoxManager.
- * 
+ *
  * @author Kevin Gaudin
- * 
  */
 final class DropBoxCollector {
 
-    private static final String[] SYSTEM_TAGS = { "system_app_anr", "system_app_wtf", "system_app_crash",
+    private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
             "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
-            "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode" };
+            "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
     private static final String NO_RESULT = "N/A";
 
     /**
      * Read latest messages contained in the DropBox for system related tags and
      * optional developer-set tags.
-     * 
-     * @param context   The application context.
-     * @param config    AcraConfig describe what to collect.
+     *
+     * @param context The application context.
+     * @param config  AcraConfig describe what to collect.
      * @return A readable formatted String listing messages retrieved.
      */
-    public String read(Context context, ACRAConfiguration config) {
+    @NonNull
+    public String read(@NonNull Context context, @NonNull ACRAConfiguration config) {
         try {
-            // Use reflection API to allow compilation with API Level 5.
-            final String serviceName = Compatibility.getDropBoxServiceName();
-            if (serviceName == null) {
-                return NO_RESULT;
-            }
+            final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
-            final Object dropbox = context.getSystemService(serviceName);
-            final Method getNextEntry = dropbox.getClass().getMethod("getNextEntry", String.class, long.class);
-            if (getNextEntry == null) {
-                return "";
-            }
-
+            //TODO: replace Time with Calendar
             final Time timer = new Time();
             timer.setToNow();
             timer.minute -= config.dropboxCollectionMinutes();
@@ -90,27 +83,23 @@ final class DropBoxCollector {
             final StringBuilder dropboxContent = new StringBuilder();
             for (String tag : tags) {
                 dropboxContent.append("Tag: ").append(tag).append('\n');
-                Object entry = getNextEntry.invoke(dropbox, tag, time);
+                DropBoxManager.Entry entry = dropbox.getNextEntry(tag, time);
                 if (entry == null) {
                     dropboxContent.append("Nothing.").append('\n');
                     continue;
                 }
-
-                final Method getText = entry.getClass().getMethod("getText", int.class);
-                final Method getTimeMillis = entry.getClass().getMethod("getTimeMillis", (Class[]) null);
-                final Method close = entry.getClass().getMethod("close", (Class[]) null);
                 while (entry != null) {
-                    final long msec = (Long) getTimeMillis.invoke(entry, (Object[]) null);
+                    final long msec = entry.getTimeMillis();
                     timer.set(msec);
                     dropboxContent.append("@").append(timer.format2445()).append('\n');
-                    final String text = (String) getText.invoke(entry, 500);
+                    final String text = entry.getText(500);
                     if (text != null) {
                         dropboxContent.append("Text: ").append(text).append('\n');
                     } else {
                         dropboxContent.append("Not Text!").append('\n');
                     }
-                    close.invoke(entry, (Object[]) null);
-                    entry = getNextEntry.invoke(dropbox, tag, msec);
+                    entry.close();
+                    entry = dropbox.getNextEntry(tag, msec);
                 }
             }
             return dropboxContent.toString();

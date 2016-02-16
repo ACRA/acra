@@ -19,6 +19,8 @@
 
 package org.acra.file;
 
+import android.support.annotation.NonNull;
+
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.collector.CollectorUtil;
@@ -46,7 +48,8 @@ public final class CrashReportPersister {
      * @return CrashReportData read from the supplied InputStream.
      * @throws java.io.IOException if error occurs during reading from the {@code InputStream}.
      */
-    public CrashReportData load(File file) throws IOException {
+    @NonNull
+    public CrashReportData load(@NonNull File file) throws IOException {
 
         final FileInputStream in = new FileInputStream(file);
         try {
@@ -66,7 +69,7 @@ public final class CrashReportPersister {
      * @param file          File into which to store the CrashReportData.
      * @throws java.io.IOException if the CrashReportData could not be written to the OutputStream.
      */
-    public void store(CrashReportData crashData, File file) throws IOException {
+    public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
 
         final OutputStream out = new FileOutputStream(file);
         try {
@@ -116,7 +119,8 @@ public final class CrashReportPersister {
      * @throws java.io.IOException if the properties could not be read.
      * @since 1.6
      */
-    private synchronized CrashReportData load(Reader reader) throws IOException {
+    @NonNull
+    private synchronized CrashReportData load(@NonNull Reader reader) throws IOException {
         int mode = NONE, unicode = 0, count = 0;
         char nextChar, buf[] = new char[40];
         int offset = 0, keyLength = -1, intVal;
@@ -292,7 +296,7 @@ public final class CrashReportPersister {
      * @param string    String to append to the buffer.
      * @param key       Whether the String is a key value or not.
      */
-    private void dumpString(StringBuilder buffer, String string, boolean key) {
+    private void dumpString(@NonNull StringBuilder buffer, @NonNull String string, boolean key) {
         int i = 0;
         if (!key && i < string.length() && string.charAt(i) == ' ') {
             buffer.append("\\ "); //$NON-NLS-1$

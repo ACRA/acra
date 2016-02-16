@@ -18,6 +18,8 @@ package org.acra.collector;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
@@ -48,9 +50,10 @@ final class SharedPreferencesCollector {
      * collected, and the developer can provide additional SharedPreferences
      * names in the {@link ReportsCrashes#additionalSharedPreferences()}
      * configuration item.
-     * 
+     *
      * @return A readable formatted String containing all key/value pairs.
      */
+    @NonNull
     public String collect() {
         final StringBuilder result = new StringBuilder();
 
@@ -80,12 +83,13 @@ final class SharedPreferencesCollector {
             }
 
             // Add all non-filtered preferences from that preference file.
-            for (final String key : prefEntries.keySet()) {
-                if (filteredKey(key)) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + key + " due to filtering rule");
+            for (final Map.Entry<String, ?> prefEntry : prefEntries.entrySet()) {
+                if (filteredKey(prefEntry.getKey())) {
+                    if (ACRA.DEV_LOGGING)
+                        ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + prefEntry.getKey() + " due to filtering rule");
                 } else {
-                    final Object prefValue = prefEntries.get(key);
-                    result.append(sharedPrefId).append('.').append(key).append('=');
+                    final Object prefValue = prefEntry.getValue();
+                    result.append(sharedPrefId).append('.').append(prefEntry.getKey()).append('=');
                     result.append(prefValue == null ? "null" : prefValue.toString());
                     result.append("\n");
                 }
@@ -99,15 +103,14 @@ final class SharedPreferencesCollector {
     /**
      * Checks if the key matches one of the patterns provided by the developer
      * to exclude some preferences from reports.
-     * 
-     * @param key
-     *            the name of the preference to be checked
+     *
+     * @param key the name of the preference to be checked
      * @return true if the key has to be excluded from reports.
      */
-    private boolean filteredKey(String key) {
+    private boolean filteredKey(@NonNull String key) {
         for (String regex : config.excludeMatchingSharedPreferencesKeys()) {
-            if(key.matches(regex)) {
-               return true; 
+            if (key.matches(regex)) {
+                return true;
             }
         }
         return false;

@@ -1,6 +1,8 @@
 package org.acra.config;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
+
 import org.acra.annotation.ReportsCrashes;
 
 /**
@@ -15,8 +17,9 @@ public final class ACRAConfigurationFactory {
      *
      * @deprecated since 4.8.1 use {@link ConfigurationBuilder#build} instead.
      */
+    @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration create(Application app) {
+    public ACRAConfiguration create(@NonNull Application app) {
         return new ConfigurationBuilder(app).build();
     }
 }

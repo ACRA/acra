@@ -15,6 +15,8 @@
  */
 package org.acra.collector;
 
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 
@@ -40,6 +42,7 @@ final class DumpSysCollector {
      * 
      * @return The execution result.
      */
+    @NonNull
     public static String collectMemInfo() {
 
         final StringBuilder meminfo = new StringBuilder();
