@@ -18,6 +18,8 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
@@ -59,7 +61,7 @@ final class ReportDistributor {
      *
      * @param reportFile    Report to send.
      */
-    public void distribute(File reportFile) {
+    public void distribute(@NonNull File reportFile) {
 
         ACRA.log.i(LOG_TAG, "Sending report " + reportFile );
         try {
@@ -122,7 +124,7 @@ final class ReportDistributor {
         }
     }
 
-    private void deleteFile(File file) {
+    private void deleteFile(@NonNull File file) {
         final boolean deleted = file.delete();
         if (!deleted) {
             ACRA.log.w(LOG_TAG, "Could not delete error report : " + file);

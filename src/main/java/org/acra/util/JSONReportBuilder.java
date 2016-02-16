@@ -1,20 +1,21 @@
 package org.acra.util;
 
+import android.support.annotation.NonNull;
+
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.collector.CollectorUtil;
+import org.acra.collector.CrashReportData;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-
-import org.acra.ACRA;
-import org.acra.ReportField;
-import org.acra.collector.CollectorUtil;
-import org.acra.collector.CrashReportData;
-import org.acra.sender.ReportSenderException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -64,10 +65,10 @@ public class JSONReportBuilder {
      *            The ACRA report data structure.
      * @return A JSONObject containing all fields from the report converted to
      *         JSON.
-     * @throws ReportSenderException
      * @throws JSONReportException
      */
-    public static JSONObject buildJSONReport(CrashReportData errorContent) throws JSONReportException {
+    @NonNull
+    public static JSONObject buildJSONReport(@NonNull CrashReportData errorContent) throws JSONReportException {
         JSONObject jsonReport = new JSONObject();
         BufferedReader reader = null;
         for (ReportField key : errorContent.keySet()) {
@@ -78,7 +79,7 @@ public class JSONReportBuilder {
                     JSONObject subObject = new JSONObject();
                     String strContent = errorContent.getProperty(key);
                     reader = new BufferedReader(new StringReader(strContent), 1024);
-                    String line = null;
+                    String line;
                     try {
                         while ((line = reader.readLine()) != null) {
                             addJSONFromProperty(subObject, line);
@@ -138,10 +139,9 @@ public class JSONReportBuilder {
      *            A string containing "some.key.name=Any value"
      * @throws JSONException
      */
-    private static void addJSONFromProperty(JSONObject destination, String propertyString) throws JSONException {
+    private static void addJSONFromProperty(@NonNull JSONObject destination, @NonNull String propertyString) throws JSONException {
         int equalsIndex = propertyString.indexOf('=');
         if (equalsIndex > 0) {
-            JSONObject finalObject = destination;
             String currentKey = propertyString.substring(0, equalsIndex).trim();
             String currentValue = propertyString.substring(equalsIndex + 1).trim();
             Object value = guessType(currentValue);
@@ -150,16 +150,16 @@ public class JSONReportBuilder {
             }
             String[] splitKey = currentKey.split("\\.");
             if (splitKey.length > 1) {
-                addJSONSubTree(finalObject, splitKey, value);
+                addJSONSubTree(destination, splitKey, value);
             } else {
-                finalObject.accumulate(currentKey, value);
+                destination.accumulate(currentKey, value);
             }
         } else {
             destination.put(propertyString.trim(), true);
         }
     }
 
-    private static Object guessType(String value) {
+    private static Object guessType(@NonNull String value) {
         if (value.equalsIgnoreCase("true"))
             return true;
         if (value.equalsIgnoreCase("false"))
@@ -168,8 +168,7 @@ public class JSONReportBuilder {
         if (value.matches("(?:^|\\s)([1-9](?:\\d*|(?:\\d{0,2})(?:,\\d{3})*)(?:\\.\\d*[1-9])?|0?\\.\\d*[1-9]|0)(?:\\s|$)")) {
             NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
-                Number number = format.parse(value);
-                return number;
+                return format.parse(value);
             } catch (ParseException e) {
                 // never mind
             }
@@ -190,7 +189,7 @@ public class JSONReportBuilder {
      *            The value to be inserted.
      * @throws JSONException
      */
-    private static void addJSONSubTree(JSONObject destination, String[] keys, Object value) throws JSONException {
+    private static void addJSONSubTree(@NonNull JSONObject destination, @NonNull String[] keys, Object value) throws JSONException {
         for (int i = 0; i < keys.length; i++) {
             String subKey = keys[i];
             if (i < keys.length - 1) {
@@ -233,5 +232,5 @@ public class JSONReportBuilder {
         public JSONReportException(String message, Throwable e) {
             super(message, e);
         }
-    };
+    }
 }

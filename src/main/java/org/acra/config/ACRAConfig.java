@@ -1,5 +1,7 @@
 package org.acra.config;
 
+import android.support.annotation.NonNull;
+
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
@@ -25,15 +27,18 @@ public interface ACRAConfig extends ReportsCrashes, Serializable {
      *
      * @return A map associating http header names to their values.
      */
+    @NonNull
     Map<String, String> getHttpHeaders();
 
     /**
      * @return KeyStore to use (if any) when sending a HttpsRequest.
      */
+    @NonNull
     KeyStore keyStore();
 
     /**
      * @return List of ReportField that ACRA will provide to the server.
      */
-    public List<ReportField> getReportFields();
+    @NonNull
+    List<ReportField> getReportFields();
 }

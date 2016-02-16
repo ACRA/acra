@@ -1,6 +1,8 @@
 package org.acra.log;
 
 
+import android.support.annotation.NonNull;
+
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -45,7 +47,7 @@ public final class NonAndroidLog implements ACRALog {
         return 0;
     }
 
-    public int v(String tag, String msg, Throwable tr) {
+    public int v(String tag, String msg, @NonNull Throwable tr) {
         if (logLevel <= VERBOSE) {
             out.println(tag + " : " + msg);
             tr.printStackTrace(out);
@@ -60,7 +62,7 @@ public final class NonAndroidLog implements ACRALog {
         return 0;
     }
 
-    public int d(String tag, String msg, Throwable tr) {
+    public int d(String tag, String msg, @NonNull Throwable tr) {
         if (logLevel <= DEBUG) {
             out.println(tag + " : " + msg);
             tr.printStackTrace(out);
@@ -75,7 +77,7 @@ public final class NonAndroidLog implements ACRALog {
         return 0;
     }
 
-    public int i(String tag, String msg, Throwable tr) {
+    public int i(String tag, String msg, @NonNull Throwable tr) {
         if (logLevel <= INFO) {
             out.println(tag + " : " + msg);
             tr.printStackTrace(out);
@@ -90,7 +92,7 @@ public final class NonAndroidLog implements ACRALog {
         return 0;
     }
 
-    public int w(String tag, String msg, Throwable tr) {
+    public int w(String tag, String msg, @NonNull Throwable tr) {
         if (logLevel <= WARN) {
             out.println(tag + " : " + msg);
             tr.printStackTrace(out);
@@ -99,7 +101,7 @@ public final class NonAndroidLog implements ACRALog {
     }
 
     //public native  boolean isLoggable(java.lang.String tag, int level);
-    public int w(String tag, Throwable tr) {
+    public int w(String tag, @NonNull Throwable tr) {
         if (logLevel <= WARN) {
             out.println(tag + " : ");
             tr.printStackTrace(out);
@@ -114,7 +116,7 @@ public final class NonAndroidLog implements ACRALog {
         return 0;
     }
 
-    public int e(String tag, String msg, Throwable tr) {
+    public int e(String tag, String msg, @NonNull Throwable tr) {
         if (logLevel <= ERROR) {
             out.println(tag + " : " + msg);
             tr.printStackTrace(out);

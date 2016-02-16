@@ -1,5 +1,7 @@
 package org.acra.log;
 
+import android.support.annotation.Nullable;
+
 /**
  * Responsible for providing ACRA classes with a platform neutral way of logging.
  * <p>
@@ -10,18 +12,19 @@ package org.acra.log;
  * @since 4.3.0
  */
 public interface ACRALog {
-    public int v(java.lang.String tag, java.lang.String msg);
-    public int v(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
-    public int d(java.lang.String tag, java.lang.String msg);
-    public int d(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
-    public int i(java.lang.String tag, java.lang.String msg);
-    public int i(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
-    public int w(java.lang.String tag, java.lang.String msg);
-    public int w(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
+    int v(java.lang.String tag, java.lang.String msg);
+    int v(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
+    int d(java.lang.String tag, java.lang.String msg);
+    int d(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
+    int i(java.lang.String tag, java.lang.String msg);
+    int i(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
+    int w(java.lang.String tag, java.lang.String msg);
+    int w(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
     //public native  boolean isLoggable(java.lang.String tag, int level);
-    public int w(java.lang.String tag, java.lang.Throwable tr);
-    public int e(java.lang.String tag, java.lang.String msg);
-    public int e(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
-    public java.lang.String getStackTraceString(java.lang.Throwable tr);
+    int w(java.lang.String tag, java.lang.Throwable tr);
+    int e(java.lang.String tag, java.lang.String msg);
+    int e(java.lang.String tag, java.lang.String msg, java.lang.Throwable tr);
+    @Nullable
+    java.lang.String getStackTraceString(java.lang.Throwable tr);
     //public native  int println(int priority, java.lang.String tag, java.lang.String msg);
 }

@@ -15,29 +15,30 @@
  */
 package org.acra.annotation;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.ReportField;
+import org.acra.ReportingInteractionMode;
+import org.acra.builder.NoOpReportPrimer;
+import org.acra.builder.ReportPrimer;
+import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.CrashReportDialog;
+import org.acra.sender.DefaultReportSenderFactory;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
+import org.acra.sender.ReportSenderFactory;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
-import org.acra.builder.NoOpReportPrimer;
-import org.acra.builder.ReportPrimer;
-import org.acra.dialog.BaseCrashReportDialog;
-import org.acra.dialog.CrashReportDialog;
-import org.acra.ReportField;
-import org.acra.ReportingInteractionMode;
-import org.acra.sender.DefaultReportSenderFactory;
-import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import org.acra.sender.ReportSenderFactory;
 
 /**
  * Provide configuration elements to the
@@ -61,7 +62,7 @@ public @interface ReportsCrashes {
      * 
      * @return URI of a custom server to which to post reports.
      */
-    String formUri() default ACRAConstants.DEFAULT_STRING_VALUE;
+    @NonNull String formUri() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * <p>
@@ -88,7 +89,7 @@ public @interface ReportsCrashes {
      * 
      * @return the interaction mode that you want ACRA to implement.
      */
-    ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
+    @NonNull ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
 
     /**
      * @return Resource id for the label of positive button in the crash dialog.
@@ -188,7 +189,7 @@ public @interface ReportsCrashes {
      *         SharedPreferences, as retrieved with
      *         {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
      */
-    String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
+    @NonNull String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * If using a custom {@link ReportsCrashes#sharedPreferencesName()}, pass
@@ -230,7 +231,7 @@ public @interface ReportsCrashes {
      * @return Array of tags that you want to be fetched when collecting DropBox
      *         entries.
      */
-    String[] additionalDropBoxTags() default {};
+    @NonNull String[] additionalDropBoxTags() default {};
 
     /**
      * @return Number of minutes to look back when collecting events from
@@ -265,7 +266,7 @@ public @interface ReportsCrashes {
      * @return Array of arguments to supply if retrieving the log as part of the
      *         report.
      */
-    String[] logcatArguments() default { "-t", "" + ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
+    @NonNull String[] logcatArguments() default { "-t", "" + ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom
@@ -275,7 +276,7 @@ public @interface ReportsCrashes {
      * 
      * @return Login to use when posting reports to a custom server.
      */
-    String formUriBasicAuthLogin() default ACRAConstants.NULL_VALUE;
+    @NonNull String formUriBasicAuthLogin() default ACRAConstants.NULL_VALUE;
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom
@@ -285,7 +286,7 @@ public @interface ReportsCrashes {
      * 
      * @return Password to use when posting reports to a custom server.
      */
-    String formUriBasicAuthPassword() default ACRAConstants.NULL_VALUE;
+    @NonNull String formUriBasicAuthPassword() default ACRAConstants.NULL_VALUE;
 
     /**
      * <p>
@@ -369,7 +370,7 @@ public @interface ReportsCrashes {
      * @return ReportField Array listing the fields to be included in the
      *         report.
      */
-    ReportField[] customReportContent() default {};
+    @NonNull ReportField[] customReportContent() default {};
 
     /**
      * <p>
@@ -397,7 +398,7 @@ public @interface ReportsCrashes {
      * 
      * @return email address to which to send reports.
      */
-    String mailTo() default ACRAConstants.DEFAULT_STRING_VALUE;
+    @NonNull String mailTo() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * Controls whether unapproved reports are deleted on application start or not.
@@ -456,7 +457,7 @@ public @interface ReportsCrashes {
      * 
      * @return String Array containing the names of the additional preferences.
      */
-    String[] additionalSharedPreferences() default {};
+    @NonNull String[] additionalSharedPreferences() default {};
 
     /**
      * Set this to true if you want to include only logcat lines related to your
@@ -491,7 +492,7 @@ public @interface ReportsCrashes {
      * 
      * @return an array of regex patterns, every matching key is not collected.
      */
-    String[] excludeMatchingSharedPreferencesKeys() default {};
+    @NonNull String[] excludeMatchingSharedPreferencesKeys() default {};
 
     /**
      * Provide here regex patterns to be evaluated on each Settings.System,
@@ -501,14 +502,14 @@ public @interface ReportsCrashes {
      * 
      * @return an array of regex patterns, every matching key is not collected.
      */
-    String[] excludeMatchingSettingsKeys() default {};
+    @NonNull String[] excludeMatchingSettingsKeys() default {};
 
     /**
      * The default value will be a BuildConfig class residing in the same package as the Application class.
      *
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
-    Class buildConfigClass() default Object.class;
+    @NonNull Class buildConfigClass() default Object.class;
 
     /**
      * The default {@link org.acra.sender.ReportSenderFactory} creates an {@link org.acra.sender.EmailIntentSender}
@@ -518,7 +519,7 @@ public @interface ReportsCrashes {
      * @return List of the {@link org.acra.sender.ReportSenderFactory} with which to construct the
      *         {@link org.acra.sender.ReportSender}s that will send the crash reports.
      */
-    Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
+    @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
@@ -530,7 +531,7 @@ public @interface ReportsCrashes {
      *         If the string does not containt any path separator, the file is
      *         assumed as being in {@link Context#getFilesDir()}.
      */
-    String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
+    @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
@@ -545,12 +546,12 @@ public @interface ReportsCrashes {
      * @return Class for the CrashReportDialog used when prompting the user for crash details.
      *          If not provided, defaults to CrashReportDialog.class
      */
-    Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
+    @NonNull Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
 
     /**
      * @return Class that is ued to provide any extra details for a crash.
      */
-    Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
+    @NonNull Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
 
     /**
      * <p>
@@ -559,7 +560,7 @@ public @interface ReportsCrashes {
      *
      * @return HTTP method used when posting reports.
      */
-    Method httpMethod() default Method.POST;
+    @NonNull Method httpMethod() default Method.POST;
 
-    Type reportType() default Type.FORM;
+    @NonNull Type reportType() default Type.FORM;
 }

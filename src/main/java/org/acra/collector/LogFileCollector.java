@@ -18,6 +18,8 @@ package org.acra.collector;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.util.BoundedLinkedList;
 
@@ -46,7 +48,8 @@ class LogFileCollector {
      * @return A single String containing all of the requested lines.
      * @throws IOException
      */
-    public String collectLogFile(Context context, String fileName, int numberOfLines) throws IOException {
+    @NonNull
+    public String collectLogFile(@NonNull Context context, @NonNull String fileName, int numberOfLines) throws IOException {
         final BoundedLinkedList<String> resultBuffer = new BoundedLinkedList<String>(numberOfLines);
         final BufferedReader reader = getReader(context, fileName);
         try {
@@ -61,7 +64,8 @@ class LogFileCollector {
         return resultBuffer.toString();
     }
 
-    private static BufferedReader getReader(Context context, String fileName) {
+    @NonNull
+    private static BufferedReader getReader(@NonNull Context context, @NonNull String fileName) {
         try {
             final FileInputStream inputStream;
             if (fileName.startsWith("/")) {

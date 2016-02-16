@@ -15,6 +15,8 @@
  */
 package org.acra.file;
 
+import android.support.annotation.NonNull;
+
 import org.acra.ACRAConstants;
 import org.acra.ErrorReporter;
 
@@ -32,7 +34,7 @@ public final class CrashReportFileNameParser {
      * @param reportFileName    Name of the report to check whether it should be sent silently.
      * @return True if the report has been declared explicitly silent using {@link ErrorReporter#handleSilentException(Throwable)}.
      */
-    public boolean isSilent(String reportFileName) {
+    public boolean isSilent(@NonNull String reportFileName) {
         return reportFileName.contains(ACRAConstants.SILENT_SUFFIX);
     }
 
@@ -49,7 +51,7 @@ public final class CrashReportFileNameParser {
      * @param reportFileName    Name of report to check whether it is approved to be sent.
      * @return True if a report can be sent.
      */
-    public boolean isApproved(String reportFileName) {
+    public boolean isApproved(@NonNull String reportFileName) {
         return isSilent(reportFileName) || reportFileName.contains(ACRAConstants.APPROVED_SUFFIX);
     }
 }

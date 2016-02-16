@@ -18,6 +18,8 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
@@ -42,7 +44,7 @@ public class EmailIntentSender implements ReportSender {
     }
 
     @Override
-    public void send(Context context, CrashReportData errorContent) throws ReportSenderException {
+    public void send(Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
 
         final String subject = mContext.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);
@@ -55,7 +57,7 @@ public class EmailIntentSender implements ReportSender {
         mContext.startActivity(emailIntent);
     }
 
-    private String buildBody(CrashReportData errorContent) {
+    private String buildBody(@NonNull CrashReportData errorContent) {
         ReportField[] fields = config.customReportContent();
         if(fields.length == 0) {
             fields = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;

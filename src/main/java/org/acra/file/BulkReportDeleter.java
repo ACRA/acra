@@ -1,9 +1,9 @@
 package org.acra.file;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
-import org.acra.file.LastModifiedComparator;
-import org.acra.file.ReportLocator;
 
 import java.io.File;
 import java.util.Arrays;
@@ -15,6 +15,7 @@ import static org.acra.ACRA.LOG_TAG;
  */
 public final class BulkReportDeleter {
 
+    @NonNull
     private final ReportLocator reportLocator;
 
     public BulkReportDeleter(Context context) {
