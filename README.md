@@ -39,6 +39,7 @@ For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA
 ACRA v4.8.2
 ===============================
 - Fix for bug when building without @ReportCrashes annotation.
+- Fix for NPE on startup deleting unsent reports from an old app version.
 
 ACRA v4.8.1
 ===============================
