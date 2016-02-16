@@ -57,6 +57,8 @@ public final class ConfigurationCollector {
     private static final String PREFIX_KEYBOARD = "KEYBOARD_";
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
+    private static final String ERROR_WHILE_INSPECTING = "Error while inspecting device configuration: ";
+
     private final Map<String, SparseArray<String>> mValueArrays = new HashMap<String, SparseArray<String>>();
 
     private ConfigurationCollector() {
@@ -95,9 +97,9 @@ public final class ConfigurationCollector {
                         uiModeValues.put(f.getInt(null), fieldName);
                     }
                 } catch (@NonNull IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
+                    ACRA.log.w(LOG_TAG, ERROR_WHILE_INSPECTING, e);
                 } catch (@NonNull IllegalAccessException e) {
-                    ACRA.log.w(LOG_TAG, "Error while inspecting device configuration: ", e);
+                    ACRA.log.w(LOG_TAG, ERROR_WHILE_INSPECTING, e);
                 }
             }
         }
@@ -137,9 +139,9 @@ public final class ConfigurationCollector {
                     result.append('\n');
                 }
             } catch (@NonNull IllegalArgumentException e) {
-                ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
+                ACRA.log.e(LOG_TAG, ERROR_WHILE_INSPECTING, e);
             } catch (@NonNull IllegalAccessException e) {
-                ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
+                ACRA.log.e(LOG_TAG, ERROR_WHILE_INSPECTING, e);
             }
         }
         return result.toString();
