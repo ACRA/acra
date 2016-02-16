@@ -32,8 +32,6 @@ import android.os.Bundle;
 /**
  * Wraps an {@link ActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
  */
-
-/* package */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
 

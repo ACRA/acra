@@ -3,7 +3,6 @@ package org.acra.sender;
 import android.Manifest;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
@@ -20,7 +19,7 @@ import static org.acra.ACRA.LOG_TAG;
  */
 public final class DefaultReportSenderFactory implements ReportSenderFactory {
 
-    @Nullable
+    @NonNull
     @Override
     public ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config) {
         final PackageManagerWrapper pm = new PackageManagerWrapper(context);

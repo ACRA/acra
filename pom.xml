@@ -55,6 +55,7 @@
 			we need to compile against version 23. All such classes are in the org.acra.jraf package.
 		-->
         <android.version>23</android.version>
+		<support.version>23.1.1</support.version>
 	</properties>
 
 	<dependencies>
@@ -77,9 +78,17 @@
 		<dependency>
 			<groupId>com.android.support</groupId>
 			<artifactId>support-v4</artifactId>
-			<version>23.1.1</version>
+			<version>${support.version}</version>
 			<type>aar</type>
 		</dependency>
+
+		<dependency>
+			<groupId>com.android.support</groupId>
+			<artifactId>support-annotations</artifactId>
+			<version>${support.version}</version>
+			<type>jar</type>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

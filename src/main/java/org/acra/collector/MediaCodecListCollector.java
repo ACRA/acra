@@ -47,22 +47,14 @@ public class MediaCodecListCollector {
     private static final String[] H263_TYPES = { "h263", "H263" };
     private static final String[] AAC_TYPES = { "aac", "AAC" };
 
-    @NonNull
-    private static SparseArray<String> mColorFormatValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mAVCLevelValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mAVCProfileValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mH263LevelValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mH263ProfileValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
-    @NonNull
-    private static SparseArray<String> mAACProfileValues = new SparseArray<String>();
+    private static final SparseArray<String> mColorFormatValues = new SparseArray<String>();
+    private static final SparseArray<String> mAVCLevelValues = new SparseArray<String>();
+    private static final SparseArray<String> mAVCProfileValues = new SparseArray<String>();
+    private static final SparseArray<String> mH263LevelValues = new SparseArray<String>();
+    private static final SparseArray<String> mH263ProfileValues = new SparseArray<String>();
+    private static final SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
+    private static final SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
+    private static final SparseArray<String> mAACProfileValues = new SparseArray<String>();
 
     // static init where nearly all reflection inspection is done.
     static {
@@ -120,34 +112,38 @@ public class MediaCodecListCollector {
     @NonNull
     @SuppressLint("NewApi") //lint doesn't check complex NewApi blocks correctly
     public static String collectMediaCodecList() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            MediaCodecInfo[] infos;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                //noinspection deprecation
-                int codecCount = MediaCodecList.getCodecCount();
-                infos = new MediaCodecInfo[codecCount];
-                for (int codecIdx = 0; codecIdx < codecCount; codecIdx++) {
-                    //noinspection deprecation
-                    infos[codecIdx] = MediaCodecList.getCodecInfoAt(codecIdx);
-                }
-            } else {
-                infos = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
-            }
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < infos.length; i++) {
-                MediaCodecInfo codecInfo = infos[i];
-                result.append('\n').append(i).append(": ").append(codecInfo.getName()).append('\n')
-                        .append("isEncoder: ").append(codecInfo.isEncoder()).append('\n');
-                String[] supportedTypes = codecInfo.getSupportedTypes();
-                result.append("Supported types: ").append(Arrays.toString(supportedTypes)).append('\n');
-                for (String type : supportedTypes) {
-                    result.append(collectCapabilitiesForType(codecInfo, type));
-                }
-                result.append('\n');
-            }
-            return result.toString();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            return "";
         }
-        return "";
+
+        final MediaCodecInfo[] infos;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            //noinspection deprecation
+            final int codecCount = MediaCodecList.getCodecCount();
+            infos = new MediaCodecInfo[codecCount];
+            for (int codecIdx = 0; codecIdx < codecCount; codecIdx++) {
+                //noinspection deprecation
+                infos[codecIdx] = MediaCodecList.getCodecInfoAt(codecIdx);
+            }
+        } else {
+            infos = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
+        }
+
+        final StringBuilder result = new StringBuilder();
+        for (int i = 0; i < infos.length; i++) {
+            final MediaCodecInfo codecInfo = infos[i];
+            result.append('\n')
+                    .append(i).append(": ").append(codecInfo.getName()).append('\n')
+                    .append("isEncoder: ").append(codecInfo.isEncoder()).append('\n');
+
+            final String[] supportedTypes = codecInfo.getSupportedTypes();
+            result.append("Supported types: ").append(Arrays.toString(supportedTypes)).append('\n');
+            for (String type : supportedTypes) {
+                result.append(collectCapabilitiesForType(codecInfo, type));
+            }
+            result.append('\n');
+        }
+        return result.toString();
     }
 
     /**
@@ -164,7 +160,7 @@ public class MediaCodecListCollector {
     private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, String type){
 
         final StringBuilder result = new StringBuilder();
-        MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);
+        final MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);
 
         // Color Formats
         final int[] colorFormats = codecCapabilities.colorFormats;
@@ -236,7 +232,7 @@ public class MediaCodecListCollector {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static CodecType identifyCodecType(@NonNull MediaCodecInfo codecInfo)  {
 
-        String name = codecInfo.getName();
+        final String name = codecInfo.getName();
         for (String token : AVC_TYPES) {
             if (name.contains(token)) {
                 return CodecType.AVC;

@@ -1,8 +1,7 @@
 package org.acra.sender;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-
+import android.support.annotation.NonNull;
 import org.acra.config.ACRAConfiguration;
 
 /**
@@ -21,6 +20,6 @@ public interface ReportSenderFactory {
      * @param config    Configuration to use when sending reports.
      * @return Fully configured instance of the relevant ReportSender.
      */
-    @Nullable
+    @NonNull
     ReportSender create(Context context, ACRAConfiguration config);
 }

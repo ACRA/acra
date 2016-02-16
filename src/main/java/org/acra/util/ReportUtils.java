@@ -5,10 +5,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
-import android.util.SparseArray;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 
@@ -105,41 +102,12 @@ public final class ReportUtils {
         return "Couldn't retrieve ApplicationFilePath";
     }
 
-    /**
-     * Utility method used for debugging purposes, writes the content of a SparseArray to a String.
-     *
-     * @param sparseArray //TODO describe param
-     * @return "{ key1 => value1, key2 => value2, ...}"
-     */
-    public static String sparseArrayToString(@Nullable SparseArray<?> sparseArray) {
-        StringBuilder result = new StringBuilder();
-        if (sparseArray == null) {
-            return "null";
-        }
-
-        result.append('{');
-        for (int i = 0; i < sparseArray.size(); i++) {
-            result.append(sparseArray.keyAt(i));
-            result.append(" => ");
-            if (sparseArray.valueAt(i) == null) {
-                result.append("null");
-            } else {
-                result.append(sparseArray.valueAt(i).toString());
-            }
-            if (i < sparseArray.size() - 1) {
-                result.append(", ");
-            }
-        }
-        result.append('}');
-        return result.toString();
-    }
-
     public static String getLocalIpAddress() {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         boolean first = true;
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
+                final NetworkInterface intf = en.nextElement();
                 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress()) {
@@ -158,7 +126,7 @@ public final class ReportUtils {
     }
 
     public static String getTimeString(@NonNull Calendar time) {
-        SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
+        final SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
         return format.format(time.getTimeInMillis());
     }
 }

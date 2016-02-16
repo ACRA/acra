@@ -167,7 +167,7 @@ public class ACRA {
      * @param checkReportsOnApplicationStart    Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(@NonNull Application app, @Nullable ACRAConfiguration config, boolean checkReportsOnApplicationStart){
+    public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
         final boolean senderServiceProcess = isACRASenderServiceProcess(app);
         if (senderServiceProcess) {

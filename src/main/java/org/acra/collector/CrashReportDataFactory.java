@@ -562,15 +562,17 @@ public final class CrashReportDataFactory {
 
         final StringBuilder customInfo = new StringBuilder();
         for (final Map.Entry<String, String> currentEntry : params.entrySet()) {
-            String currentVal = currentEntry.getValue();
             customInfo.append(currentEntry.getKey());
             customInfo.append(" = ");
+
             // We need to escape new lines in values or they are transformed into new
             // custom fields. => let's replace all '\n' with "\\n"
+            final String currentVal = currentEntry.getValue();
             if (currentVal != null) {
-                currentVal = currentVal.replaceAll("\n", "\\\\n");
+                customInfo.append(currentVal.replaceAll("\n", "\\\\n"));
+            } else {
+                customInfo.append("null");
             }
-            customInfo.append(currentVal);
             customInfo.append("\n");
         }
         return customInfo.toString();

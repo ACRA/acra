@@ -17,23 +17,21 @@ import java.lang.reflect.Field;
 final class DisplayManagerCollector {
 
     final static SparseArray<String> mFlagsNames = new SparseArray<String>();
-    final static SparseArray<String> mDensities = new SparseArray<String>();
 
     public static String collectDisplays(@NonNull Context ctx) {
-        Display[] displays;
+        final Display[] displays;
         final StringBuilder result = new StringBuilder();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             // Before Android 4.2, there was a single display available from the
             // window manager
-            final WindowManager windowManager = (WindowManager) ctx
-                    .getSystemService(Context.WINDOW_SERVICE);
+            final WindowManager windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
             displays = new Display[1];
             displays[0] = windowManager.getDefaultDisplay();
         } else {
             // Since Android 4.2, we can fetch multiple displays with the
             // DisplayManager.
-            DisplayManager displayManager = (DisplayManager) ctx.getSystemService(Context.DISPLAY_SERVICE);
+            final DisplayManager displayManager = (DisplayManager) ctx.getSystemService(Context.DISPLAY_SERVICE);
             displays = displayManager.getDisplays();
         }
 
@@ -173,16 +171,6 @@ final class DisplayManagerCollector {
 
     @NonNull
     private static String collectMetrics(String prefix, @NonNull DisplayMetrics metrics) {
-        //TODO: densities seem to be unused, is something missing here?
-        for (Field field : DisplayMetrics.class.getFields()) {
-            if (field.getType().equals(Integer.class) && field.getName().startsWith("DENSITY_")
-                    && !field.getName().equals("DENSITY_DEFAULT")) {
-                try {
-                    mDensities.put(field.getInt(null), field.getName());
-                } catch (IllegalAccessException ignored) {
-                }
-            }
-        }
         return prefix + ".density=" + metrics.density + '\n'
                 + prefix + ".densityDpi=" + metrics.densityDpi + '\n'
                 + prefix + ".scaledDensity=x" + metrics.scaledDensity + '\n'
