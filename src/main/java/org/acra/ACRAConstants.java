@@ -27,6 +27,7 @@ import static org.acra.ReportField.*;
  * @since 4.3.0
  */
 public final class ACRAConstants {
+    private ACRAConstants(){}
 
     public static final String REPORTFILE_EXTENSION = ".stacktrace";
 
@@ -136,7 +137,7 @@ public final class ACRAConstants {
      * 
      * @see org.acra.annotation.ReportsCrashes#mailTo()
      */
-    public final static ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { USER_COMMENT, ANDROID_VERSION, APP_VERSION_NAME,
+    public static final ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { USER_COMMENT, ANDROID_VERSION, APP_VERSION_NAME,
             BRAND, PHONE_MODEL, CUSTOM_DATA, STACK_TRACE };
 
     /**

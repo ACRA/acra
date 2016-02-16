@@ -114,7 +114,8 @@ public final class ACRAConfiguration implements Serializable {
     /**
      * @param builder  ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
      */
-    ACRAConfiguration(@Nullable ConfigurationBuilder builder) {
+    ACRAConfiguration(@NonNull ConfigurationBuilder builder) {
+        //noinspection ConstantConditions (don't rely on annotations alone)
         if (builder == null) {
             throw new NullPointerException("A ConfigurationBuilder must be supplied to ACRAConfiguration");
         }

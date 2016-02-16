@@ -35,6 +35,7 @@ import static org.acra.ACRA.LOG_TAG;
  * 
  */
 final class DumpSysCollector {
+    private DumpSysCollector(){}
 
     /**
      * Collect results of the <code>dumpsys meminfo</code> command restricted to

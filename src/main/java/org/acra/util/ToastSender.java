@@ -1,9 +1,9 @@
 package org.acra.util;
 
-import org.acra.ACRA;
-
 import android.content.Context;
 import android.widget.Toast;
+
+import org.acra.ACRA;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -14,6 +14,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 4.3.0
  */
 public final class ToastSender {
+    private ToastSender(){}
 
     /**
      * Sends a Toast and ensures that any Exception thrown during sending is handled.

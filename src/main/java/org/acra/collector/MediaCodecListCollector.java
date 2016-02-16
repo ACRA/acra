@@ -36,6 +36,7 @@ import java.util.Arrays;
  * @author Kevin Gaudin
  */
 public class MediaCodecListCollector {
+    private MediaCodecListCollector(){}
     private enum CodecType {
         AVC, H263, MPEG4, AAC
 

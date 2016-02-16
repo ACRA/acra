@@ -20,6 +20,7 @@ import java.util.Locale;
 import static org.acra.ACRA.LOG_TAG;
 
 public class JSONReportBuilder {
+    private JSONReportBuilder(){}
     /**
      * <p>
      * Create a JSONObject containing the whole report data with the most
