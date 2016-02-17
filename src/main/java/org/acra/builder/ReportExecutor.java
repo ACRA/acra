@@ -63,7 +63,8 @@ public final class ReportExecutor {
      */
     private static int mNotificationCounter = 0;
 
-    public ReportExecutor(Context context, ACRAConfiguration config, CrashReportDataFactory crashReportDataFactory, LastActivityManager lastActivityManager, Thread.UncaughtExceptionHandler defaultExceptionHandler, ReportPrimer reportPrimer) {
+    public ReportExecutor(@NonNull Context context,@NonNull ACRAConfiguration config,@NonNull CrashReportDataFactory crashReportDataFactory,
+                          @NonNull LastActivityManager lastActivityManager,@Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler,@NonNull ReportPrimer reportPrimer) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
@@ -91,7 +92,7 @@ public final class ReportExecutor {
         }
     }
 
-    public void handReportToDefaultExceptionHandler(Thread t, @NonNull Throwable e) {
+    public void handReportToDefaultExceptionHandler(@Nullable Thread t, @NonNull Throwable e) {
         if (defaultExceptionHandler != null) {
             ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
                     + " - forwarding uncaught Exception on to default ExceptionHandler");
@@ -265,7 +266,7 @@ public final class ReportExecutor {
     /**
      * End the application.
      */
-    private void endApplication(@Nullable Thread uncaughtExceptionThread, Throwable th) {
+    private void endApplication(@Nullable Thread uncaughtExceptionThread,@NonNull Throwable th) {
         // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
         // as the intent is clearer and would allows you to switch it off for SILENT.
         final boolean letDefaultHandlerEndApplication = (
@@ -322,7 +323,7 @@ public final class ReportExecutor {
      *
      * @param reportFile    Report file to send.
      */
-    private void createNotification(File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private void createNotification(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 

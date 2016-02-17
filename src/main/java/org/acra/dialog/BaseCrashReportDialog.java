@@ -43,7 +43,7 @@ public abstract class BaseCrashReportDialog extends Activity {
 
     @CallSuper
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());

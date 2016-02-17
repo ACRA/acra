@@ -122,7 +122,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      *
      * @param v the view to add
      */
-    protected final void addViewToDialog(View v) {
+    protected final void addViewToDialog(@NonNull View v) {
         scrollable.addView(v);
     }
 
