@@ -88,7 +88,7 @@ You can read in the [ChangeLog](http://code.google.com/p/acra/acra/wiki/ChangeLo
     * use the `formUri` parameter to send reports to your custom server script with POST parameters names not related to Google Forms naming. POST parameters will have easy to understand names.
     * introduce a new report sending mode: email (see below)
     * create your own custom report senders. There is now a simple public interface allowing you to code your own class in charge of handling report data. Your sender(s) can be added to default senders or replace them.
-  * Reports can now be sent via email (through an `ACTION_SEND` intent so the user has to choose the email client he wants to use and then send the email containing report fields in the body). The list of report fields included is configurable. This allows to get rid of the `INTERNET` permission in apps where it does not make any sense.
+  * Reports can now be sent via email (through an `ACTION_SEND` intent so the user has to choose the email client they want to use and then send the email containing report fields in the body). The list of report fields included is configurable. This allows to get rid of the `INTERNET` permission in apps where it does not make any sense.
   * Custom report receiver server scripts can be secured with basic http authentication (login/password can be configured in ACRA)
   * If the `READ_PHONE_STATE` permission is granted, reports include the Unique Device Identifier (IMEI). This can be really useful for enterprise applications deployment.
 
