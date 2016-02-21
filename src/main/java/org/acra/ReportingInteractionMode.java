@@ -24,7 +24,7 @@ package org.acra;
  * Force close dialog is not displayed.</li>
  * <li>NOTIFICATION: A status bar notification is triggered when the application
  * crashes, the Force close dialog is not displayed. When the user selects the
- * notification, a dialog is displayed asking him if he is ok to send a report</li>
+ * notification, a dialog is displayed asking if it is ok to send a report</li>
  * </ul>
  */
 public enum ReportingInteractionMode {
@@ -36,7 +36,7 @@ public enum ReportingInteractionMode {
     /**
      * A status bar notification is triggered when the application crashes, the
      * Force close dialog is not displayed. When the user selects the
-     * notification, a dialog is displayed asking him if he is ok to send a
+     * notification, a dialog is displayed asking if it is ok to send a
      * report.
      */
     NOTIFICATION,
