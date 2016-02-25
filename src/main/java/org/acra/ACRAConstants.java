@@ -16,6 +16,7 @@
 package org.acra;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
 import org.acra.dialog.CrashReportDialog;
@@ -29,6 +30,7 @@ import static org.acra.ReportField.*;
  * @since 4.3.0
  */
 public final class ACRAConstants {
+
     private ACRAConstants(){}
 
     public static final String REPORTFILE_EXTENSION = ".stacktrace";
@@ -106,13 +108,16 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_SHARED_PREFERENCES_MODE = Context.MODE_PRIVATE;
 
+    @DrawableRes
     public static final int DEFAULT_NOTIFICATION_ICON = android.R.drawable.stat_notify_error;
 
+    @DrawableRes
     public static final int DEFAULT_DIALOG_ICON = android.R.drawable.ic_dialog_alert;
 
     @StringRes
     public static final int DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT = android.R.string.ok;
 
+    @StringRes
     public static final int DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT = android.R.string.cancel;
 
     public static final int DEFAULT_RES_VALUE = 0;
@@ -132,6 +137,8 @@ public final class ACRAConstants {
     public static final String DEFAULT_APPLICATION_LOGFILE = DEFAULT_STRING_VALUE;
 
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
+
+    public static final int THREAD_SLEEP_INTERVAL_MILLIS = 100;
 
     /**
      * Default list of {@link ReportField}s to be sent in email reports. You can
