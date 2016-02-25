@@ -160,6 +160,7 @@ public class JSONReportBuilder {
         }
     }
 
+    @NonNull
     private static Object guessType(@NonNull String value) {
         if (value.equalsIgnoreCase("true"))
             return true;
@@ -170,7 +171,7 @@ public class JSONReportBuilder {
             NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
                 return format.parse(value);
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
                 // never mind
             }
         }

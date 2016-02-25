@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -83,6 +84,7 @@ public final class ReportUtils {
      * @param context Context for the application being reported.
      * @return Returns the DeviceId according to the TelephonyManager or null if there is no TelephonyManager.
      */
+    @Nullable
     public static String getDeviceId(@NonNull Context context) {
         try {
             final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -93,6 +95,7 @@ public final class ReportUtils {
         }
     }
 
+    @NonNull
     public static String getApplicationFilePath(@NonNull Context context) {
         final File filesDir = context.getFilesDir();
         if (filesDir != null) {
@@ -103,6 +106,7 @@ public final class ReportUtils {
         return "Couldn't retrieve ApplicationFilePath";
     }
 
+    @NonNull
     public static String getLocalIpAddress() {
         final StringBuilder result = new StringBuilder();
         boolean first = true;
@@ -126,6 +130,7 @@ public final class ReportUtils {
         return result.toString();
     }
 
+    @NonNull
     public static String getTimeString(@NonNull Calendar time) {
         final SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
         return format.format(time.getTimeInMillis());

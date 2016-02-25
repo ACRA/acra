@@ -46,7 +46,7 @@ final class SettingsCollector {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SettingsCollector(Context context, ACRAConfiguration config) {
+    public SettingsCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

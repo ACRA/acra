@@ -21,5 +21,5 @@ public interface ReportSenderFactory {
      * @return Fully configured instance of the relevant ReportSender.
      */
     @NonNull
-    ReportSender create(Context context, ACRAConfiguration config);
+    ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config);
 }

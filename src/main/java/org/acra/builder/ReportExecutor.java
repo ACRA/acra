@@ -266,7 +266,7 @@ public final class ReportExecutor {
     /**
      * End the application.
      */
-    private void endApplication(@Nullable Thread uncaughtExceptionThread,@NonNull Throwable th) {
+    private void endApplication(@Nullable Thread uncaughtExceptionThread,@Nullable Throwable th) {
         // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
         // as the intent is clearer and would allows you to switch it off for SILENT.
         final boolean letDefaultHandlerEndApplication = (

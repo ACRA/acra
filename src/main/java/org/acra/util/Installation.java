@@ -34,6 +34,7 @@ public class Installation {
     private static String sID;
     private static final String INSTALLATION = "ACRA-INSTALLATION";
 
+    @NonNull
     public static synchronized String id(@NonNull Context context) {
         if (sID == null) {
             final File installation = new File(context.getFilesDir(), INSTALLATION);
@@ -54,7 +55,7 @@ public class Installation {
     }
 
     @NonNull
-    private static String readInstallationFile(File installation) throws IOException {
+    private static String readInstallationFile(@NonNull File installation) throws IOException {
         final RandomAccessFile f = new RandomAccessFile(installation, "r");
         final byte[] bytes = new byte[(int) f.length()];
         try {

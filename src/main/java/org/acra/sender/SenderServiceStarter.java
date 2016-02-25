@@ -2,6 +2,8 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
@@ -18,7 +20,7 @@ public class SenderServiceStarter {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SenderServiceStarter(Context context, ACRAConfiguration config) {
+    public SenderServiceStarter(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

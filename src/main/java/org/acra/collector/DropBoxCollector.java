@@ -48,7 +48,7 @@ final class DropBoxCollector {
             "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
     private static final String NO_RESULT = "N/A";
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used to prevent logic changes). Why use this bad readable format?
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used to prevent logic changes). Why use this badly readable format?
 
     /**
      * Read latest messages contained in the DropBox for system related tags and
@@ -73,7 +73,7 @@ final class DropBoxCollector {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }
             final String[] additionalTags = config.additionalDropBoxTags();
-            if (additionalTags != null && additionalTags.length > 0) {
+            if (additionalTags.length > 0) {
                 tags.addAll(Arrays.asList(additionalTags));
             }
 

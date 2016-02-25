@@ -38,13 +38,14 @@ public class EmailIntentSender implements ReportSender {
     private final Context mContext;
     private final ACRAConfiguration config;
 
-    public EmailIntentSender(Context ctx, ACRAConfiguration config) {
+    //TODO why not use context passed in #send?
+    public EmailIntentSender(@NonNull Context ctx, @NonNull ACRAConfiguration config) {
         mContext = ctx;
         this.config = config;
     }
 
     @Override
-    public void send(Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
+    public void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
 
         final String subject = mContext.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);

@@ -39,7 +39,7 @@ final class SharedPreferencesCollector {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SharedPreferencesCollector(Context context, ACRAConfiguration config) {
+    public SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }
@@ -63,10 +63,8 @@ final class SharedPreferencesCollector {
 
         // Add in any additional SharedPreferences
         final String[] sharedPrefIds = config.additionalSharedPreferences();
-        if (sharedPrefIds != null) {
-            for (final String sharedPrefId : sharedPrefIds) {
-                sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
-            }
+        for (final String sharedPrefId : sharedPrefIds) {
+            sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
         }
 
         // Iterate over all included preference files and add the preferences from each.
