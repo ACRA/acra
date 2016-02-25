@@ -18,14 +18,16 @@ package org.acra.collector;
 import android.content.Context;
 import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
-import android.text.format.Time;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -46,6 +48,7 @@ final class DropBoxCollector {
             "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
     private static final String NO_RESULT = "N/A";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used to prevent logic changes). Why use this bad readable format?
 
     /**
      * Read latest messages contained in the DropBox for system related tags and
@@ -60,12 +63,10 @@ final class DropBoxCollector {
         try {
             final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
-            //TODO: replace Time with Calendar
-            final Time timer = new Time();
-            timer.setToNow();
-            timer.minute -= config.dropboxCollectionMinutes();
-            timer.normalize(false);
-            final long time = timer.toMillis(false);
+            final Calendar calendar = Calendar.getInstance();
+            calendar.roll(Calendar.MINUTE, -config.dropboxCollectionMinutes());
+            final long time = calendar.getTimeInMillis();
+            dateFormat.format(calendar.getTime());
 
             final List<String> tags = new ArrayList<String>();
             if (config.includeDropBoxSystemTags()) {
@@ -90,8 +91,8 @@ final class DropBoxCollector {
                 }
                 while (entry != null) {
                     final long msec = entry.getTimeMillis();
-                    timer.set(msec);
-                    dropboxContent.append("@").append(timer.format2445()).append('\n');
+                    calendar.setTimeInMillis(msec);
+                    dropboxContent.append("@").append(dateFormat.format(calendar.getTime())).append('\n');
                     final String text = entry.getText(500);
                     if (text != null) {
                         dropboxContent.append("Text: ").append(text).append('\n');
