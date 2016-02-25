@@ -101,4 +101,8 @@ public abstract class BaseCrashReportDialog extends Activity {
             ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
         }
     }
+
+    protected final ACRAConfiguration getConfig(){
+        return config;
+    }
 }
