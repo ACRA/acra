@@ -77,7 +77,7 @@ final class DisplayManagerCollector {
 
     @NonNull
     private static String collectRotation(@NonNull Display display) {
-        return display.getDisplayId() + ".rotation=ROTATION_" + rotationToString(display.getRotation()) + '\n';
+        return display.getDisplayId() + ".rotation=" + rotationToString(display.getRotation()) + '\n';
     }
 
     @NonNull
@@ -112,7 +112,7 @@ final class DisplayManagerCollector {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             Point size = new Point();
             display.getSize(size);
-            return display.getDisplayId() + '.' + "size=[" + size.x
+            return display.getDisplayId() + ".size=[" + size.x
                     + ',' + size.y + ']' + '\n';
         }
         return "";
@@ -122,7 +122,7 @@ final class DisplayManagerCollector {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             Point size = new Point();
             display.getRealSize(size);
-            return display.getDisplayId() + '.' + "realSize=[" + size.x
+            return display.getDisplayId() + ".realSize=[" + size.x
                     + ',' + size.y + ']' + '\n';
         }
         return "";
