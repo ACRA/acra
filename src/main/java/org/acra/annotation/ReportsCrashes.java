@@ -530,7 +530,7 @@ public @interface ReportsCrashes {
      * {@link Context#getFilesDir()}.
      * 
      * @return a String containing the path/name of your application log file.
-     *         If the string does not containt any path separator, the file is
+     *         If the string does not contain any path separator, the file is
      *         assumed as being in {@link Context#getFilesDir()}.
      */
     @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;

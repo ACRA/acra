@@ -53,10 +53,6 @@ public final class ReportExecutor {
 
     private boolean enabled = false;
 
-    // This is used to wait for the crash toast to end it's display duration before killing the Application.
-    // TODO make this a local variable. Only here because it cannot be non-final and referenced within an anonymous class.
-    private boolean toastWaitEnded = true;
-
     /**
      * Used to create a new (non-cached) PendingIntent each time a new crash occurs.
      */
@@ -393,7 +389,7 @@ public final class ReportExecutor {
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
     @NonNull
-    private Intent createCrashReportDialogIntent(File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private Intent createCrashReportDialogIntent(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, config.reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);

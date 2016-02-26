@@ -7,7 +7,7 @@
 What is ACRA ?
 ==============
 
-ACRA is a library enabling Android Application to automatically post their crash reports to a GoogleDoc form. It is targetted to android applications developers to help them get data from their applications when they crash or behave erroneously.
+ACRA is a library enabling Android Application to automatically post their crash reports to a GoogleDoc form. It is targeted to android applications developers to help them get data from their applications when they crash or behave erroneously.
 
 ACRA is used in 2.68% ([See AppBrain/stats](http://www.appbrain.com/stats/libraries/details/acra/acra)) of all apps on Google Play as of Feb 2016. That's over 53K **apps** using ACRA. And since the average US user has 41 apps installed on their phone that means there is a 70% chance that ACRA is running on any phone. That means ACRA is running on over a **billion devices**.
 
@@ -27,7 +27,7 @@ A crash reporting feature for android apps is native since Android 2.2 (FroYo) b
 
 ACRA's notification systems are clean. If a crash occurs, your application does not add user notifications over existing system's crash notifications or reporting features. If you use the Toast, Status bar notification or direct dialog modes, the "force close" dialog is not displayed anymore and devices where the system native reporting feature is enabled do not offer the user to send an additional report.
 
-The user is notified of an error only once, and you might enhance the percieved quality of your application by defining your own texts in the notifications/dialogs.
+The user is notified of an error only once, and you might enhance the perceived quality of your application by defining your own texts in the notifications/dialogs.
 
 Please do not hesitate to open defects/enhancements requests in [the issue tracker](http://github.com/ACRA/acra/issues).
 
@@ -57,7 +57,7 @@ ACRA v4.8
 ACRA v4.7
 ===============================
 - Support for Android M (6.0)
-  - Using HtttpUrlConnection instead of Apache Http
+  - Using HttpUrlConnection instead of Apache Http
   - Using com.android.support:support-v4 to provide support fro removed Notification methods.
 - Minimum Android version is Froyo (2.2). ACRA will disable itself for anything prior to that.  
 - Packaging as an AAR.
