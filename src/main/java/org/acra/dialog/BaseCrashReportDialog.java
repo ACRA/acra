@@ -29,17 +29,19 @@ import static org.acra.ReportField.USER_EMAIL;
  * The methods sendCrash(comment, usrEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
  *
- * This Activity will be instantiated with 3 arguments:
+ * This Activity will be instantiated with 3 (or 4) arguments:
  * <ol>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
+ *     <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
  * </ol>
  */
 public abstract class BaseCrashReportDialog extends Activity {
 
     private File reportFile;
     private ACRAConfiguration config;
+    private Throwable exception;
 
     @CallSuper
     @Override
@@ -49,6 +51,9 @@ public abstract class BaseCrashReportDialog extends Activity {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
 
         config = (ACRAConfiguration) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        if(config == null) {
+            throw new IllegalStateException("CrashReportDialog has to be called with extra ACRAConstants#EXTRA_REPORT_CONFIG");
+        }
 
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {
@@ -61,8 +66,9 @@ public abstract class BaseCrashReportDialog extends Activity {
         reportFile = (File) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + reportFile);
         if (reportFile == null) {
-            finish();
+            throw new IllegalStateException("CrashReportDialog has to be called with extra ACRAConstants#EXTRA_REPORT_FILE");
         }
+        exception = (Throwable) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
     }
 
 
@@ -106,5 +112,9 @@ public abstract class BaseCrashReportDialog extends Activity {
 
     protected final ACRAConfiguration getConfig(){
         return config;
+    }
+
+    protected final Throwable getException(){
+        return exception;
     }
 }
