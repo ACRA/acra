@@ -43,6 +43,8 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class SettingsCollector {
 
+    private static final String ERROR = "Error: ";
+
     private final Context context;
     private final ACRAConfiguration config;
 
@@ -73,9 +75,9 @@ final class SettingsCollector {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
                 } catch (@NonNull IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, ERROR, e);
                 } catch (@NonNull IllegalAccessException e) {
-                    ACRA.log.w(LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, ERROR, e);
                 }
             }
         }
@@ -102,9 +104,9 @@ final class SettingsCollector {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
                 } catch (@NonNull IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, ERROR, e);
                 } catch (@NonNull IllegalAccessException e) {
-                    ACRA.log.w(LOG_TAG, "Error : ", e);
+                    ACRA.log.w(LOG_TAG, ERROR, e);
                 }
             }
         }
@@ -139,17 +141,17 @@ final class SettingsCollector {
                 }
             }
         } catch (@NonNull IllegalArgumentException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, ERROR, e);
         } catch (@NonNull InvocationTargetException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, ERROR, e);
         } catch (@NonNull NoSuchMethodException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, ERROR, e);
         } catch (@NonNull SecurityException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, ERROR, e);
         } catch (@NonNull ClassNotFoundException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, ERROR, e);
         } catch (@NonNull IllegalAccessException e) {
-            ACRA.log.w(LOG_TAG, "Error : ", e);
+            ACRA.log.w(LOG_TAG, ERROR, e);
         }
 
         return result.toString();

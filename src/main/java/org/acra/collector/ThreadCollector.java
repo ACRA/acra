@@ -25,7 +25,7 @@ import android.support.annotation.Nullable;
  * @author Kevin Gaudin
  * 
  */
-public class ThreadCollector {
+public final class ThreadCollector {
     private ThreadCollector(){}
 
     /**
