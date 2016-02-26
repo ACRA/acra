@@ -16,7 +16,7 @@
 package org.acra.sender;
 
 /**
- * This exception is thrown when an error ocurred while sending crash data in a
+ * This exception is thrown when an error occurred while sending crash data in a
  * {@link ReportSender} implementation.
  * 
  * @author Kevin Gaudin
