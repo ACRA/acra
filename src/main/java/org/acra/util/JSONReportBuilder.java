@@ -19,7 +19,7 @@ import java.util.Locale;
 
 import static org.acra.ACRA.LOG_TAG;
 
-public class JSONReportBuilder {
+public final class JSONReportBuilder {
     private JSONReportBuilder(){}
     /**
      * <p>

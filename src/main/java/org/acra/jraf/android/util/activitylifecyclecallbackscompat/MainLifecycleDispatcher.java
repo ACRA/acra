@@ -40,7 +40,7 @@ import java.util.List;
  * {@link Application#registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} and
  * {@link Application#unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacks)}.
  */
-public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat {
+public final class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat {
     private static final MainLifecycleDispatcher INSTANCE = new MainLifecycleDispatcher();
 
     @NonNull
