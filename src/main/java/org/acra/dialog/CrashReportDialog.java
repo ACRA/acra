@@ -74,41 +74,40 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     @NonNull
     protected View buildCustomView(@Nullable Bundle savedInstanceState) {
-        final LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
+        final ScrollView root = new ScrollView(this);
         root.setPadding(10, 10, 10, 10);
         root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         root.setFocusable(true);
         root.setFocusableInTouchMode(true);
-
-        final ScrollView scroll = new ScrollView(this);
-        root.addView(scroll, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f));
-        scroll.addView(scrollable);
+        root.addView(scrollable);
 
         addViewToDialog(getMainView());
 
         // Add an optional prompt for user comments
-        final int commentPromptId = getConfig().resDialogCommentPrompt();
-        if (commentPromptId != 0) {
+        View comment = getCommentLabel();
+        if(comment != null){
+            comment.setPadding(comment.getPaddingLeft(), PADDING, comment.getPaddingRight(), comment.getPaddingBottom());
+            addViewToDialog(comment);
             String savedComment = null;
             if (savedInstanceState != null) {
                 savedComment = savedInstanceState.getString(STATE_COMMENT);
             }
-            userCommentView = getCommentPrompt(getText(commentPromptId), savedComment);
+            userCommentView = getCommentPrompt(savedComment);
             addViewToDialog(userCommentView);
         }
 
         // Add an optional user email field
-        final int emailPromptId = getConfig().resDialogEmailPrompt();
-        if (emailPromptId != 0) {
+        View email = getEmailLabel();
+        if(email != null){
+            email.setPadding(email.getPaddingLeft(), PADDING, email.getPaddingRight(), email.getPaddingBottom());
+            addViewToDialog(email);
             String savedEmail = null;
             if (savedInstanceState != null) {
                 savedEmail = savedInstanceState.getString(STATE_EMAIL);
             }
-            userEmailView = getEmailPrompt(getText(emailPromptId), savedEmail);
+            userEmailView = getEmailPrompt(savedEmail);
             addViewToDialog(userEmailView);
         }
-
         return root;
     }
 
@@ -122,7 +121,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     }
 
     /**
-     * Creates a main view containing text of resDialogText
+     * Creates a main view containing text of resDialogText, or nothing if not found
      *
      * @return the main view
      */
@@ -137,20 +136,28 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     }
 
     /**
+     * creates a comment label view with resDialogCommentPrompt as text
+     * @return the label or null if there is no resource
+     */
+    @Nullable
+    protected View getCommentLabel() {
+        final int commentPromptId = getConfig().resDialogCommentPrompt();
+        if (commentPromptId != 0) {
+            final TextView labelView = new TextView(this);
+            labelView.setText(getText(commentPromptId));
+            return labelView;
+        }
+        return null;
+    }
+
+    /**
      * creates a comment prompt
      *
-     * @param label        the label of the prompt
      * @param savedComment the content of the prompt (usually from a saved state)
      * @return the comment prompt
      */
     @NonNull
-    protected EditText getCommentPrompt(CharSequence label, @Nullable CharSequence savedComment) {
-        final TextView labelView = new TextView(this);
-        labelView.setText(label);
-
-        labelView.setPadding(labelView.getPaddingLeft(), 10, labelView.getPaddingRight(), labelView.getPaddingBottom());
-        scrollable.addView(labelView, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
+    protected EditText getCommentPrompt(@Nullable CharSequence savedComment) {
         EditText userCommentView = new EditText(this);
         userCommentView.setLines(2);
         if (savedComment != null) {
@@ -160,20 +167,28 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     }
 
     /**
+     * creates a email label view with resDialogEmailPrompt as text
+     * @return the label or null if there is no resource
+     */
+    @Nullable
+    protected View getEmailLabel(){
+        final int emailPromptId = getConfig().resDialogEmailPrompt();
+        if (emailPromptId != 0) {
+            final TextView labelView = new TextView(this);
+            labelView.setText(getText(emailPromptId));
+            return labelView;
+        }
+        return null;
+    }
+
+    /**
      * creates an email prompt
      *
-     * @param label      the label of the prompt
-     * @param savedEmail the content of the prompt (usually from a saved state)
+     * @param savedEmail the content of the prompt (usually from a saved state or settings)
      * @return the email prompt
      */
     @NonNull
-    protected EditText getEmailPrompt(CharSequence label, @Nullable CharSequence savedEmail) {
-        final TextView labelView = new TextView(this);
-        labelView.setText(label);
-
-        labelView.setPadding(labelView.getPaddingLeft(), 10, labelView.getPaddingRight(), labelView.getPaddingBottom());
-        scrollable.addView(labelView);
-
+    protected EditText getEmailPrompt(@Nullable CharSequence savedEmail) {
         EditText userEmailView = new EditText(this);
         userEmailView.setSingleLine();
         userEmailView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
