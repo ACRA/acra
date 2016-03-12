@@ -1,5 +1,9 @@
 package org.acra.security;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.io.Serializable;
 import java.security.KeyStore;
 
@@ -9,5 +13,6 @@ import java.security.KeyStore;
  * (e.g. can't be anonymous inner classes of non-serializable classes)
  */
 public interface KeyStoreFactory extends Serializable{
-    KeyStore create();
+    @Nullable
+    KeyStore create(@NonNull Context context);
 }
