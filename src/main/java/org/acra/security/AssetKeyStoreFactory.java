@@ -17,11 +17,20 @@ public class AssetKeyStoreFactory extends BaseKeyStoreFactory {
 
     private final String assetName;
 
+    /**
+     * creates a new KeyStoreFactory for the specified asset
+     * @param assetName the asset
+     */
     public AssetKeyStoreFactory(String assetName) {
         super();
         this.assetName = assetName;
     }
 
+    /**
+     * creates a new KeyStoreFactory for the specified asset with a custom certificate type
+     * @param certificateType the certificate type
+     * @param assetName the asset
+     */
     public AssetKeyStoreFactory(String certificateType, String assetName) {
         super(certificateType);
         this.assetName = assetName;

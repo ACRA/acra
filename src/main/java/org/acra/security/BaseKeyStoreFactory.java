@@ -25,10 +25,17 @@ public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
 
     private final String certificateType;
 
+    /**
+     * creates a new KeyStoreFactory for the default certificate type (X.509)
+     */
     public BaseKeyStoreFactory(){
         this("X.509");
     }
 
+    /**
+     * creates a new KeyStoreFactory with the specified certificate type
+     * @param certificateType the certificate type
+     */
     public BaseKeyStoreFactory(String certificateType) {
         this.certificateType = certificateType;
     }

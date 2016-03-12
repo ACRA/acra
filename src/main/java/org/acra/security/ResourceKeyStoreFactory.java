@@ -14,11 +14,20 @@ public class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
     @RawRes
     private final int rawRes;
 
+    /**
+     * creates a new KeyStoreFactory for the specified resource
+     * @param rawRes raw resource id
+     */
     public ResourceKeyStoreFactory(@RawRes int rawRes) {
         super();
         this.rawRes = rawRes;
     }
 
+    /**
+     * creates a new KeyStoreFactory for the specified resource with a custom certificate type
+     * @param certificateType the certificate type
+     * @param rawRes raw resource id
+     */
     public ResourceKeyStoreFactory(String certificateType, @RawRes int rawRes) {
         super(certificateType);
         this.rawRes = rawRes;

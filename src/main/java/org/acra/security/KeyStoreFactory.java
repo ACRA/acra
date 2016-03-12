@@ -13,6 +13,7 @@ import java.security.KeyStore;
  * (e.g. can't be anonymous inner classes of non-serializable classes)
  */
 public interface KeyStoreFactory extends Serializable{
+
     @Nullable
     KeyStore create(@NonNull Context context);
 }
