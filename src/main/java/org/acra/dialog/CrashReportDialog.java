@@ -14,9 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
-import org.acra.config.ACRAConfiguration;
 import org.acra.prefs.SharedPreferencesFactory;
 
 
@@ -29,11 +28,11 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
+    private static final int PADDING = 10;
 
     private LinearLayout scrollable;
     private EditText userCommentView;
     private EditText userEmailView;
-    private ACRAConfiguration config;
     private SharedPreferencesFactory sharedPreferencesFactory;
 
     private AlertDialog mDialog;
@@ -45,8 +44,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         scrollable = new LinearLayout(this);
         scrollable.setOrientation(LinearLayout.VERTICAL);
-        config = (ACRAConfiguration) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
-        sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), config);
+        sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), getConfig());
 
         buildAndShowDialog(savedInstanceState);
     }
@@ -55,19 +53,20 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      * Build the dialog from the values in config
      * @param savedInstanceState old state to restore
      */
+    @CallSuper
     protected void buildAndShowDialog(@Nullable Bundle savedInstanceState){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final int titleResourceId = config.resDialogTitle();
+        final int titleResourceId = getConfig().resDialogTitle();
         if (titleResourceId != 0) {
             dialogBuilder.setTitle(titleResourceId);
         }
-        final int iconResourceId = config.resDialogIcon();
+        final int iconResourceId = getConfig().resDialogIcon();
         if (iconResourceId != 0) {
             dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
-        dialogBuilder.setPositiveButton(getText(config.resDialogPositiveButtonText()), CrashReportDialog.this);
-        dialogBuilder.setNegativeButton(getText(config.resDialogNegativeButtonText()), CrashReportDialog.this);
+        dialogBuilder.setPositiveButton(getText(getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
+        dialogBuilder.setNegativeButton(getText(getConfig().resDialogNegativeButtonText()), CrashReportDialog.this);
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
@@ -79,7 +78,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     protected View buildCustomView(@Nullable Bundle savedInstanceState) {
         final LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(10, 10, 10, 10);
+        root.setPadding(PADDING, PADDING, PADDING, PADDING);
         root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         root.setFocusable(true);
         root.setFocusableInTouchMode(true);
@@ -91,7 +90,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         addViewToDialog(getMainView());
 
         // Add an optional prompt for user comments
-        final int commentPromptId = config.resDialogCommentPrompt();
+        final int commentPromptId = getConfig().resDialogCommentPrompt();
         if (commentPromptId != 0) {
             String savedComment = null;
             if (savedInstanceState != null) {
@@ -102,7 +101,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         }
 
         // Add an optional user email field
-        final int emailPromptId = config.resDialogEmailPrompt();
+        final int emailPromptId = getConfig().resDialogEmailPrompt();
         if (emailPromptId != 0) {
             String savedEmail = null;
             if (savedInstanceState != null) {
@@ -120,7 +119,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      *
      * @param v the view to add
      */
-    protected final void addViewToDialog(View v) {
+    protected final void addViewToDialog(@NonNull View v) {
         scrollable.addView(v);
     }
 
@@ -132,7 +131,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     @NonNull
     protected View getMainView() {
         final TextView text = new TextView(this);
-        final int dialogTextId = config.resDialogText();
+        final int dialogTextId = getConfig().resDialogText();
         if (dialogTextId != 0) {
             text.setText(getText(dialogTextId));
         }
@@ -151,7 +150,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         final TextView labelView = new TextView(this);
         labelView.setText(label);
 
-        labelView.setPadding(labelView.getPaddingLeft(), 10, labelView.getPaddingRight(), labelView.getPaddingBottom());
+        labelView.setPadding(labelView.getPaddingLeft(), PADDING, labelView.getPaddingRight(), labelView.getPaddingBottom());
         scrollable.addView(labelView, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         EditText userCommentView = new EditText(this);
@@ -174,7 +173,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         final TextView labelView = new TextView(this);
         labelView.setText(label);
 
-        labelView.setPadding(labelView.getPaddingLeft(), 10, labelView.getPaddingRight(), labelView.getPaddingBottom());
+        labelView.setPadding(labelView.getPaddingLeft(), PADDING, labelView.getPaddingRight(), labelView.getPaddingBottom());
         scrollable.addView(labelView);
 
         EditText userEmailView = new EditText(this);
@@ -241,7 +240,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     /**
      * @return the AlertDialog displayed by this Activity
      */
-    protected AlertDialog getDialog() {
+    protected final AlertDialog getDialog() {
         return mDialog;
     }
 }

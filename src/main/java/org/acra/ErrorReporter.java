@@ -87,7 +87,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(Application context, @NonNull ACRAConfiguration config, SharedPreferences prefs, boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
+    ErrorReporter(@NonNull Application context, @NonNull ACRAConfiguration config, @NonNull SharedPreferences prefs,
+                  boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.context = context;
         this.config = config;
@@ -131,8 +132,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @Deprecated
     @SuppressWarnings("unused")
-    public void addCustomData(String key, String value) {
-        crashReportDataFactory.putCustomData(key, value);
+    public void addCustomData(@NonNull String key, String value) {
+        putCustomData(key, value);
     }
 
     /**
@@ -155,7 +156,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #getCustomData(String)
      */
     @SuppressWarnings("unused")
-    public String putCustomData(String key, String value) {
+    public String putCustomData(@NonNull String key, String value) {
         return crashReportDataFactory.putCustomData(key, value);
     }
 
@@ -207,7 +208,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #getCustomData(String)
      */
     @SuppressWarnings("unused")
-    public String removeCustomData(String key) {
+    public String removeCustomData(@NonNull String key) {
         return crashReportDataFactory.removeCustomData(key);
     }
 
@@ -229,7 +230,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @see #removeCustomData(String)
      */
     @SuppressWarnings("unused")
-    public String getCustomData(String key) {
+    public String getCustomData(@NonNull String key) {
         return crashReportDataFactory.getCustomData(key);
     }
 
@@ -241,7 +242,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * .Thread, java.lang.Throwable)
      */
     @Override
-    public void uncaughtException(Thread t, @NonNull Throwable e) {
+    public void uncaughtException(@Nullable Thread t, @NonNull Throwable e) {
 
         // If we're not enabled then just pass the Exception on to the defaultExceptionHandler.
         if (!reportExecutor.isEnabled()) {
@@ -275,7 +276,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param e The {@link Throwable} to be reported. If null the report will
      *          contain a new Exception("Report requested by developer").
      */
-    public void handleSilentException(Throwable e) {
+    public void handleSilentException(@Nullable Throwable e) {
         performDeprecatedReportPriming();
         new ReportBuilder()
                 .exception(e)
@@ -330,7 +331,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            sending the report.
      */
     @SuppressWarnings("unused")
-    public void handleException(Throwable e, boolean endApplication) {
+    public void handleException(@Nullable Throwable e, boolean endApplication) {
         performDeprecatedReportPriming();
         final ReportBuilder builder = new ReportBuilder();
         builder.exception(e);
@@ -350,7 +351,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            contain a new Exception("Report requested by developer").
      */
     @SuppressWarnings("unused")
-    public void handleException(Throwable e) {
+    public void handleException(@Nullable Throwable e) {
         handleException(e, false);
     }
 
@@ -366,8 +367,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
     }
 
+    @NonNull
     private static ReportPrimer getReportPrimer(@NonNull ACRAConfiguration config) {
-        //noinspection TryWithIdenticalCatches
         try {
             return config.reportPrimerClass().newInstance();
         } catch (InstantiationException e) {

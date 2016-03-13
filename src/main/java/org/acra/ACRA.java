@@ -45,9 +45,10 @@ import org.acra.util.ApplicationStartupProcessor;
  * @author Kevin Gaudin
  * 
  */
-public class ACRA {
+public final class ACRA {
+    private ACRA(){}
 
-    public static boolean DEV_LOGGING = false; // Should be false for release.
+    public static final boolean DEV_LOGGING = false; // Should be false for release.
 
     public static final String LOG_TAG = ACRA.class.getSimpleName();
     
@@ -151,7 +152,7 @@ public class ACRA {
      * @param config    ACRAConfiguration to manually set up ACRA configuration.
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(@NonNull Application app, ACRAConfiguration config) {
+    public static void init(@NonNull Application app, @NonNull ACRAConfiguration config) {
         init(app, config, true);
     }
 
@@ -184,7 +185,8 @@ public class ACRA {
             return;
         }
         mApplication = app;
-        
+
+        //noinspection ConstantConditions
         if (config == null) {
             log.e(LOG_TAG, "ACRA#init called but no ACRAConfiguration provided");
             return;
@@ -270,6 +272,7 @@ public class ACRA {
         return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
 
+    @Nullable
     private static String getCurrentProcessName(@NonNull Application app) {
         final int processId = android.os.Process.myPid();
         final ActivityManager manager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
@@ -321,7 +324,11 @@ public class ACRA {
      * @deprecated since 4.8.0 use {@link SharedPreferencesFactory} instead.
      */
     @SuppressWarnings( "unused" )
+    @NonNull
     public static SharedPreferences getACRASharedPreferences() {
+        if (configProxy == null) {
+            throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
+        }
         return new SharedPreferencesFactory(mApplication, configProxy).create();
     }
 
@@ -331,10 +338,10 @@ public class ACRA {
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
      * @deprecated since 4.8.0 {@link ACRAConfiguration} should be passed into classes instead of retrieved statically.
      */
-    @Nullable
+    @NonNull
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {
-        if (mApplication == null) {
+        if (configProxy == null) {
             throw new IllegalStateException("Cannot call ACRA.getConfig() before ACRA.init().");
         }
         return configProxy;

@@ -16,8 +16,10 @@
 package org.acra.config;
 
 import android.app.Application;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -71,19 +73,19 @@ public final class ConfigurationBuilder {
     private Class<? extends BaseCrashReportDialog> reportDialogClass;
     private Class<? extends ReportPrimer> reportPrimerClass;
 
-    private Integer resDialogPositiveButtonText;
-    private Integer resDialogNegativeButtonText;
-    private Integer resDialogCommentPrompt;
-    private Integer resDialogEmailPrompt;
-    private Integer resDialogIcon;
-    private Integer resDialogOkToast;
-    private Integer resDialogText;
-    private Integer resDialogTitle;
-    private Integer resNotifIcon;
-    private Integer resNotifText;
-    private Integer resNotifTickerText;
-    private Integer resNotifTitle;
-    private Integer resToastText;
+    @StringRes private Integer resDialogPositiveButtonText;
+    @StringRes private Integer resDialogNegativeButtonText;
+    @StringRes private Integer resDialogCommentPrompt;
+    @StringRes  private Integer resDialogEmailPrompt;
+    @DrawableRes private Integer resDialogIcon;
+    @StringRes private Integer resDialogOkToast;
+    @StringRes private Integer resDialogText;
+    @StringRes private Integer resDialogTitle;
+    @DrawableRes private Integer resNotifIcon;
+    @StringRes private Integer resNotifText;
+    @StringRes private Integer resNotifTickerText;
+    @StringRes  private Integer resNotifTitle;
+    @StringRes   private Integer resToastText;
     private Integer sharedPreferencesMode;
     private String sharedPreferencesName;
     private Integer socketTimeout;
@@ -197,7 +199,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setAdditionalDropboxTags(String[] additionalDropboxTags) {
+    public ConfigurationBuilder setAdditionalDropboxTags(@NonNull String[] additionalDropboxTags) {
         this.additionalDropBoxTags = additionalDropboxTags;
         return this;
     }
@@ -209,7 +211,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
+    public ConfigurationBuilder setAdditionalSharedPreferences(@NonNull String[] additionalSharedPreferences) {
         this.additionalSharedPreferences = additionalSharedPreferences;
         return this;
     }
@@ -221,7 +223,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setConnectionTimeout(Integer connectionTimeout) {
+    public ConfigurationBuilder setConnectionTimeout(@NonNull Integer connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
@@ -233,7 +235,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setCustomReportContent(ReportField[] customReportContent) {
+    public ConfigurationBuilder setCustomReportContent(@NonNull ReportField[] customReportContent) {
         this.customReportContent = customReportContent;
         return this;
     }
@@ -244,7 +246,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(Boolean deleteUnapprovedReportsOnApplicationStart) {
+    public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(@NonNull Boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
     }
@@ -255,7 +257,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(Boolean deleteOldUnsentReportsOnApplicationStart) {
+    public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(@NonNull Boolean deleteOldUnsentReportsOnApplicationStart) {
         this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
         return this;
     }
@@ -267,7 +269,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setDropboxCollectionMinutes(Integer dropboxCollectionMinutes) {
+    public ConfigurationBuilder setDropboxCollectionMinutes(@NonNull Integer dropboxCollectionMinutes) {
         this.dropboxCollectionMinutes = dropboxCollectionMinutes;
         return this;
     }
@@ -279,7 +281,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setForceCloseDialogAfterToast(Boolean forceCloseDialogAfterToast) {
+    public ConfigurationBuilder setForceCloseDialogAfterToast(@NonNull Boolean forceCloseDialogAfterToast) {
         this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
         return this;
     }
@@ -292,7 +294,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setFormUri(String formUri) {
+    public ConfigurationBuilder setFormUri(@Nullable String formUri) {
         this.formUri = formUri;
         return this;
     }
@@ -304,7 +306,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setFormUriBasicAuthLogin(String formUriBasicAuthLogin) {
+    public ConfigurationBuilder setFormUriBasicAuthLogin(@Nullable String formUriBasicAuthLogin) {
         this.formUriBasicAuthLogin = formUriBasicAuthLogin;
         return this;
     }
@@ -316,7 +318,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setFormUriBasicAuthPassword(String formUriBasicAuthPassword) {
+    public ConfigurationBuilder setFormUriBasicAuthPassword(@Nullable String formUriBasicAuthPassword) {
         this.formUriBasicAuthPassword = formUriBasicAuthPassword;
         return this;
     }
@@ -328,7 +330,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setIncludeDropboxSystemTags(Boolean includeDropboxSystemTags) {
+    public ConfigurationBuilder setIncludeDropboxSystemTags(@NonNull Boolean includeDropboxSystemTags) {
         this.includeDropBoxSystemTags = includeDropboxSystemTags;
         return this;
     }
@@ -340,7 +342,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setLogcatArguments(String[] logcatArguments) {
+    public ConfigurationBuilder setLogcatArguments(@NonNull String[] logcatArguments) {
         this.logcatArguments = logcatArguments;
         return this;
     }
@@ -353,11 +355,12 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setMailTo(String mailTo) {
+    public ConfigurationBuilder setMailTo(@Nullable String mailTo) {
         this.mailTo = mailTo;
         return this;
     }
 
+    //why two methods with the same functionality?? (setMode, setReportingInteractionMode)
     /**
      * Change the current {@link ReportingInteractionMode}.
      * 
@@ -369,7 +372,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
+    public ConfigurationBuilder setMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
     }
@@ -383,28 +386,28 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setReportingInteractionMode(ReportingInteractionMode mode) throws ACRAConfigurationException {
+    public ConfigurationBuilder setReportingInteractionMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
     }
 
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogPositiveButtonText(int resId) {
+    public ConfigurationBuilder setResDialogPositiveButtonText(@StringRes int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
 
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogNegativeButtonText(int resId) {
+    public ConfigurationBuilder setResDialogNegativeButtonText(@StringRes int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
 
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setReportDialogClass(Class<? extends BaseCrashReportDialog> reportDialogClass) {
+    public ConfigurationBuilder setReportDialogClass(@NonNull Class<? extends BaseCrashReportDialog> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
         return this;
     }
@@ -419,7 +422,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogCommentPrompt(int resId) {
+    public ConfigurationBuilder setResDialogCommentPrompt(@StringRes int resId) {
         resDialogCommentPrompt = resId;
         return this;
     }
@@ -435,7 +438,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogEmailPrompt(int resId) {
+    public ConfigurationBuilder setResDialogEmailPrompt(@StringRes int resId) {
         resDialogEmailPrompt = resId;
         return this;
     }
@@ -451,7 +454,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogIcon(int resId) {
+    public ConfigurationBuilder setResDialogIcon(@DrawableRes int resId) {
         resDialogIcon = resId;
         return this;
     }
@@ -467,7 +470,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogOkToast(int resId) {
+    public ConfigurationBuilder setResDialogOkToast(@StringRes int resId) {
         resDialogOkToast = resId;
         return this;
     }
@@ -483,7 +486,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogText(int resId) {
+    public ConfigurationBuilder setResDialogText(@StringRes int resId) {
         resDialogText = resId;
         return this;
     }
@@ -499,7 +502,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResDialogTitle(int resId) {
+    public ConfigurationBuilder setResDialogTitle(@StringRes int resId) {
         resDialogTitle = resId;
         return this;
     }
@@ -515,7 +518,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifIcon(int resId) {
+    public ConfigurationBuilder setResNotifIcon(@DrawableRes int resId) {
         resNotifIcon = resId;
         return this;
     }
@@ -531,7 +534,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifText(int resId) {
+    public ConfigurationBuilder setResNotifText(@StringRes int resId) {
         resNotifText = resId;
         return this;
     }
@@ -548,7 +551,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifTickerText(int resId) {
+    public ConfigurationBuilder setResNotifTickerText(@StringRes int resId) {
         resNotifTickerText = resId;
         return this;
     }
@@ -564,7 +567,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResNotifTitle(int resId) {
+    public ConfigurationBuilder setResNotifTitle(@StringRes int resId) {
         resNotifTitle = resId;
         return this;
     }
@@ -580,7 +583,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setResToastText(int resId) {
+    public ConfigurationBuilder setResToastText(@StringRes int resId) {
         resToastText = resId;
         return this;
     }
@@ -592,7 +595,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSharedPreferenceMode(Integer sharedPreferenceMode) {
+    public ConfigurationBuilder setSharedPreferenceMode(@NonNull Integer sharedPreferenceMode) {
         this.sharedPreferencesMode = sharedPreferenceMode;
         return this;
     }
@@ -604,7 +607,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSharedPreferenceName(String sharedPreferenceName) {
+    public ConfigurationBuilder setSharedPreferenceName(@NonNull String sharedPreferenceName) {
         this.sharedPreferencesName = sharedPreferenceName;
         return this;
     }
@@ -616,7 +619,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSocketTimeout(Integer socketTimeout) {
+    public ConfigurationBuilder setSocketTimeout(@NonNull Integer socketTimeout) {
         this.socketTimeout = socketTimeout;
         return this;
     }
@@ -630,7 +633,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setLogcatFilterByPid(Boolean filterByPid) {
+    public ConfigurationBuilder setLogcatFilterByPid(@NonNull Boolean filterByPid) {
         logcatFilterByPid = filterByPid;
         return this;
     }
@@ -644,7 +647,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSendReportsInDevMode(Boolean sendReportsInDevMode) {
+    public ConfigurationBuilder setSendReportsInDevMode(@NonNull Boolean sendReportsInDevMode) {
         this.sendReportsInDevMode = sendReportsInDevMode;
         return this;
     }
@@ -659,7 +662,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSendReportsAtShutdown(Boolean sendReportsAtShutdown) {
+    public ConfigurationBuilder setSendReportsAtShutdown(@NonNull Boolean sendReportsAtShutdown) {
         this.sendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }
@@ -674,7 +677,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
+    public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(@NonNull String[] excludeMatchingSharedPreferencesKeys) {
         this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
         return this;
     }
@@ -689,14 +692,14 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
+    public ConfigurationBuilder setExcludeMatchingSettingsKeys(@NonNull String[] excludeMatchingSettingsKeys) {
         this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
     }
 
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setBuildConfigClass(Class buildConfigClass) {
+    public ConfigurationBuilder setBuildConfigClass(@Nullable Class buildConfigClass) {
         this.buildConfigClass = buildConfigClass;
         return this;
     }
@@ -709,7 +712,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setApplicationLogFile(String applicationLogFile) {
+    public ConfigurationBuilder setApplicationLogFile(@NonNull String applicationLogFile) {
         this.applicationLogFile = applicationLogFile;
         return this;
     }
@@ -737,7 +740,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setHttpMethod(Method httpMethod) {
+    public ConfigurationBuilder setHttpMethod(@NonNull Method httpMethod) {
         this.httpMethod = httpMethod;
         return this;
     }
@@ -751,7 +754,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setReportType(Type type) {
+    public ConfigurationBuilder setReportType(@NonNull Type type) {
         reportType = type;
         return this;
     }
@@ -768,12 +771,12 @@ public final class ConfigurationBuilder {
 
 
     @SuppressWarnings("unused")
-    public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
+    public void setReportSenderFactoryClasses(@NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
         this.reportSenderFactoryClasses = reportSenderFactoryClasses;
     }
 
     @SuppressWarnings("unused")
-    public void setReportPrimerClass(Class<? extends ReportPrimer> reportPrimerClass) {
+    public void setReportPrimerClass(@NonNull Class<? extends ReportPrimer> reportPrimerClass) {
         this.reportPrimerClass = reportPrimerClass;
     }
 
@@ -781,6 +784,7 @@ public final class ConfigurationBuilder {
     // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
 
     @SuppressWarnings("unused")
+    @NonNull
     String[] additionalDropBoxTags() {
         if (additionalDropBoxTags != null) {
             return additionalDropBoxTags;
@@ -789,6 +793,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String[] additionalSharedPreferences() {
         if (additionalSharedPreferences != null) {
             return additionalSharedPreferences;
@@ -814,6 +819,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     ReportField[] customReportContent() {
         if (customReportContent != null) {
             return customReportContent;
@@ -854,6 +860,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String formUri() {
         if (formUri != null) {
             return formUri;
@@ -862,6 +869,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String formUriBasicAuthLogin() {
         if (formUriBasicAuthLogin != null) {
             return formUriBasicAuthLogin;
@@ -870,6 +878,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String formUriBasicAuthPassword() {
         if (formUriBasicAuthPassword != null) {
             return formUriBasicAuthPassword;
@@ -886,6 +895,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String[] logcatArguments() {
         if (logcatArguments != null) {
             return logcatArguments;
@@ -894,6 +904,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String mailTo() {
         if (mailTo != null) {
             return mailTo;
@@ -902,6 +913,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     ReportingInteractionMode reportingInteractionMode() {
         if (reportingInteractionMode != null) {
             return reportingInteractionMode;
@@ -910,6 +922,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     public int resDialogPositiveButtonText() {
         if (resDialogPositiveButtonText != null) {
             return resDialogPositiveButtonText;
@@ -918,6 +931,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogNegativeButtonText() {
         if (resDialogNegativeButtonText != null) {
             return resDialogNegativeButtonText;
@@ -926,6 +940,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogCommentPrompt() {
         if (resDialogCommentPrompt != null) {
             return resDialogCommentPrompt;
@@ -934,6 +949,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogEmailPrompt() {
         if (resDialogEmailPrompt != null) {
             return resDialogEmailPrompt;
@@ -942,6 +958,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @DrawableRes
     int resDialogIcon() {
         if (resDialogIcon != null) {
             return resDialogIcon;
@@ -950,6 +967,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogOkToast() {
         if (resDialogOkToast != null) {
             return resDialogOkToast;
@@ -958,6 +976,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogText() {
         if (resDialogText != null) {
             return resDialogText;
@@ -966,6 +985,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resDialogTitle() {
         if (resDialogTitle != null) {
             return resDialogTitle;
@@ -974,6 +994,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @DrawableRes
     int resNotifIcon() {
         if (resNotifIcon != null) {
             return resNotifIcon;
@@ -982,6 +1003,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resNotifText() {
         if (resNotifText != null) {
             return resNotifText;
@@ -990,6 +1012,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resNotifTickerText() {
         if (resNotifTickerText != null) {
             return resNotifTickerText;
@@ -998,6 +1021,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resNotifTitle() {
         if (resNotifTitle != null) {
             return resNotifTitle;
@@ -1006,6 +1030,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @StringRes
     int resToastText() {
         if (resToastText != null) {
             return resToastText;
@@ -1022,6 +1047,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String sharedPreferencesName() {
         if (sharedPreferencesName != null) {
             return sharedPreferencesName;
@@ -1063,6 +1089,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String[] excludeMatchingSharedPreferencesKeys() {
         if (excludeMatchingSharedPreferencesKeys != null) {
             return excludeMatchingSharedPreferencesKeys;
@@ -1071,6 +1098,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String[] excludeMatchingSettingsKeys() {
         if (excludeMatchingSettingsKeys != null) {
             return excludeMatchingSettingsKeys;
@@ -1083,14 +1111,13 @@ public final class ConfigurationBuilder {
      * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
      */
     @SuppressWarnings("unused")
+    @Nullable
     Class buildConfigClass() {
-        if (buildConfigClass != null) {
-            return buildConfigClass;
-        }
-        return null;
+        return buildConfigClass;
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     String applicationLogFile() {
         if (applicationLogFile != null) {
             return applicationLogFile;
@@ -1107,6 +1134,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     Class<? extends BaseCrashReportDialog> reportDialogClass() {
         if (reportDialogClass != null) {
             return reportDialogClass;
@@ -1115,6 +1143,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     Class<? extends ReportPrimer> reportPrimerClass() {
         if (reportPrimerClass != null) {
             return reportPrimerClass;
@@ -1123,6 +1152,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     Method httpMethod() {
         if (httpMethod != null) {
             return httpMethod;
@@ -1131,6 +1161,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     Type reportType() {
         if (reportType != null) {
             return reportType;
@@ -1139,6 +1170,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @NonNull
     Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
         if (reportSenderFactoryClasses != null) {
             return reportSenderFactoryClasses;

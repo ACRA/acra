@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportingInteractionMode;
@@ -52,16 +53,13 @@ public final class ReportExecutor {
 
     private boolean enabled = false;
 
-    // This is used to wait for the crash toast to end it's display duration before killing the Application.
-    // TODO make this a local variable. Only here because it cannot be non-final and referenced within an anonymous class.
-    private boolean toastWaitEnded = true;
-
     /**
      * Used to create a new (non-cached) PendingIntent each time a new crash occurs.
      */
     private static int mNotificationCounter = 0;
 
-    public ReportExecutor(Context context, ACRAConfiguration config, CrashReportDataFactory crashReportDataFactory, LastActivityManager lastActivityManager, Thread.UncaughtExceptionHandler defaultExceptionHandler, ReportPrimer reportPrimer) {
+    public ReportExecutor(@NonNull Context context,@NonNull ACRAConfiguration config,@NonNull CrashReportDataFactory crashReportDataFactory,
+                          @NonNull LastActivityManager lastActivityManager,@Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler,@NonNull ReportPrimer reportPrimer) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
@@ -89,7 +87,7 @@ public final class ReportExecutor {
         }
     }
 
-    public void handReportToDefaultExceptionHandler(Thread t, @NonNull Throwable e) {
+    public void handReportToDefaultExceptionHandler(@Nullable Thread t, @NonNull Throwable e) {
         if (defaultExceptionHandler != null) {
             ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
                     + " - forwarding uncaught Exception on to default ExceptionHandler");
@@ -196,74 +194,59 @@ public final class ReportExecutor {
             createNotification(reportFile, reportBuilder);
         }
 
-        // This is used to wait for the crash toast to end it's display duration before killing the Application.
-        toastWaitEnded = true;
+        final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
+                && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
         if (shouldDisplayToast) {
             // A toast is being displayed, we have to wait for its end before doing anything else.
-            // The toastWaitEnded flag will be checked before any other operation.
-            toastWaitEnded = false;
             new Thread() {
 
                 @Override
                 public void run() {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
-                            + " millis from " + sentToastTimeMillis.initialTimeMillis
-                            + " currentMillis=" + System.currentTimeMillis());
+                    if (ACRA.DEV_LOGGING)
+                        ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
+                                + " millis from " + sentToastTimeMillis.initialTimeMillis
+                                + " currentMillis=" + System.currentTimeMillis());
                     while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
                         try {
                             // Wait a bit to let the user read the toast
-                            Thread.sleep(100);
+                            Thread.sleep(ACRAConstants.THREAD_SLEEP_INTERVAL_MILLIS);
                         } catch (InterruptedException e1) {
-                            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
+                            if (ACRA.DEV_LOGGING)
+                                ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                         }
                     }
-                    toastWaitEnded = true;
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
+                    dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
                 }
             }.start();
+        } else {
+            dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
+        }
+    }
+
+    private void dialogAndEnd(@NonNull ReportBuilder reportBuilder, @NonNull File reportFile, boolean shouldShowDialog) {
+        if (shouldShowDialog) {
+            // Create a new activity task with the confirmation dialog.
+            // This new task will be persisted on application restart
+            // right after its death.
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
+            final Intent dialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
+            dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(dialogIntent);
         }
 
-        final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
-                && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
-        new Thread() {
-
-            @Override
-            public void run() {
-                // We have to wait for the toast display to be completed.
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for Toast");
-                while (!toastWaitEnded) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e1) {
-                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted waiting for Toast");
-                    }
-                }
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
-
-                if (showDirectDialog) {
-                    // Create a new activity task with the confirmation dialog.
-                    // This new task will be persisted on application restart
-                    // right after its death.
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
-                    final Intent dialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
-                    dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(dialogIntent);
-                }
-
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
-
-                if (reportBuilder.isEndApplication()) {
-                    endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
-                }
-            }
-        }.start();
+        if (reportBuilder.isEndApplication()) {
+            endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
+        }
     }
 
     /**
      * End the application.
      */
-    private void endApplication(@Nullable Thread uncaughtExceptionThread, Throwable th) {
+    private void endApplication(@Nullable Thread uncaughtExceptionThread,@Nullable Throwable th) {
         // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
         // as the intent is clearer and would allows you to switch it off for SILENT.
         final boolean letDefaultHandlerEndApplication = (
@@ -320,7 +303,7 @@ public final class ReportExecutor {
      *
      * @param reportFile    Report file to send.
      */
-    private void createNotification(File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private void createNotification(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -406,7 +389,7 @@ public final class ReportExecutor {
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
     @NonNull
-    private Intent createCrashReportDialogIntent(File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private Intent createCrashReportDialogIntent(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, config.reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);

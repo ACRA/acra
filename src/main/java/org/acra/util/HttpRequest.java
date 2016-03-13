@@ -7,6 +7,7 @@ package org.acra.util;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 
 import org.acra.ACRA;
@@ -32,6 +33,16 @@ import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
 
+    private static final int PRIMARY_DIGIT_DIVIDER = 100;
+
+    private static final int HTTP_PRIMARY_SUCCESS = 2;
+    private static final int HTTP_PRIMARY_CLIENT_ERROR = 4;
+    private static final int HTTP_PRIMARY_SERVER_ERROR = 5;
+    private static final int HTTP_FORBIDDEN = 403;
+    private static final int HTTP_CONFLICT = 409;
+
+    private static final String UTF8 = "UTF-8";
+
     private final ACRAConfiguration config;
     private String login;
     private String password;
@@ -39,15 +50,15 @@ public final class HttpRequest {
     private int socketTimeOut = 3000;
     private Map<String, String> headers;
 
-    public HttpRequest(ACRAConfiguration config) {
+    public HttpRequest(@NonNull ACRAConfiguration config) {
         this.config = config;
     }
 
-    public void setLogin(String login) {
+    public void setLogin(@Nullable String login) {
         this.login = login;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@Nullable String password) {
         this.password = password;
     }
 
@@ -59,7 +70,7 @@ public final class HttpRequest {
         this.socketTimeOut = socketTimeOut;
     }
 
-    public void setHeaders(Map<String, String> headers) {
+    public void setHeaders(@Nullable Map<String, String> headers) {
         this.headers = headers;
     }
 
@@ -97,7 +108,7 @@ public final class HttpRequest {
         // Set Credentials
         if ((login != null) && (password != null)) {
             final String credentials = login + ":" + password;
-            final String encoded = new String(Base64.encode(credentials.getBytes("UTF-8"), Base64.NO_WRAP), "UTF-8");
+            final String encoded = new String(Base64.encode(credentials.getBytes(UTF8), Base64.NO_WRAP), UTF8);
             urlConnection.setRequestProperty("Authorization", "Basic " + encoded);
         }
 
@@ -116,7 +127,7 @@ public final class HttpRequest {
             }
         }
 
-        final byte[] contentAsBytes = content.getBytes("UTF-8");
+        final byte[] contentAsBytes = content.getBytes(UTF8);
 
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         urlConnection.setRequestMethod(method.name());
@@ -140,20 +151,30 @@ public final class HttpRequest {
         final int responseCode = urlConnection.getResponseCode();
         if (ACRA.DEV_LOGGING)
             ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
-        if ((responseCode >= 200) && (responseCode < 300)) {
-            // All is good
-            ACRA.log.i(LOG_TAG, "Request received by server");
-        } else if (responseCode == 403) {
-            // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
-            ACRA.log.w(LOG_TAG, "Data validation error on server - request will be discarded");
-        } else if (responseCode == 409) {
-            // 409 means that the report has been received already. So we can discard it.
-            ACRA.log.w(LOG_TAG, "Server has already received this post - request will be discarded");
-        } else if ((responseCode >= 400) && (responseCode < 600)) {
-            ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
-            throw new IOException("Host returned error code " + responseCode);
-        } else {
-            ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
+        int primaryCode = responseCode / PRIMARY_DIGIT_DIVIDER;
+        outer: switch (primaryCode) {
+            case HTTP_PRIMARY_SUCCESS:
+                // All is good
+                ACRA.log.i(LOG_TAG, "Request received by server");
+                break;
+            case HTTP_PRIMARY_CLIENT_ERROR:
+                switch (responseCode) {
+                    case HTTP_FORBIDDEN:
+                        // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
+                        ACRA.log.w(LOG_TAG, "Data validation error on server - request will be discarded");
+                        break outer;
+                    case HTTP_CONFLICT:
+                        // 409 means that the report has been received already. So we can discard it.
+                        ACRA.log.w(LOG_TAG, "Server has already received this post - request will be discarded");
+                        break outer;
+                }
+                //if none of the special cases, continue to next block
+            case HTTP_PRIMARY_SERVER_ERROR:
+                ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
+                throw new IOException("Host returned error code " + responseCode);
+            default:
+                ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
+                break;
         }
 
         urlConnection.disconnect();
@@ -166,18 +187,19 @@ public final class HttpRequest {
      * @return URL encoded String representing the parameters.
      * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
      */
+    @NonNull
     public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?,?> entry : parameters.entrySet()) {
+        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
             if (dataBfr.length() != 0) {
                 dataBfr.append('&');
             }
             final Object preliminaryValue = entry.getValue();
             final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), "UTF-8"));
+            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), UTF8));
             dataBfr.append('=');
-            dataBfr.append(URLEncoder.encode(value.toString(), "UTF-8"));
+            dataBfr.append(URLEncoder.encode(value.toString(), UTF8));
         }
 
         return dataBfr.toString();

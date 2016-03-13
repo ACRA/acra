@@ -29,26 +29,31 @@ import static org.acra.ReportField.USER_EMAIL;
  * The methods sendCrash(comment, usrEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
  *
- * This Activity will be instantiated with 3 arguments:
+ * This Activity will be instantiated with 3 (or 4) arguments:
  * <ol>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
  *     <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
+ *     <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
  * </ol>
  */
 public abstract class BaseCrashReportDialog extends Activity {
 
     private File reportFile;
     private ACRAConfiguration config;
+    private Throwable exception;
 
     @CallSuper
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
 
         config = (ACRAConfiguration) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        if(config == null) {
+            throw new IllegalStateException("CrashReportDialog has to be called with extra ACRAConstants#EXTRA_REPORT_CONFIG");
+        }
 
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
         if (forceCancel) {
@@ -61,14 +66,16 @@ public abstract class BaseCrashReportDialog extends Activity {
         reportFile = (File) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + reportFile);
         if (reportFile == null) {
-            finish();
+            throw new IllegalStateException("CrashReportDialog has to be called with extra ACRAConstants#EXTRA_REPORT_FILE");
         }
+        exception = (Throwable) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
     }
 
 
     /**
      * Cancel any pending crash reports.
      */
+    @CallSuper
     protected void cancelReports() {
         new BulkReportDeleter(getApplicationContext()).deleteReports(false, 0);
     }
@@ -79,6 +86,7 @@ public abstract class BaseCrashReportDialog extends Activity {
      * @param comment       Comment (may be null) provided by the user.
      * @param userEmail     Email address (may be null) provided by the client.
      */
+    @CallSuper
     protected void sendCrash(@Nullable String comment, @Nullable String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister();
         try {
@@ -100,5 +108,13 @@ public abstract class BaseCrashReportDialog extends Activity {
         if (toastId != 0) {
             ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
         }
+    }
+
+    protected final ACRAConfiguration getConfig(){
+        return config;
+    }
+
+    protected final Throwable getException(){
+        return exception;
     }
 }

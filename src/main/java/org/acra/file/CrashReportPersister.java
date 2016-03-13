@@ -71,10 +71,10 @@ public final class CrashReportPersister {
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
 
-        final OutputStream out = new FileOutputStream(file);
+        OutputStreamWriter writer = null;
         try {
             final StringBuilder buffer = new StringBuilder(200);
-            final OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1"); //$NON-NLS-1$
+            writer = new OutputStreamWriter(new FileOutputStream(file), "ISO8859_1"); //$NON-NLS-1$
 
             for (final Map.Entry<ReportField, String> entry : crashData.entrySet()) {
                 final String key = entry.getKey().toString();
@@ -87,7 +87,9 @@ public final class CrashReportPersister {
             }
             writer.flush();
         } finally {
-            out.close();
+            if (writer != null) {
+                writer.close();
+            }
         }
     }
 
@@ -122,7 +124,7 @@ public final class CrashReportPersister {
     @NonNull
     private synchronized CrashReportData load(@NonNull Reader reader) throws IOException {
         int mode = NONE, unicode = 0, count = 0;
-        char nextChar, buf[] = new char[40];
+        char nextChar, buf[] = new char[40]; //TODO: consider using a list instead of manually increasing the size when needed
         int offset = 0, keyLength = -1, intVal;
         boolean firstChar = true;
 

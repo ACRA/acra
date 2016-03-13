@@ -24,10 +24,9 @@ import java.util.LinkedList;
  * A {@link LinkedList} version with a maximum number of elements. When adding
  * elements to the end of the list, first elements in the list are discarded if
  * the maximum size is reached.
- * 
- * @author Kevin Gaudin
- * 
+ *
  * @param <E>
+ * @author Kevin Gaudin
  */
 @SuppressWarnings("serial")
 public class BoundedLinkedList<E> extends LinkedList<E> {
@@ -71,6 +70,14 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
      */
     @Override
     public boolean addAll(@NonNull Collection<? extends E> collection) {
+        int size = collection.size();
+        if (size > maxSize) {
+            LinkedList<? extends E> list = new LinkedList<E>(collection);
+            for (int i = 0; i < size - maxSize; i++) {
+                list.removeFirst();
+            }
+            collection = list;
+        }
         final int totalNeededSize = size() + collection.size();
         final int overhead = totalNeededSize - maxSize;
         if (overhead > 0) {
@@ -92,6 +99,9 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
         // removeRange(0, overhead);
         // }
         // return super.addAll(location, collection);
+        if(location == size()){
+            return super.addAll(location, collection);
+        }
         throw new UnsupportedOperationException();
     }
 
@@ -129,5 +139,26 @@ public class BoundedLinkedList<E> extends LinkedList<E> {
             result.append(object.toString());
         }
         return result.toString();
+    }
+
+    @Override
+    public boolean offer(E o) {
+        return add(o);
+    }
+
+    @Override
+    public boolean offerFirst(E e) {
+        addFirst(e);
+        return true;
+    }
+
+    @Override
+    public boolean offerLast(E e) {
+        return add(e);
+    }
+
+    @Override
+    public void push(E e) {
+        add(e);
     }
 }

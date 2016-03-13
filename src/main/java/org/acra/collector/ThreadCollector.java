@@ -25,7 +25,8 @@ import android.support.annotation.Nullable;
  * @author Kevin Gaudin
  * 
  */
-public class ThreadCollector {
+public final class ThreadCollector {
+    private ThreadCollector(){}
 
     /**
      * Convenience method that collects some data identifying a Thread, usually the Thread which

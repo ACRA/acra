@@ -16,7 +16,6 @@
 
 package org.acra.collector;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -35,7 +34,8 @@ import java.util.Arrays;
  *
  * @author Kevin Gaudin
  */
-public class MediaCodecListCollector {
+public final class MediaCodecListCollector {
+    private MediaCodecListCollector(){}
     private enum CodecType {
         AVC, H263, MPEG4, AAC
 
@@ -110,7 +110,6 @@ public class MediaCodecListCollector {
      * @return The media codecs information
      */
     @NonNull
-    @SuppressLint("NewApi") //lint doesn't check complex NewApi blocks correctly
     public static String collectMediaCodecList() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             return "";
@@ -157,7 +156,7 @@ public class MediaCodecListCollector {
      */
     @NonNull
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, String type){
+    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, @NonNull String type){
 
         final StringBuilder result = new StringBuilder();
         final MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);

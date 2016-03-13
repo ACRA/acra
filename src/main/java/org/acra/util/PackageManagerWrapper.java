@@ -1,12 +1,14 @@
 package org.acra.util;
 
-import static org.acra.ACRA.LOG_TAG;
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for wrapping calls to PackageManager to ensure that they always complete without throwing RuntimeExceptions.
@@ -28,7 +30,7 @@ public final class PackageManagerWrapper {
 
     private final Context context;
 
-    public PackageManagerWrapper(Context context) {
+    public PackageManagerWrapper(@NonNull Context context) {
         this.context = context;
     }
 
@@ -36,7 +38,7 @@ public final class PackageManagerWrapper {
      * @param permission    Manifest.permission to check whether it has been granted.
      * @return true if the permission has been granted to the app, false if it hasn't been granted or the PackageManager could not be contacted.
      */
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@NonNull String permission) {
         final PackageManager pm = context.getPackageManager();
         if (pm == null) {
             return false;
@@ -54,6 +56,7 @@ public final class PackageManagerWrapper {
     /**
      * @return PackageInfo for the current application or null if the PackageManager could not be contacted.
      */
+    @Nullable
     public PackageInfo getPackageInfo() {
         final PackageManager pm = context.getPackageManager();
         if (pm == null) {
