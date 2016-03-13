@@ -5,6 +5,7 @@
  */
 package org.acra.util;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
@@ -70,7 +71,7 @@ public final class HttpRequest {
      * @param content Map of parameters to post to a URL.
      * @throws IOException if the data cannot be posted.
      */
-    public void send(@NonNull URL url, @NonNull Method method, @NonNull String content, @NonNull Type type) throws IOException {
+    public void send(@NonNull Context context, @NonNull URL url, @NonNull Method method, @NonNull String content, @NonNull Type type) throws IOException {
 
         final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -82,7 +83,7 @@ public final class HttpRequest {
                 final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
 
-                tmf.init(config.keyStore());
+                tmf.init(config.keyStoreFactory().create(context));
 
                 final SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, tmf.getTrustManagers(), null);

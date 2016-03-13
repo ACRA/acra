@@ -230,7 +230,7 @@ public class HttpSender implements ReportSender {
             default:
                 throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
             }
-            request.send(reportUrl, mMethod, reportAsString, mType);
+            request.send(context, reportUrl, mMethod, reportAsString, mType);
 
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
