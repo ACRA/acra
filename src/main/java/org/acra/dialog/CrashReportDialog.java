@@ -16,6 +16,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.prefs.SharedPreferencesFactory;
 
 
@@ -26,6 +27,7 @@ import org.acra.prefs.SharedPreferencesFactory;
  **/
 public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
 
+    private static final int PADDING = 10;
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
 
@@ -55,11 +57,11 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     protected void buildAndShowDialog(@Nullable Bundle savedInstanceState){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final int titleResourceId = getConfig().resDialogTitle();
-        if (titleResourceId != 0) {
+        if (titleResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setTitle(titleResourceId);
         }
         final int iconResourceId = getConfig().resDialogIcon();
-        if (iconResourceId != 0) {
+        if (iconResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState));
@@ -75,7 +77,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     @NonNull
     protected View buildCustomView(@Nullable Bundle savedInstanceState) {
         final ScrollView root = new ScrollView(this);
-        root.setPadding(10, 10, 10, 10);
+        root.setPadding(PADDING, PADDING, PADDING, PADDING);
         root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         root.setFocusable(true);
         root.setFocusableInTouchMode(true);
@@ -129,7 +131,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     protected View getMainView() {
         final TextView text = new TextView(this);
         final int dialogTextId = getConfig().resDialogText();
-        if (dialogTextId != 0) {
+        if (dialogTextId != ACRAConstants.DEFAULT_RES_VALUE) {
             text.setText(getText(dialogTextId));
         }
         return text;
@@ -142,7 +144,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     @Nullable
     protected View getCommentLabel() {
         final int commentPromptId = getConfig().resDialogCommentPrompt();
-        if (commentPromptId != 0) {
+        if (commentPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
             final TextView labelView = new TextView(this);
             labelView.setText(getText(commentPromptId));
             return labelView;
@@ -173,7 +175,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     @Nullable
     protected View getEmailLabel(){
         final int emailPromptId = getConfig().resDialogEmailPrompt();
-        if (emailPromptId != 0) {
+        if (emailPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
             final TextView labelView = new TextView(this);
             labelView.setText(getText(emailPromptId));
             return labelView;
