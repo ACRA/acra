@@ -1,12 +1,12 @@
 package org.acra.util;
 
-import static org.acra.ACRA.LOG_TAG;
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import org.acra.ACRA;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for wrapping calls to PackageManager to ensure that they always complete without throwing RuntimeExceptions.

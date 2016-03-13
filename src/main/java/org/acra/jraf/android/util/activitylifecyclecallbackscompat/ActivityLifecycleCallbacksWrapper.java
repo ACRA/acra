@@ -85,7 +85,7 @@ class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
             return false;
         }
         final ActivityLifecycleCallbacksWrapper that = (ActivityLifecycleCallbacksWrapper) object;
-        return null == mCallback ? null == that.mCallback : mCallback.equals( that.mCallback );
+        return mCallback.equals( that.mCallback );
     }
 
     /**
@@ -94,6 +94,6 @@ class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
      */
     @Override
     public int hashCode() {
-        return null != mCallback ? mCallback.hashCode() : 0;
+        return mCallback.hashCode();
     }
 }

@@ -131,8 +131,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @Deprecated
     @SuppressWarnings("unused")
-    public void addCustomData(String key, String value) {
-        crashReportDataFactory.putCustomData(key, value);
+    public void addCustomData(@NonNull String key, String value) {
+        putCustomData(key, value);
     }
 
     /**
@@ -367,7 +367,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     private static ReportPrimer getReportPrimer(@NonNull ACRAConfiguration config) {
-        //noinspection TryWithIdenticalCatches
         try {
             return config.reportPrimerClass().newInstance();
         } catch (InstantiationException e) {

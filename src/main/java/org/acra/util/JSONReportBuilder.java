@@ -169,7 +169,7 @@ public class JSONReportBuilder {
             NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
                 return format.parse(value);
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
                 // never mind
             }
         }

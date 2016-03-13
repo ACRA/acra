@@ -390,9 +390,7 @@ public final class CrashReportDataFactory {
             if (crashReportFields.contains(BUILD_CONFIG)) {
                 try {
                     final Class buildConfigClass = getBuildConfigClass();
-                    if (buildConfigClass != null) {
-                        crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfigClass));
-                    }
+                    crashReportData.put(BUILD_CONFIG, ReflectionCollector.collectConstants(buildConfigClass));
                 } catch (ClassNotFoundException ignored) {
                     // We have already logged this when we had the name of the class that wasn't found.
                 } catch (RuntimeException e) {

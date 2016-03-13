@@ -38,7 +38,8 @@ public class EmailIntentSender implements ReportSender {
     private final Context mContext;
     private final ACRAConfiguration config;
 
-    public EmailIntentSender(Context ctx, ACRAConfiguration config) {
+    //TODO why not use context passed in #send?
+    public EmailIntentSender(@NonNull Context ctx, @NonNull ACRAConfiguration config) {
         mContext = ctx;
         this.config = config;
     }
