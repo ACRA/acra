@@ -1,6 +1,7 @@
 package org.acra.builder;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +29,12 @@ public final class ReportBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ReportBuilder message(String msg) {
+    public ReportBuilder message(@Nullable String msg) {
         message = msg;
         return this;
     }
 
+    @Nullable
     public String getMessage() {
         return message;
     }
@@ -44,11 +46,12 @@ public final class ReportBuilder {
      * @return the updated {@code ReportBuilder}
      */
     @NonNull
-    public ReportBuilder uncaughtExceptionThread(Thread thread) {
+    public ReportBuilder uncaughtExceptionThread(@Nullable Thread thread) {
         uncaughtExceptionThread = thread;
         return this;
     }
 
+    @Nullable
     public Thread getUncaughtExceptionThread() {
         return uncaughtExceptionThread;
     }
@@ -60,11 +63,12 @@ public final class ReportBuilder {
      * @return the updated {@code ReportBuilder}
      */
     @NonNull
-    public ReportBuilder exception(Throwable e) {
+    public ReportBuilder exception(@Nullable Throwable e) {
         exception = e;
         return this;
     }
 
+    @Nullable
     public Throwable getException() {
         return exception;
     }
@@ -93,7 +97,7 @@ public final class ReportBuilder {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ReportBuilder customData(String key, String value) {
+    public ReportBuilder customData(@NonNull String key, String value) {
         customData.put(key, value);
         return this;
     }

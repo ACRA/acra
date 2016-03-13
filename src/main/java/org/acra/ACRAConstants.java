@@ -16,6 +16,9 @@
 package org.acra;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
+
 import org.acra.dialog.CrashReportDialog;
 
 import static org.acra.ReportField.*;
@@ -103,12 +106,16 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_SHARED_PREFERENCES_MODE = Context.MODE_PRIVATE;
 
+    @DrawableRes
     public static final int DEFAULT_NOTIFICATION_ICON = android.R.drawable.stat_notify_error;
 
+    @DrawableRes
     public static final int DEFAULT_DIALOG_ICON = android.R.drawable.ic_dialog_alert;
 
+    @StringRes
     public static final int DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT = android.R.string.ok;
 
+    @StringRes
     public static final int DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT = android.R.string.cancel;
 
     public static final int DEFAULT_RES_VALUE = 0;

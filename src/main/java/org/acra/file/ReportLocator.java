@@ -1,6 +1,7 @@
 package org.acra.file;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -19,14 +20,16 @@ public final class ReportLocator {
 
     private final Context context;
 
-    public ReportLocator(Context context) {
+    public ReportLocator(@NonNull Context context) {
         this.context = context;
     }
 
+    @NonNull
     public File getUnapprovedFolder() {
         return context.getDir(UNAPPROVED_FOLDER_NAME, Context.MODE_PRIVATE);
     }
 
+    @NonNull
     public File[] getUnapprovedReports() {
         final File[] reports = getUnapprovedFolder().listFiles();
         if (reports == null) {
@@ -35,6 +38,7 @@ public final class ReportLocator {
         return reports;
     }
 
+    @NonNull
     public File getApprovedFolder() {
         return context.getDir(APPROVED_FOLDER_NAME, Context.MODE_PRIVATE);
     }
@@ -42,6 +46,7 @@ public final class ReportLocator {
     /**
      * @return Approved reports sorted by creation time.
      */
+    @NonNull
     public File[] getApprovedReports() {
         final File[] reports = getApprovedFolder().listFiles();
         if (reports == null) {

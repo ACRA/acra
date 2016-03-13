@@ -122,6 +122,7 @@ public final class ConfigurationCollector {
      * @return A String describing all the fields of the given Configuration,
      *         with values replaced by constant names.
      */
+    @NonNull
     private String toString(@NonNull Configuration conf) {
         final StringBuilder result = new StringBuilder();
         for (final Field f : conf.getClass().getFields()) {
@@ -197,6 +198,7 @@ public final class ConfigurationCollector {
      * @return The names of the different values contained in the bitfield,
      *         separated by '+'.
      */
+    @NonNull
     private static String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
         final StringBuilder result = new StringBuilder();
 
@@ -222,6 +224,7 @@ public final class ConfigurationCollector {
      * @param context   Context for the application being reported.
      * @return A String representation of the current configuration for the application.
      */
+    @NonNull
     public static String collectConfiguration(@NonNull Context context) {
         try {
             final ConfigurationCollector collector = new ConfigurationCollector();

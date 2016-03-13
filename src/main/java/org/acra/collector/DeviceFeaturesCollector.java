@@ -31,6 +31,7 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class DeviceFeaturesCollector {
 
+    @NonNull
     public static String getFeatures(@NonNull Context ctx) {
 
         final StringBuilder result = new StringBuilder();

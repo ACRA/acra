@@ -133,7 +133,7 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(ACRAConfiguration config, Method method, Type type, Map<ReportField, String> mapping) {
+    public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type, @Nullable Map<ReportField, String> mapping) {
         this(config, method, type, null, mapping);
     }
 
@@ -163,7 +163,7 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(ACRAConfiguration config, Method method, Type type, @Nullable String formUri, Map<ReportField, String> mapping) {
+    public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type, @Nullable String formUri, @Nullable Map<ReportField, String> mapping) {
         this.config = config;
         mMethod = method;
         mFormUri = (formUri == null) ? null : Uri.parse(formUri);
@@ -185,13 +185,13 @@ public class HttpSender implements ReportSender {
      *            The password to set for HTTP Basic Auth.
      */
     @SuppressWarnings( "unused" )
-    public void setBasicAuth(String username, String password) {
+    public void setBasicAuth(@Nullable String username, @Nullable String password) {
         mUsername = username;
         mPassword = password;
     }    
 
     @Override
-    public void send(Context context, @NonNull CrashReportData report) throws ReportSenderException {
+    public void send(@NonNull Context context, @NonNull CrashReportData report) throws ReportSenderException {
 
         try {
             URL reportUrl = mFormUri == null ? new URL(config.formUri()) : new URL(mFormUri.toString());

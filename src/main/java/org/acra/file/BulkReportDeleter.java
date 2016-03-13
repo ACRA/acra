@@ -18,7 +18,7 @@ public final class BulkReportDeleter {
     @NonNull
     private final ReportLocator reportLocator;
 
-    public BulkReportDeleter(Context context) {
+    public BulkReportDeleter(@NonNull Context context) {
         this.reportLocator = new ReportLocator(context);
     }
 

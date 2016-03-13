@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportingInteractionMode;
@@ -61,7 +62,8 @@ public final class ReportExecutor {
      */
     private static int mNotificationCounter = 0;
 
-    public ReportExecutor(Context context, ACRAConfiguration config, CrashReportDataFactory crashReportDataFactory, LastActivityManager lastActivityManager, Thread.UncaughtExceptionHandler defaultExceptionHandler, ReportPrimer reportPrimer) {
+    public ReportExecutor(@NonNull Context context,@NonNull ACRAConfiguration config,@NonNull CrashReportDataFactory crashReportDataFactory,
+                          @NonNull LastActivityManager lastActivityManager,@Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler,@NonNull ReportPrimer reportPrimer) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
@@ -89,7 +91,7 @@ public final class ReportExecutor {
         }
     }
 
-    public void handReportToDefaultExceptionHandler(Thread t, @NonNull Throwable e) {
+    public void handReportToDefaultExceptionHandler(@Nullable Thread t, @NonNull Throwable e) {
         if (defaultExceptionHandler != null) {
             ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
                     + " - forwarding uncaught Exception on to default ExceptionHandler");
@@ -320,7 +322,7 @@ public final class ReportExecutor {
      *
      * @param reportFile    Report file to send.
      */
-    private void createNotification(File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private void createNotification(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -406,7 +408,7 @@ public final class ReportExecutor {
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
     @NonNull
-    private Intent createCrashReportDialogIntent(File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private Intent createCrashReportDialogIntent(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, config.reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);

@@ -3,6 +3,7 @@ package org.acra.prefs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
@@ -20,7 +21,7 @@ public class SharedPreferencesFactory {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SharedPreferencesFactory(Context context, ACRAConfiguration config) {
+    public SharedPreferencesFactory(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }
@@ -28,6 +29,7 @@ public class SharedPreferencesFactory {
     /**
      * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
      */
+    @NonNull
     public SharedPreferences create() {
         if (context == null) {
             throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");

@@ -34,19 +34,19 @@ import android.support.annotation.NonNull;
  * Helper for accessing {@link Application#registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} and
  * {@link Application#unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} introduced in API level 14 in a
  * backwards compatible fashion.<br>
- *
+ * <p/>
  * When running on API level 14 or above, the framework's implementations of these methods will be used.
  */
 public final class ApplicationHelper {
 
     /**
      * Registers a callback to be called following the life cycle of the application's {@link Activity activities}.
-     * 
+     *
      * @param application The application with which to register the callback.
-     * @param callback The callback to register.
+     * @param callback    The callback to register.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public static void registerActivityLifecycleCallbacks(@NonNull Application application, ActivityLifecycleCallbacksCompat callback) {
+    public static void registerActivityLifecycleCallbacks(@NonNull Application application, @NonNull ActivityLifecycleCallbacksCompat callback) {
         application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacksWrapper(callback));
     }
 
@@ -57,12 +57,12 @@ public final class ApplicationHelper {
 
     /**
      * Unregisters a previously registered callback.
-     * 
+     *
      * @param application The application with which to unregister the callback.
-     * @param callback The callback to unregister.
+     * @param callback    The callback to unregister.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void unregisterActivityLifecycleCallbacks(@NonNull Application application, ActivityLifecycleCallbacksCompat callback) {
+    public void unregisterActivityLifecycleCallbacks(@NonNull Application application, @NonNull ActivityLifecycleCallbacksCompat callback) {
         application.unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacksWrapper(callback));
     }
 }
