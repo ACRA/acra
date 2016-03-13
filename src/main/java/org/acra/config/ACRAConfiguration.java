@@ -29,6 +29,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.security.KeyStoreFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -122,7 +123,7 @@ public final class ACRAConfiguration implements Serializable {
     private Method httpMethod;
     private Type reportType;
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
-    private KeyStore keyStore;
+    private KeyStoreFactory keyStoreFactory;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
     /**
@@ -181,6 +182,7 @@ public final class ACRAConfiguration implements Serializable {
         httpHeaders.putAll(builder.httpHeaders());
         reportType = builder.reportType();
         reportSenderFactoryClasses = copyArray(builder.reportSenderFactoryClasses());
+        keyStoreFactory = builder.keyStoreFactory();
     }
 
     /**
@@ -813,7 +815,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @SuppressWarnings("unused")
     public void setKeyStore(@Nullable KeyStore keyStore) {
-        this.keyStore = keyStore;
+        throw new UnsupportedOperationException("This method is not supported anymore");
     }
 
     /**
@@ -1090,9 +1092,8 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     @SuppressWarnings("unused")
-    @Nullable
-    public KeyStore keyStore() {
-        return keyStore;
+    public KeyStoreFactory keyStoreFactory() {
+        return keyStoreFactory;
     }
 
     /**

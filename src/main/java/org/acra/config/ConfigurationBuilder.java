@@ -28,6 +28,7 @@ import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.security.KeyStoreFactory;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
@@ -35,7 +36,6 @@ import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
-import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +102,7 @@ public final class ConfigurationBuilder {
     private Method httpMethod;
     private Type reportType;
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
-    private KeyStore keyStore;
+    private KeyStoreFactory keyStoreFactory;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
     /**
@@ -761,12 +761,12 @@ public final class ConfigurationBuilder {
 
     /**
      * 
-     * @param keyStore
-     *            Set this to the keystore that contains the trusted certificates
+     * @param keyStoreFactory
+     *            Set this to a factory which creates a the keystore that contains the trusted certificates
      */
     @SuppressWarnings("unused")
-    public void setKeyStore(@Nullable KeyStore keyStore) {
-        this.keyStore = keyStore;
+    public void setKeyStoreFactory(KeyStoreFactory keyStoreFactory) {
+        this.keyStoreFactory = keyStoreFactory;
     }
 
 
@@ -1180,9 +1180,8 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
-    @Nullable
-    KeyStore keyStore() {
-        return keyStore;
+    KeyStoreFactory keyStoreFactory() {
+        return keyStoreFactory;
     }
 
     @NonNull
