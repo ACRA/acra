@@ -50,7 +50,7 @@ public final class CrashReportData extends EnumMap<ReportField, String> {
      * @param key the name of the property to find.
      * @return the named property value, or {@code null} if it can't be found.
      */
-    public String getProperty(ReportField key) {
+    public String getProperty(@NonNull ReportField key) {
         return super.get(key);
     }
 

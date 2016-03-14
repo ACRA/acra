@@ -103,9 +103,9 @@ public final class CrashReportDataFactory {
     private final Calendar appStartDate;
     private final String initialConfiguration;
 
-    public CrashReportDataFactory(Context context, ACRAConfiguration config,
-                                  SharedPreferences prefs, Calendar appStartDate,
-                                  String initialConfiguration) {
+    public CrashReportDataFactory(@NonNull Context context, @NonNull ACRAConfiguration config,
+                                  @NonNull SharedPreferences prefs, @NonNull Calendar appStartDate,
+                                  @Nullable String initialConfiguration) {
         this.context = context;
         this.config = config;
         this.prefs = prefs;
@@ -127,7 +127,7 @@ public final class CrashReportDataFactory {
      * @param value The value associated to your key.
      * @return The previous value for this key if there was one, or null.
      */
-    public String putCustomData(String key, String value) {
+    public String putCustomData(@NonNull String key, String value) {
         return customParameters.put(key, value);
     }
 
@@ -137,7 +137,7 @@ public final class CrashReportDataFactory {
      * @param key The key of the data to be removed.
      * @return The value for this key before removal.
      */
-    public String removeCustomData(String key) {
+    public String removeCustomData(@NonNull String key) {
         return customParameters.remove(key);
     }
 
@@ -154,7 +154,7 @@ public final class CrashReportDataFactory {
      * @param key The key of the data to be retrieved.
      * @return The value for this key.
      */
-    public String getCustomData(String key) {
+    public String getCustomData(@NonNull String key) {
         return customParameters.get(key);
     }
 
@@ -578,7 +578,8 @@ public final class CrashReportDataFactory {
         return customInfo.toString();
     }
 
-    private String getStackTrace(@Nullable String msg, Throwable th) {
+    @NonNull
+    private String getStackTrace(@Nullable String msg, @Nullable Throwable th) {
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
 
@@ -599,7 +600,8 @@ public final class CrashReportDataFactory {
         return stacktraceAsString;
     }
 
-    private String getStackTraceHash(Throwable th) {
+    @NonNull
+    private String getStackTraceHash(@Nullable Throwable th) {
         final StringBuilder res = new StringBuilder();
         Throwable cause = th;
         while (cause != null) {
@@ -614,7 +616,7 @@ public final class CrashReportDataFactory {
         return Integer.toHexString(res.toString().hashCode());
     }
 
-    @Nullable
+    @NonNull
     private Class<?> getBuildConfigClass() throws ClassNotFoundException {
         final Class configuredBuildConfig = config.buildConfigClass();
         if ((configuredBuildConfig != null) && !configuredBuildConfig.equals(Object.class)) {

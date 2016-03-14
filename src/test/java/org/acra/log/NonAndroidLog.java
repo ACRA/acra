@@ -31,7 +31,7 @@ public final class NonAndroidLog implements ACRALog {
     /**
      * Any log that is output at level less that the supplied logLevel will be ignored.
      * <p>
-     *     The deault log level is {@link NonAndroidLog#VERBOSE}
+     *     The default log level is {@link NonAndroidLog#VERBOSE}
      * </p>
      *
      * @param logLevel LogLevel to use to filter log output.

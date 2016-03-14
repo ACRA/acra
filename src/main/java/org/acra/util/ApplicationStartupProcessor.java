@@ -3,6 +3,7 @@ package org.acra.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -24,7 +25,7 @@ public final class ApplicationStartupProcessor {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public ApplicationStartupProcessor(Context context, ACRAConfiguration config) {
+    public ApplicationStartupProcessor(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

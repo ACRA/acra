@@ -23,7 +23,7 @@ public final class ReportMigrator {
     @NonNull
     private final ReportLocator reportLocator;
 
-    public ReportMigrator(Context context) {
+    public ReportMigrator(@NonNull Context context) {
         this.context = context;
         this.reportLocator = new ReportLocator(context);
     }

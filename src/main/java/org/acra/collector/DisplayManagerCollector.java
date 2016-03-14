@@ -18,6 +18,7 @@ final class DisplayManagerCollector {
 
     final static SparseArray<String> mFlagsNames = new SparseArray<String>();
 
+    @NonNull
     public static String collectDisplays(@NonNull Context ctx) {
         final Display[] displays;
         final StringBuilder result = new StringBuilder();
@@ -170,7 +171,7 @@ final class DisplayManagerCollector {
     }
 
     @NonNull
-    private static String collectMetrics(String prefix, @NonNull DisplayMetrics metrics) {
+    private static String collectMetrics(@NonNull String prefix, @NonNull DisplayMetrics metrics) {
         return prefix + ".density=" + metrics.density + '\n'
                 + prefix + ".densityDpi=" + metrics.densityDpi + '\n'
                 + prefix + ".scaledDensity=x" + metrics.scaledDensity + '\n'

@@ -157,7 +157,7 @@ public class MediaCodecListCollector {
      */
     @NonNull
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, String type){
+    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, @NonNull String type){
 
         final StringBuilder result = new StringBuilder();
         final MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);

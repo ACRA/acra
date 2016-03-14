@@ -16,6 +16,8 @@
 package org.acra.sender;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+
 import org.acra.collector.CrashReportData;
 
 /**
@@ -44,5 +46,5 @@ public interface ReportSender {
      *             data, you can (should) throw a {@link ReportSenderException}
      *             with a custom message.
      */
-    void send(Context context, CrashReportData errorContent) throws ReportSenderException;
+    void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException;
 }

@@ -28,6 +28,8 @@ import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Wraps an {@link ActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
@@ -37,42 +39,42 @@ class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
 
     private final ActivityLifecycleCallbacksCompat mCallback;
 
-    public ActivityLifecycleCallbacksWrapper(ActivityLifecycleCallbacksCompat callback) {
+    public ActivityLifecycleCallbacksWrapper(@NonNull ActivityLifecycleCallbacksCompat callback) {
         mCallback = callback;
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
         mCallback.onActivityCreated(activity, savedInstanceState);
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(@NonNull Activity activity) {
         mCallback.onActivityStarted(activity);
     }
 
     @Override
-    public void onActivityResumed(Activity activity) {
+    public void onActivityResumed(@NonNull Activity activity) {
         mCallback.onActivityResumed(activity);
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {
+    public void onActivityPaused(@NonNull Activity activity) {
         mCallback.onActivityPaused(activity);
     }
 
     @Override
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(@NonNull Activity activity) {
         mCallback.onActivityStopped(activity);
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+    public void onActivitySaveInstanceState(@NonNull Activity activity, Bundle outState) {
         mCallback.onActivitySaveInstanceState(activity, outState);
     }
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
+    public void onActivityDestroyed(@NonNull Activity activity) {
         mCallback.onActivityDestroyed(activity);
     }
 

@@ -44,7 +44,7 @@ public class EmailIntentSender implements ReportSender {
     }
 
     @Override
-    public void send(Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
+    public void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
 
         final String subject = mContext.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);

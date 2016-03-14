@@ -50,7 +50,7 @@ final class ReportDistributor {
      * @param config                Configuration to use while sending.
      * @param reportSenders         List of ReportSender to use to send the crash reports.
      */
-    public ReportDistributor(Context context, ACRAConfiguration config, List<ReportSender> reportSenders) {
+    public ReportDistributor(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull List<ReportSender> reportSenders) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;
@@ -91,7 +91,7 @@ final class ReportDistributor {
      * @param errorContent  Crash data.
      * @throws ReportSenderException if unable to send the crash report.
      */
-    private void sendCrashReport(CrashReportData errorContent) throws ReportSenderException {
+    private void sendCrashReport(@NonNull CrashReportData errorContent) throws ReportSenderException {
         if (!isDebuggable() || config.sendReportsInDevMode()) {
             boolean sentAtLeastOnce = false;
             ReportSenderException sendFailure = null;

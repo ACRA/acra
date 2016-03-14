@@ -7,6 +7,7 @@ package org.acra.util;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 
 import org.acra.ACRA;
@@ -39,15 +40,15 @@ public final class HttpRequest {
     private int socketTimeOut = 3000;
     private Map<String, String> headers;
 
-    public HttpRequest(ACRAConfiguration config) {
+    public HttpRequest(@NonNull ACRAConfiguration config) {
         this.config = config;
     }
 
-    public void setLogin(String login) {
+    public void setLogin(@Nullable String login) {
         this.login = login;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@Nullable String password) {
         this.password = password;
     }
 
@@ -59,7 +60,7 @@ public final class HttpRequest {
         this.socketTimeOut = socketTimeOut;
     }
 
-    public void setHeaders(Map<String, String> headers) {
+    public void setHeaders(@Nullable Map<String, String> headers) {
         this.headers = headers;
     }
 
@@ -166,6 +167,7 @@ public final class HttpRequest {
      * @return URL encoded String representing the parameters.
      * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
      */
+    @NonNull
     public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();

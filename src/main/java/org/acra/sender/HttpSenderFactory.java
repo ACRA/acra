@@ -12,7 +12,7 @@ public final class HttpSenderFactory implements ReportSenderFactory {
 
     @NonNull
     @Override
-    public ReportSender create(Context context, @NonNull ACRAConfiguration config) {
+    public ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config) {
         return new HttpSender(config, config.httpMethod(), config.reportType(), null);
     }
 }
