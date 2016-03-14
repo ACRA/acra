@@ -186,15 +186,6 @@ public final class ACRAConfiguration implements Serializable {
         keyStoreFactory = builder.keyStoreFactory();
     }
 
-    /**
-     * Empty constructor which sets no defaults.
-     */
-    @SuppressWarnings( "unused" )
-    public ACRAConfiguration(){
-        //TODO this will always throw a NPE! Intended?
-        this(null);
-    }
-
 
     /**
      * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
