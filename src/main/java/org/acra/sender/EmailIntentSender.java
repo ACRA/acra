@@ -35,19 +35,16 @@ import org.acra.config.ACRAConfiguration;
  */
 public class EmailIntentSender implements ReportSender {
 
-    private final Context mContext;
     private final ACRAConfiguration config;
 
-    //TODO why not use context passed in #send?
-    public EmailIntentSender(@NonNull Context ctx, @NonNull ACRAConfiguration config) {
-        mContext = ctx;
+    public EmailIntentSender(@NonNull ACRAConfiguration config) {
         this.config = config;
     }
 
     @Override
     public void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
 
-        final String subject = mContext.getPackageName() + " Crash Report";
+        final String subject = context.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);
 
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SENDTO);
@@ -55,7 +52,7 @@ public class EmailIntentSender implements ReportSender {
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-        mContext.startActivity(emailIntent);
+        context.startActivity(emailIntent);
     }
 
     private String buildBody(@NonNull CrashReportData errorContent) {
