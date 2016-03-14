@@ -19,7 +19,8 @@ import java.util.Locale;
 
 import static org.acra.ACRA.LOG_TAG;
 
-public class JSONReportBuilder {
+public final class JSONReportBuilder {
+    private JSONReportBuilder(){}
     /**
      * <p>
      * Create a JSONObject containing the whole report data with the most
@@ -78,7 +79,7 @@ public class JSONReportBuilder {
                 if (key.containsKeyValuePairs()) {
                     JSONObject subObject = new JSONObject();
                     String strContent = errorContent.getProperty(key);
-                    reader = new BufferedReader(new StringReader(strContent), 1024);
+                    reader = new BufferedReader(new StringReader(strContent), 1024); //TODO: 1024 should be a constant. Use ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES ?
                     String line;
                     try {
                         while ((line = reader.readLine()) != null) {

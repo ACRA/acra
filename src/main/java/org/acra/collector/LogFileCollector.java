@@ -78,7 +78,7 @@ class LogFileCollector {
                 // A file directly contained within the application files folder.
                 inputStream = context.openFileInput(fileName);
             }
-            return new BufferedReader(new InputStreamReader(inputStream), 1024);
+            return new BufferedReader(new InputStreamReader(inputStream), 1024); //TODO: 1024 should be a constant. Use ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES ?
         } catch (FileNotFoundException e) {
             ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + fileName + "'");
             return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(new byte[0])));

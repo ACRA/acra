@@ -37,6 +37,7 @@ import org.acra.sender.ReportSenderFactory;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Collections;
@@ -254,7 +255,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalDropboxTags(String[] additionalDropboxTags) {
-        this.additionalDropBoxTags = additionalDropboxTags;
+        this.additionalDropBoxTags = copyArray(additionalDropboxTags);
         return this;
     }
 
@@ -266,7 +267,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setAdditionalSharedPreferences(String[] additionalSharedPreferences) {
-        this.additionalSharedPreferences = additionalSharedPreferences;
+        this.additionalSharedPreferences = copyArray(additionalSharedPreferences);
         return this;
     }
 
@@ -290,7 +291,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setCustomReportContent(ReportField[] customReportContent) {
-        this.customReportContent = customReportContent;
+        this.customReportContent = copyArray(customReportContent);
         return this;
     }
 
@@ -741,7 +742,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSharedPreferencesKeys(String[] excludeMatchingSharedPreferencesKeys) {
-        this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
+        this.excludeMatchingSharedPreferencesKeys = copyArray(excludeMatchingSharedPreferencesKeys);
         return this;
     }
 
@@ -757,7 +758,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setExcludeMatchingSettingsKeys(String[] excludeMatchingSettingsKeys) {
-        this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
+        this.excludeMatchingSettingsKeys = copyArray(excludeMatchingSettingsKeys);
         return this;
     }
 
@@ -836,19 +837,19 @@ public final class ACRAConfiguration implements Serializable {
      */
     @SuppressWarnings("unused")
     public void setReportSenderFactoryClasses(Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
-        this.reportSenderFactoryClasses = reportSenderFactoryClasses;
+        this.reportSenderFactoryClasses = copyArray(reportSenderFactoryClasses);
     }
 
     @SuppressWarnings("unused")
     @NonNull
     public String[] additionalDropBoxTags() {
-        return additionalDropBoxTags;
+        return copyArray(additionalDropBoxTags);
     }
 
     @SuppressWarnings("unused")
     @NonNull
     public String[] additionalSharedPreferences() {
-        return additionalSharedPreferences;
+        return copyArray(additionalSharedPreferences);
     }
 
     /**
@@ -868,7 +869,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings("unused")
     public ReportField[] customReportContent() {
-        return customReportContent;
+        return copyArray(customReportContent);
     }
 
     @SuppressWarnings("unused")
@@ -917,7 +918,7 @@ public final class ACRAConfiguration implements Serializable {
     @SuppressWarnings("unused")
     @NonNull
     public String[] logcatArguments() {
-        return logcatArguments;
+        return copyArray(logcatArguments);
     }
 
     @SuppressWarnings("unused")
@@ -1044,13 +1045,13 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings("unused")
     public String[] excludeMatchingSharedPreferencesKeys() {
-        return excludeMatchingSharedPreferencesKeys;
+        return copyArray(excludeMatchingSharedPreferencesKeys);
     }
 
     @NonNull
     @SuppressWarnings("unused")
     public String[] excludeMatchingSettingsKeys() {
-        return excludeMatchingSettingsKeys;
+        return copyArray(excludeMatchingSettingsKeys);
     }
 
     /**
@@ -1101,7 +1102,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings("unused")
     public Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
-        return reportSenderFactoryClasses;
+        return copyArray(reportSenderFactoryClasses);
     }
 
     @SuppressWarnings("unused")
@@ -1143,24 +1144,13 @@ public final class ACRAConfiguration implements Serializable {
         }
     }
 
-    @NonNull
-    private static String[] copyArray(@NonNull String[] source) {
-        final String[] target = new String[source.length];
-        System.arraycopy(source, 0, target, 0, source.length);
-        return target;
-    }
-
-    @NonNull
-    private static ReportField[] copyArray(@NonNull ReportField[] source) {
-        final ReportField[] target = new ReportField[source.length];
-        System.arraycopy(source, 0, target, 0, source.length);
-        return target;
-    }
-
-    @NonNull
-    private static Class<? extends ReportSenderFactory>[] copyArray(@NonNull Class<? extends ReportSenderFactory>[] source) {
-        final Class<? extends ReportSenderFactory>[] target = new Class[source.length];
-        System.arraycopy(source, 0, target, 0, source.length);
-        return target;
+    private static <T> T[] copyArray(@NonNull T[] source) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            return Arrays.copyOf(source, source.length);
+        }
+        //noinspection unchecked
+        T[] result = (T[]) Array.newInstance(source.getClass().getComponentType(), source.length);
+        System.arraycopy(source, 0, result, 0, source.length);
+        return result;
     }
 }

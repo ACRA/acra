@@ -618,7 +618,7 @@ public final class CrashReportDataFactory {
     private Class<?> getBuildConfigClass() throws ClassNotFoundException {
         final Class configuredBuildConfig = config.buildConfigClass();
         if ((configuredBuildConfig != null) && !configuredBuildConfig.equals(Object.class)) {
-            // If set via annotations or programatically then it will have a real value,
+            // If set via annotations or programmatically then it will have a real value,
             // otherwise it will be Object.class (annotation default) or null (explicit programmatic).
             return configuredBuildConfig;
         }
