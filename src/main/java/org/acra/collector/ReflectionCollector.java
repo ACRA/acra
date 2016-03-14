@@ -34,6 +34,7 @@ import java.util.Arrays;
  * 
  */
 final class ReflectionCollector {
+    private ReflectionCollector(){}
 
     /**
      * Retrieves key/value pairs from static fields of a class.

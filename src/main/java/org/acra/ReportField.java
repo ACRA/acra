@@ -15,9 +15,9 @@
  */
 package org.acra;
 
-import org.acra.annotation.ReportsCrashes;
-
 import android.content.res.Configuration;
+
+import org.acra.annotation.ReportsCrashes;
 
 /**
  * Specifies all the different fields available in a crash report.
@@ -293,7 +293,7 @@ public enum ReportField {
      * Whether this field is a collection of key/value pairs.
      * 
      * @return true if the field contains a string with a key/value pair on each
-     *         line, key and value separated by an equal sugn
+     *         line, key and value separated by an equal sign
      * 
      */
     public boolean containsKeyValuePairs() {

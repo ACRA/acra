@@ -29,6 +29,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 4.3.0
  */
 public final class ReportUtils {
+    private ReportUtils(){}
 
     /**
      * Calculates the free memory of the device. This is based on an inspection of the filesystem, which in android

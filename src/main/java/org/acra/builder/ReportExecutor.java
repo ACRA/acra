@@ -40,6 +40,8 @@ import static org.acra.ReportField.USER_CRASH_DATE;
  */
 public final class ReportExecutor {
 
+    private static final int THREAD_SLEEP_INTERVAL_MILLIS = 100;
+
     private final Context context;
     private final ACRAConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;
@@ -52,10 +54,6 @@ public final class ReportExecutor {
     private final ReportPrimer reportPrimer;
 
     private boolean enabled = false;
-
-    // This is used to wait for the crash toast to end it's display duration before killing the Application.
-    // TODO make this a local variable. Only here because it cannot be non-final and referenced within an anonymous class.
-    private boolean toastWaitEnded = true;
 
     /**
      * Used to create a new (non-cached) PendingIntent each time a new crash occurs.
@@ -198,68 +196,53 @@ public final class ReportExecutor {
             createNotification(reportFile, reportBuilder);
         }
 
-        // This is used to wait for the crash toast to end it's display duration before killing the Application.
-        toastWaitEnded = true;
+        final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
+                && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
         if (shouldDisplayToast) {
             // A toast is being displayed, we have to wait for its end before doing anything else.
-            // The toastWaitEnded flag will be checked before any other operation.
-            toastWaitEnded = false;
             new Thread() {
 
                 @Override
                 public void run() {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
-                            + " millis from " + sentToastTimeMillis.initialTimeMillis
-                            + " currentMillis=" + System.currentTimeMillis());
+                    if (ACRA.DEV_LOGGING)
+                        ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
+                                + " millis from " + sentToastTimeMillis.initialTimeMillis
+                                + " currentMillis=" + System.currentTimeMillis());
                     while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
                         try {
                             // Wait a bit to let the user read the toast
-                            Thread.sleep(100);
+                            Thread.sleep(THREAD_SLEEP_INTERVAL_MILLIS);
                         } catch (InterruptedException e1) {
-                            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
+                            if (ACRA.DEV_LOGGING)
+                                ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                         }
                     }
-                    toastWaitEnded = true;
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
+                    dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
                 }
             }.start();
+        } else {
+            dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
+        }
+    }
+
+    private void dialogAndEnd(@NonNull ReportBuilder reportBuilder, @NonNull File reportFile, boolean shouldShowDialog) {
+        if (shouldShowDialog) {
+            // Create a new activity task with the confirmation dialog.
+            // This new task will be persisted on application restart
+            // right after its death.
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
+            final Intent dialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
+            dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(dialogIntent);
         }
 
-        final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
-                && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
-        new Thread() {
-
-            @Override
-            public void run() {
-                // We have to wait for the toast display to be completed.
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Waiting for Toast");
-                while (!toastWaitEnded) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e1) {
-                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted waiting for Toast");
-                    }
-                }
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
-
-                if (showDirectDialog) {
-                    // Create a new activity task with the confirmation dialog.
-                    // This new task will be persisted on application restart
-                    // right after its death.
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
-                    final Intent dialogIntent = createCrashReportDialogIntent(reportFile, reportBuilder);
-                    dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(dialogIntent);
-                }
-
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
-
-                if (reportBuilder.isEndApplication()) {
-                    endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
-                }
-            }
-        }.start();
+        if (reportBuilder.isEndApplication()) {
+            endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
+        }
     }
 
     /**

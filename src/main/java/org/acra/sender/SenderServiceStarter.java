@@ -37,7 +37,7 @@ public class SenderServiceStarter {
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
         intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
 
-        intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, new ArrayList(Arrays.asList(config.reportSenderFactoryClasses())));
+        intent.putExtra(SenderService.EXTRA_REPORT_SENDER_FACTORIES, new ArrayList<Class<? extends ReportSenderFactory>>(Arrays.asList(config.reportSenderFactoryClasses())));
 
         intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
         context.startService(intent);

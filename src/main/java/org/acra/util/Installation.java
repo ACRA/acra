@@ -28,7 +28,8 @@ import static org.acra.ACRA.LOG_TAG;
  * android developers blog.</a>
  * </p>
  */
-public class Installation {
+public final class Installation {
+    private Installation(){}
 
     private static String sID;
     private static final String INSTALLATION = "ACRA-INSTALLATION";

@@ -30,6 +30,7 @@ import static org.acra.ACRA.LOG_TAG;
  * 
  */
 final class DeviceFeaturesCollector {
+    private DeviceFeaturesCollector(){}
 
     @NonNull
     public static String getFeatures(@NonNull Context ctx) {
