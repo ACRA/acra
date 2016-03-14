@@ -13,6 +13,6 @@ public final class EmailIntentSenderFactory implements ReportSenderFactory {
     @NonNull
     @Override
     public ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config) {
-        return new EmailIntentSender(context, config);
+        return new EmailIntentSender(config);
     }
 }
