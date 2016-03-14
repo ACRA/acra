@@ -324,6 +324,9 @@ public class ACRA {
     @SuppressWarnings( "unused" )
     @NonNull
     public static SharedPreferences getACRASharedPreferences() {
+        if (configProxy == null) {
+            throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
+        }
         return new SharedPreferencesFactory(mApplication, configProxy).create();
     }
 

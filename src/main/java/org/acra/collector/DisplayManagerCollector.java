@@ -57,11 +57,11 @@ final class DisplayManagerCollector {
                 display.getDisplayId() + ".orientation=" + display.getRotation() + '\n' +
                 display.getDisplayId() + ".pixelFormat=" + display.getPixelFormat() + '\n' +
                 collectRealMetrics(display) +
-                collectSize(display, "getRealSize") +
+                collectRealSize(display) +
                 collectRectSize(display) +
                 display.getDisplayId() + ".refreshRate=" + display.getRefreshRate() + '\n' +
                 collectRotation(display) +
-                collectSize(display, "getSize") +
+                collectSize(display) +
                 display.getDisplayId() + ".width=" + display.getWidth() + '\n' +
                 collectIsValid(display);
     }
@@ -76,7 +76,7 @@ final class DisplayManagerCollector {
 
     @NonNull
     private static String collectRotation(@NonNull Display display) {
-        return display.getDisplayId() + ".rotation=ROTATION_" + rotationToString(display.getRotation()) + '\n';
+        return display.getDisplayId() + ".rotation=" + rotationToString(display.getRotation()) + '\n';
     }
 
     @NonNull
@@ -107,12 +107,22 @@ final class DisplayManagerCollector {
     }
 
     @NonNull
-    private static String collectSize(@NonNull Display display, String methodName) {
+    private static String collectSize(@NonNull Display display) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            Point size = new Point();
+            display.getSize(size);
+            return display.getDisplayId() + ".size=[" + size.x
+                    + ',' + size.y + ']' + '\n';
+        }
+        return "";
+    }
+
+    private static String collectRealSize(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             Point size = new Point();
             display.getRealSize(size);
-            return display.getDisplayId() + '.' + (methodName + "=[" + size.x
-                    + ',' + size.y + ']' + '\n');
+            return display.getDisplayId() + ".realSize=[" + size.x
+                    + ',' + size.y + ']' + '\n';
         }
         return "";
     }

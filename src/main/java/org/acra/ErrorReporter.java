@@ -369,7 +369,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     @NonNull
     private static ReportPrimer getReportPrimer(@NonNull ACRAConfiguration config) {
-        //noinspection TryWithIdenticalCatches
         try {
             return config.reportPrimerClass().newInstance();
         } catch (InstantiationException e) {

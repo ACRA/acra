@@ -31,6 +31,7 @@ public class SharedPreferencesFactory {
      */
     @NonNull
     public SharedPreferences create() {
+        //noinspection ConstantConditions
         if (context == null) {
             throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
         } else if (!"".equals(config.sharedPreferencesName())) {

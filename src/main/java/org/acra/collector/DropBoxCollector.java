@@ -72,7 +72,7 @@ final class DropBoxCollector {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }
             final String[] additionalTags = config.additionalDropBoxTags();
-            if (additionalTags != null && additionalTags.length > 0) {
+            if (additionalTags.length > 0) {
                 tags.addAll(Arrays.asList(additionalTags));
             }
 

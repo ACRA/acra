@@ -360,6 +360,7 @@ public final class ConfigurationBuilder {
         return this;
     }
 
+    //why two methods with the same functionality?? (setMode, setReportingInteractionMode)
     /**
      * Change the current {@link ReportingInteractionMode}.
      * 
@@ -1112,10 +1113,7 @@ public final class ConfigurationBuilder {
     @SuppressWarnings("unused")
     @Nullable
     Class buildConfigClass() {
-        if (buildConfigClass != null) {
-            return buildConfigClass;
-        }
-        return null;
+        return buildConfigClass;
     }
 
     @SuppressWarnings("unused")
