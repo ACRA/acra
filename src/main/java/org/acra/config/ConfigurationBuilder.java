@@ -360,7 +360,6 @@ public final class ConfigurationBuilder {
         return this;
     }
 
-    //why two methods with the same functionality?? (setMode, setReportingInteractionMode)
     /**
      * Change the current {@link ReportingInteractionMode}.
      * 

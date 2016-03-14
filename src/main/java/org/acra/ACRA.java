@@ -185,7 +185,8 @@ public final class ACRA {
             return;
         }
         mApplication = app;
-        
+
+        //noinspection ConstantConditions
         if (config == null) {
             log.e(LOG_TAG, "ACRA#init called but no ACRAConfiguration provided");
             return;
@@ -340,7 +341,7 @@ public final class ACRA {
     @NonNull
     @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {
-        if (mApplication == null) {
+        if (configProxy == null) {
             throw new IllegalStateException("Cannot call ACRA.getConfig() before ACRA.init().");
         }
         return configProxy;

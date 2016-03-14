@@ -33,6 +33,7 @@ import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
 
+    private static final String UTF8 = "UTF-8";
     private static final int HTTP_SUCCESS = 200;
     private static final int HTTP_REDIRECT = 300;
     private static final int HTTP_CLIENT_ERROR = 400;
@@ -105,7 +106,7 @@ public final class HttpRequest {
         // Set Credentials
         if ((login != null) && (password != null)) {
             final String credentials = login + ":" + password;
-            final String encoded = new String(Base64.encode(credentials.getBytes("UTF-8"), Base64.NO_WRAP), "UTF-8");
+            final String encoded = new String(Base64.encode(credentials.getBytes(UTF8), Base64.NO_WRAP), UTF8);
             urlConnection.setRequestProperty("Authorization", "Basic " + encoded);
         }
 
@@ -124,7 +125,7 @@ public final class HttpRequest {
             }
         }
 
-        final byte[] contentAsBytes = content.getBytes("UTF-8");
+        final byte[] contentAsBytes = content.getBytes(UTF8);
 
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         urlConnection.setRequestMethod(method.name());
@@ -184,9 +185,9 @@ public final class HttpRequest {
             }
             final Object preliminaryValue = entry.getValue();
             final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), "UTF-8"));
+            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), UTF8));
             dataBfr.append('=');
-            dataBfr.append(URLEncoder.encode(value.toString(), "UTF-8"));
+            dataBfr.append(URLEncoder.encode(value.toString(), UTF8));
         }
 
         return dataBfr.toString();
