@@ -27,7 +27,6 @@ import org.acra.prefs.SharedPreferencesFactory;
  **/
 public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
 
-    private static final int PADDING = 10;
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
     private static final int PADDING = 10;
