@@ -223,7 +223,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setConnectionTimeout(@NonNull Integer connectionTimeout) {
+    public ConfigurationBuilder setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
@@ -246,7 +246,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(@NonNull Boolean deleteUnapprovedReportsOnApplicationStart) {
+    public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
     }
@@ -257,7 +257,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(@NonNull Boolean deleteOldUnsentReportsOnApplicationStart) {
+    public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(boolean deleteOldUnsentReportsOnApplicationStart) {
         this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
         return this;
     }
@@ -269,7 +269,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setDropboxCollectionMinutes(@NonNull Integer dropboxCollectionMinutes) {
+    public ConfigurationBuilder setDropboxCollectionMinutes(int dropboxCollectionMinutes) {
         this.dropboxCollectionMinutes = dropboxCollectionMinutes;
         return this;
     }
@@ -281,7 +281,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setForceCloseDialogAfterToast(@NonNull Boolean forceCloseDialogAfterToast) {
+    public ConfigurationBuilder setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
         this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
         return this;
     }
@@ -330,7 +330,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setIncludeDropboxSystemTags(@NonNull Boolean includeDropboxSystemTags) {
+    public ConfigurationBuilder setIncludeDropboxSystemTags(boolean includeDropboxSystemTags) {
         this.includeDropBoxSystemTags = includeDropboxSystemTags;
         return this;
     }
@@ -594,7 +594,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSharedPreferenceMode(@NonNull Integer sharedPreferenceMode) {
+    public ConfigurationBuilder setSharedPreferenceMode(int sharedPreferenceMode) {
         this.sharedPreferencesMode = sharedPreferenceMode;
         return this;
     }
@@ -618,7 +618,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSocketTimeout(@NonNull Integer socketTimeout) {
+    public ConfigurationBuilder setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
         return this;
     }
@@ -632,7 +632,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setLogcatFilterByPid(@NonNull Boolean filterByPid) {
+    public ConfigurationBuilder setLogcatFilterByPid(boolean filterByPid) {
         logcatFilterByPid = filterByPid;
         return this;
     }
@@ -646,7 +646,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSendReportsInDevMode(@NonNull Boolean sendReportsInDevMode) {
+    public ConfigurationBuilder setSendReportsInDevMode(boolean sendReportsInDevMode) {
         this.sendReportsInDevMode = sendReportsInDevMode;
         return this;
     }
@@ -661,7 +661,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ConfigurationBuilder setSendReportsAtShutdown(@NonNull Boolean sendReportsAtShutdown) {
+    public ConfigurationBuilder setSendReportsAtShutdown(boolean sendReportsAtShutdown) {
         this.sendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }

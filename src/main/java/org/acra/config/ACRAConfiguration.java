@@ -61,18 +61,19 @@ public final class ACRAConfiguration implements Serializable {
     private final Class<? extends Annotation> annotationType;
 
     // TODO Make all of these attributes final in ACRA 4.9 or 5.0
+    // consider using immutable Collections for Arrays and Collections, so this can be truly final
     private String[] additionalDropBoxTags;
     private String[] additionalSharedPreferences;
-    private Integer connectionTimeout;
+    private int connectionTimeout;
     private ReportField[] customReportContent;
-    private Boolean deleteUnapprovedReportsOnApplicationStart;
-    private Boolean deleteOldUnsentReportsOnApplicationStart;
-    private Integer dropboxCollectionMinutes;
-    private Boolean forceCloseDialogAfterToast;
+    private boolean deleteUnapprovedReportsOnApplicationStart;
+    private boolean deleteOldUnsentReportsOnApplicationStart;
+    private int dropboxCollectionMinutes;
+    private boolean forceCloseDialogAfterToast;
     private String formUri;
     private String formUriBasicAuthLogin;
     private String formUriBasicAuthPassword;
-    private Boolean includeDropBoxSystemTags;
+    private boolean includeDropBoxSystemTags;
 
     private String[] logcatArguments;
     private String mailTo;
@@ -81,44 +82,44 @@ public final class ACRAConfiguration implements Serializable {
     private Class<? extends ReportPrimer> reportPrimerClass;
 
     @StringRes
-    private Integer resDialogPositiveButtonText;
+    private int resDialogPositiveButtonText;
     @StringRes
-    private Integer resDialogNegativeButtonText;
+    private int resDialogNegativeButtonText;
     @StringRes
-    private Integer resDialogCommentPrompt;
+    private int resDialogCommentPrompt;
     @StringRes
-    private Integer resDialogEmailPrompt;
+    private int resDialogEmailPrompt;
     @DrawableRes
-    private Integer resDialogIcon;
+    private int resDialogIcon;
     @StringRes
-    private Integer resDialogOkToast;
+    private int resDialogOkToast;
     @StringRes
-    private Integer resDialogText;
+    private int resDialogText;
     @StringRes
-    private Integer resDialogTitle;
+    private int resDialogTitle;
     @DrawableRes
-    private Integer resNotifIcon;
+    private int resNotifIcon;
     @StringRes
-    private Integer resNotifText;
+    private int resNotifText;
     @StringRes
-    private Integer resNotifTickerText;
+    private int resNotifTickerText;
     @StringRes
-    private Integer resNotifTitle;
+    private int resNotifTitle;
     @StringRes
-    private Integer resToastText;
-    private Integer sharedPreferencesMode;
+    private int resToastText;
+    private int sharedPreferencesMode;
     private String sharedPreferencesName;
-    private Integer socketTimeout;
-    private Boolean logcatFilterByPid;
-    private Boolean sendReportsInDevMode;
-    private Boolean sendReportsAtShutdown;
+    private int socketTimeout;
+    private boolean logcatFilterByPid;
+    private boolean sendReportsInDevMode;
+    private boolean sendReportsAtShutdown;
 
     private String[] excludeMatchingSharedPreferencesKeys;
     private String[] excludeMatchingSettingsKeys;
     @Nullable
     private Class buildConfigClass;
     private String applicationLogFile;
-    private Integer applicationLogFileLines;
+    private int applicationLogFileLines;
 
     private Method httpMethod;
     private Type reportType;
@@ -279,7 +280,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setConnectionTimeout(@NonNull Integer connectionTimeout) {
+    public ACRAConfiguration setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
@@ -303,7 +304,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setDeleteUnapprovedReportsOnApplicationStart(@NonNull Boolean deleteUnapprovedReportsOnApplicationStart) {
+    public ACRAConfiguration setDeleteUnapprovedReportsOnApplicationStart(boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
     }
@@ -315,7 +316,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setDeleteOldUnsentReportsOnApplicationStart(@NonNull Boolean deleteOldUnsentReportsOnApplicationStart) {
+    public ACRAConfiguration setDeleteOldUnsentReportsOnApplicationStart(boolean deleteOldUnsentReportsOnApplicationStart) {
         this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
         return this;
     }
@@ -327,7 +328,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setDropboxCollectionMinutes(@NonNull Integer dropboxCollectionMinutes) {
+    public ACRAConfiguration setDropboxCollectionMinutes(int dropboxCollectionMinutes) {
         this.dropboxCollectionMinutes = dropboxCollectionMinutes;
         return this;
     }
@@ -339,7 +340,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setForceCloseDialogAfterToast(@NonNull Boolean forceCloseDialogAfterToast) {
+    public ACRAConfiguration setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
         this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
         return this;
     }
@@ -389,7 +390,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setIncludeDropboxSystemTags(@NonNull Boolean includeDropboxSystemTags) {
+    public ACRAConfiguration setIncludeDropboxSystemTags(boolean includeDropboxSystemTags) {
         this.includeDropBoxSystemTags = includeDropboxSystemTags;
         return this;
     }
@@ -653,7 +654,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public ACRAConfiguration setSharedPreferenceMode(@NonNull Integer sharedPreferenceMode) {
+    public ACRAConfiguration setSharedPreferenceMode(int sharedPreferenceMode) {
         this.sharedPreferencesMode = sharedPreferenceMode;
         return this;
     }
@@ -678,7 +679,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setSocketTimeout(@NonNull Integer socketTimeout) {
+    public ACRAConfiguration setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
         return this;
     }
@@ -694,7 +695,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setLogcatFilterByPid(@NonNull Boolean filterByPid) {
+    public ACRAConfiguration setLogcatFilterByPid(boolean filterByPid) {
         logcatFilterByPid = filterByPid;
         return this;
     }
@@ -709,7 +710,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setSendReportsInDevMode(@NonNull Boolean sendReportsInDevMode) {
+    public ACRAConfiguration setSendReportsInDevMode(boolean sendReportsInDevMode) {
         this.sendReportsInDevMode = sendReportsInDevMode;
         return this;
     }
@@ -725,7 +726,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     @SuppressWarnings( "unused" )
-    public ACRAConfiguration setSendReportsAtShutdown(@NonNull Boolean sendReportsAtShutdown) {
+    public ACRAConfiguration setSendReportsAtShutdown(boolean sendReportsAtShutdown) {
         this.sendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }
