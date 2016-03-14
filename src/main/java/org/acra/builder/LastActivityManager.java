@@ -9,8 +9,6 @@ import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.dialog.BaseCrashReportDialog;
-import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
-import org.acra.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
 
 import java.lang.ref.WeakReference;
 
@@ -30,7 +28,7 @@ public final class LastActivityManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 
             // ActivityLifecycleCallback only available for API14+
-            ApplicationHelper.registerActivityLifecycleCallbacks(application, new ActivityLifecycleCallbacksCompat() {
+            application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
