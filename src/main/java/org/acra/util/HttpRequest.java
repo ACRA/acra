@@ -92,7 +92,9 @@ public final class HttpRequest {
                 final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
 
-                tmf.init(config.keyStoreFactory().create(context));
+                if (config.keyStoreFactory() != null) {
+                    tmf.init(config.keyStoreFactory().create(context));
+                }
 
                 final SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, tmf.getTrustManagers(), null);
