@@ -12,6 +12,7 @@ import android.util.Base64;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
+import org.acra.security.KeyStoreFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
@@ -23,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -91,10 +93,10 @@ public final class HttpRequest {
 
                 final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
+                final KeyStoreFactory keyStoreFactory = config.keyStoreFactory();
+                final KeyStore keyStore = keyStoreFactory == null ? null : keyStoreFactory.create(context);
 
-                if (config.keyStoreFactory() != null) {
-                    tmf.init(config.keyStoreFactory().create(context));
-                }
+                tmf.init(keyStore);
 
                 final SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, tmf.getTrustManagers(), null);

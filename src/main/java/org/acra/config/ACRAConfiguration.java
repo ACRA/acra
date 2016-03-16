@@ -1085,6 +1085,7 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     @SuppressWarnings("unused")
+    @Nullable
     public KeyStoreFactory keyStoreFactory() {
         return keyStoreFactory;
     }
