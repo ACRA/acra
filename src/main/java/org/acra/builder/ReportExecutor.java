@@ -174,10 +174,6 @@ public final class ReportExecutor {
         final File reportFile = getReportFileName(crashReportData);
         saveCrashReportFile(reportFile, crashReportData);
 
-        if (reportBuilder.isEndApplication() && !config.sendReportsAtShutdown()) {
-            endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
-        }
-
         final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
         if (reportingInteractionMode == ReportingInteractionMode.SILENT
                 || reportingInteractionMode == ReportingInteractionMode.TOAST

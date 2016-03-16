@@ -91,7 +91,6 @@ public final class ConfigurationBuilder {
     private Integer socketTimeout;
     private Boolean logcatFilterByPid;
     private Boolean sendReportsInDevMode;
-    private Boolean sendReportsAtShutdown;
 
     private String[] excludeMatchingSharedPreferencesKeys;
     private String[] excludeMatchingSettingsKeys;
@@ -152,7 +151,6 @@ public final class ConfigurationBuilder {
             socketTimeout = annotationConfig.socketTimeout();
             logcatFilterByPid = annotationConfig.logcatFilterByPid();
             sendReportsInDevMode = annotationConfig.sendReportsInDevMode();
-            sendReportsAtShutdown = annotationConfig.sendReportsAtShutdown();
             excludeMatchingSharedPreferencesKeys = annotationConfig.excludeMatchingSharedPreferencesKeys();
             excludeMatchingSettingsKeys = annotationConfig.excludeMatchingSettingsKeys();
             buildConfigClass = annotationConfig.buildConfigClass();
@@ -652,17 +650,11 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * 
-     * @param sendReportsAtShutdown
-     *            false if you want to disable sending reports at the time the
-     *            exception is caught. Reports will be sent when the application
-     *            is restarted.
-     * @return The updated ACRA configuration
+     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
      */
     @NonNull
     @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSendReportsAtShutdown(boolean sendReportsAtShutdown) {
-        this.sendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }
 
@@ -1077,14 +1069,6 @@ public final class ConfigurationBuilder {
             return sendReportsInDevMode;
         }
         return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
-    }
-
-    @SuppressWarnings("unused")
-    boolean sendReportsAtShutdown() {
-        if (sendReportsAtShutdown != null) {
-            return sendReportsAtShutdown;
-        }
-        return DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
     }
 
     @SuppressWarnings("unused")

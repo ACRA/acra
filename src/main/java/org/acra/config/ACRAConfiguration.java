@@ -112,7 +112,6 @@ public final class ACRAConfiguration implements Serializable {
     private int socketTimeout;
     private boolean logcatFilterByPid;
     private boolean sendReportsInDevMode;
-    private boolean sendReportsAtShutdown;
 
     private String[] excludeMatchingSharedPreferencesKeys;
     private String[] excludeMatchingSettingsKeys;
@@ -171,7 +170,6 @@ public final class ACRAConfiguration implements Serializable {
         socketTimeout = builder.socketTimeout();
         logcatFilterByPid = builder.logcatFilterByPid();
         sendReportsInDevMode = builder.sendReportsInDevMode();
-        sendReportsAtShutdown = builder.sendReportsAtShutdown();
         excludeMatchingSharedPreferencesKeys = copyArray(builder.excludeMatchingSharedPreferencesKeys());
         excludeMatchingSettingsKeys = copyArray(builder.excludeMatchingSettingsKeys());
         buildConfigClass = builder.buildConfigClass();
@@ -707,18 +705,11 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * @param sendReportsAtShutdown
-     *            false if you want to disable sending reports at the time the
-     *            exception is caught. Reports will be sent when the application
-     *            is restarted.
-     * @return The updated ACRA configuration
-     *
-     * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
+     * @deprecated since 4.8.1 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
      */
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setSendReportsAtShutdown(boolean sendReportsAtShutdown) {
-        this.sendReportsAtShutdown = sendReportsAtShutdown;
         return this;
     }
 
@@ -1028,11 +1019,6 @@ public final class ACRAConfiguration implements Serializable {
     @SuppressWarnings("unused")
     public boolean sendReportsInDevMode() {
         return sendReportsInDevMode;
-    }
-
-    @SuppressWarnings("unused")
-    public boolean sendReportsAtShutdown() {
-        return sendReportsAtShutdown;
     }
 
     @NonNull
