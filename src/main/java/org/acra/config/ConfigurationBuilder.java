@@ -756,19 +756,25 @@ public final class ConfigurationBuilder {
      *            Set this to a factory which creates a the keystore that contains the trusted certificates
      */
     @SuppressWarnings("unused")
-    public void setKeyStoreFactory(KeyStoreFactory keyStoreFactory) {
+    @NonNull
+    public ConfigurationBuilder setKeyStoreFactory(KeyStoreFactory keyStoreFactory) {
         this.keyStoreFactory = keyStoreFactory;
+        return this;
     }
 
 
     @SuppressWarnings("unused")
-    public void setReportSenderFactoryClasses(@NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
+    @NonNull
+    public ConfigurationBuilder setReportSenderFactoryClasses(@NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
         this.reportSenderFactoryClasses = reportSenderFactoryClasses;
+        return this;
     }
 
     @SuppressWarnings("unused")
-    public void setReportPrimerClass(@NonNull Class<? extends ReportPrimer> reportPrimerClass) {
+    @NonNull
+    public ConfigurationBuilder setReportPrimerClass(@NonNull Class<? extends ReportPrimer> reportPrimerClass) {
         this.reportPrimerClass = reportPrimerClass;
+        return this;
     }
 
 
@@ -1163,6 +1169,7 @@ public final class ConfigurationBuilder {
     }
 
     @SuppressWarnings("unused")
+    @Nullable
     KeyStoreFactory keyStoreFactory() {
         return keyStoreFactory;
     }
