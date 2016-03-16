@@ -36,6 +36,12 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
+ACRA v4.8.3
+===============================
+- Added Proguard rule to keep ReportSenderFactory constructors.
+- Configure your KeyStore using a KeyStoreFactory
+- Removing ability to configure reports to NOT send at shutdown. It's not longer required.
+
 ACRA v4.8.2
 ===============================
 - Fix for bug when building without @ReportCrashes annotation.
