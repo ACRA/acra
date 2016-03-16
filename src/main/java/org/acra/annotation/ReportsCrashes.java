@@ -479,13 +479,9 @@ public @interface ReportsCrashes {
     boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 
     /**
-     * Set this to false if you want to disable sending reports at the time the
-     * exception is caught. In this case, reports will not be sent until the
-     * application is restarted.
-     *
-     * @return false if reports should not be sent.
+     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
      */
-    boolean sendReportsAtShutdown() default ACRAConstants.DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
+    boolean sendReportsAtShutdown() default true;
 
     /**
      * Provide here regex patterns to be evaluated on each SharedPreference key
