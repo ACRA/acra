@@ -36,6 +36,11 @@ Change Log
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
+ACRA v4.8.5
+===============================
+- Fixes issue relating to Https.
+- Fixes issue relating to use of KeyStoreFactory within Https.
+
 ACRA v4.8.3
 ===============================
 - Added Proguard rule to keep ReportSenderFactory constructors.
