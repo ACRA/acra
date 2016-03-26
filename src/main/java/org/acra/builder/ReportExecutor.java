@@ -180,7 +180,7 @@ public final class ReportExecutor {
                 || prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
 
             // Approve and then send reports now
-            startSendingReports(sendOnlySilentReports, true);
+            startSendingReports(sendOnlySilentReports);
             if ((reportingInteractionMode == ReportingInteractionMode.SILENT) && !reportBuilder.isEndApplication()) {
                 // Report is being sent silently and the application is not ending.
                 // So no need to wait around for the sender to complete.
@@ -282,12 +282,11 @@ public final class ReportExecutor {
      * Starts a Thread to start sending outstanding error reports.
      *
      * @param onlySendSilentReports If true then only send silent reports.
-     * @param approveReportsFirst   If true then approve unapproved reports first.
      */
-    private void startSendingReports(boolean onlySendSilentReports, boolean approveReportsFirst) {
+    private void startSendingReports(boolean onlySendSilentReports) {
         if (enabled) {
             final SenderServiceStarter starter = new SenderServiceStarter(context, config);
-            starter.startService(onlySendSilentReports, approveReportsFirst);
+            starter.startService(onlySendSilentReports, true);
         } else {
             ACRA.log.w(LOG_TAG, "Would be sending reports, but ACRA is disabled");
         }

@@ -66,7 +66,14 @@ public final class ApplicationStartupProcessor {
      */
     public void sendApprovedReports() {
 
-        if (config.mode() == ReportingInteractionMode.TOAST && hasNonSilentApprovedReports()) {
+        final ReportLocator reportLocator = new ReportLocator(context);
+        final File[] reportFiles = reportLocator.getApprovedReports();
+
+        if (reportFiles.length == 0) {
+            return; // There are no approved reports, so bail now.
+        }
+
+        if (config.mode() == ReportingInteractionMode.TOAST && hasNonSilentApprovedReports(reportFiles)) {
             ToastSender.sendToast(context, config.resToastText(), Toast.LENGTH_LONG);
         }
 
@@ -85,10 +92,8 @@ public final class ApplicationStartupProcessor {
         return (packageInfo == null) ? 0 : packageInfo.versionCode;
     }
 
-    private boolean hasNonSilentApprovedReports() {
-        final ReportLocator reportLocator = new ReportLocator(context);
+    private boolean hasNonSilentApprovedReports(File[] reportFiles) {
         final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
-        final File[] reportFiles = reportLocator.getApprovedReports();
         for (final File file : reportFiles) {
             if (!fileNameParser.isSilent(file.getName())) {
                 return true;
