@@ -2,9 +2,9 @@ package org.acra.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
@@ -16,6 +16,7 @@ import org.acra.util.ToastSender;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.USER_COMMENT;
@@ -23,18 +24,17 @@ import static org.acra.ReportField.USER_EMAIL;
 
 /**
  * Activity which implements the base functionality for a CrashReportDialog
- * Activities which extend from this class can override onCreate() to create a custom view,
- * but they must call super.onCreate() at the beginning of the method.
+ * Activities which extend from this class can override init to create a custom view.
  *
- * The methods sendCrash(comment, usrEmail) and cancelReports() can be used to send or cancel
+ * The methods sendCrash(comment, userEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
  *
  * This Activity will be instantiated with 3 (or 4) arguments:
  * <ol>
- *     <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
- *     <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
- *     <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
- *     <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
+ * <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
+ * <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
+ * <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
+ * <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
  * </ol>
  */
 public abstract class BaseCrashReportDialog extends Activity {
@@ -43,51 +43,56 @@ public abstract class BaseCrashReportDialog extends Activity {
     private ACRAConfiguration config;
     private Throwable exception;
 
-    @CallSuper
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
 
-        config = (ACRAConfiguration) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
-        if(config == null) {
-            throw new IllegalStateException("CrashReportDialog has to be called with extra ACRAConstants#EXTRA_REPORT_CONFIG");
+        if (ACRA.DEV_LOGGING) {
+            ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
         }
 
+        Serializable sConfig = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        Serializable sReportFile = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
+        Serializable sException = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
-        if (forceCancel) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
-            cancelReports();
-            finish();
-            return;
-        }
 
-        reportFile = (File) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Opening CrashReportDialog for " + reportFile);
-        if (reportFile == null) {
-            throw new IllegalStateException("CrashReportDialog has to be called with extra ACRAConstants#EXTRA_REPORT_FILE");
+        if (!forceCancel && sConfig instanceof ACRAConfiguration && sReportFile instanceof File
+                && (sException == null || sException instanceof Throwable)) {
+            config = (ACRAConfiguration) sConfig;
+            reportFile = (File) sReportFile;
+            exception = (Throwable) sException;
+            init(savedInstanceState);
+        } else {
+            if (forceCancel) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
+                cancelReports();
+            } else {
+                ACRA.log.w(LOG_TAG, "Illegal or incomplete call of BaseCrashReportDialog.");
+            }
+            finish();
         }
-        exception = (Throwable) getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
+    }
+
+    protected void init(@Nullable Bundle savedInstanceState) {
     }
 
 
     /**
      * Cancel any pending crash reports.
      */
-    @CallSuper
-    protected void cancelReports() {
+    protected final void cancelReports() {
         new BulkReportDeleter(getApplicationContext()).deleteReports(false, 0);
     }
 
 
     /**
      * Send crash report given user's comment and email address. If none should be empty strings
-     * @param comment       Comment (may be null) provided by the user.
-     * @param userEmail     Email address (may be null) provided by the client.
+     *
+     * @param comment   Comment (may be null) provided by the user.
+     * @param userEmail Email address (may be null) provided by the client.
      */
-    @CallSuper
-    protected void sendCrash(@Nullable String comment, @Nullable String userEmail) {
+    protected final void sendCrash(@Nullable String comment, @Nullable String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister();
         try {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
@@ -110,11 +115,11 @@ public abstract class BaseCrashReportDialog extends Activity {
         }
     }
 
-    protected final ACRAConfiguration getConfig(){
+    protected final ACRAConfiguration getConfig() {
         return config;
     }
 
-    protected final Throwable getException(){
+    protected final Throwable getException() {
         return exception;
     }
 }
