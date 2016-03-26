@@ -62,9 +62,9 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         if (iconResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setIcon(iconResourceId);
         }
-        dialogBuilder.setView(buildCustomView(savedInstanceState));
-        dialogBuilder.setPositiveButton(getText(getConfig().resDialogPositiveButtonText()), CrashReportDialog.this);
-        dialogBuilder.setNegativeButton(getText(getConfig().resDialogNegativeButtonText()), CrashReportDialog.this);
+        dialogBuilder.setView(buildCustomView(savedInstanceState))
+                .setPositiveButton(getText(getConfig().resDialogPositiveButtonText()), this)
+                .setNegativeButton(getText(getConfig().resDialogNegativeButtonText()), this);
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
