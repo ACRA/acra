@@ -266,7 +266,7 @@ public final class ACRA {
     /**
      * @return true if the current process is the process running the SenderService.
      */
-    private static boolean isACRASenderServiceProcess(@NonNull Application app) {
+    public static boolean isACRASenderServiceProcess(@NonNull Application app) {
         final String processName = getCurrentProcessName(app);
         if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + "'");
         return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
