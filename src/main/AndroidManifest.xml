@@ -38,7 +38,7 @@
         1.1     2
         1.0     1
     -->
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="23"/>
+    <uses-sdk android:minSdkVersion="8"/>
 
     <application>
         <activity
