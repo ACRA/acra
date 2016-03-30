@@ -39,11 +39,14 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -66,7 +69,7 @@ public final class ACRAConfiguration implements Serializable {
     private String[] additionalDropBoxTags;
     private String[] additionalSharedPreferences;
     private int connectionTimeout;
-    private ReportField[] customReportContent;
+    private Set<ReportField> reportContent;
     private boolean deleteUnapprovedReportsOnApplicationStart;
     private boolean deleteOldUnsentReportsOnApplicationStart;
     private int dropboxCollectionMinutes;
@@ -141,7 +144,7 @@ public final class ACRAConfiguration implements Serializable {
         additionalDropBoxTags = copyArray(builder.additionalDropBoxTags());
         additionalSharedPreferences = copyArray(builder.additionalSharedPreferences());
         connectionTimeout = builder.connectionTimeout();
-        customReportContent = copyArray(builder.customReportContent());
+        reportContent = new HashSet<ReportField>(builder.reportContent());
         deleteUnapprovedReportsOnApplicationStart = builder.deleteUnapprovedReportsOnApplicationStart();
         deleteOldUnsentReportsOnApplicationStart = builder.deleteOldUnsentReportsOnApplicationStart();
         dropboxCollectionMinutes = builder.dropboxCollectionMinutes();
@@ -221,20 +224,7 @@ public final class ACRAConfiguration implements Serializable {
      */
     @NonNull
     public List<ReportField> getReportFields() {
-        final ReportField[] customReportFields = customReportContent();
-
-        final ReportField[] fieldsList;
-        if (customReportFields.length != 0) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
-            fieldsList = customReportFields;
-        } else if (mailTo() == null || "".equals(mailTo())) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Report Fields");
-            fieldsList = ACRAConstants.DEFAULT_REPORT_FIELDS;
-        } else {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
-            fieldsList = ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
-        }
-        return Arrays.asList(fieldsList);
+        return new ArrayList<ReportField>(reportContent);
     }
 
     /**
@@ -280,7 +270,7 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     @SuppressWarnings( "unused" )
     public ACRAConfiguration setCustomReportContent(@NonNull ReportField[] customReportContent) {
-        this.customReportContent = copyArray(customReportContent);
+        this.reportContent = new HashSet<ReportField>(Arrays.asList(customReportContent));
         return this;
     }
 
@@ -807,9 +797,13 @@ public final class ACRAConfiguration implements Serializable {
         return connectionTimeout;
     }
 
+    /**
+     * @deprecated since 4.8.6 use {@link #getReportFields()} instead
+     * TODO remove with setters in 4.9 / 5.0
+     */
     @NonNull
     public ReportField[] customReportContent() {
-        return copyArray(customReportContent);
+        return reportContent.toArray(new ReportField[reportContent.size()]);
     }
 
     public boolean deleteUnapprovedReportsOnApplicationStart() {

@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -43,6 +44,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.*;
 
 /**
@@ -786,15 +788,26 @@ public final class ConfigurationBuilder {
 
     @NonNull
     ReportField[] customReportContent() {
+        if (customReportContent != null) {
+            return customReportContent;
+        }
+        return new ReportField[0];
+    }
+
+    @NonNull
+    Set<ReportField> reportContent() {
+        Set<ReportField> reportContent = new HashSet<ReportField>();
+        if (customReportContent != null) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
+            reportContent.addAll(Arrays.asList(customReportContent));
+        } else if (mailTo == null || DEFAULT_STRING_VALUE.equals(mailTo)) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Report Fields");
+            reportContent.addAll(Arrays.asList(DEFAULT_REPORT_FIELDS));
+        } else {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
+            reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
+        }
         if (!reportContentChanges.isEmpty()) {
-            Set<ReportField> reportContent = new HashSet<ReportField>();
-            if (customReportContent != null) {
-                reportContent.addAll(Arrays.asList(customReportContent));
-            } else if (mailTo != null && !ACRAConstants.DEFAULT_STRING_VALUE.equals(mailTo)) {
-                reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
-            } else {
-                reportContent.addAll(Arrays.asList(DEFAULT_REPORT_FIELDS));
-            }
             for (Map.Entry<ReportField, Boolean> entry : reportContentChanges.entrySet()) {
                 if (entry.getValue()) {
                     reportContent.add(entry.getKey());
@@ -802,12 +815,8 @@ public final class ConfigurationBuilder {
                     reportContent.remove(entry.getKey());
                 }
             }
-            customReportContent = reportContent.toArray(new ReportField[reportContent.size()]);
         }
-        if (customReportContent != null) {
-            return customReportContent;
-        }
-        return new ReportField[0];
+        return reportContent;
     }
 
     boolean deleteUnapprovedReportsOnApplicationStart() {
