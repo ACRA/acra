@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -36,8 +37,11 @@ import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.acra.ACRAConstants.*;
 
@@ -58,6 +62,7 @@ public final class ConfigurationBuilder {
     private String[] additionalSharedPreferences;
     private Integer connectionTimeout;
     private ReportField[] customReportContent;
+    private final Map<ReportField, Boolean> reportContentChanges = new HashMap<ReportField, Boolean>();
     private Boolean deleteUnapprovedReportsOnApplicationStart;
     private Boolean deleteOldUnsentReportsOnApplicationStart;
     private Integer dropboxCollectionMinutes;
@@ -234,11 +239,25 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @param deleteUnapprovedReportsOnApplicationStart the deleteUnapprovedReportsOnApplicationStart to set
-     * @return The updated ACRA configuration
+     * Use this if you want to keep the default configuration of reportContent, but set some fields explicitly.
+     *
+     * @param field  the field to set
+     * @param enable if this field should be reported
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
+    public ConfigurationBuilder setReportField(@NonNull ReportField field, boolean enable) {
+        this.reportContentChanges.put(field, enable);
+        return this;
+    }
+
+    /**
+     * @param deleteUnapprovedReportsOnApplicationStart the deleteUnapprovedReportsOnApplicationStart to set
+     * @return this instance
+     */
+    @NonNull
+    @SuppressWarnings("unused")
     public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
@@ -767,6 +786,24 @@ public final class ConfigurationBuilder {
 
     @NonNull
     ReportField[] customReportContent() {
+        if (!reportContentChanges.isEmpty()) {
+            Set<ReportField> reportContent = new HashSet<ReportField>();
+            if (customReportContent != null) {
+                reportContent.addAll(Arrays.asList(customReportContent));
+            } else if (mailTo != null && !ACRAConstants.DEFAULT_STRING_VALUE.equals(mailTo)) {
+                reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
+            } else {
+                reportContent.addAll(Arrays.asList(DEFAULT_REPORT_FIELDS));
+            }
+            for (Map.Entry<ReportField, Boolean> entry : reportContentChanges.entrySet()) {
+                if (entry.getValue()) {
+                    reportContent.add(entry.getKey());
+                } else {
+                    reportContent.remove(entry.getKey());
+                }
+            }
+            customReportContent = reportContent.toArray(new ReportField[reportContent.size()]);
+        }
         if (customReportContent != null) {
             return customReportContent;
         }
