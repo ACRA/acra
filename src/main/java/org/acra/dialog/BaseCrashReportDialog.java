@@ -23,7 +23,8 @@ import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_EMAIL;
 
 /**
- * Activity which implements the base functionality for a CrashReportDialog
+ * Activity which implements the base functionality for a CrashReportDialog.
+ *
  * Activities which extend from this class can override init to create a custom view.
  *
  * The methods sendCrash(comment, userEmail) and cancelReports() can be used to send or cancel
@@ -52,24 +53,22 @@ public abstract class BaseCrashReportDialog extends Activity {
             ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
         }
 
-        Serializable sConfig = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
-        Serializable sReportFile = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
-        Serializable sException = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
+        final Serializable sConfig = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
+        final Serializable sReportFile = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
+        final Serializable sException = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
 
-        if (!forceCancel && sConfig instanceof ACRAConfiguration && sReportFile instanceof File
-                && (sException == null || sException instanceof Throwable)) {
+        if (forceCancel) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
+            cancelReports();
+            finish();
+        } else if ((sConfig instanceof ACRAConfiguration) && (sReportFile instanceof File) && (sException instanceof Throwable)) {
             config = (ACRAConfiguration) sConfig;
             reportFile = (File) sReportFile;
             exception = (Throwable) sException;
             init(savedInstanceState);
         } else {
-            if (forceCancel) {
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
-                cancelReports();
-            } else {
-                ACRA.log.w(LOG_TAG, "Illegal or incomplete call of BaseCrashReportDialog.");
-            }
+            ACRA.log.w(LOG_TAG, "Illegal or incomplete call of BaseCrashReportDialog.");
             finish();
         }
     }
