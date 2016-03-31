@@ -27,6 +27,9 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * KeyStoreFactory for a certificate stored in an asset file
+ *
+ * @author F43nd1r
+ * @since 4.8.3
  */
 public class AssetKeyStoreFactory extends BaseKeyStoreFactory {
 

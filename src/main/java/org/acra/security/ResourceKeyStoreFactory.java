@@ -23,6 +23,9 @@ import java.io.InputStream;
 
 /**
  * KeyStoreFactory for a certificate stored in a raw resource
+ *
+ * @author F43nd1r
+ * @since 4.8.3
  */
 public class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
 

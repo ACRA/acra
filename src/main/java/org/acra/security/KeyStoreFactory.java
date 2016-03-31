@@ -26,6 +26,9 @@ import java.security.KeyStore;
  * The interface can be used to provide a KeyStore with certificates.
  * Note that implementations need to be serializable.
  * (e.g. can't be anonymous inner classes of non-serializable classes)
+ *
+ * @author F43nd1r
+ * @since 4.8.3
  */
 public interface KeyStoreFactory extends Serializable{
 
