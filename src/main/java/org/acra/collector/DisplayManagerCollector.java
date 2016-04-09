@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 final class DisplayManagerCollector {
     private DisplayManagerCollector(){}
 
-    static final SparseArray<String> mFlagsNames = new SparseArray<String>();
+    private static final SparseArray<String> mFlagsNames = new SparseArray<String>();
 
     @NonNull
     public static String collectDisplays(@NonNull Context ctx) {

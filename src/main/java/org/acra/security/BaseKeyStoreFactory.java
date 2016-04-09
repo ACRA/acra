@@ -39,6 +39,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.8.3
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
 
     private final String certificateType;

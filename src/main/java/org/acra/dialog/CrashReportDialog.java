@@ -25,6 +25,7 @@ import org.acra.prefs.SharedPreferencesFactory;
  * to send reports. Requires android:launchMode="singleInstance" in your
  * AndroidManifest to work properly.
  **/
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
 
     private static final String STATE_EMAIL = "email";
@@ -50,9 +51,10 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     /**
      * Build the dialog from the values in config
+     *
      * @param savedInstanceState old state to restore
      */
-    protected void buildAndShowDialog(@Nullable Bundle savedInstanceState){
+    protected void buildAndShowDialog(@Nullable Bundle savedInstanceState) {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final int titleResourceId = getConfig().resDialogTitle();
         if (titleResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
@@ -85,7 +87,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         // Add an optional prompt for user comments
         View comment = getCommentLabel();
-        if(comment != null){
+        if (comment != null) {
             comment.setPadding(comment.getPaddingLeft(), PADDING, comment.getPaddingRight(), comment.getPaddingBottom());
             addViewToDialog(comment);
             String savedComment = null;
@@ -98,7 +100,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         // Add an optional user email field
         View email = getEmailLabel();
-        if(email != null){
+        if (email != null) {
             email.setPadding(email.getPaddingLeft(), PADDING, email.getPaddingRight(), email.getPaddingBottom());
             addViewToDialog(email);
             String savedEmail = null;
@@ -137,6 +139,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     /**
      * creates a comment label view with resDialogCommentPrompt as text
+     *
      * @return the label or null if there is no resource
      */
     @Nullable
@@ -168,10 +171,11 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     /**
      * creates a email label view with resDialogEmailPrompt as text
+     *
      * @return the label or null if there is no resource
      */
     @Nullable
-    protected View getEmailLabel(){
+    protected View getEmailLabel() {
         final int emailPromptId = getConfig().resDialogEmailPrompt();
         if (emailPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
             final TextView labelView = new TextView(this);

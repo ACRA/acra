@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 /**
  * Stub implementation of {@link org.acra.log.ACRALog}, quenches all logging.
  */
+@SuppressWarnings("unused")
 public class HollowLog implements ACRALog {
     @Override
     public int v(String tag, String msg) {

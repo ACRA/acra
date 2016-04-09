@@ -38,6 +38,7 @@ import static org.acra.ReportField.USER_EMAIL;
  * <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
  * </ol>
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseCrashReportDialog extends Activity {
 
     private File reportFile;

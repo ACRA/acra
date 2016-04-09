@@ -47,6 +47,7 @@ import java.util.List;
  * @author Kevin Gaudin
  *
  */
+@SuppressWarnings({"WeakerAccess","unused"})
 public final class ACRA {
     private ACRA(){}
 
@@ -345,7 +346,6 @@ public final class ACRA {
      * @deprecated since 4.8.0 {@link ACRAConfiguration} should be passed into classes instead of retrieved statically.
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public static ACRAConfiguration getConfig() {
         if (configProxy == null) {
             throw new IllegalStateException("Cannot call ACRA.getConfig() before ACRA.init().");
@@ -359,7 +359,6 @@ public final class ACRA {
      * @deprecated since 4.8.0 use {@link ConfigurationBuilder} instead.
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public static ACRAConfiguration getNewDefaultConfig(@NonNull Application app) {
         return new ConfigurationBuilder(app).build();
     }

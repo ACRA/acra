@@ -27,6 +27,7 @@ import java.io.InputStream;
  * @author F43nd1r
  * @since 4.8.3
  */
+@SuppressWarnings("unused")
 public class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
 
     @RawRes
