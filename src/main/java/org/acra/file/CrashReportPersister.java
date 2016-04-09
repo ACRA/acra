@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.collector.CollectorUtil;
+import org.acra.util.IOUtils;
 import org.acra.collector.CrashReportData;
 
 import java.io.*;
@@ -286,7 +286,7 @@ public final class CrashReportPersister {
             crashData.put(key, value);
         }
 
-        CollectorUtil.safeClose(reader);
+        IOUtils.safeClose(reader);
 
         return crashData;
     }

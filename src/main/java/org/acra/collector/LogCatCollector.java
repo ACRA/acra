@@ -19,16 +19,15 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.android.internal.util.Predicate;
+
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.BoundedLinkedList;
+import org.acra.util.IOUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -97,12 +96,9 @@ class LogCatCollector {
         final LinkedList<String> logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount
                 : DEFAULT_TAIL_COUNT);
         commandLine.addAll(logcatArgumentsList);
-        
-        BufferedReader bufferedReader = null;
 
         try {
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
@@ -110,30 +106,22 @@ class LogCatCollector {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        InputStream stderr = process.getErrorStream();
-                        byte[] dummy = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
-                        //noinspection StatementWithEmptyBody
-                        while (stderr.read(dummy) >= 0)
-                            ;
+                        IOUtils.streamToString(process.getErrorStream());
                     } catch (IOException ignored) {
                     }
                 }
             }).start();
 
-            while (true) {
-                final String line = bufferedReader.readLine();
-                if (line == null) {
-                    break;
+            final String finalMyPidStr = myPidStr;
+            logcatBuf.add(IOUtils.streamToString(process.getInputStream(), new Predicate<String>() {
+                @Override
+                public boolean apply(String s) {
+                    return finalMyPidStr == null || s.contains(finalMyPidStr);
                 }
-                if (myPidStr == null || line.contains(myPidStr)) {
-                    logcatBuf.add(line + "\n");
-                }
-            }
+            }));
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
-        } finally {
-            CollectorUtil.safeClose(bufferedReader);
         }
 
         return logcatBuf.toString();

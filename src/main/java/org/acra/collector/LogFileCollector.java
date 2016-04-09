@@ -21,7 +21,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.util.BoundedLinkedList;
+import org.acra.util.IOUtils;
 
 import java.io.*;
 
@@ -50,22 +50,11 @@ class LogFileCollector {
      */
     @NonNull
     public String collectLogFile(@NonNull Context context, @NonNull String fileName, int numberOfLines) throws IOException {
-        final BoundedLinkedList<String> resultBuffer = new BoundedLinkedList<String>(numberOfLines);
-        final BufferedReader reader = getReader(context, fileName);
-        try {
-            String line = reader.readLine();
-            while (line != null) {
-                resultBuffer.add(line + "\n");
-                line = reader.readLine();
-            }
-        } finally {
-            CollectorUtil.safeClose(reader);
-        }
-        return resultBuffer.toString();
+        return IOUtils.streamToString(getStream(context, fileName), numberOfLines);
     }
 
     @NonNull
-    private static BufferedReader getReader(@NonNull Context context, @NonNull String fileName) {
+    private static InputStream getStream(@NonNull Context context, @NonNull String fileName) {
         try {
             final FileInputStream inputStream;
             if (fileName.startsWith("/")) {
@@ -78,10 +67,10 @@ class LogFileCollector {
                 // A file directly contained within the application files folder.
                 inputStream = context.openFileInput(fileName);
             }
-            return new BufferedReader(new InputStreamReader(inputStream), 1024); //TODO: 1024 should be a constant. Use ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES ?
+            return inputStream;
         } catch (FileNotFoundException e) {
             ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + fileName + "'");
-            return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(new byte[0])));
+            return new ByteArrayInputStream(new byte[0]);
         }
     }
 }
