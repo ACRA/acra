@@ -35,15 +35,17 @@ import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.ApplicationStartupProcessor;
 
+import java.util.List;
+
 /**
  * Use this class to initialize the crash reporting feature using
  * {@link #init(Application)} as soon as possible in your {@link Application}
  * subclass {@link Application#onCreate()} method. Configuration items must have
  * been set by using {@link ReportsCrashes} above the declaration of your
  * {@link Application} subclass.
- * 
+ *
  * @author Kevin Gaudin
- * 
+ *
  */
 public final class ACRA {
     private ACRA(){}
@@ -51,7 +53,7 @@ public final class ACRA {
     public static final boolean DEV_LOGGING = false; // Should be false for release.
 
     public static final String LOG_TAG = ACRA.class.getSimpleName();
-    
+
     @NonNull
     public static ACRALog log = new AndroidLogDelegate();
 
@@ -126,7 +128,7 @@ public final class ACRA {
      * Uses the configuration as configured with the @ReportCrashes annotation.
      * Sends any unsent reports.
      * </p>
-     * 
+     *
      * @param app   Your Application class.
      * @throws IllegalStateException if it is called more than once.
      */
@@ -277,9 +279,12 @@ public final class ACRA {
     private static String getCurrentProcessName(@NonNull Application app) {
         final int processId = android.os.Process.myPid();
         final ActivityManager manager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
-        for (final ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()){
-            if(processInfo.pid == processId){
-                return processInfo.processName;
+        List<ActivityManager.RunningAppProcessInfo> processInfos = manager.getRunningAppProcesses();
+        if (processInfos != null) {
+            for (final ActivityManager.RunningAppProcessInfo processInfo : processInfos) {
+                if (processInfo.pid == processId) {
+                    return processInfo.processName;
+                }
             }
         }
         return null;
@@ -297,13 +302,13 @@ public final class ACRA {
         return errorReporterSingleton;
     }
 
-    
+
 
     /**
      * Check if the application default shared preferences contains true for the
      * key "acra.disable", do not activate ACRA. Also checks the alternative
      * opposite setting "acra.enable" if "acra.disable" is not found.
-     * 
+     *
      * @param prefs
      *            SharedPreferences to check to see whether ACRA should be
      *            disabled.
@@ -335,7 +340,7 @@ public final class ACRA {
 
     /**
      * Provides the current ACRA configuration.
-     * 
+     *
      * @return Current ACRA {@link ReportsCrashes} configuration instance.
      * @deprecated since 4.8.0 {@link ACRAConfiguration} should be passed into classes instead of retrieved statically.
      */
