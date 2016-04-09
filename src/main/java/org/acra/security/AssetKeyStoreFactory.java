@@ -32,7 +32,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 4.8.3
  */
 @SuppressWarnings("unused")
-public class AssetKeyStoreFactory extends BaseKeyStoreFactory {
+public final class AssetKeyStoreFactory extends BaseKeyStoreFactory {
 
     private final String assetName;
 

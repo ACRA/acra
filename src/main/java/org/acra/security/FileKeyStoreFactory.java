@@ -33,7 +33,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 4.8.3
  */
 @SuppressWarnings("unused")
-public class FileKeyStoreFactory extends BaseKeyStoreFactory {
+public final class FileKeyStoreFactory extends BaseKeyStoreFactory {
 
     private final String filePath;
 

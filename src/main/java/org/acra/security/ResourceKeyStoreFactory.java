@@ -28,7 +28,7 @@ import java.io.InputStream;
  * @since 4.8.3
  */
 @SuppressWarnings("unused")
-public class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
+public final class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
 
     @RawRes
     private final int rawRes;
