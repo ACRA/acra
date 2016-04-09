@@ -21,6 +21,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.util.IOUtils;
 
 import java.io.*;
 
@@ -49,7 +50,7 @@ class LogFileCollector {
      */
     @NonNull
     public String collectLogFile(@NonNull Context context, @NonNull String fileName, int numberOfLines) throws IOException {
-        return CollectorUtil.streamToString(getStream(context, fileName), numberOfLines);
+        return IOUtils.streamToString(getStream(context, fileName), numberOfLines);
     }
 
     @NonNull

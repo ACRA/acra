@@ -25,6 +25,7 @@ import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.BoundedLinkedList;
+import org.acra.util.IOUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,15 +106,14 @@ class LogCatCollector {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        //noinspection ResultOfMethodCallIgnored
-                        CollectorUtil.streamToString(process.getErrorStream());
+                        IOUtils.streamToString(process.getErrorStream());
                     } catch (IOException ignored) {
                     }
                 }
             }).start();
 
             final String finalMyPidStr = myPidStr;
-            logcatBuf.add(CollectorUtil.streamToString(process.getInputStream(), new Predicate<String>() {
+            logcatBuf.add(IOUtils.streamToString(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return finalMyPidStr == null || s.contains(finalMyPidStr);

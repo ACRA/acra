@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.collector;
+package org.acra.util;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,7 +36,7 @@ import java.util.List;
  * @author William Ferguson, F43nd1r
  * @since 4.6.0
  */
-public final class CollectorUtil {
+public final class IOUtils {
 
     private static final Predicate<String> DEFAULT_FILTER = new Predicate<String>() {
         @Override
@@ -46,7 +46,7 @@ public final class CollectorUtil {
     };
     private static final int NO_LIMIT = -1;
 
-    private CollectorUtil() {
+    private IOUtils() {
     }
 
 

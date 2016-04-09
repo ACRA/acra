@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
-import org.acra.collector.CollectorUtil;
 import org.acra.collector.CrashReportData;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,7 +95,7 @@ public final class JSONReportBuilder {
             } catch (JSONException e) {
                 throw new JSONReportException("Could not create JSON object for key " + key, e);
             } finally {
-            	CollectorUtil.safeClose(reader);
+            	IOUtils.safeClose(reader);
             }
         }
         return jsonReport;

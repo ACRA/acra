@@ -18,6 +18,7 @@ package org.acra.collector;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.util.IOUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ final class DumpSysCollector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            meminfo.append(CollectorUtil.streamToString(process.getInputStream()));
+            meminfo.append(IOUtils.streamToString(process.getInputStream()));
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "DumpSysCollector.meminfo could not retrieve data", e);
