@@ -279,9 +279,8 @@ public final class ACRA {
 
     @Nullable
     private static String getCurrentProcessName() {
-        final int processId = android.os.Process.myPid();
         try {
-            return IOUtils.streamToString(new FileInputStream("/proc/"+processId+"/cmdline")).trim();
+            return IOUtils.streamToString(new FileInputStream("/proc/self/cmdline")).trim();
         } catch (IOException e) {
             return null;
         }
