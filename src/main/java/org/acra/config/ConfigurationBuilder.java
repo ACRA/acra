@@ -183,7 +183,6 @@ public final class ConfigurationBuilder {
      * @return The updated ACRA configuration
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
         this.httpHeaders.clear();
         this.httpHeaders.putAll(headers);
@@ -755,22 +754,18 @@ public final class ConfigurationBuilder {
      * @param keyStoreFactory
      *            Set this to a factory which creates a the keystore that contains the trusted certificates
      */
-    @SuppressWarnings("unused")
     @NonNull
     public ConfigurationBuilder setKeyStoreFactory(KeyStoreFactory keyStoreFactory) {
         this.keyStoreFactory = keyStoreFactory;
         return this;
     }
 
-
-    @SuppressWarnings("unused")
     @NonNull
     public ConfigurationBuilder setReportSenderFactoryClasses(@NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
         this.reportSenderFactoryClasses = reportSenderFactoryClasses;
         return this;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     public ConfigurationBuilder setReportPrimerClass(@NonNull Class<? extends ReportPrimer> reportPrimerClass) {
         this.reportPrimerClass = reportPrimerClass;
@@ -780,7 +775,6 @@ public final class ConfigurationBuilder {
 
     // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
 
-    @SuppressWarnings("unused")
     @NonNull
     String[] additionalDropBoxTags() {
         if (additionalDropBoxTags != null) {
@@ -789,7 +783,6 @@ public final class ConfigurationBuilder {
         return new String[0];
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String[] additionalSharedPreferences() {
         if (additionalSharedPreferences != null) {
@@ -802,12 +795,10 @@ public final class ConfigurationBuilder {
      * @deprecated since 4.8.1 no replacement.
      */
     @Nullable
-    @SuppressWarnings("unused")
     Class<? extends Annotation> annotationType() {
         return annotationType; // Why would this ever be needed?
     }
 
-    @SuppressWarnings("unused")
     int connectionTimeout() {
         if (connectionTimeout != null) {
             return connectionTimeout;
@@ -815,7 +806,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_CONNECTION_TIMEOUT;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     ReportField[] customReportContent() {
         if (customReportContent != null) {
@@ -824,7 +814,6 @@ public final class ConfigurationBuilder {
         return new ReportField[0];
     }
 
-    @SuppressWarnings("unused")
     boolean deleteUnapprovedReportsOnApplicationStart() {
         if (deleteUnapprovedReportsOnApplicationStart != null) {
             return deleteUnapprovedReportsOnApplicationStart;
@@ -832,7 +821,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
     }
 
-    @SuppressWarnings("unused")
     boolean deleteOldUnsentReportsOnApplicationStart() {
         if (deleteOldUnsentReportsOnApplicationStart != null) {
             return deleteOldUnsentReportsOnApplicationStart;
@@ -840,7 +828,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
     }
 
-    @SuppressWarnings("unused")
     int dropboxCollectionMinutes() {
         if (dropboxCollectionMinutes != null) {
             return dropboxCollectionMinutes;
@@ -848,7 +835,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_DROPBOX_COLLECTION_MINUTES;
     }
 
-    @SuppressWarnings("unused")
     boolean forceCloseDialogAfterToast() {
         if (forceCloseDialogAfterToast != null) {
             return forceCloseDialogAfterToast;
@@ -856,7 +842,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String formUri() {
         if (formUri != null) {
@@ -865,7 +850,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_STRING_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String formUriBasicAuthLogin() {
         if (formUriBasicAuthLogin != null) {
@@ -874,7 +858,6 @@ public final class ConfigurationBuilder {
         return NULL_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String formUriBasicAuthPassword() {
         if (formUriBasicAuthPassword != null) {
@@ -883,7 +866,6 @@ public final class ConfigurationBuilder {
         return NULL_VALUE;
     }
 
-    @SuppressWarnings("unused")
     boolean includeDropBoxSystemTags() {
         if (includeDropBoxSystemTags != null) {
             return includeDropBoxSystemTags;
@@ -891,7 +873,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String[] logcatArguments() {
         if (logcatArguments != null) {
@@ -900,7 +881,6 @@ public final class ConfigurationBuilder {
         return new String[] { "-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time" };
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String mailTo() {
         if (mailTo != null) {
@@ -909,7 +889,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_STRING_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     ReportingInteractionMode reportingInteractionMode() {
         if (reportingInteractionMode != null) {
@@ -918,7 +897,6 @@ public final class ConfigurationBuilder {
         return ReportingInteractionMode.SILENT;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     public int resDialogPositiveButtonText() {
         if (resDialogPositiveButtonText != null) {
@@ -927,7 +905,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resDialogNegativeButtonText() {
         if (resDialogNegativeButtonText != null) {
@@ -936,7 +913,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resDialogCommentPrompt() {
         if (resDialogCommentPrompt != null) {
@@ -945,7 +921,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resDialogEmailPrompt() {
         if (resDialogEmailPrompt != null) {
@@ -954,7 +929,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @DrawableRes
     int resDialogIcon() {
         if (resDialogIcon != null) {
@@ -963,7 +937,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_DIALOG_ICON;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resDialogOkToast() {
         if (resDialogOkToast != null) {
@@ -972,7 +945,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resDialogText() {
         if (resDialogText != null) {
@@ -981,7 +953,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resDialogTitle() {
         if (resDialogTitle != null) {
@@ -990,7 +961,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @DrawableRes
     int resNotifIcon() {
         if (resNotifIcon != null) {
@@ -999,7 +969,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_NOTIFICATION_ICON;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resNotifText() {
         if (resNotifText != null) {
@@ -1008,7 +977,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resNotifTickerText() {
         if (resNotifTickerText != null) {
@@ -1017,7 +985,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resNotifTitle() {
         if (resNotifTitle != null) {
@@ -1026,7 +993,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     @StringRes
     int resToastText() {
         if (resToastText != null) {
@@ -1035,7 +1001,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_RES_VALUE;
     }
 
-    @SuppressWarnings("unused")
     int sharedPreferencesMode() {
         if (sharedPreferencesMode != null) {
             return sharedPreferencesMode;
@@ -1043,7 +1008,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_SHARED_PREFERENCES_MODE;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String sharedPreferencesName() {
         if (sharedPreferencesName != null) {
@@ -1053,7 +1017,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_STRING_VALUE;
     }
 
-    @SuppressWarnings("unused")
     int socketTimeout() {
         if (socketTimeout != null) {
             return socketTimeout;
@@ -1061,7 +1024,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_SOCKET_TIMEOUT;
     }
 
-    @SuppressWarnings("unused")
     boolean logcatFilterByPid() {
         if (logcatFilterByPid != null) {
             return logcatFilterByPid;
@@ -1069,7 +1031,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_LOGCAT_FILTER_BY_PID;
     }
 
-    @SuppressWarnings("unused")
     boolean sendReportsInDevMode() {
         if (sendReportsInDevMode != null) {
             return sendReportsInDevMode;
@@ -1077,7 +1038,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_SEND_REPORTS_IN_DEV_MODE;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String[] excludeMatchingSharedPreferencesKeys() {
         if (excludeMatchingSharedPreferencesKeys != null) {
@@ -1086,7 +1046,6 @@ public final class ConfigurationBuilder {
         return new String[0];
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String[] excludeMatchingSettingsKeys() {
         if (excludeMatchingSettingsKeys != null) {
@@ -1099,13 +1058,11 @@ public final class ConfigurationBuilder {
      * Will return null if no value has been configured.
      * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
      */
-    @SuppressWarnings("unused")
     @Nullable
     Class buildConfigClass() {
         return buildConfigClass;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     String applicationLogFile() {
         if (applicationLogFile != null) {
@@ -1114,7 +1071,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_APPLICATION_LOGFILE;
     }
 
-    @SuppressWarnings("unused")
     int applicationLogFileLines() {
         if (applicationLogFileLines != null) {
             return applicationLogFileLines;
@@ -1122,7 +1078,6 @@ public final class ConfigurationBuilder {
         return DEFAULT_APPLICATION_LOGFILE_LINES;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     Class<? extends BaseCrashReportDialog> reportDialogClass() {
         if (reportDialogClass != null) {
@@ -1131,7 +1086,6 @@ public final class ConfigurationBuilder {
         return CrashReportDialog.class;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     Class<? extends ReportPrimer> reportPrimerClass() {
         if (reportPrimerClass != null) {
@@ -1140,7 +1094,6 @@ public final class ConfigurationBuilder {
         return NoOpReportPrimer.class;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     Method httpMethod() {
         if (httpMethod != null) {
@@ -1149,7 +1102,6 @@ public final class ConfigurationBuilder {
         return Method.POST;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     Type reportType() {
         if (reportType != null) {
@@ -1158,7 +1110,6 @@ public final class ConfigurationBuilder {
         return Type.FORM;
     }
 
-    @SuppressWarnings("unused")
     @NonNull
     Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() {
         if (reportSenderFactoryClasses != null) {
@@ -1168,7 +1119,6 @@ public final class ConfigurationBuilder {
         return new Class[] {DefaultReportSenderFactory.class};
     }
 
-    @SuppressWarnings("unused")
     @Nullable
     KeyStoreFactory keyStoreFactory() {
         return keyStoreFactory;

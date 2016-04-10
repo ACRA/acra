@@ -276,6 +276,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param e The {@link Throwable} to be reported. If null the report will
      *          contain a new Exception("Report requested by developer").
      */
+    @SuppressWarnings("unused")
     public void handleSilentException(@Nullable Throwable e) {
         performDeprecatedReportPriming();
         new ReportBuilder()

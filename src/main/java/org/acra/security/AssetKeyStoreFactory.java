@@ -31,7 +31,8 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.8.3
  */
-public class AssetKeyStoreFactory extends BaseKeyStoreFactory {
+@SuppressWarnings("unused")
+public final class AssetKeyStoreFactory extends BaseKeyStoreFactory {
 
     private final String assetName;
 
