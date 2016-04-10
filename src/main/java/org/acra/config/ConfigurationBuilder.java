@@ -754,13 +754,11 @@ public final class ConfigurationBuilder {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
             reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
         }
-        if (!reportContentChanges.isEmpty()) {
-            for (Map.Entry<ReportField, Boolean> entry : reportContentChanges.entrySet()) {
-                if (entry.getValue()) {
-                    reportContent.add(entry.getKey());
-                } else {
-                    reportContent.remove(entry.getKey());
-                }
+        for (Map.Entry<ReportField, Boolean> entry : reportContentChanges.entrySet()) {
+            if (entry.getValue()) {
+                reportContent.add(entry.getKey());
+            } else {
+                reportContent.remove(entry.getKey());
             }
         }
         return reportContent;
