@@ -743,7 +743,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     Set<ReportField> reportContent() {
-        Set<ReportField> reportContent = new HashSet<ReportField>();
+        final Set<ReportField> reportContent = new HashSet<ReportField>();
         if (customReportContent != null) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             reportContent.addAll(Arrays.asList(customReportContent));
@@ -754,6 +754,8 @@ public final class ConfigurationBuilder {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
             reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
         }
+
+        // Add or remove any extra fields.
         for (Map.Entry<ReportField, Boolean> entry : reportContentChanges.entrySet()) {
             if (entry.getValue()) {
                 reportContent.add(entry.getKey());
