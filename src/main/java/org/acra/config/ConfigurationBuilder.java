@@ -189,7 +189,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
         this.httpHeaders.clear();
         this.httpHeaders.putAll(headers);
@@ -201,7 +200,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setAdditionalDropboxTags(@NonNull String[] additionalDropboxTags) {
         this.additionalDropBoxTags = additionalDropboxTags;
         return this;
@@ -212,7 +210,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setAdditionalSharedPreferences(@NonNull String[] additionalSharedPreferences) {
         this.additionalSharedPreferences = additionalSharedPreferences;
         return this;
@@ -223,7 +220,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
@@ -234,7 +230,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setCustomReportContent(@NonNull ReportField[] customReportContent) {
         this.customReportContent = customReportContent;
         return this;
@@ -248,7 +243,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setReportField(@NonNull ReportField field, boolean enable) {
         this.reportContentChanges.put(field, enable);
         return this;
@@ -259,7 +253,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
@@ -270,7 +263,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(boolean deleteOldUnsentReportsOnApplicationStart) {
         this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
         return this;
@@ -281,7 +273,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setDropboxCollectionMinutes(int dropboxCollectionMinutes) {
         this.dropboxCollectionMinutes = dropboxCollectionMinutes;
         return this;
@@ -292,7 +283,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
         this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
         return this;
@@ -305,7 +295,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setFormUri(@Nullable String formUri) {
         this.formUri = formUri;
         return this;
@@ -316,7 +305,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setFormUriBasicAuthLogin(@Nullable String formUriBasicAuthLogin) {
         this.formUriBasicAuthLogin = formUriBasicAuthLogin;
         return this;
@@ -327,7 +315,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setFormUriBasicAuthPassword(@Nullable String formUriBasicAuthPassword) {
         this.formUriBasicAuthPassword = formUriBasicAuthPassword;
         return this;
@@ -338,7 +325,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setIncludeDropboxSystemTags(boolean includeDropboxSystemTags) {
         this.includeDropBoxSystemTags = includeDropboxSystemTags;
         return this;
@@ -349,7 +335,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setLogcatArguments(@NonNull String[] logcatArguments) {
         this.logcatArguments = logcatArguments;
         return this;
@@ -362,7 +347,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setMailTo(@Nullable String mailTo) {
         this.mailTo = mailTo;
         return this;
@@ -377,7 +361,6 @@ public final class ConfigurationBuilder {
      * @deprecated since 4.8.2 use {@link #setReportingInteractionMode(ReportingInteractionMode)} instead.
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
@@ -391,28 +374,24 @@ public final class ConfigurationBuilder {
      * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setReportingInteractionMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogPositiveButtonText(@StringRes int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogNegativeButtonText(@StringRes int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setReportDialogClass(@NonNull Class<? extends BaseCrashReportDialog> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
         return this;
@@ -427,7 +406,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogCommentPrompt(@StringRes int resId) {
         resDialogCommentPrompt = resId;
         return this;
@@ -442,7 +420,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogEmailPrompt(@StringRes int resId) {
         resDialogEmailPrompt = resId;
         return this;
@@ -457,7 +434,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogIcon(@DrawableRes int resId) {
         resDialogIcon = resId;
         return this;
@@ -472,7 +448,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogOkToast(@StringRes int resId) {
         resDialogOkToast = resId;
         return this;
@@ -487,7 +462,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogText(@StringRes int resId) {
         resDialogText = resId;
         return this;
@@ -502,7 +476,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResDialogTitle(@StringRes int resId) {
         resDialogTitle = resId;
         return this;
@@ -517,7 +490,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResNotifIcon(@DrawableRes int resId) {
         resNotifIcon = resId;
         return this;
@@ -532,7 +504,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResNotifText(@StringRes int resId) {
         resNotifText = resId;
         return this;
@@ -548,7 +519,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResNotifTickerText(@StringRes int resId) {
         resNotifTickerText = resId;
         return this;
@@ -563,7 +533,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResNotifTitle(@StringRes int resId) {
         resNotifTitle = resId;
         return this;
@@ -578,7 +547,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setResToastText(@StringRes int resId) {
         resToastText = resId;
         return this;
@@ -589,7 +557,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setSharedPreferenceMode(int sharedPreferenceMode) {
         this.sharedPreferencesMode = sharedPreferenceMode;
         return this;
@@ -600,7 +567,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setSharedPreferenceName(@NonNull String sharedPreferenceName) {
         this.sharedPreferencesName = sharedPreferenceName;
         return this;
@@ -611,7 +577,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
         return this;
@@ -623,7 +588,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setLogcatFilterByPid(boolean filterByPid) {
         logcatFilterByPid = filterByPid;
         return this;
@@ -635,7 +599,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setSendReportsInDevMode(boolean sendReportsInDevMode) {
         this.sendReportsInDevMode = sendReportsInDevMode;
         return this;
@@ -645,7 +608,6 @@ public final class ConfigurationBuilder {
      * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setSendReportsAtShutdown(boolean sendReportsAtShutdown) {
         return this;
     }
@@ -657,7 +619,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(@NonNull String[] excludeMatchingSharedPreferencesKeys) {
         this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
         return this;
@@ -670,14 +631,12 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setExcludeMatchingSettingsKeys(@NonNull String[] excludeMatchingSettingsKeys) {
         this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setBuildConfigClass(@Nullable Class buildConfigClass) {
         this.buildConfigClass = buildConfigClass;
         return this;
@@ -689,7 +648,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setApplicationLogFile(@NonNull String applicationLogFile) {
         this.applicationLogFile = applicationLogFile;
         return this;
@@ -702,7 +660,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setApplicationLogFileLines(int applicationLogFileLines) {
         this.applicationLogFileLines = applicationLogFileLines;
         return this;
@@ -713,7 +670,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setHttpMethod(@NonNull Method httpMethod) {
         this.httpMethod = httpMethod;
         return this;
@@ -725,7 +681,6 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    @SuppressWarnings("unused")
     public ConfigurationBuilder setReportType(@NonNull Type type) {
         reportType = type;
         return this;
