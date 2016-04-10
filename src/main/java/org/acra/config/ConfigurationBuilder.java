@@ -742,14 +742,6 @@ public final class ConfigurationBuilder {
     }
 
     @NonNull
-    ReportField[] customReportContent() {
-        if (customReportContent != null) {
-            return customReportContent;
-        }
-        return new ReportField[0];
-    }
-
-    @NonNull
     Set<ReportField> reportContent() {
         Set<ReportField> reportContent = new HashSet<ReportField>();
         if (customReportContent != null) {
