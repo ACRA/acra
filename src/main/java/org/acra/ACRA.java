@@ -15,9 +15,7 @@
  */
 package org.acra;
 
-import android.app.ActivityManager;
 import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
@@ -34,8 +32,10 @@ import org.acra.log.AndroidLogDelegate;
 import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.ApplicationStartupProcessor;
+import org.acra.util.IOUtils;
 
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Use this class to initialize the crash reporting feature using
@@ -50,7 +50,7 @@ import java.util.List;
 public final class ACRA {
     private ACRA(){}
 
-    public static final boolean DEV_LOGGING = false; // Should be false for release.
+    public static /*non-final*/ boolean DEV_LOGGING = false; // Should be false for release.
 
     public static final String LOG_TAG = ACRA.class.getSimpleName();
 
@@ -172,7 +172,7 @@ public final class ACRA {
      */
     public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
-        final boolean senderServiceProcess = isACRASenderServiceProcess(app);
+        final boolean senderServiceProcess = isACRASenderServiceProcess();
         if (senderServiceProcess) {
             if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
         }
@@ -269,25 +269,21 @@ public final class ACRA {
      * @return true if the current process is the process running the SenderService.
      *          NB this assumes that your SenderService is configured to used the default ':acra' process.
      */
-    public static boolean isACRASenderServiceProcess(@NonNull Application app) {
-        final String processName = getCurrentProcessName(app);
+    public static boolean isACRASenderServiceProcess() {
+        final String processName = getCurrentProcessName();
         if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + "'");
-        return (processName != null) && processName.equals(ACRA_PRIVATE_PROCESS_NAME);
+        //processName sometimes (or always?) starts with the package name, so we use endsWith instead of equals
+        return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
 
     @Nullable
-    private static String getCurrentProcessName(@NonNull Application app) {
+    private static String getCurrentProcessName() {
         final int processId = android.os.Process.myPid();
-        final ActivityManager manager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> processInfos = manager.getRunningAppProcesses();
-        if (processInfos != null) {
-            for (final ActivityManager.RunningAppProcessInfo processInfo : processInfos) {
-                if (processInfo.pid == processId) {
-                    return processInfo.processName;
-                }
-            }
+        try {
+            return IOUtils.streamToString(new FileInputStream("/proc/"+processId+"/cmdline")).trim();
+        } catch (IOException e) {
+            return null;
         }
-        return null;
     }
 
     /**
