@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -36,9 +38,13 @@ import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.*;
 
 /**
@@ -58,6 +64,7 @@ public final class ConfigurationBuilder {
     private String[] additionalSharedPreferences;
     private Integer connectionTimeout;
     private ReportField[] customReportContent;
+    private final Map<ReportField, Boolean> reportContentChanges = new HashMap<ReportField, Boolean>();
     private Boolean deleteUnapprovedReportsOnApplicationStart;
     private Boolean deleteOldUnsentReportsOnApplicationStart;
     private Integer dropboxCollectionMinutes;
@@ -108,7 +115,7 @@ public final class ConfigurationBuilder {
      * Constructs a ConfigurationBuilder that is prepopulated with any
      * '@ReportCrashes' annotation declared on the Application class.
      *
-     * @param app   Current Application, from which any annotated config will be gleaned.
+     * @param app Current Application, from which any annotated config will be gleaned.
      */
     public ConfigurationBuilder(@NonNull Application app) {
 
@@ -177,10 +184,9 @@ public final class ConfigurationBuilder {
     /**
      * Set custom HTTP headers to be sent by the provided {@link HttpSender}.
      * This should be used also by third party senders.
-     * 
-     * @param headers
-     *            A map associating HTTP header names to their values.
-     * @return The updated ACRA configuration
+     *
+     * @param headers A map associating HTTP header names to their values.
+     * @return this instance
      */
     @NonNull
     public ConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
@@ -190,94 +196,93 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @param additionalDropboxTags
-     *            the additionalDropboxTags to set
-     * @return The updated ACRA configuration
+     * @param additionalDropboxTags the additionalDropboxTags to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setAdditionalDropboxTags(@NonNull String[] additionalDropboxTags) {
         this.additionalDropBoxTags = additionalDropboxTags;
         return this;
     }
 
     /**
-     * @param additionalSharedPreferences
-     *            the additionalSharedPreferences to set
-     * @return The updated ACRA configuration
+     * @param additionalSharedPreferences the additionalSharedPreferences to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setAdditionalSharedPreferences(@NonNull String[] additionalSharedPreferences) {
         this.additionalSharedPreferences = additionalSharedPreferences;
         return this;
     }
 
     /**
-     * @param connectionTimeout
-     *            the connectionTimeout to set
-     * @return The updated ACRA configuration
+     * @param connectionTimeout the connectionTimeout to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
 
     /**
-     * @param customReportContent
-     *            the customReportContent to set
-     * @return The updated ACRA configuration
+     * @param customReportContent the customReportContent to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setCustomReportContent(@NonNull ReportField[] customReportContent) {
         this.customReportContent = customReportContent;
         return this;
     }
 
     /**
-     * @param deleteUnapprovedReportsOnApplicationStart the deleteUnapprovedReportsOnApplicationStart to set
-     * @return The updated ACRA configuration
+     * Use this if you want to keep the default configuration of reportContent, but set some fields explicitly.
+     *
+     * @param field  the field to set
+     * @param enable if this field should be reported
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
+    public ConfigurationBuilder setReportField(@NonNull ReportField field, boolean enable) {
+        this.reportContentChanges.put(field, enable);
+        return this;
+    }
+
+    /**
+     * @param deleteUnapprovedReportsOnApplicationStart the deleteUnapprovedReportsOnApplicationStart to set
+     * @return this instance
+     */
+    @NonNull
     public ConfigurationBuilder setDeleteUnapprovedReportsOnApplicationStart(boolean deleteUnapprovedReportsOnApplicationStart) {
         this.deleteUnapprovedReportsOnApplicationStart = deleteUnapprovedReportsOnApplicationStart;
         return this;
     }
 
     /**
-     * @param deleteOldUnsentReportsOnApplicationStart    When to delete old (unsent) reports on startup.
-     * @return The updated ACRA configuration
+     * @param deleteOldUnsentReportsOnApplicationStart When to delete old (unsent) reports on startup.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setDeleteOldUnsentReportsOnApplicationStart(boolean deleteOldUnsentReportsOnApplicationStart) {
         this.deleteOldUnsentReportsOnApplicationStart = deleteOldUnsentReportsOnApplicationStart;
         return this;
     }
 
     /**
-     * @param dropboxCollectionMinutes
-     *            the dropboxCollectionMinutes to set
-     * @return The updated ACRA configuration
+     * @param dropboxCollectionMinutes the dropboxCollectionMinutes to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setDropboxCollectionMinutes(int dropboxCollectionMinutes) {
         this.dropboxCollectionMinutes = dropboxCollectionMinutes;
         return this;
     }
 
     /**
-     * @param forceCloseDialogAfterToast
-     *            the forceCloseDialogAfterToast to set
-     * @return The updated ACRA configuration
+     * @param forceCloseDialogAfterToast the forceCloseDialogAfterToast to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
         this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
         return this;
@@ -285,60 +290,51 @@ public final class ConfigurationBuilder {
 
     /**
      * Modify the formUri of your backend server receiving reports.
-     * 
-     * @param formUri   formUri to set.
-     * @return The updated ACRA configuration
+     *
+     * @param formUri formUri to set.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setFormUri(@Nullable String formUri) {
         this.formUri = formUri;
         return this;
     }
 
     /**
-     * @param formUriBasicAuthLogin
-     *            the formUriBasicAuthLogin to set
-     * @return The updated ACRA configuration
+     * @param formUriBasicAuthLogin the formUriBasicAuthLogin to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setFormUriBasicAuthLogin(@Nullable String formUriBasicAuthLogin) {
         this.formUriBasicAuthLogin = formUriBasicAuthLogin;
         return this;
     }
 
     /**
-     * @param formUriBasicAuthPassword
-     *            the formUriBasicAuthPassword to set
-     * @return The updated ACRA configuration
+     * @param formUriBasicAuthPassword the formUriBasicAuthPassword to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setFormUriBasicAuthPassword(@Nullable String formUriBasicAuthPassword) {
         this.formUriBasicAuthPassword = formUriBasicAuthPassword;
         return this;
     }
 
     /**
-     * @param includeDropboxSystemTags
-     *            the includeDropboxSystemTags to set
-     * @return The updated ACRA configuration
+     * @param includeDropboxSystemTags the includeDropboxSystemTags to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setIncludeDropboxSystemTags(boolean includeDropboxSystemTags) {
         this.includeDropBoxSystemTags = includeDropboxSystemTags;
         return this;
     }
 
     /**
-     * @param logcatArguments
-     *            the logcatArguments to set
-     * @return The updated ACRA configuration
+     * @param logcatArguments the logcatArguments to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setLogcatArguments(@NonNull String[] logcatArguments) {
         this.logcatArguments = logcatArguments;
         return this;
@@ -346,12 +342,11 @@ public final class ConfigurationBuilder {
 
     /**
      * Modify the mailTo of the mail account receiving reports.
-     * 
-     * @param mailTo    mailTo to set.
-     * @return The updated ACRA configuration
+     *
+     * @param mailTo mailTo to set.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setMailTo(@Nullable String mailTo) {
         this.mailTo = mailTo;
         return this;
@@ -359,15 +354,13 @@ public final class ConfigurationBuilder {
 
     /**
      * Change the current {@link ReportingInteractionMode}.
-     * 
-     * @param mode  ReportingInteractionMode to set.
-     * @return The updated ACRA configuration
-     * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      *
+     * @param mode ReportingInteractionMode to set.
+     * @return this instance
+     * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      * @deprecated since 4.8.2 use {@link #setReportingInteractionMode(ReportingInteractionMode)} instead.
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
@@ -376,33 +369,29 @@ public final class ConfigurationBuilder {
     /**
      * Change the current {@link ReportingInteractionMode}.
      *
-     * @param mode  ReportingInteractionMode to set.
-     * @return The updated ACRA configuration
+     * @param mode ReportingInteractionMode to set.
+     * @return this instance
      * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setReportingInteractionMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
         this.reportingInteractionMode = mode;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogPositiveButtonText(@StringRes int resId) {
         resDialogPositiveButtonText = resId;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogNegativeButtonText(@StringRes int resId) {
         resDialogNegativeButtonText = resId;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setReportDialogClass(@NonNull Class<? extends BaseCrashReportDialog> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
         return this;
@@ -412,12 +401,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogCommentPrompt()} comes from an Android
      * Library Project.
-     * 
+     *
      * @param resId The resource id, see {@link ReportsCrashes#resDialogCommentPrompt()}
-     * @return The updated ACRA configuration
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogCommentPrompt(@StringRes int resId) {
         resDialogCommentPrompt = resId;
         return this;
@@ -426,14 +414,12 @@ public final class ConfigurationBuilder {
     /**
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogEmailPrompt()} comes from an Android Library Project.
-     * 
-     * @param resId
-     *            The resource id, see
-     *            {@link ReportsCrashes#resDialogEmailPrompt()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see
+     *              {@link ReportsCrashes#resDialogEmailPrompt()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogEmailPrompt(@StringRes int resId) {
         resDialogEmailPrompt = resId;
         return this;
@@ -443,13 +429,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogIcon()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resDialogIcon()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resDialogIcon()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogIcon(@DrawableRes int resId) {
         resDialogIcon = resId;
         return this;
@@ -459,13 +443,11 @@ public final class ConfigurationBuilder {
      * Use this method BEFORE if the id you wanted to give to
      * {@link ReportsCrashes#resDialogOkToast()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resDialogOkToast()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resDialogOkToast()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogOkToast(@StringRes int resId) {
         resDialogOkToast = resId;
         return this;
@@ -475,13 +457,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogText()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resDialogText()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resDialogText()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogText(@StringRes int resId) {
         resDialogText = resId;
         return this;
@@ -491,13 +471,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resDialogTitle()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resDialogTitle()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resDialogTitle()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResDialogTitle(@StringRes int resId) {
         resDialogTitle = resId;
         return this;
@@ -507,13 +485,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifIcon()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resNotifIcon()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resNotifIcon()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifIcon(@DrawableRes int resId) {
         resNotifIcon = resId;
         return this;
@@ -523,13 +499,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifText()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resNotifText()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resNotifText()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifText(@StringRes int resId) {
         resNotifText = resId;
         return this;
@@ -539,14 +513,12 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifTickerText()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see
-     *            {@link ReportsCrashes#resNotifTickerText()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see
+     *              {@link ReportsCrashes#resNotifTickerText()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifTickerText(@StringRes int resId) {
         resNotifTickerText = resId;
         return this;
@@ -556,13 +528,11 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resNotifTitle()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resNotifTitle()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resNotifTitle()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResNotifTitle(@StringRes int resId) {
         resNotifTitle = resId;
         return this;
@@ -572,77 +542,63 @@ public final class ConfigurationBuilder {
      * Use this method if the id you wanted to give to
      * {@link ReportsCrashes#resToastText()} comes from an Android Library
      * Project.
-     * 
-     * @param resId
-     *            The resource id, see {@link ReportsCrashes#resToastText()}
-     * @return The updated ACRA configuration
+     *
+     * @param resId The resource id, see {@link ReportsCrashes#resToastText()}
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setResToastText(@StringRes int resId) {
         resToastText = resId;
         return this;
     }
 
     /**
-     * @param sharedPreferenceMode
-     *            the sharedPreferenceMode to set
-     * @return The updated ACRA configuration
+     * @param sharedPreferenceMode the sharedPreferenceMode to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSharedPreferenceMode(int sharedPreferenceMode) {
         this.sharedPreferencesMode = sharedPreferenceMode;
         return this;
     }
 
     /**
-     * @param sharedPreferenceName
-     *            the sharedPreferenceName to set
-     * @return The updated ACRA configuration
+     * @param sharedPreferenceName the sharedPreferenceName to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSharedPreferenceName(@NonNull String sharedPreferenceName) {
         this.sharedPreferencesName = sharedPreferenceName;
         return this;
     }
 
     /**
-     * @param socketTimeout
-     *            the socketTimeout to set
-     * @return The updated ACRA configuration
+     * @param socketTimeout the socketTimeout to set
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
         return this;
     }
 
     /**
-     * 
-     * @param filterByPid
-     *            true if you want to collect only logcat lines related to your
-     *            application process.
-     * @return The updated ACRA configuration
+     * @param filterByPid true if you want to collect only logcat lines related to your
+     *                    application process.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setLogcatFilterByPid(boolean filterByPid) {
         logcatFilterByPid = filterByPid;
         return this;
     }
 
     /**
-     * 
-     * @param sendReportsInDevMode
-     *            false if you want to disable sending reports in development
-     *            mode. Reports will be sent only on signed applications.
-     * @return The updated ACRA configuration
+     * @param sendReportsInDevMode false if you want to disable sending reports in development
+     *                             mode. Reports will be sent only on signed applications.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSendReportsInDevMode(boolean sendReportsInDevMode) {
         this.sendReportsInDevMode = sendReportsInDevMode;
         return this;
@@ -652,107 +608,86 @@ public final class ConfigurationBuilder {
      * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setSendReportsAtShutdown(boolean sendReportsAtShutdown) {
         return this;
     }
 
     /**
-     * 
-     * @param excludeMatchingSharedPreferencesKeys
-     *            an array of Strings containing regexp defining
-     *            SharedPreferences keys that should be excluded from the data
-     *            collection.
-     * @return The updated ACRA configuration
+     * @param excludeMatchingSharedPreferencesKeys an array of Strings containing regexp defining
+     *                                             SharedPreferences keys that should be excluded from the data
+     *                                             collection.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(@NonNull String[] excludeMatchingSharedPreferencesKeys) {
         this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
         return this;
     }
 
     /**
-     * 
-     * @param excludeMatchingSettingsKeys
-     *            an array of Strings containing regexp defining
-     *            Settings.System, Settings.Secure and Settings.Global keys that
-     *            should be excluded from the data collection.
-     * @return The updated ACRA configuration
+     * @param excludeMatchingSettingsKeys an array of Strings containing regexp defining
+     *                                    Settings.System, Settings.Secure and Settings.Global keys that
+     *                                    should be excluded from the data collection.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setExcludeMatchingSettingsKeys(@NonNull String[] excludeMatchingSettingsKeys) {
         this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
     }
 
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setBuildConfigClass(@Nullable Class buildConfigClass) {
         this.buildConfigClass = buildConfigClass;
         return this;
     }
+
     /**
-     * 
-     * @param applicationLogFile
-     *            The path and file name of your application log file, to be
-     *            used with {@link ReportField#APPLICATION_LOG}.
-     * @return The updated ACRA configuration
+     * @param applicationLogFile The path and file name of your application log file, to be
+     *                           used with {@link ReportField#APPLICATION_LOG}.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setApplicationLogFile(@NonNull String applicationLogFile) {
         this.applicationLogFile = applicationLogFile;
         return this;
     }
 
     /**
-     * 
-     * @param applicationLogFileLines
-     *            The number of lines of your application log to be collected,
-     *            to be used with {@link ReportField#APPLICATION_LOG} and
-     *            {@link ReportsCrashes#applicationLogFile()}.
-     * @return The updated ACRA configuration
+     * @param applicationLogFileLines The number of lines of your application log to be collected,
+     *                                to be used with {@link ReportField#APPLICATION_LOG} and
+     *                                {@link ReportsCrashes#applicationLogFile()}.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setApplicationLogFileLines(int applicationLogFileLines) {
         this.applicationLogFileLines = applicationLogFileLines;
         return this;
     }
 
     /**
-     * 
-     * @param httpMethod
-     *            The method to be used to send data to the server.
-     * @return The updated ACRA configuration
+     * @param httpMethod The method to be used to send data to the server.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setHttpMethod(@NonNull Method httpMethod) {
         this.httpMethod = httpMethod;
         return this;
     }
 
     /**
-     * 
-     * @param type
-     *            The type of content encoding to be used to send data to the
-     *            server.
-     * @return The updated ACRA configuration
+     * @param type The type of content encoding to be used to send data to the
+     *             server.
+     * @return this instance
      */
     @NonNull
-    @SuppressWarnings( "unused" )
     public ConfigurationBuilder setReportType(@NonNull Type type) {
         reportType = type;
         return this;
     }
 
     /**
-     * 
-     * @param keyStoreFactory
-     *            Set this to a factory which creates a the keystore that contains the trusted certificates
+     * @param keyStoreFactory Set this to a factory which creates a the keystore that contains the trusted certificates
      */
     @NonNull
     public ConfigurationBuilder setKeyStoreFactory(KeyStoreFactory keyStoreFactory) {
@@ -807,11 +742,28 @@ public final class ConfigurationBuilder {
     }
 
     @NonNull
-    ReportField[] customReportContent() {
+    Set<ReportField> reportContent() {
+        final Set<ReportField> reportContent = new HashSet<ReportField>();
         if (customReportContent != null) {
-            return customReportContent;
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
+            reportContent.addAll(Arrays.asList(customReportContent));
+        } else if (mailTo == null || DEFAULT_STRING_VALUE.equals(mailTo)) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Report Fields");
+            reportContent.addAll(Arrays.asList(DEFAULT_REPORT_FIELDS));
+        } else {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
+            reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
         }
-        return new ReportField[0];
+
+        // Add or remove any extra fields.
+        for (Map.Entry<ReportField, Boolean> entry : reportContentChanges.entrySet()) {
+            if (entry.getValue()) {
+                reportContent.add(entry.getKey());
+            } else {
+                reportContent.remove(entry.getKey());
+            }
+        }
+        return reportContent;
     }
 
     boolean deleteUnapprovedReportsOnApplicationStart() {
@@ -878,7 +830,7 @@ public final class ConfigurationBuilder {
         if (logcatArguments != null) {
             return logcatArguments;
         }
-        return new String[] { "-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time" };
+        return new String[]{"-t", Integer.toString(DEFAULT_LOGCAT_LINES), "-v", "time"};
     }
 
     @NonNull
@@ -1116,7 +1068,7 @@ public final class ConfigurationBuilder {
             return reportSenderFactoryClasses;
         }
         //noinspection unchecked
-        return new Class[] {DefaultReportSenderFactory.class};
+        return new Class[]{DefaultReportSenderFactory.class};
     }
 
     @Nullable
