@@ -687,7 +687,7 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @param keyStoreFactory Set this to a factory which creates a the keystore that contains the trusted certificates
+     * @param keyStoreFactoryClass Set this to a factory class which creates a the keystore that contains the trusted certificates
      */
     @NonNull
     public ConfigurationBuilder setKeyStoreFactoryClass(Class<?extends KeyStoreFactory> keyStoreFactoryClass) {
