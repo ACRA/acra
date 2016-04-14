@@ -108,7 +108,7 @@ public final class ConfigurationBuilder {
     private Method httpMethod;
     private Type reportType;
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
-    private KeyStoreFactory keyStoreFactory;
+    private Class<? extends KeyStoreFactory> keyStoreFactoryClass;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
     /**
@@ -690,8 +690,8 @@ public final class ConfigurationBuilder {
      * @param keyStoreFactory Set this to a factory which creates a the keystore that contains the trusted certificates
      */
     @NonNull
-    public ConfigurationBuilder setKeyStoreFactory(KeyStoreFactory keyStoreFactory) {
-        this.keyStoreFactory = keyStoreFactory;
+    public ConfigurationBuilder setKeyStoreFactoryClass(Class<?extends KeyStoreFactory> keyStoreFactoryClass) {
+        this.keyStoreFactoryClass = keyStoreFactoryClass;
         return this;
     }
 
@@ -1072,8 +1072,8 @@ public final class ConfigurationBuilder {
     }
 
     @Nullable
-    KeyStoreFactory keyStoreFactory() {
-        return keyStoreFactory;
+    Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
+        return keyStoreFactoryClass;
     }
 
     @NonNull

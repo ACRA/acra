@@ -93,8 +93,7 @@ public final class HttpRequest {
 
                 final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
-                final KeyStoreFactory keyStoreFactory = config.keyStoreFactory();
-                final KeyStore keyStore = keyStoreFactory == null ? null : keyStoreFactory.create(context);
+                final KeyStore keyStore = getKeyStore(context, config);
 
                 tmf.init(keyStore);
 
@@ -172,6 +171,21 @@ public final class HttpRequest {
         urlConnection.disconnect();
     }
 
+    @Nullable
+    private static KeyStore getKeyStore(@NonNull Context context,@NonNull ACRAConfiguration config) {
+        final Class<? extends KeyStoreFactory> keyStoreFactory = config.keyStoreFactoryClass();
+        if(keyStoreFactory != null) {
+            try {
+                return keyStoreFactory.newInstance().create(context);
+            } catch (InstantiationException e) {
+                ACRA.log.e(LOG_TAG, "Could not get keystore from factory", e);
+            } catch (IllegalAccessException e) {
+                ACRA.log.e(LOG_TAG, "Could not get keystore from factory", e);
+            }
+        }
+        return null;
+    }
+
     /**
      * Converts a Map of parameters into a URL encoded Sting.
      *
@@ -183,7 +197,7 @@ public final class HttpRequest {
     public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?,?> entry : parameters.entrySet()) {
+        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
             if (dataBfr.length() != 0) {
                 dataBfr.append('&');
             }

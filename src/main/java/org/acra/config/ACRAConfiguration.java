@@ -127,7 +127,7 @@ public final class ACRAConfiguration implements Serializable {
     private Method httpMethod;
     private Type reportType;
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
-    private KeyStoreFactory keyStoreFactory;
+    private Class<? extends KeyStoreFactory> keyStoreFactoryClass;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
 
     /**
@@ -185,7 +185,7 @@ public final class ACRAConfiguration implements Serializable {
         httpHeaders.putAll(builder.httpHeaders());
         reportType = builder.reportType();
         reportSenderFactoryClasses = copyArray(builder.reportSenderFactoryClasses());
-        keyStoreFactory = builder.keyStoreFactory();
+        keyStoreFactoryClass = builder.keyStoreFactoryClass();
     }
 
 
@@ -996,8 +996,8 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     @Nullable
-    public KeyStoreFactory keyStoreFactory() {
-        return keyStoreFactory;
+    public Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
+        return keyStoreFactoryClass;
     }
 
     /**
