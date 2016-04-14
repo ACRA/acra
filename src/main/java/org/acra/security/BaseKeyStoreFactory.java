@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.util.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -39,16 +41,16 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.8.3
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess","unused"})
 public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
 
     private final String certificateType;
 
     /**
-     * creates a new KeyStoreFactory for the default certificate type (X.509)
+     * creates a new KeyStoreFactory for the default certificate type {@link ACRAConstants#DEFAULT_CERTIFICATE_TYPE}
      */
     public BaseKeyStoreFactory(){
-        this("X.509");
+        this(ACRAConstants.DEFAULT_CERTIFICATE_TYPE);
     }
 
     /**
@@ -75,19 +77,15 @@ public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
                 keyStore.setCertificateEntry("ca", certificate);
                 return keyStore;
             } catch (CertificateException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load certificate", e);
             } catch (KeyStoreException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load certificate", e);
             } catch (NoSuchAlgorithmException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load certificate", e);
             } catch (IOException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load certificate", e);
             } finally {
-                try {
-                    bufferedInputStream.close();
-                } catch (IOException e) {
-                    ACRA.log.e(LOG_TAG, "", e);
-                }
+                IOUtils.safeClose(bufferedInputStream);
             }
         }
         return null;

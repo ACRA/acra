@@ -17,33 +17,20 @@ package org.acra.security;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
+import android.support.annotation.Nullable;
 
-import java.io.InputStream;
+import java.security.KeyStore;
 
 /**
- * KeyStoreFactory for a certificate stored in a raw resource
+ * Default KeyStoreFactory. Does not provide any KeyStore
  *
  * @author F43nd1r
- * @since 4.8.3
+ * @since 4.8.6
  */
-final class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
-
-    @RawRes
-    private final int rawRes;
-
-    /**
-     * creates a new KeyStoreFactory for the specified resource with a custom certificate type
-     * @param certificateType the certificate type
-     * @param rawRes raw resource id
-     */
-    public ResourceKeyStoreFactory(String certificateType, @RawRes int rawRes) {
-        super(certificateType);
-        this.rawRes = rawRes;
-    }
-
+public class NoKeyStoreFactory implements KeyStoreFactory {
+    @Nullable
     @Override
-    public InputStream getInputStream(@NonNull Context context) {
-        return context.getResources().openRawResource(rawRes);
+    public KeyStore create(@NonNull Context context) {
+        return null;
     }
 }

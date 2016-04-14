@@ -19,6 +19,7 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 
 import org.acra.ACRA;
@@ -129,6 +130,10 @@ public final class ACRAConfiguration implements Serializable {
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
     private Class<? extends KeyStoreFactory> keyStoreFactoryClass;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
+    @RawRes
+    private int resCertificate;
+    private String certificatePath;
+    private String certificateType;
 
     /**
      * @param builder ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
@@ -186,6 +191,9 @@ public final class ACRAConfiguration implements Serializable {
         reportType = builder.reportType();
         reportSenderFactoryClasses = copyArray(builder.reportSenderFactoryClasses());
         keyStoreFactoryClass = builder.keyStoreFactoryClass();
+        resCertificate = builder.resCertificate();
+        certificatePath = builder.certificatePath();
+        certificateType = builder.certificateType();
     }
 
 
@@ -995,9 +1003,22 @@ public final class ACRAConfiguration implements Serializable {
         return copyArray(reportSenderFactoryClasses);
     }
 
-    @Nullable
+    @NonNull
     public Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
         return keyStoreFactoryClass;
+    }
+
+    @RawRes
+    public int resCertificate() {
+        return resCertificate;
+    }
+
+    public String certificatePath() {
+        return certificatePath;
+    }
+
+    public String certificateType() {
+        return certificateType;
     }
 
     /**

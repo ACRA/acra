@@ -19,6 +19,7 @@ import android.app.Application;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 
 import org.acra.ACRA;
@@ -31,6 +32,7 @@ import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.security.KeyStoreFactory;
+import org.acra.security.NoKeyStoreFactory;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
@@ -91,8 +93,8 @@ public final class ConfigurationBuilder {
     @DrawableRes private Integer resNotifIcon;
     @StringRes private Integer resNotifText;
     @StringRes private Integer resNotifTickerText;
-    @StringRes  private Integer resNotifTitle;
-    @StringRes   private Integer resToastText;
+    @StringRes private Integer resNotifTitle;
+    @StringRes private Integer resToastText;
     private Integer sharedPreferencesMode;
     private String sharedPreferencesName;
     private Integer socketTimeout;
@@ -110,6 +112,10 @@ public final class ConfigurationBuilder {
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
     private Class<? extends KeyStoreFactory> keyStoreFactoryClass;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
+    @RawRes private Integer resCertificate;
+    private String certificatePath;
+    private String certificateType;
+
 
     /**
      * Constructs a ConfigurationBuilder that is prepopulated with any
@@ -168,6 +174,10 @@ public final class ConfigurationBuilder {
             httpMethod = annotationConfig.httpMethod();
             reportType = annotationConfig.reportType();
             reportSenderFactoryClasses = annotationConfig.reportSenderFactoryClasses();
+            keyStoreFactoryClass = annotationConfig.keyStoreFactoryClass();
+            resCertificate = annotationConfig.resCertificate();
+            certificatePath = annotationConfig.certificatePath();
+            certificateType = annotationConfig.certificateType();
         } else {
             annotationType = null;
         }
@@ -688,10 +698,41 @@ public final class ConfigurationBuilder {
 
     /**
      * @param keyStoreFactoryClass Set this to a factory class which creates a the keystore that contains the trusted certificates
+     * @return this instance
      */
     @NonNull
     public ConfigurationBuilder setKeyStoreFactoryClass(Class<?extends KeyStoreFactory> keyStoreFactoryClass) {
         this.keyStoreFactoryClass = keyStoreFactoryClass;
+        return this;
+    }
+
+    /**
+     * @param resCertificate a raw resource of a custom certificate file
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setCertificate(@RawRes int resCertificate){
+        this.resCertificate = resCertificate;
+        return this;
+    }
+
+    /**
+     * @param certificatePath path to a custom trusted certificate. Must start with "asset://" if the file is in the assets folder
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setCertificate(@NonNull String certificatePath) {
+        this.certificatePath = certificatePath;
+        return this;
+    }
+
+    /**
+     * @param type custom certificate type
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setCertificateType(@NonNull String type) {
+        this.certificateType = type;
         return this;
     }
 
@@ -1071,9 +1112,36 @@ public final class ConfigurationBuilder {
         return new Class[]{DefaultReportSenderFactory.class};
     }
 
-    @Nullable
+    @NonNull
     Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
-        return keyStoreFactoryClass;
+        if(keyStoreFactoryClass != null) {
+            return keyStoreFactoryClass;
+        }
+        return NoKeyStoreFactory.class;
+    }
+
+    @RawRes
+    int resCertificate() {
+        if(resCertificate != null){
+            return resCertificate;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @NonNull
+    String certificatePath() {
+        if(certificatePath != null){
+            return certificatePath;
+        }
+        return DEFAULT_STRING_VALUE;
+    }
+
+    @NonNull
+    String certificateType() {
+        if(certificateType != null){
+            return certificateType;
+        }
+        return DEFAULT_CERTIFICATE_TYPE;
     }
 
     @NonNull
