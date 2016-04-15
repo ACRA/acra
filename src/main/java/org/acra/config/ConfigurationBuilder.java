@@ -22,7 +22,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
