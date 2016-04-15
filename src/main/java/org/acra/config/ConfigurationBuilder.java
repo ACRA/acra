@@ -199,7 +199,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setAdditionalDropboxTags(@NonNull String[] additionalDropboxTags) {
+    public ConfigurationBuilder setAdditionalDropboxTags(@NonNull String... additionalDropboxTags) {
         this.additionalDropBoxTags = additionalDropboxTags;
         return this;
     }
@@ -209,7 +209,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setAdditionalSharedPreferences(@NonNull String[] additionalSharedPreferences) {
+    public ConfigurationBuilder setAdditionalSharedPreferences(@NonNull String... additionalSharedPreferences) {
         this.additionalSharedPreferences = additionalSharedPreferences;
         return this;
     }
@@ -229,7 +229,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setCustomReportContent(@NonNull ReportField[] customReportContent) {
+    public ConfigurationBuilder setCustomReportContent(@NonNull ReportField... customReportContent) {
         this.customReportContent = customReportContent;
         return this;
     }
@@ -334,7 +334,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setLogcatArguments(@NonNull String[] logcatArguments) {
+    public ConfigurationBuilder setLogcatArguments(@NonNull String... logcatArguments) {
         this.logcatArguments = logcatArguments;
         return this;
     }
@@ -616,7 +616,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(@NonNull String[] excludeMatchingSharedPreferencesKeys) {
+    public ConfigurationBuilder setExcludeMatchingSharedPreferencesKeys(@NonNull String... excludeMatchingSharedPreferencesKeys) {
         this.excludeMatchingSharedPreferencesKeys = excludeMatchingSharedPreferencesKeys;
         return this;
     }
@@ -628,7 +628,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setExcludeMatchingSettingsKeys(@NonNull String[] excludeMatchingSettingsKeys) {
+    public ConfigurationBuilder setExcludeMatchingSettingsKeys(@NonNull String... excludeMatchingSettingsKeys) {
         this.excludeMatchingSettingsKeys = excludeMatchingSettingsKeys;
         return this;
     }
@@ -692,8 +692,9 @@ public final class ConfigurationBuilder {
         return this;
     }
 
+    @SafeVarargs
     @NonNull
-    public ConfigurationBuilder setReportSenderFactoryClasses(@NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses) {
+    public final ConfigurationBuilder setReportSenderFactoryClasses(@NonNull Class<? extends ReportSenderFactory>... reportSenderFactoryClasses) {
         this.reportSenderFactoryClasses = reportSenderFactoryClasses;
         return this;
     }
