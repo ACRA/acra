@@ -22,7 +22,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -357,11 +356,10 @@ public final class ConfigurationBuilder {
      *
      * @param mode ReportingInteractionMode to set.
      * @return this instance
-     * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      * @deprecated since 4.8.2 use {@link #setReportingInteractionMode(ReportingInteractionMode)} instead.
      */
     @NonNull
-    public ConfigurationBuilder setMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
+    public ConfigurationBuilder setMode(@NonNull ReportingInteractionMode mode) {
         this.reportingInteractionMode = mode;
         return this;
     }
@@ -371,10 +369,9 @@ public final class ConfigurationBuilder {
      *
      * @param mode ReportingInteractionMode to set.
      * @return this instance
-     * @throws ACRAConfigurationException if a configuration item is missing for this reportingInteractionMode.
      */
     @NonNull
-    public ConfigurationBuilder setReportingInteractionMode(@NonNull ReportingInteractionMode mode) throws ACRAConfigurationException {
+    public ConfigurationBuilder setReportingInteractionMode(@NonNull ReportingInteractionMode mode) {
         this.reportingInteractionMode = mode;
         return this;
     }
