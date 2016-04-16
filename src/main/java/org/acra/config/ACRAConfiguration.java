@@ -20,6 +20,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -101,6 +102,8 @@ public final class ACRAConfiguration implements Serializable {
     private int resDialogText;
     @StringRes
     private int resDialogTitle;
+    @StyleRes
+    private int resDialogTheme;
     @DrawableRes
     private int resNotifIcon;
     @StringRes
@@ -164,6 +167,7 @@ public final class ACRAConfiguration implements Serializable {
         resDialogOkToast = builder.resDialogOkToast();
         resDialogText = builder.resDialogText();
         resDialogTitle = builder.resDialogTitle();
+        resDialogTheme = builder.resDialogTheme();
         resNotifIcon = builder.resNotifIcon();
         resNotifText = builder.resNotifText();
         resNotifTickerText = builder.resNotifTickerText();
@@ -894,6 +898,11 @@ public final class ACRAConfiguration implements Serializable {
     @StringRes
     public int resDialogTitle() {
         return resDialogTitle;
+    }
+
+    @StyleRes
+    public int resDialogTheme() {
+        return resDialogTheme;
     }
 
     @DrawableRes

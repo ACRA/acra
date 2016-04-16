@@ -20,6 +20,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -87,6 +88,7 @@ public final class ConfigurationBuilder {
     @StringRes private Integer resDialogOkToast;
     @StringRes private Integer resDialogText;
     @StringRes private Integer resDialogTitle;
+    @StyleRes private Integer resDialogTheme;
     @DrawableRes private Integer resNotifIcon;
     @StringRes private Integer resNotifText;
     @StringRes private Integer resNotifTickerText;
@@ -147,6 +149,7 @@ public final class ConfigurationBuilder {
             resDialogOkToast = annotationConfig.resDialogOkToast();
             resDialogText = annotationConfig.resDialogText();
             resDialogTitle = annotationConfig.resDialogTitle();
+            resDialogTheme = annotationConfig.resDialogTheme();
             resNotifIcon = annotationConfig.resNotifIcon();
             resNotifText = annotationConfig.resNotifText();
             resNotifTickerText = annotationConfig.resNotifTickerText();
@@ -475,6 +478,16 @@ public final class ConfigurationBuilder {
     @NonNull
     public ConfigurationBuilder setResDialogTitle(@StringRes int resId) {
         resDialogTitle = resId;
+        return this;
+    }
+
+    /**
+     * @param resId The resource id, see {@link ReportsCrashes#resDialogTheme()}
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setResDialogTheme(@StyleRes int resId) {
+        resDialogTheme = resId;
         return this;
     }
 
@@ -907,6 +920,14 @@ public final class ConfigurationBuilder {
     int resDialogTitle() {
         if (resDialogTitle != null) {
             return resDialogTitle;
+        }
+        return DEFAULT_RES_VALUE;
+    }
+
+    @StyleRes
+    int resDialogTheme() {
+        if (resDialogTheme != null) {
+            return resDialogTheme;
         }
         return DEFAULT_RES_VALUE;
     }

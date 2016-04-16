@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -138,6 +139,12 @@ public @interface ReportsCrashes {
      * @return Resource id for the title in the crash dialog.
      */
     @StringRes int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     *
+     * @return resource id for the crash dialog theme
+     */
+    @StyleRes int resDialogTheme() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the status bar notification. Default
