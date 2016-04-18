@@ -55,7 +55,7 @@
 			we need to compile against version 23. All such classes are in the org.acra.jraf package.
 		-->
         	<android.version>23</android.version>
-		<support.version>23.2.1</support.version>
+		<support.version>23.3.0</support.version>
 	</properties>
 
 	<dependencies>

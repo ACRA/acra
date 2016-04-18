@@ -6,6 +6,7 @@ ext {
     supportVersion = pom.depthFirst().find { it.name() == 'support.version' }.toString()
     androidVersion = pom.depthFirst().find { it.name() == 'android.version' }.toInteger()
     proguardFile = pom.depthFirst().find { it.name() == 'consumerProguardFile' }.toString()
+    println("building ACRA $acraVersion for android $androidVersion with support version $supportVersion")
 }
 
 android {
