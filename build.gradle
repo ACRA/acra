@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 ext {
-    def pom = new XmlSlurper().parse(new File(rootDir, "/acra/pom.xml"))
+    def pom = new XmlSlurper().parse(new File(projectDir, "pom.xml"))
     acraVersion = pom.version.toString()
     supportVersion = pom.depthFirst().find { it.name() == 'support.version' }.toString()
     androidVersion = pom.depthFirst().find { it.name() == 'android.version' }.toInteger()
