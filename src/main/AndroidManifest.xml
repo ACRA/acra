@@ -9,8 +9,6 @@
   ~ Contact support@xandar.com.au for copyright requests.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="0"
-          android:versionName="UPDATED-BY-BUILD"
           package="ch.acra.acra">
     
     <!--
