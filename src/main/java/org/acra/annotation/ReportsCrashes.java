@@ -455,12 +455,12 @@ public @interface ReportsCrashes {
     int socketTimeout() default ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 
     /**
-     * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you
-     * prefer displaying the native Force Close dialog after the Toast.
+     * set this to true if you prefer displaying the native force close dialog after the ACRA is done.
+     * Recommended: Keep this set to false in {@link ReportingInteractionMode#DIALOG}
      * 
-     * @return true if the Force Close dialog has to be displayed.
+     * @return true if the force close dialog has to be displayed.
      */
-    boolean forceCloseDialogAfterToast() default ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+    boolean alsoReportToNative() default ACRAConstants.DEFAULT_REPORT_TO_NATIVE;
 
     /**
      * Add here your {@link SharedPreferences} identifier Strings if you use

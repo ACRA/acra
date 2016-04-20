@@ -245,12 +245,7 @@ public final class ReportExecutor {
      * End the application.
      */
     private void endApplication(@Nullable Thread uncaughtExceptionThread, Throwable th) {
-        // TODO It would be better to create an explicit config attribute #letDefaultHandlerEndApplication
-        // as the intent is clearer and would allows you to switch it off for SILENT.
-        final boolean letDefaultHandlerEndApplication = (
-                config.mode() == ReportingInteractionMode.SILENT ||
-                        (config.mode() == ReportingInteractionMode.TOAST && config.forceCloseDialogAfterToast())
-        );
+        final boolean letDefaultHandlerEndApplication = config.alsoReportToNative();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
         if (handlingUncaughtException && letDefaultHandlerEndApplication && (defaultExceptionHandler != null)) {

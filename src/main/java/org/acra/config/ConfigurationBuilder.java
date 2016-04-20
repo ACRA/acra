@@ -70,7 +70,7 @@ public final class ConfigurationBuilder {
     private Boolean deleteUnapprovedReportsOnApplicationStart;
     private Boolean deleteOldUnsentReportsOnApplicationStart;
     private Integer dropboxCollectionMinutes;
-    private Boolean forceCloseDialogAfterToast;
+    private Boolean alsoReportToNative;
     private String formUri;
     private String formUriBasicAuthLogin;
     private String formUriBasicAuthPassword;
@@ -139,7 +139,7 @@ public final class ConfigurationBuilder {
             deleteUnapprovedReportsOnApplicationStart = annotationConfig.deleteUnapprovedReportsOnApplicationStart();
             deleteOldUnsentReportsOnApplicationStart = annotationConfig.deleteOldUnsentReportsOnApplicationStart();
             dropboxCollectionMinutes = annotationConfig.dropboxCollectionMinutes();
-            forceCloseDialogAfterToast = annotationConfig.forceCloseDialogAfterToast();
+            alsoReportToNative = annotationConfig.alsoReportToNative();
             formUri = annotationConfig.formUri();
             formUriBasicAuthLogin = annotationConfig.formUriBasicAuthLogin();
             formUriBasicAuthPassword = annotationConfig.formUriBasicAuthPassword();
@@ -291,12 +291,12 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @param forceCloseDialogAfterToast the forceCloseDialogAfterToast to set
+     * @param alsoReportToNative the alsoReportToNative to set
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
-        this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
+    public ConfigurationBuilder setAlsoReportToNative(boolean alsoReportToNative) {
+        this.alsoReportToNative = alsoReportToNative;
         return this;
     }
 
@@ -839,11 +839,11 @@ public final class ConfigurationBuilder {
         return DEFAULT_DROPBOX_COLLECTION_MINUTES;
     }
 
-    boolean forceCloseDialogAfterToast() {
-        if (forceCloseDialogAfterToast != null) {
-            return forceCloseDialogAfterToast;
+    boolean alsoReportToNative() {
+        if (alsoReportToNative != null) {
+            return alsoReportToNative;
         }
-        return DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+        return DEFAULT_REPORT_TO_NATIVE;
     }
 
     @NonNull

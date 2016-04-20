@@ -23,7 +23,6 @@ import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 
-import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -50,8 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.acra.ACRA.LOG_TAG;
-
 /**
  * Represents the configuration that ACRA will use when handling crash reports.
  *
@@ -75,7 +72,7 @@ public final class ACRAConfiguration implements Serializable {
     private boolean deleteUnapprovedReportsOnApplicationStart;
     private boolean deleteOldUnsentReportsOnApplicationStart;
     private int dropboxCollectionMinutes;
-    private boolean forceCloseDialogAfterToast;
+    private boolean alsoReportToNative;
     private String formUri;
     private String formUriBasicAuthLogin;
     private String formUriBasicAuthPassword;
@@ -156,7 +153,7 @@ public final class ACRAConfiguration implements Serializable {
         deleteUnapprovedReportsOnApplicationStart = builder.deleteUnapprovedReportsOnApplicationStart();
         deleteOldUnsentReportsOnApplicationStart = builder.deleteOldUnsentReportsOnApplicationStart();
         dropboxCollectionMinutes = builder.dropboxCollectionMinutes();
-        forceCloseDialogAfterToast = builder.forceCloseDialogAfterToast();
+        alsoReportToNative = builder.alsoReportToNative();
         formUri = builder.formUri();
         formUriBasicAuthLogin = builder.formUriBasicAuthLogin();
         formUriBasicAuthPassword = builder.formUriBasicAuthPassword();
@@ -320,13 +317,13 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * @param forceCloseDialogAfterToast the forceCloseDialogAfterToast to set
+     * @param forceCloseDialogAfterToast the alsoReportToNative to set
      * @return The updated ACRA configuration
      * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @NonNull
     public ACRAConfiguration setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
-        this.forceCloseDialogAfterToast = forceCloseDialogAfterToast;
+        this.alsoReportToNative = forceCloseDialogAfterToast;
         return this;
     }
 
@@ -830,8 +827,8 @@ public final class ACRAConfiguration implements Serializable {
         return dropboxCollectionMinutes;
     }
 
-    public boolean forceCloseDialogAfterToast() {
-        return forceCloseDialogAfterToast;
+    public boolean alsoReportToNative() {
+        return alsoReportToNative;
     }
 
     @Nullable
