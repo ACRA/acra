@@ -31,19 +31,9 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.8.3
  */
-@SuppressWarnings("unused")
-public final class AssetKeyStoreFactory extends BaseKeyStoreFactory {
+final class AssetKeyStoreFactory extends BaseKeyStoreFactory {
 
     private final String assetName;
-
-    /**
-     * creates a new KeyStoreFactory for the specified asset
-     * @param assetName the asset
-     */
-    public AssetKeyStoreFactory(String assetName) {
-        super();
-        this.assetName = assetName;
-    }
 
     /**
      * creates a new KeyStoreFactory for the specified asset with a custom certificate type
@@ -60,7 +50,7 @@ public final class AssetKeyStoreFactory extends BaseKeyStoreFactory {
         try {
             return context.getAssets().open(assetName);
         } catch (IOException e) {
-            ACRA.log.e(LOG_TAG, "", e);
+            ACRA.log.e(LOG_TAG, "Could not open certificate in asset://"+assetName, e);
         }
         return null;
     }

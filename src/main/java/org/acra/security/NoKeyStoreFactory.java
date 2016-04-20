@@ -19,17 +19,18 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.Serializable;
 import java.security.KeyStore;
 
 /**
- * The interface can be used to provide a KeyStore with certificates.
+ * Default KeyStoreFactory. Does not provide any KeyStore
  *
  * @author F43nd1r
- * @since 4.8.3
+ * @since 4.8.6
  */
-public interface KeyStoreFactory {
-
+public class NoKeyStoreFactory implements KeyStoreFactory {
     @Nullable
-    KeyStore create(@NonNull Context context);
+    @Override
+    public KeyStore create(@NonNull Context context) {
+        return null;
+    }
 }

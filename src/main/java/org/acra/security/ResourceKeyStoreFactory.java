@@ -27,20 +27,10 @@ import java.io.InputStream;
  * @author F43nd1r
  * @since 4.8.3
  */
-@SuppressWarnings("unused")
-public final class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
+final class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
 
     @RawRes
     private final int rawRes;
-
-    /**
-     * creates a new KeyStoreFactory for the specified resource
-     * @param rawRes raw resource id
-     */
-    public ResourceKeyStoreFactory(@RawRes int rawRes) {
-        super();
-        this.rawRes = rawRes;
-    }
 
     /**
      * creates a new KeyStoreFactory for the specified resource with a custom certificate type

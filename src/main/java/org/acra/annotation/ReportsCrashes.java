@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 
@@ -31,6 +32,8 @@ import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.security.KeyStoreFactory;
+import org.acra.security.NoKeyStoreFactory;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -568,4 +571,24 @@ public @interface ReportsCrashes {
     @NonNull Method httpMethod() default Method.POST;
 
     @NonNull Type reportType() default Type.FORM;
+
+    /**
+     * @return Class which creates a keystore that can contain trusted certificates
+     */
+    @NonNull Class<? extends KeyStoreFactory> keyStoreFactoryClass() default NoKeyStoreFactory.class;
+
+    /**
+     * @return path to a custom trusted certificate. Must start with "asset://" if the file is in the assets folder
+     */
+    @NonNull String certificatePath() default ACRAConstants.DEFAULT_STRING_VALUE;
+
+    /**
+     * @return resource id of a custom trusted certificate.
+     */
+    @RawRes int resCertificate() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return specify the type of the certificate set in either {@link #certificatePath()} or {@link #resCertificate()}
+     */
+    @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
 }

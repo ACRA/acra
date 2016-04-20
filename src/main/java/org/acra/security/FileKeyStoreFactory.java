@@ -32,19 +32,9 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.8.3
  */
-@SuppressWarnings("unused")
-public final class FileKeyStoreFactory extends BaseKeyStoreFactory {
+final class FileKeyStoreFactory extends BaseKeyStoreFactory {
 
     private final String filePath;
-
-    /**
-     * creates a new KeyStoreFactory for the specified file
-     * @param filePath path to the file
-     */
-    public FileKeyStoreFactory(String filePath) {
-        super();
-        this.filePath = filePath;
-    }
 
     /**
      * creates a new KeyStoreFactory for the specified file with a custom certificate type
@@ -61,7 +51,7 @@ public final class FileKeyStoreFactory extends BaseKeyStoreFactory {
         try {
             return new FileInputStream(filePath);
         } catch (FileNotFoundException e) {
-            ACRA.log.e(LOG_TAG, "", e);
+            ACRA.log.e(LOG_TAG, "Could not find File "+filePath, e);
         }
         return null;
     }

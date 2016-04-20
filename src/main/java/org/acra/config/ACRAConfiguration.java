@@ -19,6 +19,7 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 
@@ -130,8 +131,12 @@ public final class ACRAConfiguration implements Serializable {
     private Method httpMethod;
     private Type reportType;
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
-    private KeyStoreFactory keyStoreFactory;
+    private Class<? extends KeyStoreFactory> keyStoreFactoryClass;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
+    @RawRes
+    private int resCertificate;
+    private String certificatePath;
+    private String certificateType;
 
     /**
      * @param builder ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
@@ -189,7 +194,10 @@ public final class ACRAConfiguration implements Serializable {
         httpHeaders.putAll(builder.httpHeaders());
         reportType = builder.reportType();
         reportSenderFactoryClasses = copyArray(builder.reportSenderFactoryClasses());
-        keyStoreFactory = builder.keyStoreFactory();
+        keyStoreFactoryClass = builder.keyStoreFactoryClass();
+        resCertificate = builder.resCertificate();
+        certificatePath = builder.certificatePath();
+        certificateType = builder.certificateType();
     }
 
 
@@ -1004,9 +1012,22 @@ public final class ACRAConfiguration implements Serializable {
         return copyArray(reportSenderFactoryClasses);
     }
 
-    @Nullable
-    public KeyStoreFactory keyStoreFactory() {
-        return keyStoreFactory;
+    @NonNull
+    public Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
+        return keyStoreFactoryClass;
+    }
+
+    @RawRes
+    public int resCertificate() {
+        return resCertificate;
+    }
+
+    public String certificatePath() {
+        return certificatePath;
+    }
+
+    public String certificateType() {
+        return certificateType;
     }
 
     /**

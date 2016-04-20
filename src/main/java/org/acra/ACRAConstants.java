@@ -157,4 +157,6 @@ public final class ACRAConstants {
             INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES };
 
     public static final String DATE_TIME_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+
+    public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 }

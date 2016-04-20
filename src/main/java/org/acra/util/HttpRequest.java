@@ -13,6 +13,7 @@ import android.util.Base64;
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 import org.acra.security.KeyStoreFactory;
+import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
@@ -93,8 +94,7 @@ public final class HttpRequest {
 
                 final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
                 final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
-                final KeyStoreFactory keyStoreFactory = config.keyStoreFactory();
-                final KeyStore keyStore = keyStoreFactory == null ? null : keyStoreFactory.create(context);
+                final KeyStore keyStore = KeyStoreHelper.getKeyStore(context, config);
 
                 tmf.init(keyStore);
 
@@ -183,7 +183,7 @@ public final class HttpRequest {
     public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
 
         final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?,?> entry : parameters.entrySet()) {
+        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
             if (dataBfr.length() != 0) {
                 dataBfr.append('&');
             }

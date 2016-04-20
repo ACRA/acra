@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.util.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -39,27 +41,45 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.8.3
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
+
+    public enum Type {
+        CERTIFICATE,
+        KEYSTORE
+    }
 
     private final String certificateType;
 
     /**
-     * creates a new KeyStoreFactory for the default certificate type (X.509)
+     * creates a new KeyStoreFactory for the default certificate type {@link ACRAConstants#DEFAULT_CERTIFICATE_TYPE}
      */
-    public BaseKeyStoreFactory(){
-        this("X.509");
+    public BaseKeyStoreFactory() {
+        this(ACRAConstants.DEFAULT_CERTIFICATE_TYPE);
     }
 
     /**
      * creates a new KeyStoreFactory with the specified certificate type
+     *
      * @param certificateType the certificate type
      */
     public BaseKeyStoreFactory(String certificateType) {
         this.certificateType = certificateType;
     }
 
-    abstract public InputStream getInputStream(@NonNull Context context);
+    abstract protected InputStream getInputStream(@NonNull Context context);
+
+    protected String getKeyStoreType() {
+        return KeyStore.getDefaultType();
+    }
+
+    protected Type getStreamType() {
+        return Type.CERTIFICATE;
+    }
+
+    protected char[] getPassword() {
+        return null;
+    }
 
     @Override
     @Nullable
@@ -68,26 +88,28 @@ public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
         if (inputStream != null) {
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
             try {
-                CertificateFactory certificateFactory = CertificateFactory.getInstance(certificateType);
-                Certificate certificate = certificateFactory.generateCertificate(bufferedInputStream);
-                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                keyStore.load(null, null);
-                keyStore.setCertificateEntry("ca", certificate);
+                KeyStore keyStore = KeyStore.getInstance(getKeyStoreType());
+                switch (getStreamType()) {
+                    case CERTIFICATE:
+                        CertificateFactory certificateFactory = CertificateFactory.getInstance(certificateType);
+                        Certificate certificate = certificateFactory.generateCertificate(bufferedInputStream);
+                        keyStore.load(null, null);
+                        keyStore.setCertificateEntry("ca", certificate);
+                        break;
+                    case KEYSTORE:
+                        keyStore.load(bufferedInputStream, getPassword());
+                }
                 return keyStore;
             } catch (CertificateException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load certificate", e);
             } catch (KeyStoreException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load keystore", e);
             } catch (NoSuchAlgorithmException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load keystore", e);
             } catch (IOException e) {
-                ACRA.log.e(LOG_TAG, "", e);
+                ACRA.log.e(LOG_TAG, "Could not load keystore", e);
             } finally {
-                try {
-                    bufferedInputStream.close();
-                } catch (IOException e) {
-                    ACRA.log.e(LOG_TAG, "", e);
-                }
+                IOUtils.safeClose(bufferedInputStream);
             }
         }
         return null;
