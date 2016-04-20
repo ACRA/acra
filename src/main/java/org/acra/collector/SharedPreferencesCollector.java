@@ -25,7 +25,6 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -63,8 +62,7 @@ final class SharedPreferencesCollector {
         sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
 
         // Add in any additional SharedPreferences
-        final Set<String> sharedPrefIds = config.additionalSharedPreferences();
-        for (final String sharedPrefId : sharedPrefIds) {
+        for (final String sharedPrefId : config.additionalSharedPreferences()) {
             sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
         }
 
