@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -72,9 +73,9 @@ final class DropBoxCollector {
             if (config.includeDropBoxSystemTags()) {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }
-            final String[] additionalTags = config.additionalDropBoxTags();
-            if (additionalTags.length > 0) {
-                tags.addAll(Arrays.asList(additionalTags));
+            final Set<String> additionalTags = config.additionalDropBoxTags();
+            if (additionalTags.size() > 0) {
+                tags.addAll(additionalTags);
             }
 
             if (tags.isEmpty()) {
