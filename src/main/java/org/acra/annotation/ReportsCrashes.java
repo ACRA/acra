@@ -460,7 +460,7 @@ public @interface ReportsCrashes {
      * 
      * @return true if the force close dialog has to be displayed.
      */
-    boolean alsoReportToNative() default ACRAConstants.DEFAULT_REPORT_TO_NATIVE;
+    boolean alsoReportToAndroidFramework() default ACRAConstants.DEFAULT_REPORT_TO_ANDROID_FRAMEWORK;
 
     /**
      * Add here your {@link SharedPreferences} identifier Strings if you use

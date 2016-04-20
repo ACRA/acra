@@ -72,7 +72,7 @@ public final class ACRAConfiguration implements Serializable {
     private boolean deleteUnapprovedReportsOnApplicationStart;
     private boolean deleteOldUnsentReportsOnApplicationStart;
     private int dropboxCollectionMinutes;
-    private boolean alsoReportToNative;
+    private boolean alsoReportToAndroidFramework;
     private String formUri;
     private String formUriBasicAuthLogin;
     private String formUriBasicAuthPassword;
@@ -153,7 +153,7 @@ public final class ACRAConfiguration implements Serializable {
         deleteUnapprovedReportsOnApplicationStart = builder.deleteUnapprovedReportsOnApplicationStart();
         deleteOldUnsentReportsOnApplicationStart = builder.deleteOldUnsentReportsOnApplicationStart();
         dropboxCollectionMinutes = builder.dropboxCollectionMinutes();
-        alsoReportToNative = builder.alsoReportToNative();
+        alsoReportToAndroidFramework = builder.alsoReportToAndroidFramework();
         formUri = builder.formUri();
         formUriBasicAuthLogin = builder.formUriBasicAuthLogin();
         formUriBasicAuthPassword = builder.formUriBasicAuthPassword();
@@ -317,13 +317,13 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     /**
-     * @param forceCloseDialogAfterToast the alsoReportToNative to set
+     * @param forceCloseDialogAfterToast the alsoReportToAndroidFramework to set
      * @return The updated ACRA configuration
      * @deprecated since 4.8.1 - configure using {@link ConfigurationBuilder} instead. ACRAConfiguration will become immutable in the near future.
      */
     @NonNull
     public ACRAConfiguration setForceCloseDialogAfterToast(boolean forceCloseDialogAfterToast) {
-        this.alsoReportToNative = forceCloseDialogAfterToast;
+        this.alsoReportToAndroidFramework = forceCloseDialogAfterToast;
         return this;
     }
 
@@ -827,8 +827,8 @@ public final class ACRAConfiguration implements Serializable {
         return dropboxCollectionMinutes;
     }
 
-    public boolean alsoReportToNative() {
-        return alsoReportToNative;
+    public boolean alsoReportToAndroidFramework() {
+        return alsoReportToAndroidFramework;
     }
 
     @Nullable

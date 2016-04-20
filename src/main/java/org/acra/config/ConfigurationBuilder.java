@@ -70,7 +70,7 @@ public final class ConfigurationBuilder {
     private Boolean deleteUnapprovedReportsOnApplicationStart;
     private Boolean deleteOldUnsentReportsOnApplicationStart;
     private Integer dropboxCollectionMinutes;
-    private Boolean alsoReportToNative;
+    private Boolean alsoReportToAndroidFramework;
     private String formUri;
     private String formUriBasicAuthLogin;
     private String formUriBasicAuthPassword;
@@ -139,7 +139,7 @@ public final class ConfigurationBuilder {
             deleteUnapprovedReportsOnApplicationStart = annotationConfig.deleteUnapprovedReportsOnApplicationStart();
             deleteOldUnsentReportsOnApplicationStart = annotationConfig.deleteOldUnsentReportsOnApplicationStart();
             dropboxCollectionMinutes = annotationConfig.dropboxCollectionMinutes();
-            alsoReportToNative = annotationConfig.alsoReportToNative();
+            alsoReportToAndroidFramework = annotationConfig.alsoReportToAndroidFramework();
             formUri = annotationConfig.formUri();
             formUriBasicAuthLogin = annotationConfig.formUriBasicAuthLogin();
             formUriBasicAuthPassword = annotationConfig.formUriBasicAuthPassword();
@@ -291,12 +291,12 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @param alsoReportToNative the alsoReportToNative to set
+     * @param alsoReportToAndroidFramework the alsoReportToAndroidFramework to set
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setAlsoReportToNative(boolean alsoReportToNative) {
-        this.alsoReportToNative = alsoReportToNative;
+    public ConfigurationBuilder setAlsoReportToAndroidFramework(boolean alsoReportToAndroidFramework) {
+        this.alsoReportToAndroidFramework = alsoReportToAndroidFramework;
         return this;
     }
 
@@ -839,11 +839,11 @@ public final class ConfigurationBuilder {
         return DEFAULT_DROPBOX_COLLECTION_MINUTES;
     }
 
-    boolean alsoReportToNative() {
-        if (alsoReportToNative != null) {
-            return alsoReportToNative;
+    boolean alsoReportToAndroidFramework() {
+        if (alsoReportToAndroidFramework != null) {
+            return alsoReportToAndroidFramework;
         }
-        return DEFAULT_REPORT_TO_NATIVE;
+        return DEFAULT_REPORT_TO_ANDROID_FRAMEWORK;
     }
 
     @NonNull

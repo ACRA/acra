@@ -245,7 +245,7 @@ public final class ReportExecutor {
      * End the application.
      */
     private void endApplication(@Nullable Thread uncaughtExceptionThread, Throwable th) {
-        final boolean letDefaultHandlerEndApplication = config.alsoReportToNative();
+        final boolean letDefaultHandlerEndApplication = config.alsoReportToAndroidFramework();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
         if (handlingUncaughtException && letDefaultHandlerEndApplication && (defaultExceptionHandler != null)) {
