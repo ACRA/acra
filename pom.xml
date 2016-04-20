@@ -54,7 +54,7 @@
 			But in order to compile classes and method that will NOT be used except when the target platform is of sufficient version
 			we need to compile against version 23. All such classes are in the org.acra.jraf package.
 		-->
-        	<android.version>23</android.version>
+        <android.version>23</android.version>
 		<support.version>23.3.0</support.version>
 	</properties>
 
@@ -134,6 +134,15 @@
 					<consumerProguardFiles>
 						<consumerProguardFile>src/main/proguard/proguard.cfg</consumerProguardFile>
 					</consumerProguardFiles>
+
+					<buildConfigConstants>
+						<buildConfigConstant>
+							<name>VERSION_NAME</name>
+							<type>String</type>
+							<value>${project.version}</value>
+						</buildConfigConstant>
+					</buildConfigConstants>
+
 				</configuration>
 			</plugin>
 
