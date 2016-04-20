@@ -25,7 +25,7 @@ import java.security.KeyStore;
  * Default KeyStoreFactory. Does not provide any KeyStore
  *
  * @author F43nd1r
- * @since 4.8.6
+ * @since 4.9.0
  */
 public class NoKeyStoreFactory implements KeyStoreFactory {
     @Nullable
