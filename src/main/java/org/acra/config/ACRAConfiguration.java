@@ -42,7 +42,6 @@ import java.io.Serializable;
  *
  * Use {@link ConfigurationBuilder} to programmatically construct an ACRAConfiguration.
  */
-@SuppressWarnings("unused")
 public final class ACRAConfiguration implements Serializable {
 
     private final ImmutableSet<String> additionalDropBoxTags;
