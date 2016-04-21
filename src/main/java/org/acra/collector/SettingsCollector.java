@@ -37,9 +37,9 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Helper to collect data from {@link System} and {@link Secure} Settings
  * classes.
- * 
+ *
  * @author Kevin Gaudin
- * 
+ *
  */
 final class SettingsCollector {
 
@@ -57,7 +57,7 @@ final class SettingsCollector {
      * Collect data from {@link android.provider.Settings.System}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
-     * 
+     *
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
@@ -89,7 +89,7 @@ final class SettingsCollector {
      * Collect data from {@link android.provider.Settings.Secure}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
-     * 
+     *
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
@@ -118,7 +118,7 @@ final class SettingsCollector {
      * Collect data from {@link android.provider.Settings.Global}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
-     * 
+     *
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
@@ -128,32 +128,23 @@ final class SettingsCollector {
         }
 
         final StringBuilder result = new StringBuilder();
-        try {
-            final Class<?> globalClass = Class.forName("android.provider.Settings$Global");
-            final Field[] keys = globalClass.getFields();
-            final Method getString = globalClass.getMethod("getString", ContentResolver.class, String.class);
-            for (final Field key : keys) {
-                if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
-                    final Object value = getString.invoke(null, context.getContentResolver(), key.get(null));
+        final Field[] keys = Settings.Global.class.getFields();
+        for (final Field key : keys) {
+            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
+                try {
+                    final Object value = Settings.Global.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append("=").append(value).append("\n");
                     }
+                } catch (@NonNull IllegalArgumentException e) {
+                    ACRA.log.w(LOG_TAG, ERROR, e);
+                } catch (@NonNull SecurityException e) {
+                    ACRA.log.w(LOG_TAG, ERROR, e);
+                } catch (@NonNull IllegalAccessException e) {
+                    ACRA.log.w(LOG_TAG, ERROR, e);
                 }
             }
-        } catch (@NonNull IllegalArgumentException e) {
-            ACRA.log.w(LOG_TAG, ERROR, e);
-        } catch (@NonNull InvocationTargetException e) {
-            ACRA.log.w(LOG_TAG, ERROR, e);
-        } catch (@NonNull NoSuchMethodException e) {
-            ACRA.log.w(LOG_TAG, ERROR, e);
-        } catch (@NonNull SecurityException e) {
-            ACRA.log.w(LOG_TAG, ERROR, e);
-        } catch (@NonNull ClassNotFoundException e) {
-            ACRA.log.w(LOG_TAG, ERROR, e);
-        } catch (@NonNull IllegalAccessException e) {
-            ACRA.log.w(LOG_TAG, ERROR, e);
         }
-
         return result.toString();
     }
 
@@ -163,7 +154,7 @@ final class SettingsCollector {
         }
         for (String regex : config.excludeMatchingSettingsKeys()) {
             if(key.getName().matches(regex)) {
-               return false; 
+               return false;
             }
         }
         return true;
