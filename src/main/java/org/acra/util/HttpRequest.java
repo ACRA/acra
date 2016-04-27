@@ -32,6 +32,8 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import ch.acra.acra.BuildConfig;
+
 import static org.acra.ACRA.LOG_TAG;
 
 public final class HttpRequest {
@@ -118,7 +120,7 @@ public final class HttpRequest {
         urlConnection.setReadTimeout(socketTimeOut);
 
         // Set Headers
-        urlConnection.setRequestProperty("User-Agent", "Android");
+        urlConnection.setRequestProperty("User-Agent", String.format("Android ACRA %1$s", BuildConfig.VERSION_NAME)); //sent ACRA version to server
         urlConnection.setRequestProperty("Accept",
                 "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
         urlConnection.setRequestProperty("Content-Type", type.getContentType());
