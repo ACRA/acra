@@ -62,8 +62,7 @@ final class SharedPreferencesCollector {
         sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
 
         // Add in any additional SharedPreferences
-        final String[] sharedPrefIds = config.additionalSharedPreferences();
-        for (final String sharedPrefId : sharedPrefIds) {
+        for (final String sharedPrefId : config.additionalSharedPreferences()) {
             sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
         }
 

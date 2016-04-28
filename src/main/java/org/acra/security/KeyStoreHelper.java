@@ -31,7 +31,7 @@ import static org.acra.ACRA.LOG_TAG;
  * Helper to get a KeyStore from a configuration
  *
  * @author F43nd1r
- * @since 4.8.6
+ * @since 4.9.0
  */
 public final class KeyStoreHelper {
     private static final String ASSET_PREFIX = "asset://";

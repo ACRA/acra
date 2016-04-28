@@ -13,24 +13,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.security;
+package org.acra.util;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import java.security.KeyStore;
+import java.util.Iterator;
 
 /**
- * Default KeyStoreFactory. Does not provide any KeyStore
+ * Wrapper around an Iterator which prevents modifications
  *
  * @author F43nd1r
  * @since 4.9.0
  */
-public class NoKeyStoreFactory implements KeyStoreFactory {
-    @Nullable
+class UnmodifiableIteratorWrapper<E> implements Iterator<E> {
+    private final Iterator<E> mIterator;
+
+    UnmodifiableIteratorWrapper(Iterator<E> mIterator) {
+        this.mIterator = mIterator;
+    }
+
     @Override
-    public KeyStore create(@NonNull Context context) {
-        return null;
+    public boolean hasNext() {
+        return mIterator.hasNext();
+    }
+
+    @Override
+    public E next() {
+        return mIterator.next();
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
     }
 }

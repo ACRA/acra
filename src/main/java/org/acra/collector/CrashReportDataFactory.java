@@ -42,8 +42,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -167,7 +167,7 @@ public final class CrashReportDataFactory {
     public CrashReportData createCrashData(@NonNull ReportBuilder builder) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            final List<ReportField> crashReportFields = config.getReportFields();
+            final Set<ReportField> crashReportFields = config.getReportFields();
 
             // Make every entry here bullet proof and move any slightly dodgy
             // ones to the end.
