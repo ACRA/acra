@@ -180,6 +180,7 @@ public final class ACRA {
 
         boolean supportedAndroidVersion = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO);
         if (!supportedAndroidVersion){
+            // NB We keep initialising so that everything is configured. But ACRA is never enabled below.
             log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
         }
 
