@@ -148,7 +148,6 @@ public final class ACRA {
      *
      * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)}  method.
      *
-     * Uses the configuration as configured with the @ReportCrashes annotation.
      * Sends any unsent reports.
      * </p>
      *
@@ -232,14 +231,14 @@ public final class ACRA {
 
     /**
      * <p>
-     * Initialize ACRA for a given Application. The call to this method should
-     * be placed as soon as possible in the {@link Application#attachBaseContext(Context)}
-     * method.
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
      * </p>
      *
-     * @param app       Your Application class.
-     * @param config    ACRAConfiguration to manually set up ACRA configuration.
-     * @param checkReportsOnApplicationStart    Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
+     * @param app                            Your Application class.
+     * @param config                         ACRAConfiguration to manually set up ACRA configuration.
+     * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      */
     public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
