@@ -291,7 +291,9 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @param alsoReportToAndroidFramework the alsoReportToAndroidFramework to set
+     * @param alsoReportToAndroidFramework Whether to also report the failure to the Android framework.
+     *                                     NB this will cause the native force dialog dialog to be displayed
+     *                                     as well as any ACRA notification.
      * @return this instance
      */
     @NonNull
