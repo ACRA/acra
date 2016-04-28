@@ -132,7 +132,6 @@ public final class ACRA {
      * </p>
      *
      * @param app   Your Application class.
-     * @throws IllegalStateException if it is called more than once.
      */
     public static void init(@NonNull Application app) {
         final ReportsCrashes reportsCrashes = app.getClass().getAnnotation(ReportsCrashes.class);
@@ -140,8 +139,40 @@ public final class ACRA {
             log.e(LOG_TAG, "ACRA#init(Application) called but no ReportsCrashes annotation on Application " + app.getPackageName());
             return;
         }
+        init(app, new ConfigurationBuilder(app));
+    }
+
+    /**
+     * <p>
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)}  method.
+     *
+     * Uses the configuration as configured with the @ReportCrashes annotation.
+     * Sends any unsent reports.
+     * </p>
+     *
+     * @param app     Your Application class.
+     * @param builder ConfigurationBuilder to manually set up ACRA configuration
+     */
+    public static void init(@NonNull Application app, @NonNull ConfigurationBuilder builder){
+        init(app, builder, true);
+    }
+
+    /**
+     * <p>
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)}  method.
+     * </p>
+     *
+     * @param app                            Your Application class.
+     * @param builder                        ConfigurationBuilder to manually set up ACRA configuration
+     * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
+     */
+    public static void init(@NonNull Application app, @NonNull ConfigurationBuilder builder, boolean checkReportsOnApplicationStart){
         try {
-            init(app, new ConfigurationBuilder(app).build());
+            init(app, builder.build(), checkReportsOnApplicationStart);
         } catch (ACRAConfigurationException e) {
             log.w(LOG_TAG, "Configuration Error - ACRA not started : " + e.getMessage());
         }
@@ -194,7 +225,6 @@ public final class ACRA {
      *
      * @param app       Your Application class.
      * @param config    ACRAConfiguration to manually set up ACRA configuration.
-     * @throws IllegalStateException if it is called more than once.
      */
     public static void init(@NonNull Application app, @NonNull ACRAConfiguration config) {
         init(app, config, true);
@@ -210,7 +240,6 @@ public final class ACRA {
      * @param app       Your Application class.
      * @param config    ACRAConfiguration to manually set up ACRA configuration.
      * @param checkReportsOnApplicationStart    Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
-     * @throws IllegalStateException if it is called more than once.
      */
     public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart){
 
