@@ -51,7 +51,7 @@ public final class ACRAConfiguration implements Serializable {
     private final boolean deleteUnapprovedReportsOnApplicationStart;
     private final boolean deleteOldUnsentReportsOnApplicationStart;
     private final int dropboxCollectionMinutes;
-    private final boolean forceCloseDialogAfterToast;
+    private final boolean alsoReportToAndroidFramework;
     private final String formUri;
     private final String formUriBasicAuthLogin;
     private final String formUriBasicAuthPassword;
@@ -125,7 +125,7 @@ public final class ACRAConfiguration implements Serializable {
         deleteUnapprovedReportsOnApplicationStart = builder.deleteUnapprovedReportsOnApplicationStart();
         deleteOldUnsentReportsOnApplicationStart = builder.deleteOldUnsentReportsOnApplicationStart();
         dropboxCollectionMinutes = builder.dropboxCollectionMinutes();
-        forceCloseDialogAfterToast = builder.forceCloseDialogAfterToast();
+        alsoReportToAndroidFramework = builder.alsoReportToAndroidFramework();
         formUri = builder.formUri();
         formUriBasicAuthLogin = builder.formUriBasicAuthLogin();
         formUriBasicAuthPassword = builder.formUriBasicAuthPassword();
@@ -215,8 +215,8 @@ public final class ACRAConfiguration implements Serializable {
         return dropboxCollectionMinutes;
     }
 
-    public boolean forceCloseDialogAfterToast() {
-        return forceCloseDialogAfterToast;
+    public boolean alsoReportToAndroidFramework() {
+        return alsoReportToAndroidFramework;
     }
 
     @Nullable
