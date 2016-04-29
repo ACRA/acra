@@ -24,6 +24,7 @@ import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -897,10 +898,21 @@ public final class ConfigurationBuilder {
 
     @NonNull
     ReportingInteractionMode reportingInteractionMode() {
-        if (reportingInteractionMode != null) {
+        if (reportingInteractionMode != null && reportingInteractionMode != ReportingInteractionMode.INFERRED) {
             return reportingInteractionMode;
         }
-        return ReportingInteractionMode.SILENT;
+        if (resNotifTickerText() != ACRAConstants.DEFAULT_RES_VALUE && resNotifTitle() != ACRAConstants.DEFAULT_RES_VALUE && resNotifText() != ACRAConstants.DEFAULT_RES_VALUE) {
+            return ReportingInteractionMode.NOTIFICATION;
+        }
+        else if (reportDialogClass != null && (!CrashReportDialog.class.equals(reportDialogClass()) || resDialogText() != ACRAConstants.DEFAULT_RES_VALUE)) {
+            return ReportingInteractionMode.DIALOG;
+        }
+        else if (resToastText() != ACRAConstants.DEFAULT_RES_VALUE) {
+            return ReportingInteractionMode.TOAST;
+        }
+        else {
+            return ReportingInteractionMode.SILENT;
+        }
     }
 
     @StringRes

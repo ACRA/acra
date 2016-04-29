@@ -49,5 +49,9 @@ public enum ReportingInteractionMode {
      * Direct dialog: a report confirmation dialog is displayed right after the crash.
      * Will replace {@link #NOTIFICATION} mode.
      */
-    DIALOG
+    DIALOG,
+    /**
+     * Infer the report mode from the other provided configuration options
+     */
+    INFERRED
 }

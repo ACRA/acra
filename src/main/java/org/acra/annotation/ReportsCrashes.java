@@ -95,7 +95,7 @@ public @interface ReportsCrashes {
      * 
      * @return the interaction mode that you want ACRA to implement.
      */
-    @NonNull ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
+    @NonNull ReportingInteractionMode mode() default ReportingInteractionMode.INFERRED;
 
     /**
      * @return Resource id for the label of positive button in the crash dialog.
