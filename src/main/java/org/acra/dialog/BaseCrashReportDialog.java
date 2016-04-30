@@ -41,35 +41,24 @@ import static org.acra.ReportField.USER_EMAIL;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseCrashReportDialog extends Activity {
 
-    private File reportFile;
-    private ACRAConfiguration config;
-    private Throwable exception;
+    private final DialogHelper helper;
+
+    protected BaseCrashReportDialog() {
+        helper = new DialogHelper(this);
+    }
 
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        if (ACRA.DEV_LOGGING) {
-            ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
-        }
-
-        final Serializable sConfig = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
-        final Serializable sReportFile = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
-        final Serializable sException = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
-        final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
-
-        if (forceCancel) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
-            cancelReports();
-            finish();
-        } else if ((sConfig instanceof ACRAConfiguration) && (sReportFile instanceof File) && (sException instanceof Throwable)) {
-            config = (ACRAConfiguration) sConfig;
-            reportFile = (File) sReportFile;
-            exception = (Throwable) sException;
-            init(savedInstanceState);
-        } else {
-            ACRA.log.w(LOG_TAG, "Illegal or incomplete call of BaseCrashReportDialog.");
+        try {
+            if (helper.loadFrom(getIntent())) {
+                init(savedInstanceState);
+            } else {
+                finish();
+            }
+        } catch (InvalidIntentException e) {
+            ACRA.log.w(LOG_TAG, e.getMessage());
             finish();
         }
     }
@@ -82,7 +71,7 @@ public abstract class BaseCrashReportDialog extends Activity {
      * Cancel any pending crash reports.
      */
     protected final void cancelReports() {
-        new BulkReportDeleter(getApplicationContext()).deleteReports(false, 0);
+        helper.cancelReports();
     }
 
 
@@ -93,33 +82,21 @@ public abstract class BaseCrashReportDialog extends Activity {
      * @param userEmail Email address (may be null) provided by the client.
      */
     protected final void sendCrash(@Nullable String comment, @Nullable String userEmail) {
-        final CrashReportPersister persister = new CrashReportPersister();
-        try {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
-            final CrashReportData crashData = persister.load(reportFile);
-            crashData.put(USER_COMMENT, comment == null ? "" : comment);
-            crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
-            persister.store(crashData, reportFile);
-        } catch (IOException e) {
-            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
-        }
-
-        // Start the report sending task
-        final SenderServiceStarter starter = new SenderServiceStarter(getApplicationContext(), config);
-        starter.startService(false, true);
-
-        // Optional Toast to thank the user
-        final int toastId = config.resDialogOkToast();
-        if (toastId != 0) {
-            ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
-        }
+        helper.sendCrash(comment, userEmail);
     }
 
+
+    /**
+     * @return ACRAs configuration
+     */
     protected final ACRAConfiguration getConfig() {
-        return config;
+        return helper.getConfig();
     }
 
+    /**
+     * @return the exception, if any
+     */
     protected final Throwable getException() {
-        return exception;
+        return helper.getException();
     }
 }
