@@ -16,6 +16,7 @@
 package org.acra;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
@@ -124,7 +125,7 @@ public final class ACRA {
      * <p>
      * Initialize ACRA for a given Application.
      *
-     * The call to this method should be placed as soon as possible in the {@link Application#onCreate()} method.
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
      *
      * Uses the configuration as configured with the @ReportCrashes annotation.
      * Sends any unsent reports.
@@ -150,7 +151,43 @@ public final class ACRA {
      * <p>
      * Initialize ACRA for a given Application.
      *
-     * The call to this method should be placed as soon as possible in the {@link Application#onCreate()} method.
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
+     *
+     * Uses the configuration as configured with the @ReportCrashes annotation.
+     * Sends any unsent reports.
+     * </p>
+     *
+     * @param app     Your Application class.
+     * @param builder ConfigurationBuilder to manually set up ACRA configuration.
+     */
+    public static void init(@NonNull Application app, @NonNull ConfigurationBuilder builder) {
+        init(app, builder, true);
+    }
+
+    /**
+     * <p>
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)}  method.
+     * </p>
+     *
+     * @param app                            Your Application class.
+     * @param builder                        ConfigurationBuilder to manually set up ACRA configuration.
+     * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
+     */
+    public static void init(@NonNull Application app, @NonNull ConfigurationBuilder builder, boolean checkReportsOnApplicationStart) {
+        try {
+            init(app, builder.build(), checkReportsOnApplicationStart);
+        } catch (ACRAConfigurationException e) {
+            log.w(LOG_TAG, "Configuration Error - ACRA not started : " + e.getMessage());
+        }
+    }
+
+    /**
+     * <p>
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
      *
      * Sends any unsent reports.
      * </p>
@@ -166,7 +203,7 @@ public final class ACRA {
     /**
      * <p>
      * Initialize ACRA for a given Application. The call to this method should
-     * be placed as soon as possible in the {@link Application#onCreate()}
+     * be placed as soon as possible in the {@link Application#attachBaseContext(Context)}
      * method.
      * </p>
      *
