@@ -189,7 +189,31 @@ public final class ConfigurationBuilder {
      * @return new ACRAConfiguration containing all the properties configured on this builder.
      */
     @NonNull
-    public ACRAConfiguration build() {
+    public ACRAConfiguration build() throws ACRAConfigurationException {
+
+        switch (reportingInteractionMode) {
+            case TOAST:
+                if (resToastText() == DEFAULT_RES_VALUE) {
+                    throw new ACRAConfigurationException("TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
+                }
+                break;
+            case NOTIFICATION:
+                if (resNotifTickerText() == DEFAULT_RES_VALUE || resNotifTitle() == DEFAULT_RES_VALUE || resNotifText() == DEFAULT_RES_VALUE) {
+                    throw new ACRAConfigurationException("NOTIFICATION mode: you have to define at least the resNotifTickerText, resNotifTitle, resNotifText parameters in your application @ReportsCrashes() annotation.");
+                }
+                if (CrashReportDialog.class.equals(reportDialogClass()) && resDialogText() == DEFAULT_RES_VALUE) {
+                    throw new ACRAConfigurationException("NOTIFICATION mode: using the (default) CrashReportDialog requires you have to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
+                }
+                break;
+            case DIALOG:
+                if (CrashReportDialog.class.equals(reportDialogClass()) && resDialogText() == DEFAULT_RES_VALUE) {
+                    throw new ACRAConfigurationException("DIALOG mode: using the (default) CrashReportDialog requires you to define the resDialogText parameter in your application @ReportsCrashes() annotation.");
+                }
+                break;
+            default:
+                break;
+        }
+
         return new ACRAConfiguration(this);
     }
 
