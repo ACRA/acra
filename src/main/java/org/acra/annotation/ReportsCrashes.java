@@ -15,6 +15,7 @@
  */
 package org.acra.annotation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -30,7 +31,6 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
-import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
@@ -554,7 +554,7 @@ public @interface ReportsCrashes {
      * @return Class for the CrashReportDialog used when prompting the user for crash details.
      *          If not provided, defaults to CrashReportDialog.class
      */
-    @NonNull Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
+    @NonNull Class<? extends Activity> reportDialogClass() default CrashReportDialog.class;
 
     /**
      * @return Class that is ued to provide any extra details for a crash.

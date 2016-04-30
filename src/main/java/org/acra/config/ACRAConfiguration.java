@@ -15,6 +15,7 @@
  */
 package org.acra.config;
 
+import android.app.Activity;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,7 +26,6 @@ import android.support.annotation.StyleRes;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.builder.ReportPrimer;
-import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.security.KeyStoreFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -58,7 +58,7 @@ public final class ACRAConfiguration implements Serializable {
     private final ImmutableSet<String> logcatArguments;
     private final String mailTo;
     private final ReportingInteractionMode reportingInteractionMode;
-    private final Class<? extends BaseCrashReportDialog> reportDialogClass;
+    private final Class<? extends Activity> reportDialogClass;
     private final Class<? extends ReportPrimer> reportPrimerClass;
 
     @StringRes
@@ -371,7 +371,7 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     @NonNull
-    public Class<? extends BaseCrashReportDialog> reportDialogClass() {
+    public Class<? extends Activity> reportDialogClass() {
         return reportDialogClass;
     }
 
