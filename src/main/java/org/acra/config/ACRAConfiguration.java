@@ -354,7 +354,9 @@ public final class ACRAConfiguration implements Serializable {
 
     /**
      * Will return null if no value has been configured.
-     * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
+     * It is up to clients to construct the recommended default value of context.getClass().getPackage().getName() + BuildConfig.class
+     *
+     * @return Class generated at compile time containing the build config for this application.
      */
     @Nullable
     public Class buildConfigClass() {

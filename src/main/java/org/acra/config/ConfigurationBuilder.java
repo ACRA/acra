@@ -187,7 +187,13 @@ public final class ConfigurationBuilder {
     }
 
     /**
+     * Builds the {@link ACRAConfiguration} which will be used to configure ACRA.
+     * <p>
+     * You can pass this {@link ConfigurationBuilder} to {@link ACRA#init(Application, ConfigurationBuilder)} and
+     * {@link ACRA#init(Application, ConfigurationBuilder)} will handle any Exception.
+     * </p>
      * @return new ACRAConfiguration containing all the properties configured on this builder.
+     * @throws ACRAConfigurationException if the required values for the configured notification mode have not been provided.
      */
     @NonNull
     public ACRAConfiguration build() throws ACRAConfigurationException {
@@ -652,7 +658,9 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
+     * @param sendReportsAtShutdown Ignored.
+     * @return this instance
+     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process we always send at shutdown.
      */
     @NonNull
     public ConfigurationBuilder setSendReportsAtShutdown(boolean sendReportsAtShutdown) {

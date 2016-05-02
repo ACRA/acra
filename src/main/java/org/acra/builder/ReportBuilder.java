@@ -138,7 +138,9 @@ public final class ReportBuilder {
     }
 
     /**
-     * Assembles and sends the crash report
+     * Assembles and sends the crash report.
+     *
+     * @param reportExecutor    ReportExecutor to use to build the report.
      */
     public void build(@NonNull ReportExecutor reportExecutor) {
         if (message == null && exception == null) {

@@ -489,7 +489,8 @@ public @interface ReportsCrashes {
     boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 
     /**
-     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process it is always safe to send at shutdown.
+     * @return true.
+     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process we always send at shutdown.
      */
     boolean sendReportsAtShutdown() default true;
 

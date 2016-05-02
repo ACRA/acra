@@ -25,7 +25,6 @@ import java.util.LinkedList;
  * elements to the end of the list, first elements in the list are discarded if
  * the maximum size is reached.
  *
- * @param <E>
  * @author Kevin Gaudin
  */
 @SuppressWarnings("serial")

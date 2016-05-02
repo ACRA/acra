@@ -162,6 +162,7 @@ public final class CrashReportDataFactory {
      * Collects crash data.
      *
      * @param builder ReportBuilder for whom to crete the crash report.
+     * @return CrashReportData identifying the current crash.
      */
     @NonNull
     public CrashReportData createCrashData(@NonNull ReportBuilder builder) {
