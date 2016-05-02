@@ -331,7 +331,7 @@ public final class CrashReportPersister {
                     final String hex = Integer.toHexString(ch);
                     buffer.append("\\u"); //$NON-NLS-1$
                     for (int j = 0; j < 4 - hex.length(); j++) {
-                        buffer.append("0"); //$NON-NLS-1$
+                        buffer.append('0'); //$NON-NLS-1$
                     }
                     buffer.append(hex);
                 }

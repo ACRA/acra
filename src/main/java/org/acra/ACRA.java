@@ -307,7 +307,7 @@ public final class ACRA {
      */
     public static boolean isACRASenderServiceProcess() {
         final String processName = getCurrentProcessName();
-        if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + "'");
+        if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + '\'');
         //processName sometimes (or always?) starts with the package name, so we use endsWith instead of equals
         return processName != null && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }

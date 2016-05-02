@@ -93,7 +93,7 @@ final class DropBoxCollector {
                 while (entry != null) {
                     final long msec = entry.getTimeMillis();
                     calendar.setTimeInMillis(msec);
-                    dropboxContent.append("@").append(dateFormat.format(calendar.getTime())).append('\n');
+                    dropboxContent.append('@').append(dateFormat.format(calendar.getTime())).append('\n');
                     final String text = entry.getText(500);
                     if (text != null) {
                         dropboxContent.append("Text: ").append(text).append('\n');

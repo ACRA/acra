@@ -41,6 +41,7 @@ import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -66,7 +67,7 @@ public final class ConfigurationBuilder {
     private String[] additionalSharedPreferences;
     private Integer connectionTimeout;
     private ReportField[] customReportContent;
-    private final Map<ReportField, Boolean> reportContentChanges = new HashMap<ReportField, Boolean>();
+    private final Map<ReportField, Boolean> reportContentChanges = new EnumMap<ReportField, Boolean>(ReportField.class);
     private Boolean deleteUnapprovedReportsOnApplicationStart;
     private Boolean deleteOldUnsentReportsOnApplicationStart;
     private Integer dropboxCollectionMinutes;

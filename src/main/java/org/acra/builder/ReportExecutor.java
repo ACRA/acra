@@ -340,8 +340,7 @@ public final class ReportExecutor {
     private File getReportFileName(@NonNull CrashReportData crashData) {
         final String timestamp = crashData.getProperty(USER_CRASH_DATE);
         final String isSilent = crashData.getProperty(IS_SILENT);
-        final String fileName =  ""
-                + (timestamp != null ? timestamp : new Date().getTime()) // Need to check for null because old version of ACRA did not always capture USER_CRASH_DATE
+        final String fileName = (timestamp != null ? timestamp : new Date().getTime()) // Need to check for null because old version of ACRA did not always capture USER_CRASH_DATE
                 + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "")
                 + ACRAConstants.REPORTFILE_EXTENSION;
         final ReportLocator reportLocator = new ReportLocator(context);

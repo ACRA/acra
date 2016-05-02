@@ -571,7 +571,7 @@ public final class CrashReportDataFactory {
             } else {
                 customInfo.append("null");
             }
-            customInfo.append("\n");
+            customInfo.append('\n');
         }
         return customInfo.toString();
     }

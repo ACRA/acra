@@ -53,7 +53,7 @@ final class ReflectionCollector {
             if (prefix != null && !prefix.isEmpty()) {
                 result.append(prefix).append('.');
             }
-            result.append(field.getName()).append("=");
+            result.append(field.getName()).append('=');
             try {
                 final Object value = field.get(null);
                 if (value != null) {
@@ -68,7 +68,7 @@ final class ReflectionCollector {
             } catch (@NonNull IllegalAccessException e) {
                 result.append("N/A");
             }
-            result.append("\n");
+            result.append('\n');
         }
 
         return result.toString();
@@ -92,7 +92,7 @@ final class ReflectionCollector {
                     result.append(method.getName());
                     result.append('=');
                     result.append(method.invoke(null, (Object[]) null));
-                    result.append("\n");
+                    result.append('\n');
                 } catch (@NonNull IllegalArgumentException ignored) {
                     // NOOP
                 } catch (@NonNull InvocationTargetException ignored) {

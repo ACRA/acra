@@ -171,7 +171,7 @@ final class MediaCodecListCollector {
                     result.append(',');
                 }
             }
-            result.append("\n");
+            result.append('\n');
         }
 
         final CodecType codecType = identifyCodecType(codecInfo);

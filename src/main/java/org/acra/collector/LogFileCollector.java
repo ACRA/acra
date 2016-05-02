@@ -69,7 +69,7 @@ class LogFileCollector {
             }
             return inputStream;
         } catch (FileNotFoundException e) {
-            ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + fileName + "'");
+            ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + fileName + '\'');
             return new ByteArrayInputStream(new byte[0]);
         }
     }

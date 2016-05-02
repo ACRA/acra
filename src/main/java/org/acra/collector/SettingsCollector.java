@@ -69,7 +69,7 @@ final class SettingsCollector {
                 try {
                     final Object value = Settings.System.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append("=").append(value).append("\n");
+                        result.append(key.getName()).append('=').append(value).append('\n');
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -98,7 +98,7 @@ final class SettingsCollector {
                 try {
                     final Object value = Settings.Secure.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append("=").append(value).append("\n");
+                        result.append(key.getName()).append('=').append(value).append('\n');
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -131,7 +131,7 @@ final class SettingsCollector {
                 try {
                     final Object value = Settings.Global.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append("=").append(value).append("\n");
+                        result.append(key.getName()).append('=').append(value).append('\n');
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);

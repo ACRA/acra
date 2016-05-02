@@ -87,7 +87,7 @@ final class SharedPreferencesCollector {
                     final Object prefValue = prefEntry.getValue();
                     result.append(sharedPrefId).append('.').append(prefEntry.getKey()).append('=');
                     result.append(prefValue == null ? "null" : prefValue.toString());
-                    result.append("\n");
+                    result.append('\n');
                 }
             }
             result.append('\n');
