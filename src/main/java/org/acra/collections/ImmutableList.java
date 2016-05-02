@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,10 @@ import java.util.ListIterator;
 public final class ImmutableList<E> implements List<E>, Serializable {
 
     private final List<E> mList;
+
+    public ImmutableList(E... elements) {
+        this(Arrays.asList(elements));
+    }
 
     public ImmutableList(Collection<E> collection) {
         this.mList = new ArrayList<E>(collection);

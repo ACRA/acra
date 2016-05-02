@@ -25,6 +25,7 @@ import android.support.annotation.StyleRes;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.builder.ReportPrimer;
+import org.acra.collections.ImmutableList;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.security.KeyStoreFactory;
 import org.acra.sender.HttpSender.Method;
@@ -55,7 +56,7 @@ public final class ACRAConfiguration implements Serializable {
     private final String formUriBasicAuthPassword;
     private final boolean includeDropBoxSystemTags;
 
-    private final ImmutableSet<String> logcatArguments;
+    private final ImmutableList<String> logcatArguments;
     private final String mailTo;
     private final ReportingInteractionMode reportingInteractionMode;
     private final Class<? extends BaseCrashReportDialog> reportDialogClass;
@@ -128,7 +129,7 @@ public final class ACRAConfiguration implements Serializable {
         formUriBasicAuthLogin = builder.formUriBasicAuthLogin();
         formUriBasicAuthPassword = builder.formUriBasicAuthPassword();
         includeDropBoxSystemTags = builder.includeDropBoxSystemTags();
-        logcatArguments = new ImmutableSet<String>(builder.logcatArguments());
+        logcatArguments = new ImmutableList<String>(builder.logcatArguments());
         mailTo = builder.mailTo();
         reportingInteractionMode = builder.reportingInteractionMode();
         resDialogIcon = builder.resDialogIcon();
@@ -237,7 +238,7 @@ public final class ACRAConfiguration implements Serializable {
     }
 
     @NonNull
-    public ImmutableSet<String> logcatArguments() {
+    public ImmutableList<String> logcatArguments() {
         return logcatArguments;
     }
 
