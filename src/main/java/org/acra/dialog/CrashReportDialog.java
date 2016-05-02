@@ -26,7 +26,7 @@ import org.acra.prefs.SharedPreferencesFactory;
  * AndroidManifest to work properly.
  **/
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
+public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener {
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
@@ -72,7 +72,6 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
-        mDialog.setOnDismissListener(this);
         mDialog.show();
     }
 
@@ -230,12 +229,6 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
             cancelReports();
         }
 
-        finish();
-    }
-
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
         finish();
     }
 
