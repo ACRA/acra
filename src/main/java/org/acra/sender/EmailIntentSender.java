@@ -62,7 +62,7 @@ public class EmailIntentSender implements ReportSender {
 
     private String buildBody(@NonNull CrashReportData errorContent) {
         Set<ReportField> fields = config.getReportFields();
-        if(fields.size() == 0) {
+        if(fields.isEmpty()) {
             fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS);
         }
 

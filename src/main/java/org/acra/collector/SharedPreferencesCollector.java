@@ -39,7 +39,7 @@ final class SharedPreferencesCollector {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }

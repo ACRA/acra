@@ -59,7 +59,7 @@ final class MediaCodecListCollector {
     // static init where nearly all reflection inspection is done.
     static {
         try {
-            Class<?> codecCapabilitiesClass = Class.forName("android.media.MediaCodecInfo$CodecCapabilities");
+            final Class<?> codecCapabilitiesClass = Class.forName("android.media.MediaCodecInfo$CodecCapabilities");
 
             // Retrieve list of possible Color Format
             for (Field f : codecCapabilitiesClass.getFields()) {
@@ -70,7 +70,7 @@ final class MediaCodecListCollector {
             }
 
             // Retrieve lists of possible codecs profiles and levels
-            Class<?> codecProfileLevelClass = Class.forName("android.media.MediaCodecInfo$CodecProfileLevel");
+            final Class<?> codecProfileLevelClass = Class.forName("android.media.MediaCodecInfo$CodecProfileLevel");
             for (Field f : codecProfileLevelClass.getFields()) {
                 if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())) {
                     if (f.getName().startsWith("AVCLevel")) {

@@ -67,7 +67,7 @@ public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
         this.certificateType = certificateType;
     }
 
-    abstract protected InputStream getInputStream(@NonNull Context context);
+    protected abstract InputStream getInputStream(@NonNull Context context);
 
     protected String getKeyStoreType() {
         return KeyStore.getDefaultType();
@@ -84,15 +84,15 @@ public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
     @Override
     @Nullable
     public final KeyStore create(@NonNull Context context) {
-        InputStream inputStream = getInputStream(context);
+        final InputStream inputStream = getInputStream(context);
         if (inputStream != null) {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            final BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
             try {
-                KeyStore keyStore = KeyStore.getInstance(getKeyStoreType());
+                final KeyStore keyStore = KeyStore.getInstance(getKeyStoreType());
                 switch (getStreamType()) {
                     case CERTIFICATE:
-                        CertificateFactory certificateFactory = CertificateFactory.getInstance(certificateType);
-                        Certificate certificate = certificateFactory.generateCertificate(bufferedInputStream);
+                        final CertificateFactory certificateFactory = CertificateFactory.getInstance(certificateType);
+                        final Certificate certificate = certificateFactory.generateCertificate(bufferedInputStream);
                         keyStore.load(null, null);
                         keyStore.setCertificateEntry("ca", certificate);
                         break;

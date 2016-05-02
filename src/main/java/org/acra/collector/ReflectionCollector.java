@@ -50,7 +50,7 @@ final class ReflectionCollector {
 
         final Field[] fields = someClass.getFields();
         for (final Field field : fields) {
-            if (prefix != null && prefix.length() > 0) {
+            if (prefix != null && !prefix.isEmpty()) {
                 result.append(prefix).append('.');
             }
             result.append(field.getName()).append("=");
@@ -87,7 +87,7 @@ final class ReflectionCollector {
         for (final Method method : methods) {
             if (method.getParameterTypes().length == 0
                     && (method.getName().startsWith("get") || method.getName().startsWith("is"))
-                    && !method.getName().equals("getClass")) {
+                    && !"getClass".equals(method.getName())) {
                 try {
                     result.append(method.getName());
                     result.append('=');

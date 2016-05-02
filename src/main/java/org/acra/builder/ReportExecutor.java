@@ -248,7 +248,7 @@ public final class ReportExecutor {
         final boolean letDefaultHandlerEndApplication = config.alsoReportToAndroidFramework();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
-        if (handlingUncaughtException && letDefaultHandlerEndApplication && (defaultExceptionHandler != null)) {
+        if (handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {
             // Let the system default handler do it's job and display the force close dialog.
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
@@ -323,7 +323,7 @@ public final class ReportExecutor {
                 .setContentIntent(contentIntent)
                 .build();
 
-        notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         // The deleteIntent is invoked when the user swipes away the Notification.
         // In this case we invoke the CrashReportDialog with EXTRA_FORCE_CANCEL==true

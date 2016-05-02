@@ -37,7 +37,7 @@ final class ThreadCollector {
      */
     @NonNull
     public static String collect(@Nullable Thread t) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         if (t != null) {
             result.append("id=").append(t.getId()).append("\n");
             result.append("name=").append(t.getName()).append("\n");

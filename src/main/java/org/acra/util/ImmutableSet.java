@@ -109,7 +109,7 @@ public final class ImmutableSet<E> implements Set<E> {
         return mSet.toArray(array);
     }
 
-    public final static class Builder<E> {
+    public static final class Builder<E> {
         private final Set<E> mSet;
 
         public Builder() {

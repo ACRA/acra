@@ -249,7 +249,7 @@ public class HttpSender implements ReportSender {
     private Map<String, String> remap(@NonNull Map<ReportField, String> report) {
 
         Set<ReportField> fields = config.getReportFields();
-        if (fields.size() == 0) {
+        if (fields.isEmpty()) {
             fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_REPORT_FIELDS);
         }
 

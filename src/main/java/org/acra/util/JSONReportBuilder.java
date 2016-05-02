@@ -69,15 +69,15 @@ public final class JSONReportBuilder {
      */
     @NonNull
     public static JSONObject buildJSONReport(@NonNull CrashReportData errorContent) throws JSONReportException {
-        JSONObject jsonReport = new JSONObject();
+        final JSONObject jsonReport = new JSONObject();
         BufferedReader reader = null;
         for (ReportField key : errorContent.keySet()) {
             try {
                 // Each ReportField can be identified as a substructure and not
                 // a simple String value.
                 if (key.containsKeyValuePairs()) {
-                    JSONObject subObject = new JSONObject();
-                    String strContent = errorContent.getProperty(key);
+                    final JSONObject subObject = new JSONObject();
+                    final String strContent = errorContent.getProperty(key);
                     reader = new BufferedReader(new StringReader(strContent), 1024); //TODO: 1024 should be a constant. Use ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES ?
                     String line;
                     try {
@@ -140,15 +140,15 @@ public final class JSONReportBuilder {
      * @throws JSONException
      */
     private static void addJSONFromProperty(@NonNull JSONObject destination, @NonNull String propertyString) throws JSONException {
-        int equalsIndex = propertyString.indexOf('=');
+        final int equalsIndex = propertyString.indexOf('=');
         if (equalsIndex > 0) {
-            String currentKey = propertyString.substring(0, equalsIndex).trim();
-            String currentValue = propertyString.substring(equalsIndex + 1).trim();
+            final String currentKey = propertyString.substring(0, equalsIndex).trim();
+            final String currentValue = propertyString.substring(equalsIndex + 1).trim();
             Object value = guessType(currentValue);
             if(value instanceof String) {
                 value = ((String) value).replaceAll("\\\\n","\n");
             }
-            String[] splitKey = currentKey.split("\\.");
+            final String[] splitKey = currentKey.split("\\.");
             if (splitKey.length > 1) {
                 addJSONSubTree(destination, splitKey, value);
             } else {
@@ -161,13 +161,13 @@ public final class JSONReportBuilder {
 
     @NonNull
     private static Object guessType(@NonNull String value) {
-        if (value.equalsIgnoreCase("true"))
+        if ("true".equalsIgnoreCase(value))
             return true;
-        if (value.equalsIgnoreCase("false"))
+        if ("false".equalsIgnoreCase(value))
             return false;
 
         if (value.matches("(?:^|\\s)([1-9](?:\\d*|(?:\\d{0,2})(?:,\\d{3})*)(?:\\.\\d*[1-9])?|0?\\.\\d*[1-9]|0)(?:\\s|$)")) {
-            NumberFormat format = NumberFormat.getInstance(Locale.US);
+            final NumberFormat format = NumberFormat.getInstance(Locale.US);
             try {
                 return format.parse(value);
             } catch (ParseException ignored) {
@@ -192,19 +192,19 @@ public final class JSONReportBuilder {
      */
     private static void addJSONSubTree(@NonNull JSONObject destination, @NonNull String[] keys, Object value) throws JSONException {
         for (int i = 0; i < keys.length; i++) {
-            String subKey = keys[i];
+            final String subKey = keys[i];
             if (i < keys.length - 1) {
                 JSONObject intermediate = null;
                 if (destination.isNull(subKey)) {
                     intermediate = new JSONObject();
                     destination.accumulate(subKey, intermediate);
                 } else {
-                    Object target = destination.get(subKey);
+                    final Object target = destination.get(subKey);
                     if (target instanceof JSONObject) {
                         intermediate = destination.getJSONObject(subKey);
                     } else if (target instanceof JSONArray) {
                         // Unexpected JSONArray, see issue #186
-                        JSONArray wildCard = destination.getJSONArray(subKey);
+                        final JSONArray wildCard = destination.getJSONArray(subKey);
                         for (int j = 0; j < wildCard.length(); j++) {
                             intermediate = wildCard.optJSONObject(j);
                             if (intermediate != null) {

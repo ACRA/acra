@@ -124,7 +124,8 @@ public final class CrashReportPersister {
     @NonNull
     private synchronized CrashReportData load(@NonNull Reader reader) throws IOException {
         int mode = NONE, unicode = 0, count = 0;
-        char nextChar, buf[] = new char[40]; //TODO: consider using a list instead of manually increasing the size when needed
+        char nextChar;
+        char[] buf = new char[40]; //TODO: consider using a list instead of manually increasing the size when needed
         int offset = 0, keyLength = -1, intVal;
         boolean firstChar = true;
 
