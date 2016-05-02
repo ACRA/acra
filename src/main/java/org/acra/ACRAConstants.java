@@ -93,7 +93,7 @@ public final class ACRAConstants {
 
     public static final boolean DEFAULT_REPORT_TO_ANDROID_FRAMEWORK = false;
 
-    public static final int DEFAULT_SOCKET_TIMEOUT = 8000;
+    public static final int DEFAULT_SOCKET_TIMEOUT = 20000;
 
     public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
 
