@@ -37,13 +37,13 @@ final class ThreadCollector {
      */
     @NonNull
     public static String collect(@Nullable Thread t) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         if (t != null) {
-            result.append("id=").append(t.getId()).append("\n");
-            result.append("name=").append(t.getName()).append("\n");
-            result.append("priority=").append(t.getPriority()).append("\n");
+            result.append("id=").append(t.getId()).append('\n');
+            result.append("name=").append(t.getName()).append('\n');
+            result.append("priority=").append(t.getPriority()).append('\n');
             if (t.getThreadGroup() != null) {
-                result.append("groupName=").append(t.getThreadGroup().getName()).append("\n");
+                result.append("groupName=").append(t.getThreadGroup().getName()).append('\n');
             }
         } else {
             result.append("No broken thread, this might be a silent exception.");

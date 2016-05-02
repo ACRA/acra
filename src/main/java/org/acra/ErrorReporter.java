@@ -293,11 +293,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *            forward them as crash reports.
      */
     public void setEnabled(boolean enabled) {
-        if (!supportedAndroidVersion) {
-            ACRA.log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
-        } else {
+        if (supportedAndroidVersion) {
             ACRA.log.i(LOG_TAG, "ACRA is " + (enabled ? "enabled" : "disabled") + " for " + context.getPackageName());
             reportExecutor.setEnabled(enabled);
+        } else {
+            ACRA.log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
         }
     }
 

@@ -16,7 +16,6 @@
 
 package org.acra.collector;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
@@ -29,8 +28,6 @@ import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -48,7 +45,7 @@ final class SettingsCollector {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SettingsCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    SettingsCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }
@@ -72,7 +69,7 @@ final class SettingsCollector {
                 try {
                     final Object value = Settings.System.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append("=").append(value).append("\n");
+                        result.append(key.getName()).append('=').append(value).append('\n');
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -101,7 +98,7 @@ final class SettingsCollector {
                 try {
                     final Object value = Settings.Secure.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append("=").append(value).append("\n");
+                        result.append(key.getName()).append('=').append(value).append('\n');
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -134,7 +131,7 @@ final class SettingsCollector {
                 try {
                     final Object value = Settings.Global.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append("=").append(value).append("\n");
+                        result.append(key.getName()).append('=').append(value).append('\n');
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);

@@ -12,7 +12,6 @@ import android.util.Base64;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
-import org.acra.security.KeyStoreFactory;
 import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -110,8 +109,8 @@ public final class HttpRequest {
         }
 
         // Set Credentials
-        if ((login != null) && (password != null)) {
-            final String credentials = login + ":" + password;
+        if (login != null && password != null) {
+            final String credentials = login + ':' + password;
             final String encoded = new String(Base64.encode(credentials.getBytes(UTF8), Base64.NO_WRAP), UTF8);
             urlConnection.setRequestProperty("Authorization", "Basic " + encoded);
         }
@@ -144,9 +143,12 @@ public final class HttpRequest {
         urlConnection.connect();
 
         final OutputStream outputStream = new BufferedOutputStream(urlConnection.getOutputStream());
-        outputStream.write(contentAsBytes);
-        outputStream.flush();
-        outputStream.close();
+        try {
+            outputStream.write(contentAsBytes);
+            outputStream.flush();
+        } finally {
+            IOUtils.safeClose(outputStream);
+        }
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending request to " + url);
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");

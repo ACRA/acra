@@ -27,8 +27,6 @@ import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.ImmutableSet;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -62,13 +60,13 @@ public class EmailIntentSender implements ReportSender {
 
     private String buildBody(@NonNull CrashReportData errorContent) {
         Set<ReportField> fields = config.getReportFields();
-        if(fields.size() == 0) {
+        if(fields.isEmpty()) {
             fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS);
         }
 
         final StringBuilder builder = new StringBuilder();
         for (ReportField field : fields) {
-            builder.append(field.toString()).append("=");
+            builder.append(field.toString()).append('=');
             builder.append(errorContent.get(field));
             builder.append('\n');
         }

@@ -50,7 +50,7 @@ final class ReportDistributor {
      * @param config                Configuration to use while sending.
      * @param reportSenders         List of ReportSender to use to send the crash reports.
      */
-    public ReportDistributor(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull List<ReportSender> reportSenders) {
+    ReportDistributor(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull List<ReportSender> reportSenders) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;
@@ -137,9 +137,9 @@ final class ReportDistributor {
      * @return true if the application is debuggable.
      */
     private boolean isDebuggable() {
-        PackageManager pm = context.getPackageManager();
+        final PackageManager pm = context.getPackageManager();
         try {
-            return ((pm.getApplicationInfo(context.getPackageName(), 0).flags & ApplicationInfo.FLAG_DEBUGGABLE) > 0);
+            return (pm.getApplicationInfo(context.getPackageName(), 0).flags & ApplicationInfo.FLAG_DEBUGGABLE) > 0;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }

@@ -219,7 +219,7 @@ public final class ACRA {
             if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
         }
 
-        boolean supportedAndroidVersion = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO);
+        final boolean supportedAndroidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
         if (!supportedAndroidVersion){
             // NB We keep initialising so that everything is configured. But ACRA is never enabled below.
             log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
@@ -298,7 +298,7 @@ public final class ACRA {
      */
     @SuppressWarnings("unused")
     public static boolean isInitialised() {
-        return (configProxy != null);
+        return configProxy != null;
     }
 
     /**
@@ -307,9 +307,9 @@ public final class ACRA {
      */
     public static boolean isACRASenderServiceProcess() {
         final String processName = getCurrentProcessName();
-        if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + "'");
+        if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + '\'');
         //processName sometimes (or always?) starts with the package name, so we use endsWith instead of equals
-        return (processName != null) && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
+        return processName != null && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
 
     @Nullable

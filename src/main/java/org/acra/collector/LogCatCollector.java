@@ -103,6 +103,7 @@ class LogCatCollector {
 
             // Dump stderr to null
             new Thread(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         IOUtils.streamToString(process.getErrorStream());

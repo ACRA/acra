@@ -205,14 +205,13 @@ public final class ReportExecutor {
                         ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
                                 + " millis from " + sentToastTimeMillis.initialTimeMillis
                                 + " currentMillis=" + System.currentTimeMillis());
-                    while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
-                        try {
-                            // Wait a bit to let the user read the toast
-                            Thread.sleep(THREAD_SLEEP_INTERVAL_MILLIS);
-                        } catch (InterruptedException e1) {
-                            if (ACRA.DEV_LOGGING)
-                                ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
-                        }
+                    final long sleep = ACRAConstants.TOAST_WAIT_DURATION - sentToastTimeMillis.getElapsedTime();
+                    try {
+                        // Wait a bit to let the user read the toast
+                        if (sleep > 0L) Thread.sleep(sleep);
+                    } catch (InterruptedException e1) {
+                        if (ACRA.DEV_LOGGING)
+                            ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                     }
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
                     dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
@@ -248,7 +247,7 @@ public final class ReportExecutor {
         final boolean letDefaultHandlerEndApplication = config.alsoReportToAndroidFramework();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
-        if (handlingUncaughtException && letDefaultHandlerEndApplication && (defaultExceptionHandler != null)) {
+        if (handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {
             // Let the system default handler do it's job and display the force close dialog.
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
@@ -323,7 +322,7 @@ public final class ReportExecutor {
                 .setContentIntent(contentIntent)
                 .build();
 
-        notification.flags = notification.flags | Notification.FLAG_AUTO_CANCEL;
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         // The deleteIntent is invoked when the user swipes away the Notification.
         // In this case we invoke the CrashReportDialog with EXTRA_FORCE_CANCEL==true
@@ -340,8 +339,7 @@ public final class ReportExecutor {
     private File getReportFileName(@NonNull CrashReportData crashData) {
         final String timestamp = crashData.getProperty(USER_CRASH_DATE);
         final String isSilent = crashData.getProperty(IS_SILENT);
-        final String fileName =  ""
-                + (timestamp != null ? timestamp : new Date().getTime()) // Need to check for null because old version of ACRA did not always capture USER_CRASH_DATE
+        final String fileName = (timestamp != null ? timestamp : new Date().getTime()) // Need to check for null because old version of ACRA did not always capture USER_CRASH_DATE
                 + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "")
                 + ACRAConstants.REPORTFILE_EXTENSION;
         final ReportLocator reportLocator = new ReportLocator(context);

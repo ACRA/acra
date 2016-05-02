@@ -87,7 +87,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         addViewToDialog(getMainView());
 
         // Add an optional prompt for user comments
-        View comment = getCommentLabel();
+        final View comment = getCommentLabel();
         if (comment != null) {
             comment.setPadding(comment.getPaddingLeft(), PADDING, comment.getPaddingRight(), comment.getPaddingBottom());
             addViewToDialog(comment);
@@ -100,7 +100,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         }
 
         // Add an optional user email field
-        View email = getEmailLabel();
+        final View email = getEmailLabel();
         if (email != null) {
             email.setPadding(email.getPaddingLeft(), PADDING, email.getPaddingRight(), email.getPaddingBottom());
             addViewToDialog(email);
@@ -162,7 +162,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     @NonNull
     protected EditText getCommentPrompt(@Nullable CharSequence savedComment) {
-        EditText userCommentView = new EditText(this);
+        final EditText userCommentView = new EditText(this);
         userCommentView.setLines(2);
         if (savedComment != null) {
             userCommentView.setText(savedComment);
@@ -194,7 +194,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     @NonNull
     protected EditText getEmailPrompt(@Nullable CharSequence savedEmail) {
-        EditText userEmailView = new EditText(this);
+        final EditText userEmailView = new EditText(this);
         userEmailView.setSingleLine();
         userEmailView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 

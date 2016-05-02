@@ -74,7 +74,7 @@ final class DropBoxCollector {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }
             final Set<String> additionalTags = config.additionalDropBoxTags();
-            if (additionalTags.size() > 0) {
+            if (!additionalTags.isEmpty()) {
                 tags.addAll(additionalTags);
             }
 
@@ -93,7 +93,7 @@ final class DropBoxCollector {
                 while (entry != null) {
                     final long msec = entry.getTimeMillis();
                     calendar.setTimeInMillis(msec);
-                    dropboxContent.append("@").append(dateFormat.format(calendar.getTime())).append('\n');
+                    dropboxContent.append('@').append(dateFormat.format(calendar.getTime())).append('\n');
                     final String text = entry.getText(500);
                     if (text != null) {
                         dropboxContent.append("Text: ").append(text).append('\n');
