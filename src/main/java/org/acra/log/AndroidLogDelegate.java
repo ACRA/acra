@@ -5,7 +5,7 @@ import android.util.Log;
 
 /**
  * Responsible for delegating calls to the Android logging system.
- * <p/>
+ *
  * @author William Ferguson
  * @since 4.3.0
  */

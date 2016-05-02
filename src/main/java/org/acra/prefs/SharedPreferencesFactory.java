@@ -10,11 +10,12 @@ import org.acra.config.ACRAConfiguration;
 
 /**
  * Responsible for creating a SharedPreferences instance which stores ACRA settings.
- * <p/>
+ * <p>
  * Retrieves the {@link SharedPreferences} instance where user adjustable
  * settings for ACRA are stored. Default are the Application default
  * SharedPreferences, but you can provide another SharedPreferences name
  * with {@link ReportsCrashes#sharedPreferencesName()}.
+ * </p>
  */
 public class SharedPreferencesFactory {
 

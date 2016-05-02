@@ -22,7 +22,7 @@ import org.acra.ErrorReporter;
 
 /**
  * Responsible for determining the state of a Crash Report based on its file name.
- * <p/>
+ *
  * @author William Ferguson
  * @since 4.3.0
  */

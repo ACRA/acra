@@ -168,7 +168,7 @@
 					</execution>
 				</executions>
                 <configuration>
-					<bootclasspath>$(env.JAVA_HOME)/jre/lib/rt.jar;${env.ANDROID_HOME}/platforms/android-${android.version}/android.jar</bootclasspath>
+					<bootclasspath>${env.JAVA_HOME}/jre/lib/rt.jar;${env.ANDROID_HOME}/platforms/android-${android.version}/android.jar</bootclasspath>
                     <excludePackageNames>org.acra.log,org.acra.util</excludePackageNames>
                 </configuration>
 			</plugin>

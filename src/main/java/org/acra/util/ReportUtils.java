@@ -23,7 +23,6 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for providing base utilities used when constructing the report.
- * <p/>
  *
  * @author William Ferguson
  * @since 4.3.0

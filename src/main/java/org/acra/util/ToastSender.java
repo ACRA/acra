@@ -12,7 +12,6 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for sending Toasts under all circumstances.
- * <p/>
  *
  * @author William Ferguson
  * @since 4.3.0
