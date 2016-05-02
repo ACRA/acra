@@ -12,7 +12,6 @@ import android.util.Base64;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
-import org.acra.security.KeyStoreFactory;
 import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;

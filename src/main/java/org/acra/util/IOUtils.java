@@ -22,7 +22,6 @@ import android.text.TextUtils;
 import com.android.internal.util.Predicate;
 
 import org.acra.ACRAConstants;
-import org.acra.util.BoundedLinkedList;
 
 import java.io.BufferedReader;
 import java.io.Closeable;

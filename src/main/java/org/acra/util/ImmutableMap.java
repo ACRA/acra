@@ -104,7 +104,7 @@ public class ImmutableMap<K, V> implements Map<K, V>, Serializable {
         return new ImmutableList<V>(mMap.values());
     }
 
-    static class ImmutableEntryWrapper<K, V> implements Map.Entry<K, V> {
+    public static class ImmutableEntryWrapper<K, V> implements Map.Entry<K, V> {
         private final Map.Entry<K, V> mEntry;
 
         ImmutableEntryWrapper(Entry<K, V> mEntry) {

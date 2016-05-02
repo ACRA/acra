@@ -60,7 +60,7 @@ import static org.acra.ACRAConstants.*;
 public final class ConfigurationBuilder {
 
     @Nullable
-    final Class<? extends Annotation> annotationType;
+    private final Class<? extends Annotation> annotationType;
 
     private String[] additionalDropBoxTags;
     private String[] additionalSharedPreferences;

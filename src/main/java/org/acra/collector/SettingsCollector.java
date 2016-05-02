@@ -16,7 +16,6 @@
 
 package org.acra.collector;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
@@ -29,8 +28,6 @@ import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import static org.acra.ACRA.LOG_TAG;
 
