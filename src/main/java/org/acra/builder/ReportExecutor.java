@@ -205,14 +205,13 @@ public final class ReportExecutor {
                         ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
                                 + " millis from " + sentToastTimeMillis.initialTimeMillis
                                 + " currentMillis=" + System.currentTimeMillis());
-                    while (sentToastTimeMillis.getElapsedTime() < ACRAConstants.TOAST_WAIT_DURATION) {
-                        try {
-                            // Wait a bit to let the user read the toast
-                            Thread.sleep(THREAD_SLEEP_INTERVAL_MILLIS);
-                        } catch (InterruptedException e1) {
-                            if (ACRA.DEV_LOGGING)
-                                ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
-                        }
+                    final long sleep = ACRAConstants.TOAST_WAIT_DURATION - sentToastTimeMillis.getElapsedTime();
+                    try {
+                        // Wait a bit to let the user read the toast
+                        if (sleep > 0L) Thread.sleep(sleep);
+                    } catch (InterruptedException e1) {
+                        if (ACRA.DEV_LOGGING)
+                            ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
                     }
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
                     dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
