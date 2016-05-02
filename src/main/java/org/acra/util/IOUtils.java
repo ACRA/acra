@@ -113,11 +113,10 @@ public final class IOUtils {
      */
     @NonNull
     public static String streamToString(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
-        BufferedReader reader = null;
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(input), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
         try {
-            reader = new BufferedReader(new InputStreamReader(input), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
             String line;
-            List<String> buffer = limit == NO_LIMIT ? new LinkedList<String>() : new BoundedLinkedList<String>(limit);
+            final List<String> buffer = limit == NO_LIMIT ? new LinkedList<String>() : new BoundedLinkedList<String>(limit);
             while ((line = reader.readLine()) != null) {
                 if (filter.apply(line)) {
                     buffer.add(line);

@@ -143,9 +143,12 @@ public final class HttpRequest {
         urlConnection.connect();
 
         final OutputStream outputStream = new BufferedOutputStream(urlConnection.getOutputStream());
-        outputStream.write(contentAsBytes);
-        outputStream.flush();
-        outputStream.close();
+        try {
+            outputStream.write(contentAsBytes);
+            outputStream.flush();
+        } finally {
+            IOUtils.safeClose(outputStream);
+        }
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending request to " + url);
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
