@@ -187,7 +187,7 @@ public final class CrashReportDataFactory {
             // Before JellyBean, this required the READ_LOGS permission
             // Since JellyBean, READ_LOGS is not granted to third-party apps anymore for security reasons.
             // Though, we can call logcat without any permission and still get traces related to our app.
-            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+            final boolean hasReadLogsPermission = pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
             if (prefs.getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true) && hasReadLogsPermission) {
                 if (ACRA.DEV_LOGGING)
                     ACRA.log.d(LOG_TAG, "READ_LOGS granted! ACRA can include LogCat and DropBox data.");
@@ -571,7 +571,7 @@ public final class CrashReportDataFactory {
             } else {
                 customInfo.append("null");
             }
-            customInfo.append("\n");
+            customInfo.append('\n');
         }
         return customInfo.toString();
     }
@@ -617,7 +617,7 @@ public final class CrashReportDataFactory {
     @NonNull
     private Class<?> getBuildConfigClass() throws ClassNotFoundException {
         final Class configuredBuildConfig = config.buildConfigClass();
-        if ((configuredBuildConfig != null) && !configuredBuildConfig.equals(Object.class)) {
+        if (configuredBuildConfig != null && !configuredBuildConfig.equals(Object.class)) {
             // If set via annotations or programmatically then it will have a real value,
             // otherwise it will be Object.class (annotation default) or null (explicit programmatic).
             return configuredBuildConfig;

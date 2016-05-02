@@ -27,14 +27,12 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.HttpRequest;
-import org.acra.util.ImmutableSet;
+import org.acra.collections.ImmutableSet;
 import org.acra.util.JSONReportBuilder.JSONReportException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -249,7 +247,7 @@ public class HttpSender implements ReportSender {
     private Map<String, String> remap(@NonNull Map<ReportField, String> report) {
 
         Set<ReportField> fields = config.getReportFields();
-        if (fields.size() == 0) {
+        if (fields.isEmpty()) {
             fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_REPORT_FIELDS);
         }
 

@@ -51,12 +51,11 @@ public final class CrashReportPersister {
     @NonNull
     public CrashReportData load(@NonNull File file) throws IOException {
 
-        final FileInputStream in = new FileInputStream(file);
+        final InputStream in = new BufferedInputStream(new FileInputStream(file), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
         try {
-            final BufferedInputStream bis = new BufferedInputStream(in, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-            return load(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
+            return load(new InputStreamReader(in, "ISO8859-1")); //$NON-NLS-1$
         } finally {
-            in.close();
+            IOUtils.safeClose(in);
         }
     }
 
@@ -71,10 +70,9 @@ public final class CrashReportPersister {
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
 
-        OutputStreamWriter writer = null;
+        final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "ISO8859_1"); //$NON-NLS-1$
         try {
             final StringBuilder buffer = new StringBuilder(200);
-            writer = new OutputStreamWriter(new FileOutputStream(file), "ISO8859_1"); //$NON-NLS-1$
 
             for (final Map.Entry<ReportField, String> entry : crashData.entrySet()) {
                 final String key = entry.getKey().toString();
@@ -87,9 +85,7 @@ public final class CrashReportPersister {
             }
             writer.flush();
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            IOUtils.safeClose(writer);
         }
     }
 
@@ -124,171 +120,175 @@ public final class CrashReportPersister {
     @NonNull
     private synchronized CrashReportData load(@NonNull Reader reader) throws IOException {
         int mode = NONE, unicode = 0, count = 0;
-        char nextChar, buf[] = new char[40]; //TODO: consider using a list instead of manually increasing the size when needed
+        char nextChar;
+        char[] buf = new char[40]; //TODO: consider using a list instead of manually increasing the size when needed
         int offset = 0, keyLength = -1, intVal;
         boolean firstChar = true;
 
         final CrashReportData crashData = new CrashReportData();
         final BufferedReader br = new BufferedReader(reader, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
+        try {
+            while (true) {
+                intVal = br.read();
+                if (intVal == -1) {
+                    break;
+                }
+                nextChar = (char) intVal;
 
-        while (true) {
-            intVal = br.read();
-            if (intVal == -1) {
-                break;
-            }
-            nextChar = (char) intVal;
-
-            if (offset == buf.length) {
-                final char[] newBuf = new char[buf.length * 2];
-                System.arraycopy(buf, 0, newBuf, 0, offset);
-                buf = newBuf;
-            }
-            if (mode == UNICODE) {
-                final int digit = Character.digit(nextChar, 16);
-                if (digit >= 0) {
-                    unicode = (unicode << 4) + digit;
-                    if (++count < 4) {
-                        continue;
-                    }
-                } else if (count <= 4) {
-                    // luni.09=Invalid Unicode sequence: illegal character
-                    throw new IllegalArgumentException("luni.09");
+                if (offset == buf.length) {
+                    final char[] newBuf = new char[buf.length * 2];
+                    System.arraycopy(buf, 0, newBuf, 0, offset);
+                    buf = newBuf;
                 }
-                mode = NONE;
-                buf[offset++] = (char) unicode;
-                if (nextChar != '\n' && nextChar != '\u0085') {
-                    continue;
-                }
-            }
-            if (mode == SLASH) {
-                mode = NONE;
-                switch (nextChar) {
-                case '\r':
-                    mode = CONTINUE; // Look for a following \n
-                    continue;
-                case '\u0085':
-                case '\n':
-                    mode = IGNORE; // Ignore whitespace on the next line
-                    continue;
-                case 'b':
-                    nextChar = '\b';
-                    break;
-                case 'f':
-                    nextChar = '\f';
-                    break;
-                case 'n':
-                    nextChar = '\n';
-                    break;
-                case 'r':
-                    nextChar = '\r';
-                    break;
-                case 't':
-                    nextChar = '\t';
-                    break;
-                case 'u':
-                    mode = UNICODE;
-                    unicode = count = 0;
-                    continue;
-                }
-            } else {
-                switch (nextChar) {
-                case '#':
-                case '!':
-                    if (firstChar) {
-                        while (true) {
-                            intVal = br.read();
-                            if (intVal == -1) {
-                                break;
-                            }
-                            nextChar = (char) intVal; // & 0xff
-                                                      // not
-                                                      // required
-                            if (nextChar == '\r' || nextChar == '\n' || nextChar == '\u0085') {
-                                break;
-                            }
+                if (mode == UNICODE) {
+                    final int digit = Character.digit(nextChar, 16);
+                    if (digit >= 0) {
+                        unicode = (unicode << 4) + digit;
+                        if (++count < 4) {
+                            continue;
                         }
-                        continue;
+                    } else if (count <= 4) {
+                        // luni.09=Invalid Unicode sequence: illegal character
+                        throw new IllegalArgumentException("luni.09");
                     }
-                    break;
-                case '\n':
-                    if (mode == CONTINUE) { // Part of a \r\n sequence
-                        mode = IGNORE; // Ignore whitespace on the next line
-                        continue;
-                    }
-                    // fall into the next case
-                case '\u0085':
-                case '\r':
                     mode = NONE;
-                    firstChar = true;
-                    if (offset > 0 || (offset == 0 && keyLength == 0)) {
-                        if (keyLength == -1) {
-                            keyLength = offset;
+                    buf[offset++] = (char) unicode;
+                    if (nextChar != '\n' && nextChar != '\u0085') {
+                        continue;
+                    }
+                }
+                if (mode == SLASH) {
+                    mode = NONE;
+                    switch (nextChar) {
+                        case '\r':
+                            mode = CONTINUE; // Look for a following \n
+                            continue;
+                        case '\u0085':
+                        case '\n':
+                            mode = IGNORE; // Ignore whitespace on the next line
+                            continue;
+                        case 'b':
+                            nextChar = '\b';
+                            break;
+                        case 'f':
+                            nextChar = '\f';
+                            break;
+                        case 'n':
+                            nextChar = '\n';
+                            break;
+                        case 'r':
+                            nextChar = '\r';
+                            break;
+                        case 't':
+                            nextChar = '\t';
+                            break;
+                        case 'u':
+                            mode = UNICODE;
+                            unicode = count = 0;
+                            continue;
+                    }
+                } else {
+                    switch (nextChar) {
+                        case '#':
+                        case '!':
+                            if (firstChar) {
+                                while (true) {
+                                    intVal = br.read();
+                                    if (intVal == -1) {
+                                        break;
+                                    }
+                                    nextChar = (char) intVal; // & 0xff
+                                    // not
+                                    // required
+                                    if (nextChar == '\r' || nextChar == '\n' || nextChar == '\u0085') {
+                                        break;
+                                    }
+                                }
+                                continue;
+                            }
+                            break;
+                        case '\n':
+                            if (mode == CONTINUE) { // Part of a \r\n sequence
+                                mode = IGNORE; // Ignore whitespace on the next line
+                                continue;
+                            }
+                            // fall into the next case
+                        case '\u0085':
+                        case '\r':
+                            mode = NONE;
+                            firstChar = true;
+                            if (offset > 0 || (offset == 0 && keyLength == 0)) {
+                                if (keyLength == -1) {
+                                    keyLength = offset;
+                                }
+                                final String temp = new String(buf, 0, offset);
+                                crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), temp.substring(keyLength));
+                            }
+                            keyLength = -1;
+                            offset = 0;
+                            continue;
+                        case '\\':
+                            if (mode == KEY_DONE) {
+                                keyLength = offset;
+                            }
+                            mode = SLASH;
+                            continue;
+                        case ':':
+                        case '=':
+                            if (keyLength == -1) { // if parsing the key
+                                mode = NONE;
+                                keyLength = offset;
+                                continue;
+                            }
+                            break;
+                    }
+                    if (Character.isWhitespace(nextChar)) {
+                        if (mode == CONTINUE) {
+                            mode = IGNORE;
                         }
-                        final String temp = new String(buf, 0, offset);
-                        crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), temp.substring(keyLength));
+                        // if key length == 0 or value length == 0
+                        if (offset == 0 || offset == keyLength || mode == IGNORE) {
+                            continue;
+                        }
+                        if (keyLength == -1) { // if parsing the key
+                            mode = KEY_DONE;
+                            continue;
+                        }
                     }
-                    keyLength = -1;
-                    offset = 0;
-                    continue;
-                case '\\':
-                    if (mode == KEY_DONE) {
-                        keyLength = offset;
-                    }
-                    mode = SLASH;
-                    continue;
-                case ':':
-                case '=':
-                    if (keyLength == -1) { // if parsing the key
+                    if (mode == IGNORE || mode == CONTINUE) {
                         mode = NONE;
-                        keyLength = offset;
-                        continue;
-                    }
-                    break;
-                }
-                if (Character.isWhitespace(nextChar)) {
-                    if (mode == CONTINUE) {
-                        mode = IGNORE;
-                    }
-                    // if key length == 0 or value length == 0
-                    if (offset == 0 || offset == keyLength || mode == IGNORE) {
-                        continue;
-                    }
-                    if (keyLength == -1) { // if parsing the key
-                        mode = KEY_DONE;
-                        continue;
                     }
                 }
-                if (mode == IGNORE || mode == CONTINUE) {
+                firstChar = false;
+                if (mode == KEY_DONE) {
+                    keyLength = offset;
                     mode = NONE;
                 }
+                buf[offset++] = nextChar;
             }
-            firstChar = false;
-            if (mode == KEY_DONE) {
+            if (mode == UNICODE && count <= 4) {
+                // luni.08=Invalid Unicode sequence: expected format \\uxxxx
+                throw new IllegalArgumentException("luni.08");
+            }
+            if (keyLength == -1 && offset > 0) {
                 keyLength = offset;
-                mode = NONE;
             }
-            buf[offset++] = nextChar;
-        }
-        if (mode == UNICODE && count <= 4) {
-            // luni.08=Invalid Unicode sequence: expected format \\uxxxx
-            throw new IllegalArgumentException("luni.08");
-        }
-        if (keyLength == -1 && offset > 0) {
-            keyLength = offset;
-        }
-        if (keyLength >= 0) {
-            final String temp = new String(buf, 0, offset);
-            final ReportField key = Enum.valueOf(ReportField.class, temp.substring(0, keyLength));
-            String value = temp.substring(keyLength);
-            if (mode == SLASH) {
-                value += "\u0000";
+            if (keyLength >= 0) {
+                final String temp = new String(buf, 0, offset);
+                final ReportField key = Enum.valueOf(ReportField.class, temp.substring(0, keyLength));
+                String value = temp.substring(keyLength);
+                if (mode == SLASH) {
+                    value += "\u0000";
+                }
+                crashData.put(key, value);
             }
-            crashData.put(key, value);
+
+            IOUtils.safeClose(reader);
+
+            return crashData;
+        } finally {
+            IOUtils.safeClose(br);
         }
-
-        IOUtils.safeClose(reader);
-
-        return crashData;
     }
 
     /**
@@ -330,7 +330,7 @@ public final class CrashReportPersister {
                     final String hex = Integer.toHexString(ch);
                     buffer.append("\\u"); //$NON-NLS-1$
                     for (int j = 0; j < 4 - hex.length(); j++) {
-                        buffer.append("0"); //$NON-NLS-1$
+                        buffer.append('0'); //$NON-NLS-1$
                     }
                     buffer.append(hex);
                 }

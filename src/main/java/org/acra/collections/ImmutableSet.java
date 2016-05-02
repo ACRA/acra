@@ -13,41 +13,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.util;
+package org.acra.collections;
 
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.Set;
 
 /**
- * Naive (not optimized) implementation of an Immutable List
+ * Naive (not optimized) implementation of an Immutable Set
  *
  * @author F43nd1r
  * @since 4.9.0
  */
-public final class ImmutableList<E> implements List<E> {
-    private List<E> mList;
+public final class ImmutableSet<E> implements Set<E>, Serializable {
 
-    public ImmutableList(Collection<E> collection) {
-        this.mList = new ArrayList<E>(collection);
+    private final Set<E> mSet;
+
+    public ImmutableSet(E... elements) {
+        this(Arrays.asList(elements));
     }
 
-    @Override
-    public void add(int location, E object) {
-        throw new UnsupportedOperationException();
+    public ImmutableSet(Collection<E> collection) {
+        this.mSet = new HashSet<E>(collection);
     }
 
     @Override
     public boolean add(E object) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(int location, @NonNull Collection<? extends E> collection) {
         throw new UnsupportedOperationException();
     }
 
@@ -63,54 +59,23 @@ public final class ImmutableList<E> implements List<E> {
 
     @Override
     public boolean contains(Object object) {
-        return mList.contains(object);
+        return mSet.contains(object);
     }
 
     @Override
     public boolean containsAll(@NonNull Collection<?> collection) {
-        return mList.containsAll(collection);
-    }
-
-    @Override
-    public E get(int location) {
-        return mList.get(location);
-    }
-
-    @Override
-    public int indexOf(Object object) {
-        return mList.indexOf(object);
+        return mSet.containsAll(collection);
     }
 
     @Override
     public boolean isEmpty() {
-        return mList.isEmpty();
+        return mSet.isEmpty();
     }
 
     @NonNull
     @Override
     public Iterator<E> iterator() {
-        return new UnmodifiableIteratorWrapper<E>(mList.iterator());
-    }
-
-    @Override
-    public int lastIndexOf(Object object) {
-        return mList.lastIndexOf(object);
-    }
-
-    @Override
-    public ListIterator<E> listIterator() {
-        return new UnmodifiableListIteratorWrapper<E>(mList.listIterator());
-    }
-
-    @NonNull
-    @Override
-    public ListIterator<E> listIterator(int location) {
-        return new UnmodifiableListIteratorWrapper<E>(mList.listIterator(location));
-    }
-
-    @Override
-    public E remove(int location) {
-        throw new UnsupportedOperationException();
+        return new UnmodifiableIteratorWrapper<E>(mSet.iterator());
     }
 
     @Override
@@ -129,32 +94,37 @@ public final class ImmutableList<E> implements List<E> {
     }
 
     @Override
-    public E set(int location, E object) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int size() {
-        return mList.size();
-    }
-
-    @NonNull
-    @Override
-    public List<E> subList(int start, int end) {
-        throw new UnsupportedOperationException();
+        return mSet.size();
     }
 
     @NonNull
     @Override
     public Object[] toArray() {
-        return mList.toArray();
+        return mSet.toArray();
     }
 
     @NonNull
     @Override
     public <T> T[] toArray(@NonNull T[] array) {
         //noinspection SuspiciousToArrayCall
-        return mList.toArray(array);
+        return mSet.toArray(array);
+    }
+
+    public static final class Builder<E> {
+        private final Set<E> mSet;
+
+        public Builder() {
+            mSet = new HashSet<E>();
+        }
+
+        public void add(E element) {
+            mSet.add(element);
+        }
+
+        public ImmutableSet<E> build() {
+            return new ImmutableSet<E>(mSet);
+        }
     }
 
 }

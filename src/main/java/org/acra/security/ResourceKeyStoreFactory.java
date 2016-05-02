@@ -37,7 +37,7 @@ final class ResourceKeyStoreFactory extends BaseKeyStoreFactory {
      * @param certificateType the certificate type
      * @param rawRes raw resource id
      */
-    public ResourceKeyStoreFactory(String certificateType, @RawRes int rawRes) {
+    ResourceKeyStoreFactory(String certificateType, @RawRes int rawRes) {
         super(certificateType);
         this.rawRes = rawRes;
     }

@@ -24,7 +24,7 @@ import com.android.internal.util.Predicate;
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
-import org.acra.util.BoundedLinkedList;
+import org.acra.collections.BoundedLinkedList;
 import org.acra.util.IOUtils;
 
 import java.io.IOException;
@@ -103,6 +103,7 @@ class LogCatCollector {
 
             // Dump stderr to null
             new Thread(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         IOUtils.streamToString(process.getErrorStream());

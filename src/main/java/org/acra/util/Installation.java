@@ -61,7 +61,7 @@ public final class Installation {
         try {
             f.readFully(bytes);
         } finally {
-            f.close();
+            IOUtils.safeClose(f);
         }
         return new String(bytes);
     }

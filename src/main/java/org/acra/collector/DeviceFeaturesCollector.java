@@ -46,7 +46,7 @@ final class DeviceFeaturesCollector {
                 } else {
                     result.append("glEsVersion = ").append(feature.getGlEsVersion());
                 }
-                result.append("\n");
+                result.append('\n');
             }
         } catch (Throwable e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + ctx.getPackageName(), e);

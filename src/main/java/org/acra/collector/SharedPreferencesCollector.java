@@ -39,7 +39,7 @@ final class SharedPreferencesCollector {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
         this.context = context;
         this.config = config;
     }
@@ -87,7 +87,7 @@ final class SharedPreferencesCollector {
                     final Object prefValue = prefEntry.getValue();
                     result.append(sharedPrefId).append('.').append(prefEntry.getKey()).append('=');
                     result.append(prefValue == null ? "null" : prefValue.toString());
-                    result.append("\n");
+                    result.append('\n');
                 }
             }
             result.append('\n');

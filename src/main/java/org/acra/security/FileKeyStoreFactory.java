@@ -41,7 +41,7 @@ final class FileKeyStoreFactory extends BaseKeyStoreFactory {
      * @param certificateType the certificate type
      * @param filePath path to the file
      */
-    public FileKeyStoreFactory(String certificateType, String filePath) {
+    FileKeyStoreFactory(String certificateType, String filePath) {
         super(certificateType);
         this.filePath = filePath;
     }

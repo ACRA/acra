@@ -99,7 +99,7 @@ final class DisplayManagerCollector {
     @NonNull
     private static String collectRectSize(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Rect size = new Rect();
+            final Rect size = new Rect();
             display.getRectSize(size);
             return display.getDisplayId() + ".rectSize=[" + size.top + ',' + size.left +
                     ',' + size.width() + ',' + size.height() + ']' + '\n';
@@ -110,7 +110,7 @@ final class DisplayManagerCollector {
     @NonNull
     private static String collectSize(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point size = new Point();
+            final Point size = new Point();
             display.getSize(size);
             return display.getDisplayId() + ".size=[" + size.x
                     + ',' + size.y + ']' + '\n';
@@ -120,7 +120,7 @@ final class DisplayManagerCollector {
 
     private static String collectRealSize(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            Point size = new Point();
+            final Point size = new Point();
             display.getRealSize(size);
             return display.getDisplayId() + ".realSize=[" + size.x
                     + ',' + size.y + ']' + '\n';
@@ -131,7 +131,8 @@ final class DisplayManagerCollector {
     @NonNull
     private static String collectCurrentSizeRange(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            Point smallest = new Point(), largest = new Point();
+            final Point smallest = new Point();
+            final Point largest = new Point();
             display.getCurrentSizeRange(smallest, largest);
             return display.getDisplayId() + ".currentSizeRange.smallest=[" + smallest.x + ',' + smallest.y + "]\n"
                     + display.getDisplayId() + ".currentSizeRange.largest=[" + largest.x + ',' + largest.y + "]\n";
@@ -142,7 +143,7 @@ final class DisplayManagerCollector {
     @NonNull
     private static String collectFlags(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            int flags = display.getFlags();
+            final int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
                 if (field.getName().startsWith("FLAG_")) {
                     try {
@@ -166,7 +167,7 @@ final class DisplayManagerCollector {
 
     @NonNull
     private static String collectMetrics(@NonNull Display display) {
-        DisplayMetrics metrics = new DisplayMetrics();
+        final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         return collectMetrics(display.getDisplayId() + ".metrics", metrics);
     }
@@ -174,7 +175,7 @@ final class DisplayManagerCollector {
     @NonNull
     private static String collectRealMetrics(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            DisplayMetrics metrics = new DisplayMetrics();
+            final DisplayMetrics metrics = new DisplayMetrics();
             display.getRealMetrics(metrics);
             return collectMetrics(display.getDisplayId() + ".realMetrics", metrics);
         }

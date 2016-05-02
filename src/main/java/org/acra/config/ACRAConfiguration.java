@@ -30,8 +30,8 @@ import org.acra.security.KeyStoreFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
-import org.acra.util.ImmutableMap;
-import org.acra.util.ImmutableSet;
+import org.acra.collections.ImmutableMap;
+import org.acra.collections.ImmutableSet;
 
 import java.io.Serializable;
 

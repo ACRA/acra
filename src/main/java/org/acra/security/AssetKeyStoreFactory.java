@@ -40,7 +40,7 @@ final class AssetKeyStoreFactory extends BaseKeyStoreFactory {
      * @param certificateType the certificate type
      * @param assetName the asset
      */
-    public AssetKeyStoreFactory(String certificateType, String assetName) {
+    AssetKeyStoreFactory(String certificateType, String assetName) {
         super(certificateType);
         this.assetName = assetName;
     }

@@ -50,10 +50,10 @@ final class ReflectionCollector {
 
         final Field[] fields = someClass.getFields();
         for (final Field field : fields) {
-            if (prefix != null && prefix.length() > 0) {
+            if (prefix != null && !prefix.isEmpty()) {
                 result.append(prefix).append('.');
             }
-            result.append(field.getName()).append("=");
+            result.append(field.getName()).append('=');
             try {
                 final Object value = field.get(null);
                 if (value != null) {
@@ -68,7 +68,7 @@ final class ReflectionCollector {
             } catch (@NonNull IllegalAccessException e) {
                 result.append("N/A");
             }
-            result.append("\n");
+            result.append('\n');
         }
 
         return result.toString();
@@ -87,12 +87,12 @@ final class ReflectionCollector {
         for (final Method method : methods) {
             if (method.getParameterTypes().length == 0
                     && (method.getName().startsWith("get") || method.getName().startsWith("is"))
-                    && !method.getName().equals("getClass")) {
+                    && !"getClass".equals(method.getName())) {
                 try {
                     result.append(method.getName());
                     result.append('=');
                     result.append(method.invoke(null, (Object[]) null));
-                    result.append("\n");
+                    result.append('\n');
                 } catch (@NonNull IllegalArgumentException ignored) {
                     // NOOP
                 } catch (@NonNull InvocationTargetException ignored) {
