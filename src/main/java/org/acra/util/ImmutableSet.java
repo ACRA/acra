@@ -17,6 +17,7 @@ package org.acra.util;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,8 +30,8 @@ import java.util.Set;
  * @author F43nd1r
  * @since 4.9.0
  */
-public final class ImmutableSet<E> implements Set<E> {
-    private Set<E> mSet;
+public final class ImmutableSet<E> implements Set<E>, Serializable {
+    private final HashSet<E> mSet;
 
     public ImmutableSet(E... elements) {
         this(Arrays.asList(elements));
