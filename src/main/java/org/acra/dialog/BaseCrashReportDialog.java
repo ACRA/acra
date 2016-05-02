@@ -63,7 +63,7 @@ public abstract class BaseCrashReportDialog extends Activity {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
             cancelReports();
             finish();
-        } else if ((sConfig instanceof ACRAConfiguration) && (sReportFile instanceof File) && (sException instanceof Throwable)) {
+        } else if ((sConfig instanceof ACRAConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
             config = (ACRAConfiguration) sConfig;
             reportFile = (File) sReportFile;
             exception = (Throwable) sException;
