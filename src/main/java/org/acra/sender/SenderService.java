@@ -67,7 +67,7 @@ public class SenderService extends IntentService {
                 }
 
                 reportDistributor.distribute(report);
-                //TODO shouldn't we increase reportsSentCount here?
+                reportsSentCount++;
             }
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "", e);
