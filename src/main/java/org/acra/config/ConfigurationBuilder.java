@@ -198,7 +198,7 @@ public final class ConfigurationBuilder {
     @NonNull
     public ACRAConfiguration build() throws ACRAConfigurationException {
 
-        switch (reportingInteractionMode) {
+        switch (reportingInteractionMode()) {
             case TOAST:
                 if (resToastText() == DEFAULT_RES_VALUE) {
                     throw new ACRAConfigurationException("TOAST mode: you have to define the resToastText parameter in your application @ReportsCrashes() annotation.");
