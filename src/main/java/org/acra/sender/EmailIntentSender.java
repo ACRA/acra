@@ -25,10 +25,8 @@ import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
-import org.acra.util.ImmutableSet;
+import org.acra.collections.ImmutableSet;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

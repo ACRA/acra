@@ -27,14 +27,12 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.HttpRequest;
-import org.acra.util.ImmutableSet;
+import org.acra.collections.ImmutableSet;
 import org.acra.util.JSONReportBuilder.JSONReportException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 

@@ -13,10 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.util;
+package org.acra.collections;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +29,9 @@ import java.util.Set;
  * @author F43nd1r
  * @since 4.9.0
  */
-public class ImmutableMap<K, V> implements Map<K, V> {
-    private Map<K, V> mMap;
+public final class ImmutableMap<K, V> implements Map<K, V>, Serializable {
+
+    private final Map<K, V> mMap;
 
     public ImmutableMap(Map<K, V> map) {
         this.mMap = new HashMap<K, V>(map);

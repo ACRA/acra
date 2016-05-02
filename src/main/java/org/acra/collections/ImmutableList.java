@@ -13,10 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.util;
+package org.acra.collections;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,8 +30,9 @@ import java.util.ListIterator;
  * @author F43nd1r
  * @since 4.9.0
  */
-public final class ImmutableList<E> implements List<E> {
-    private List<E> mList;
+public final class ImmutableList<E> implements List<E>, Serializable {
+
+    private final List<E> mList;
 
     public ImmutableList(Collection<E> collection) {
         this.mList = new ArrayList<E>(collection);

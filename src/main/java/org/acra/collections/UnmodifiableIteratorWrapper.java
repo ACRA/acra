@@ -13,26 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.util;
+package org.acra.collections;
 
-import java.util.ListIterator;
+import java.util.Iterator;
 
 /**
- * Wrapper around a ListIterator which prevents modifications
+ * Wrapper around an Iterator which prevents modifications
  *
  * @author F43nd1r
  * @since 4.9.0
  */
-class UnmodifiableListIteratorWrapper<E> implements ListIterator<E> {
-    private final ListIterator<E> mIterator;
+class UnmodifiableIteratorWrapper<E> implements Iterator<E> {
+    private final Iterator<E> mIterator;
 
-    UnmodifiableListIteratorWrapper(ListIterator<E> mIterator) {
+    UnmodifiableIteratorWrapper(Iterator<E> mIterator) {
         this.mIterator = mIterator;
-    }
-
-    @Override
-    public void add(E object) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -41,38 +36,12 @@ class UnmodifiableListIteratorWrapper<E> implements ListIterator<E> {
     }
 
     @Override
-    public boolean hasPrevious() {
-        return mIterator.hasPrevious();
-    }
-
-    @Override
     public E next() {
         return mIterator.next();
-    }
-
-    @Override
-    public int nextIndex() {
-        return mIterator.nextIndex();
-    }
-
-    @Override
-    public E previous() {
-        return mIterator.previous();
-    }
-
-    @Override
-    public int previousIndex() {
-        return mIterator.previousIndex();
     }
 
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void set(E object) {
-        throw new UnsupportedOperationException();
-    }
 }
-

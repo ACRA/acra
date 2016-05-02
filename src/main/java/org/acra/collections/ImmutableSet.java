@@ -13,10 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.util;
+package org.acra.collections;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,8 +30,9 @@ import java.util.Set;
  * @author F43nd1r
  * @since 4.9.0
  */
-public final class ImmutableSet<E> implements Set<E> {
-    private Set<E> mSet;
+public final class ImmutableSet<E> implements Set<E>, Serializable {
+
+    private final Set<E> mSet;
 
     public ImmutableSet(E... elements) {
         this(Arrays.asList(elements));
