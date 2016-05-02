@@ -66,6 +66,7 @@ public final class ReportMigrator {
 
         // Filter for ".stacktrace" files
         final FilenameFilter filter = new FilenameFilter() {
+            @Override
             public boolean accept(File dir, @NonNull String name) {
                 return name.endsWith(ACRAConstants.REPORTFILE_EXTENSION);
             }
