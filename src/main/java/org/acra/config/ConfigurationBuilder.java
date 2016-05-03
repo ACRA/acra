@@ -941,7 +941,7 @@ public final class ConfigurationBuilder {
         if (resDialogPositiveButtonText != null) {
             return resDialogPositiveButtonText;
         }
-        return DEFAULT_RES_VALUE;
+        return DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
     }
 
     @StringRes
@@ -949,7 +949,7 @@ public final class ConfigurationBuilder {
         if (resDialogNegativeButtonText != null) {
             return resDialogNegativeButtonText;
         }
-        return DEFAULT_RES_VALUE;
+        return DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
     }
 
     @StringRes
