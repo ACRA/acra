@@ -831,7 +831,7 @@ public final class ConfigurationBuilder {
     @NonNull
     Set<ReportField> reportContent() {
         final Set<ReportField> reportContent = new HashSet<ReportField>();
-        if (customReportContent != null) {
+        if (customReportContent != null && customReportContent.length != 0) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             reportContent.addAll(Arrays.asList(customReportContent));
         } else if (mailTo == null || DEFAULT_STRING_VALUE.equals(mailTo)) {
