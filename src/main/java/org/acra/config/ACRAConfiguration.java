@@ -98,7 +98,6 @@ public final class ACRAConfiguration implements Serializable {
 
     private final ImmutableSet<String> excludeMatchingSharedPreferencesKeys;
     private final ImmutableSet<String> excludeMatchingSettingsKeys;
-    @Nullable
     private final Class buildConfigClass;
     private final String applicationLogFile;
     private final int applicationLogFileLines;
@@ -359,7 +358,7 @@ public final class ACRAConfiguration implements Serializable {
      *
      * @return Class generated at compile time containing the build config for this application.
      */
-    @Nullable
+    @NonNull
     public Class buildConfigClass() {
         return buildConfigClass;
     }

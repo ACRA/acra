@@ -1102,12 +1102,15 @@ public final class ConfigurationBuilder {
     }
 
     /**
-     * Will return null if no value has been configured.
-     * It is up to clients to construct the recommended default value oof context.getClass().getPackage().getName() + BuildConfig.class
+     * Will return {@link Object} if no value has been configured.
+     * It is up to clients to construct the recommended default value of context.getClass().getPackage().getName() + BuildConfig.class
      */
-    @Nullable
+    @NonNull
     Class buildConfigClass() {
-        return buildConfigClass;
+        if(buildConfigClass != null) {
+            return buildConfigClass;
+        }
+        return Object.class;
     }
 
     @NonNull
