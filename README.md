@@ -1,9 +1,5 @@
 [![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)
 
-<a href="https://plus.google.com/118444843928759726538" rel="publisher">Follow ACRA on Google+ for latest news and tips.</a>
-
-[![](https://ssl.gstatic.com/images/icons/gplus-32.png)](https://plus.google.com/118444843928759726538)
-
 What is ACRA ?
 ==============
 
@@ -178,8 +174,8 @@ And after that?
 
 Now that ACRA is stabilized on the device side (there shouldn't be much more data required...), the effort should be placed on crash data analysis and reports management tools for developers.
 
-You can look at [some contributions](http://github.com/ACRA/acra/wiki/Contribs) that have already been published. Most of them are work in progress, so if you feel like joining the effort, please do!
+You can look at [some contributions](https://github.com/ACRA/acra/wiki/Backends) that have already been published.
 
-[Acralyzer](http://github.com/ACRA/acralyzer) will soon be the official backend for reports storage and analysis. It is a free and open source modern web app, based on a full open stack and using advanced
+[Acralyzer](http://github.com/ACRA/acralyzer) is the official backend for reports storage and analysis. It is a free and open source modern web app, based on a full open stack and using advanced
 technology like CouchDB (JSON document storage with a RESTful API and Map/Reduce querying), AngularJS (one of the most advanced client-side JS frameworks), D3JS (for data visualisation)... If you are interested
 in webapps development, this project can become your playground too ;-)
