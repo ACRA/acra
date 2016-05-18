@@ -30,6 +30,8 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
+import org.acra.config.DefaultRetryPolicy;
+import org.acra.config.RetryPolicy;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.security.KeyStoreFactory;
@@ -592,4 +594,10 @@ public @interface ReportsCrashes {
      * @return specify the type of the certificate set in either {@link #certificatePath()} or {@link #resCertificate()}
      */
     @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
+
+
+    /**
+     * @return a Class that decides if a report should be resent (usually if one or more senders failed).
+     */
+    @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
 }
