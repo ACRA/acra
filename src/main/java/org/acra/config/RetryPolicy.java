@@ -27,6 +27,12 @@ import java.util.List;
  * @since 4.9.0
  */
 public interface RetryPolicy {
+
+    /**
+     * @param senders a list of all senders
+     * @param failedSenders a list of all failed senders with the thrown exceptions
+     * @return if the request should be resent later
+     */
     boolean shouldRetrySend(List<ReportSender> senders, List<FailedSender> failedSenders);
 
     class FailedSender {

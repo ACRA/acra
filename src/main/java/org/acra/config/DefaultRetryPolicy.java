@@ -20,13 +20,13 @@ import org.acra.sender.ReportSender;
 import java.util.List;
 
 /**
- * Default {@link RetryPolicy}. Do not resend reports if at least one sender completed.
+ * Default {@link RetryPolicy}. Only resend if all senders failed.
  * @author F43nd1r
  * @since 4.9.0
  */
 public class DefaultRetryPolicy implements RetryPolicy {
     @Override
     public boolean shouldRetrySend(List<ReportSender> senders, List<FailedSender> failedSenders) {
-        return senders.size() > failedSenders.size();
+        return senders.size() == failedSenders.size();
     }
 }
