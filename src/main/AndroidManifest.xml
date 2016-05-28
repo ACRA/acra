@@ -44,7 +44,8 @@
             android:theme="@android:style/Theme.Dialog"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"/>
+            android:finishOnTaskLaunch="true"
+            android:process=":acra"/>
 
         <service
             android:name="org.acra.sender.SenderService"
