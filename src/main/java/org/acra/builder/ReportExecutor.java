@@ -269,6 +269,7 @@ public final class ReportExecutor {
                         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
                     }
                 });
+                lastActivityManager.waitForActivityStop(100);
                 lastActivityManager.clearLastActivity();
             }
 
