@@ -45,6 +45,7 @@ public final class IOUtils {
         }
     };
     private static final int NO_LIMIT = -1;
+	private static final int READ_TIMEOUT = 3000;
 
     private IOUtils() {
     }
@@ -126,6 +127,38 @@ public final class IOUtils {
             return TextUtils.join("\n", buffer);
         } finally {
             safeClose(reader);
+        }
+    }
+	
+	/**
+     * Reads an InputStream into a string in an async way
+     *
+     * @param input  the stream
+     * @param filter should return false for lines which should be excluded
+     * @param limit the maximum number of lines to read (the last x lines are kept)
+     * @return the read string
+     * @throws IOException
+     */
+    @NonNull
+    public static String streamToStringAsync(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(input), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
+        final NonblockingBufferedReader nonBlockingReader = new NonblockingBufferedReader(reader);
+        try {
+            String line;
+            final List<String> buffer = limit == NO_LIMIT ? new LinkedList<String>() : new BoundedLinkedList<String>(limit);
+            long end = System.currentTimeMillis() + READ_TIMEOUT;
+            while ((System.currentTimeMillis() < end)) {
+                try {
+                    if ((line = nonBlockingReader.readLine()) != null) {
+                        if (filter.apply(line)) {
+                            buffer.add(line);
+                        }
+                    }
+                } catch (InterruptedException e) {}
+            }
+            return TextUtils.join("\n", buffer);
+        } finally {
+            nonBlockingReader.close();
         }
     }
 }

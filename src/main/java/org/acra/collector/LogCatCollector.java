@@ -97,28 +97,19 @@ class LogCatCollector {
         commandLine.addAll(logcatArgumentsList);
 
         try {
-            final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
+            final Process process =  new ProcessBuilder().command(commandLine).redirectErrorStream(true).start();
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
-            // Dump stderr to null
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        IOUtils.streamToString(process.getErrorStream());
-                    } catch (IOException ignored) {
-                    }
-                }
-            }).start();
 
             final String finalMyPidStr = myPidStr;
-            logcatBuf.add(IOUtils.streamToString(process.getInputStream(), new Predicate<String>() {
+            logcatBuf.add(IOUtils.streamToStringAsync(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return finalMyPidStr == null || s.contains(finalMyPidStr);
                 }
-            }));
+            }, tailCount));
+            process.destroy();
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
