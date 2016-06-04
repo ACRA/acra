@@ -19,14 +19,16 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.config.DefaultRetryPolicy;
+import org.acra.config.RetryPolicy;
 import org.acra.file.CrashReportPersister;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -93,35 +95,44 @@ final class ReportDistributor {
      */
     private void sendCrashReport(@NonNull CrashReportData errorContent) throws ReportSenderException {
         if (!isDebuggable() || config.sendReportsInDevMode()) {
-            boolean sentAtLeastOnce = false;
-            ReportSenderException sendFailure = null;
-            String failedSender = null;
+            final List<RetryPolicy.FailedSender> failedSenders = new LinkedList<RetryPolicy.FailedSender>();
             for (ReportSender sender : reportSenders) {
                 try {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
                     sender.send(context, errorContent);
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
-
-                    // If at least one sender worked, don't re-send the report later.
-                    sentAtLeastOnce = true;
                 } catch (ReportSenderException e) {
-                    sendFailure = e;
-                    failedSender = sender.getClass().getName();
+                    failedSenders.add(new RetryPolicy.FailedSender(sender, e));
                 }
             }
 
-            if (sendFailure != null) {
-                // We had some failure
-                if (!sentAtLeastOnce) {
-                    throw sendFailure; // Don't log here because we aren't dealing with the Exception here.
-                } else {
-                    ACRA.log.w(LOG_TAG,
-                               "ReportSender of class "
-                                   + failedSender
-                                   + " failed but other senders completed their task. ACRA will not send this report again.");
+            if (failedSenders.isEmpty()) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Report was sent by all senders");
+            } else if (getRetryPolicy().shouldRetrySend(reportSenders, failedSenders)) {
+                final Throwable firstFailure = failedSenders.get(0).getException();
+                throw new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.", firstFailure);
+            } else {
+                final StringBuilder builder = new StringBuilder("ReportSenders of classes [");
+                for (final RetryPolicy.FailedSender failedSender : failedSenders) {
+                    builder.append(failedSender.getSender().getClass().getName());
+                    builder.append(", ");
                 }
+                builder.append("] failed, but Policy marked this task as complete. ACRA will not send this report again.");
+                ACRA.log.w(LOG_TAG, builder.toString());
             }
         }
+    }
+
+    private RetryPolicy getRetryPolicy() {
+        try {
+            return config.retryPolicyClass().newInstance();
+        } catch (InstantiationException e) {
+            ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
+        } catch (IllegalAccessException e) {
+            ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
+        }
+
+        return new DefaultRetryPolicy();
     }
 
     private void deleteFile(@NonNull File file) {

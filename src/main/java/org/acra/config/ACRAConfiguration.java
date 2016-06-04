@@ -111,6 +111,7 @@ public final class ACRAConfiguration implements Serializable {
     private final int resCertificate;
     private final String certificatePath;
     private final String certificateType;
+    private final Class<? extends RetryPolicy> retryPolicyClass;
 
     /**
      * @param builder ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
@@ -165,6 +166,7 @@ public final class ACRAConfiguration implements Serializable {
         resCertificate = builder.resCertificate();
         certificatePath = builder.certificatePath();
         certificateType = builder.certificateType();
+        retryPolicyClass = builder.retryPolicyClass();
     }
 
     /**
@@ -407,11 +409,18 @@ public final class ACRAConfiguration implements Serializable {
         return resCertificate;
     }
 
+    @NonNull
     public String certificatePath() {
         return certificatePath;
     }
 
+    @NonNull
     public String certificateType() {
         return certificateType;
+    }
+
+    @NonNull
+    public Class<? extends RetryPolicy> retryPolicyClass() {
+        return retryPolicyClass;
     }
 }
