@@ -153,6 +153,8 @@ public final class IOUtils {
                         if (filter.apply(line)) {
                             buffer.add(line);
                         }
+                    } else {
+                    	break;
                     }
                 } catch (InterruptedException e) {}
             }
