@@ -117,6 +117,7 @@ public final class ConfigurationBuilder {
     @RawRes private Integer resCertificate;
     private String certificatePath;
     private String certificateType;
+    private Class<? extends RetryPolicy> retryPolicyClass;
 
 
     /**
@@ -181,6 +182,7 @@ public final class ConfigurationBuilder {
             resCertificate = annotationConfig.resCertificate();
             certificatePath = annotationConfig.certificatePath();
             certificateType = annotationConfig.certificateType();
+            retryPolicyClass = annotationConfig.retryPolicyClass();
         } else {
             annotationType = null;
         }
@@ -794,6 +796,12 @@ public final class ConfigurationBuilder {
         return this;
     }
 
+    @NonNull
+    public ConfigurationBuilder setRetryPolicyClass(@NonNull Class<? extends RetryPolicy> retryPolicyClass) {
+        this.retryPolicyClass = retryPolicyClass;
+        return this;
+    }
+
 
     // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
 
@@ -1204,5 +1212,13 @@ public final class ConfigurationBuilder {
     @NonNull
     Map<String, String> httpHeaders() {
         return httpHeaders;
+    }
+
+    @NonNull
+    Class<? extends RetryPolicy> retryPolicyClass(){
+        if(retryPolicyClass != null){
+            return retryPolicyClass;
+        }
+        return DefaultRetryPolicy.class;
     }
 }
