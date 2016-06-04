@@ -269,8 +269,9 @@ public final class ReportExecutor {
                         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
                     }
                 });
-                // a crashed activity won't continue its lifecycle. So we only wait if something else crashed
-                if(uncaughtExceptionThread != lastActivity.getMainLooper().getThread()) {
+
+                // A crashed activity won't continue its lifecycle. So we only wait if something else crashed
+                if (uncaughtExceptionThread != lastActivity.getMainLooper().getThread()) {
                     lastActivityManager.waitForActivityStop(100);
                 }
                 lastActivityManager.clearLastActivity();
