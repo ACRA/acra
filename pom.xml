@@ -128,7 +128,7 @@
 			<plugin>
 				<groupId>com.simpligility.maven.plugins</groupId>
 				<artifactId>android-maven-plugin</artifactId>
-				<version>4.3.0</version>
+				<version>4.4.2</version>
 				<extensions>true</extensions>
 				<configuration>
 					<consumerProguardFiles>
