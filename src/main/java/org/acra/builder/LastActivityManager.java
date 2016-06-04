@@ -57,6 +57,9 @@ public final class LastActivityManager {
                 @Override
                 public void onActivityStopped(@NonNull Activity activity) {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityStopped " + activity.getClass());
+                    synchronized (this){
+                        notify();
+                    }
                 }
 
                 @Override
@@ -79,5 +82,14 @@ public final class LastActivityManager {
 
     public void clearLastActivity() {
         lastActivityCreated.clear();
+    }
+
+    public void waitForActivityStop(int timeOutInMillis){
+        synchronized (this) {
+            try {
+                wait(timeOutInMillis);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 }
