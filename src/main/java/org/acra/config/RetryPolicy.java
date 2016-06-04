@@ -24,18 +24,19 @@ import java.util.List;
  * A policy which determines if a report should be resent.
  *
  * @author F43nd1r
- * @since 4.9.0
+ * @since 4.9.1
  */
 public interface RetryPolicy {
 
     /**
-     * @param senders a list of all senders
-     * @param failedSenders a list of all failed senders with the thrown exceptions
-     * @return if the request should be resent later
+     * @param senders a list of all senders.
+     * @param failedSenders a list of all failed senders with the thrown exceptions.
+     * @return <code>true</code> if the request should be resent later, otherwise <code>false</code>.
      */
     boolean shouldRetrySend(List<ReportSender> senders, List<FailedSender> failedSenders);
 
     class FailedSender {
+
         private final ReportSender sender;
         private final ReportSenderException exception;
 

@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
@@ -29,7 +28,6 @@ import org.acra.file.CrashReportPersister;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,45 +95,44 @@ final class ReportDistributor {
      */
     private void sendCrashReport(@NonNull CrashReportData errorContent) throws ReportSenderException {
         if (!isDebuggable() || config.sendReportsInDevMode()) {
-            List<RetryPolicy.FailedSender> failedSenders = new LinkedList<RetryPolicy.FailedSender>();
+            final List<RetryPolicy.FailedSender> failedSenders = new LinkedList<RetryPolicy.FailedSender>();
             for (ReportSender sender : reportSenders) {
                 try {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
                     sender.send(context, errorContent);
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
-
                 } catch (ReportSenderException e) {
                     failedSenders.add(new RetryPolicy.FailedSender(sender, e));
                 }
             }
 
-            RetryPolicy policy = null;
-            try {
-                policy = config.retryPolicyClass().newInstance();
-            } catch (InstantiationException e) {
-                ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
-            } catch (IllegalAccessException e) {
-                ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
-            }
-            if(policy == null){
-                policy = new DefaultRetryPolicy();
-            }
-
-            if (policy.shouldRetrySend(reportSenders, failedSenders)) {
-                ReportSenderException exception = new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.");
-                if(failedSenders.size() > 0) exception.initCause(failedSenders.get(failedSenders.size() - 1).getException());
-                throw exception;
+            if (failedSenders.isEmpty()) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Report was sent by all senders");
+            } else if (getRetryPolicy().shouldRetrySend(reportSenders, failedSenders)) {
+                final Throwable firstFailure = failedSenders.get(0).getException();
+                throw new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.", firstFailure);
             } else {
-                StringBuilder builder = new StringBuilder("ReportSenders of classes [");
-                for (Iterator<RetryPolicy.FailedSender> iterator = failedSenders.iterator(); iterator.hasNext();){
-                    RetryPolicy.FailedSender failedSender = iterator.next();
+                final StringBuilder builder = new StringBuilder("ReportSenders of classes [");
+                for (final RetryPolicy.FailedSender failedSender : failedSenders) {
                     builder.append(failedSender.getSender().getClass().getName());
-                    if(iterator.hasNext()) builder.append(", ");
+                    builder.append(", ");
                 }
                 builder.append("] failed, but Policy marked this task as complete. ACRA will not send this report again.");
                 ACRA.log.w(LOG_TAG, builder.toString());
             }
         }
+    }
+
+    private RetryPolicy getRetryPolicy() {
+        try {
+            return config.retryPolicyClass().newInstance();
+        } catch (InstantiationException e) {
+            ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
+        } catch (IllegalAccessException e) {
+            ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
+        }
+
+        return new DefaultRetryPolicy();
     }
 
     private void deleteFile(@NonNull File file) {

@@ -595,9 +595,9 @@ public @interface ReportsCrashes {
      */
     @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
 
-
     /**
      * @return a Class that decides if a report should be resent (usually if one or more senders failed).
+     * @since 4.9.1
      */
     @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
 }
