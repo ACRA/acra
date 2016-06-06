@@ -28,6 +28,7 @@ import org.acra.collections.BoundedLinkedList;
 import org.acra.util.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,7 +104,7 @@ class LogCatCollector {
 
 
             final String finalMyPidStr = myPidStr;
-            logcatBuf.add(IOUtils.streamToStringAsync(process.getInputStream(), new Predicate<String>() {
+            logcatBuf.add(streamToString(config, process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return finalMyPidStr == null || s.contains(finalMyPidStr);
@@ -116,5 +117,25 @@ class LogCatCollector {
         }
 
         return logcatBuf.toString();
+    }
+
+    /**
+     * Reads an InputStream into a string in an non blocking way for current thread
+     * It has a default timeout of 3 seconds.
+     *
+     * @param config AcraConfig to use when collecting logcat.
+     * @param input  the stream
+     * @param filter should return false for lines which should be excluded
+     * @param limit  the maximum number of lines to read (the last x lines are kept)
+     * @return the read string
+     * @throws IOException
+     */
+    @NonNull
+    private String streamToString(@NonNull ACRAConfiguration config, @NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+        if (config.nonBlockingReadForLogcat()) {
+            return IOUtils.streamToStringNonBlockingRead(input, filter, limit);
+        } else {
+            return IOUtils.streamToString(input, filter, limit);
+        }
     }
 }

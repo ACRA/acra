@@ -129,6 +129,8 @@ public final class ACRAConstants {
 
     public static final boolean DEFAULT_LOGCAT_FILTER_BY_PID = false;
 
+    public static final boolean DEFAULT_NON_BLOCKING_READ_FOR_LOGCAT = false;
+
     public static final boolean DEFAULT_SEND_REPORTS_IN_DEV_MODE = true;
 
     public static final String DEFAULT_APPLICATION_LOGFILE = DEFAULT_STRING_VALUE;

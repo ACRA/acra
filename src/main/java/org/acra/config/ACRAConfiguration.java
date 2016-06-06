@@ -338,6 +338,10 @@ public final class ACRAConfiguration implements Serializable {
         return logcatFilterByPid;
     }
 
+    public boolean nonBlockingReadForLogcat() {
+        return nonBlockingReadForLogcat;
+    }
+
     public boolean sendReportsInDevMode() {
         return sendReportsInDevMode;
     }
