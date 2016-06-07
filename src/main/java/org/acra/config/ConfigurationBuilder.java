@@ -101,6 +101,7 @@ public final class ConfigurationBuilder {
     private String sharedPreferencesName;
     private Integer socketTimeout;
     private Boolean logcatFilterByPid;
+    private Boolean nonBlockingReadForLogcat;
     private Boolean sendReportsInDevMode;
 
     private String[] excludeMatchingSharedPreferencesKeys;
@@ -166,6 +167,7 @@ public final class ConfigurationBuilder {
             sharedPreferencesName = annotationConfig.sharedPreferencesName();
             socketTimeout = annotationConfig.socketTimeout();
             logcatFilterByPid = annotationConfig.logcatFilterByPid();
+            nonBlockingReadForLogcat = annotationConfig.nonBlockingReadForLogcat();
             sendReportsInDevMode = annotationConfig.sendReportsInDevMode();
             excludeMatchingSharedPreferencesKeys = annotationConfig.excludeMatchingSharedPreferencesKeys();
             excludeMatchingSettingsKeys = annotationConfig.excludeMatchingSettingsKeys();

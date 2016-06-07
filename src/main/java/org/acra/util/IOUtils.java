@@ -131,7 +131,8 @@ public final class IOUtils {
     }
 	
 	/**
-     * Reads an InputStream into a string in an async way
+     * Reads an InputStream into a string in an non blocking way for current thread
+     * It has a default timeout of 3 seconds.
      *
      * @param input  the stream
      * @param filter should return false for lines which should be excluded
@@ -140,7 +141,7 @@ public final class IOUtils {
      * @throws IOException
      */
     @NonNull
-    public static String streamToStringAsync(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+    public static String streamToStringNonBlockingRead(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
         final BufferedReader reader = new BufferedReader(new InputStreamReader(input), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
         final NonblockingBufferedReader nonBlockingReader = new NonblockingBufferedReader(reader);
         try {
