@@ -143,7 +143,7 @@ public final class IOUtils {
     @NonNull
     public static String streamToStringNonBlockingRead(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
         final BufferedReader reader = new BufferedReader(new InputStreamReader(input), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-        final NonblockingBufferedReader nonBlockingReader = new NonblockingBufferedReader(reader);
+        final NonBlockingBufferedReader nonBlockingReader = new NonBlockingBufferedReader(reader);
         try {
             String line;
             final List<String> buffer = limit == NO_LIMIT ? new LinkedList<String>() : new BoundedLinkedList<String>(limit);
