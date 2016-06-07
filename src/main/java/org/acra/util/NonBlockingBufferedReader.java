@@ -15,7 +15,7 @@ public class NonBlockingBufferedReader {
     private boolean closed = false;
     private Thread backgroundReaderThread = null;
 
-    public NonblockingBufferedReader(final BufferedReader bufferedReader) {
+    public NonBlockingBufferedReader(final BufferedReader bufferedReader) {
         backgroundReaderThread = new Thread(new Runnable() {
             @Override
             public void run() {
