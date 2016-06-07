@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author C-Romeo
  * @since 4.9.0
  */
-public class NonblockingBufferedReader {
+public class NonBlockingBufferedReader {
     private final BlockingQueue<String> lines = new LinkedBlockingQueue<String>();
     private boolean closed = false;
     private Thread backgroundReaderThread = null;
