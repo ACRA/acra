@@ -82,7 +82,7 @@ final class SharedPreferencesCollector {
             // Add all non-filtered preferences from that preference file.
             for (final Map.Entry<String, ?> prefEntry : prefEntries.entrySet()) {
                 if (filteredKey(prefEntry.getKey())) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + prefEntry.getKey() + " due to filtering rule");
+                    ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + prefEntry.getKey() + " due to filtering rule");
                 } else {
                     final Object prefValue = prefEntry.getValue();
                     result.append(sharedPrefId).append('.').append(prefEntry.getKey()).append('=');
