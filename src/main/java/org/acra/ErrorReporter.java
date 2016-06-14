@@ -252,7 +252,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         try {
             ACRA.log.e(LOG_TAG, "ACRA caught a " + e.getClass().getSimpleName() + " for " + context.getPackageName(), e);
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Building report");
+            ACRA.log.d(LOG_TAG, "Building report");
 
             performDeprecatedReportPriming();
 

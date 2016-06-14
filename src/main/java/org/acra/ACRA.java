@@ -29,7 +29,7 @@ import org.acra.config.ACRAConfigurationException;
 import org.acra.config.ConfigurationBuilder;
 import org.acra.legacy.ReportMigrator;
 import org.acra.log.ACRALog;
-import org.acra.log.AndroidLogDelegate;
+import org.acra.log.DebugConditionalAndroidLog;
 import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.ApplicationStartupProcessor;
@@ -57,7 +57,7 @@ public final class ACRA {
     public static final String LOG_TAG = ACRA.class.getSimpleName();
 
     @NonNull
-    public static ACRALog log = new AndroidLogDelegate();
+    public static ACRALog log = new DebugConditionalAndroidLog();
 
     private static final String ACRA_PRIVATE_PROCESS_NAME= ":acra";
 
@@ -216,7 +216,7 @@ public final class ACRA {
 
         final boolean senderServiceProcess = isACRASenderServiceProcess();
         if (senderServiceProcess) {
-            if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
+            log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
         }
 
         final boolean supportedAndroidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
@@ -307,7 +307,7 @@ public final class ACRA {
      */
     public static boolean isACRASenderServiceProcess() {
         final String processName = getCurrentProcessName();
-        if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "ACRA processName='" + processName + '\'');
+        log.d(LOG_TAG, "ACRA processName='" + processName + '\'');
         //processName sometimes (or always?) starts with the package name, so we use endsWith instead of equals
         return processName != null && processName.endsWith(ACRA_PRIVATE_PROCESS_NAME);
     }
