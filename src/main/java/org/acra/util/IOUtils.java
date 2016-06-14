@@ -56,7 +56,9 @@ public final class IOUtils {
      * @param closeable Closeable to close. If closeable is null then method just returns.
      */
     public static void safeClose(@Nullable Closeable closeable) {
-        if (closeable == null) return;
+        if (closeable == null) {
+            return;
+        }
 
         try {
             closeable.close();

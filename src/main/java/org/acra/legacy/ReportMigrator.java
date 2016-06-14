@@ -38,11 +38,15 @@ public final class ReportMigrator {
             final String fileName = file.getName();
             if (fileNameParser.isApproved(fileName)) {
                 if (file.renameTo(new File(reportLocator.getApprovedFolder(), fileName))) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
+                    if (ACRA.DEV_LOGGING) {
+                        ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
+                    }
                 }
             } else {
                 if (file.renameTo(new File(reportLocator.getUnapprovedFolder(), fileName))) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
+                    if (ACRA.DEV_LOGGING) {
+                        ACRA.log.d(LOG_TAG, "Cold not migrate unsent ACRA crash report : " + fileName);
+                    }
                 }
             }
         }
@@ -62,7 +66,9 @@ public final class ReportMigrator {
             return new File[0];
         }
 
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
+        if (ACRA.DEV_LOGGING) {
+            ACRA.log.d(LOG_TAG, "Looking for error files in " + dir.getAbsolutePath());
+        }
 
         // Filter for ".stacktrace" files
         final FilenameFilter filter = new FilenameFilter() {

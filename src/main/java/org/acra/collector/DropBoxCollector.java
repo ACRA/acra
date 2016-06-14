@@ -107,7 +107,9 @@ final class DropBoxCollector {
             return dropboxContent.toString();
 
         } catch (Exception e) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "DropBoxManager not available.");
+            }
         }
 
         return NO_RESULT;

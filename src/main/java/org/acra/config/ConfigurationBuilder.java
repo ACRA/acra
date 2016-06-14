@@ -840,13 +840,19 @@ public final class ConfigurationBuilder {
     Set<ReportField> reportContent() {
         final Set<ReportField> reportContent = new HashSet<ReportField>();
         if (customReportContent != null && customReportContent.length != 0) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "Using custom Report Fields");
+            }
             reportContent.addAll(Arrays.asList(customReportContent));
         } else if (mailTo == null || DEFAULT_STRING_VALUE.equals(mailTo)) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Report Fields");
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "Using default Report Fields");
+            }
             reportContent.addAll(Arrays.asList(DEFAULT_REPORT_FIELDS));
         } else {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "Using default Mail Report Fields");
+            }
             reportContent.addAll(Arrays.asList(DEFAULT_MAIL_REPORT_FIELDS));
         }
 

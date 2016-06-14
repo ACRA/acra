@@ -46,7 +46,9 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         scrollable.setOrientation(LinearLayout.VERTICAL);
         sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), getConfig());
         final int themeResourceId = getConfig().resDialogTheme();
-        if(themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
+        if(themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
+            setTheme(themeResourceId);
+        }
 
         buildAndShowDialog(savedInstanceState);
     }
