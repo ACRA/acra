@@ -98,16 +98,22 @@ final class ReportDistributor {
             final List<RetryPolicy.FailedSender> failedSenders = new LinkedList<RetryPolicy.FailedSender>();
             for (ReportSender sender : reportSenders) {
                 try {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
+                    if (ACRA.DEV_LOGGING) {
+                        ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
+                    }
                     sender.send(context, errorContent);
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
+                    if (ACRA.DEV_LOGGING) {
+                        ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
+                    }
                 } catch (ReportSenderException e) {
                     failedSenders.add(new RetryPolicy.FailedSender(sender, e));
                 }
             }
 
             if (failedSenders.isEmpty()) {
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Report was sent by all senders");
+                if (ACRA.DEV_LOGGING) {
+                    ACRA.log.d(LOG_TAG, "Report was sent by all senders");
+                }
             } else if (getRetryPolicy().shouldRetrySend(reportSenders, failedSenders)) {
                 final Throwable firstFailure = failedSenders.get(0).getException();
                 throw new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.", firstFailure);

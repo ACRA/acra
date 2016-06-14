@@ -152,9 +152,15 @@ public final class HttpRequest {
             IOUtils.safeClose(outputStream);
         }
 
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending request to " + url);
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, content);
+        if (ACRA.DEV_LOGGING) {
+            ACRA.log.d(LOG_TAG, "Sending request to " + url);
+        }
+        if (ACRA.DEV_LOGGING) {
+            ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
+        }
+        if (ACRA.DEV_LOGGING) {
+            ACRA.log.d(LOG_TAG, content);
+        }
 
         final int responseCode = urlConnection.getResponseCode();
         if (ACRA.DEV_LOGGING)

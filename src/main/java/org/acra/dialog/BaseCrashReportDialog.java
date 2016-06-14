@@ -68,7 +68,9 @@ public abstract class BaseCrashReportDialog extends Activity {
         final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
 
         if (forceCancel) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "Forced reports deletion.");
+            }
             cancelReports();
             finish();
         } else if ((sConfig instanceof ACRAConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
@@ -110,7 +112,9 @@ public abstract class BaseCrashReportDialog extends Activity {
     protected final void sendCrash(@Nullable String comment, @Nullable String userEmail) {
         final CrashReportPersister persister = new CrashReportPersister();
         try {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+            }
             final CrashReportData crashData = persister.load(reportFile);
             crashData.put(USER_COMMENT, comment == null ? "" : comment);
             crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);

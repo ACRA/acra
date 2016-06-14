@@ -99,7 +99,9 @@ class LogCatCollector {
         try {
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
 
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
+            if (ACRA.DEV_LOGGING) {
+                ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
+            }
 
             // Dump stderr to null
             new Thread(new Runnable() {
