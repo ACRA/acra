@@ -15,12 +15,12 @@
  */
 package org.acra.collector;
 
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
+import android.support.annotation.NonNull;
 
-import java.io.BufferedReader;
+import org.acra.ACRA;
+import org.acra.util.IOUtils;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +33,7 @@ import static org.acra.ACRA.LOG_TAG;
  * 
  */
 final class DumpSysCollector {
+    private DumpSysCollector(){}
 
     /**
      * Collect results of the <code>dumpsys meminfo</code> command restricted to
@@ -40,10 +41,10 @@ final class DumpSysCollector {
      * 
      * @return The execution result.
      */
+    @NonNull
     public static String collectMemInfo() {
 
         final StringBuilder meminfo = new StringBuilder();
-		BufferedReader bufferedReader = null;
         try {
             final List<String> commandLine = new ArrayList<String>();
             commandLine.add("dumpsys");
@@ -51,22 +52,11 @@ final class DumpSysCollector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-
-            while (true) {
-                final String line = bufferedReader.readLine();
-                if (line == null) {
-                    break;
-                }
-                meminfo.append(line);
-                meminfo.append("\n");
-            }
+            meminfo.append(IOUtils.streamToString(process.getInputStream()));
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "DumpSysCollector.meminfo could not retrieve data", e);
 		}
-
-        CollectorUtil.safeClose(bufferedReader);
 
         return meminfo.toString();
     }

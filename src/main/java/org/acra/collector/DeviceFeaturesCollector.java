@@ -15,45 +15,38 @@
  */
 package org.acra.collector;
 
-import static org.acra.ACRA.LOG_TAG;
-
-import java.lang.reflect.Method;
-
 import android.content.Context;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
-
+import android.support.annotation.NonNull;
 import org.acra.ACRA;
 
+import static org.acra.ACRA.LOG_TAG;
+
 /**
- * Features declared as available on the device. Available only with API level > 5.
+ * Features declared as available on the device.
  * 
  * @author Kevin Gaudin
  * 
  */
 final class DeviceFeaturesCollector {
+    private DeviceFeaturesCollector(){}
 
-    public static String getFeatures(Context ctx) {
-
-        if (Compatibility.getAPILevel() < Compatibility.VERSION_CODES.ECLAIR) {
-            return "Data available only with API Level >= 5";
-        }
+    @NonNull
+    public static String getFeatures(@NonNull Context ctx) {
 
         final StringBuilder result = new StringBuilder();
         try {
             final PackageManager pm = ctx.getPackageManager();
-            final Method getSystemAvailableFeatures = PackageManager.class.getMethod("getSystemAvailableFeatures", (Class[]) null);
-            final Object[] features = (Object[]) getSystemAvailableFeatures.invoke(pm);
-            for (final Object feature : features) {
-                final String featureName = (String) feature.getClass().getField("name").get(feature);
+            final FeatureInfo[] features = pm.getSystemAvailableFeatures();
+            for (final FeatureInfo feature : features) {
+                final String featureName = feature.name;
                 if(featureName != null) {
                     result.append(featureName);
                 } else {
-                    final Method getGlEsVersion = feature.getClass().getMethod("getGlEsVersion", (Class[]) null);
-                    final String glEsVersion = (String) getGlEsVersion.invoke(feature);
-                    result.append("glEsVersion = ");
-                    result.append(glEsVersion);
+                    result.append("glEsVersion = ").append(feature.getGlEsVersion());
                 }
-                result.append("\n");
+                result.append('\n');
             }
         } catch (Throwable e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + ctx.getPackageName(), e);

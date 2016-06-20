@@ -16,20 +16,22 @@
 
 package org.acra.collector;
 
-import java.util.EnumMap;
-import java.util.Properties;
+import android.support.annotation.NonNull;
 
 import org.acra.ReportField;
 import org.acra.util.JSONReportBuilder;
 import org.acra.util.JSONReportBuilder.JSONReportException;
 import org.json.JSONObject;
 
+import java.util.EnumMap;
+import java.util.Properties;
+
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
+ *
  * This is basically the source of {@link Properties} adapted to extend an
  * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
- * amounts of android time in the generation of a date comment when storing to
- * file.
+ * amounts of android time in the generation of a date comment when storing to file.
  */
 public final class CrashReportData extends EnumMap<ReportField, String> {
 
@@ -48,10 +50,11 @@ public final class CrashReportData extends EnumMap<ReportField, String> {
      * @param key the name of the property to find.
      * @return the named property value, or {@code null} if it can't be found.
      */
-    public String getProperty(ReportField key) {
+    public String getProperty(@NonNull ReportField key) {
         return super.get(key);
     }
 
+    @NonNull
     public JSONObject toJSON() throws JSONReportException {
         return JSONReportBuilder.buildJSONReport(this);
     }

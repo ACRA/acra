@@ -15,24 +15,28 @@
  */
 package org.acra.sender;
 
-import static org.acra.ACRA.LOG_TAG;
+import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.ReportField;
+import org.acra.annotation.ReportsCrashes;
+import org.acra.collector.CrashReportData;
+import org.acra.config.ACRAConfiguration;
+import org.acra.util.HttpRequest;
+import org.acra.collections.ImmutableSet;
+import org.acra.util.JSONReportBuilder.JSONReportException;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import android.content.Context;
-import org.acra.ACRA;
-import org.acra.ACRAConfiguration;
-import org.acra.ACRAConstants;
-import org.acra.ReportField;
-import org.acra.annotation.ReportsCrashes;
-import org.acra.collector.CrashReportData;
-import org.acra.util.HttpRequest;
-import org.acra.util.JSONReportBuilder.JSONReportException;
-
-import android.net.Uri;
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * <p>
@@ -50,23 +54,8 @@ import android.net.Uri;
  * </p>
  * 
  * <pre>
- * &#64;ReportsCrashes(...)
- * public class myApplication extends Application {
- * 
- *     public void onCreate() {
- *         super.onCreate();
- *         ACRA.init(this);
- *         Map&lt;ReportField, String&gt; mapping = new HashMap&lt;ReportField, String&gt;();
- *         mapping.put(ReportField.APP_VERSION_CODE, &quot;myAppVerCode'); 
- *         mapping.put(ReportField.APP_VERSION_NAME, &quot;myAppVerName');
- *         //... 
- *         mapping.put(ReportField.USER_EMAIL, &quot;userEmail');
- *         // remove any default report sender
- *         ErrorReporter.getInstance().removeAllReportSenders();
- *         // create your own instance with your specific mapping
- *         ErrorReporter.getInstance().addReportSender(new ReportSender(&quot;http://my.domain.com/reports/receiver.py&quot;, mapping));
- *     }
- * }
+ * Just create and declare a {@link ReportSenderFactory} that constructs a mapping
+ * from each {@link ReportField} to another name.
  * </pre>
  * 
  */
@@ -90,6 +79,7 @@ public class HttpSender implements ReportSender {
          * @see <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4">Form content types</a>
          */
         FORM {
+            @NonNull
             @Override
             public String getContentType() {
                 return "application/x-www-form-urlencoded";
@@ -99,29 +89,34 @@ public class HttpSender implements ReportSender {
          * Send data as a structured JSON tree.
          */
         JSON {
+            @NonNull
             @Override
             public String getContentType() {
                 return "application/json";
             }
         };
 
+        @NonNull
         public abstract String getContentType();
     }
 
+    private final ACRAConfiguration config;
+    @Nullable
     private final Uri mFormUri;
     private final Map<ReportField, String> mMapping;
     private final Method mMethod;
     private final Type mType;
+    @Nullable
     private String mUsername;
+    @Nullable
     private String mPassword;
 
     /**
      * <p>
-     * Create a new HttpSender instance with its destination taken from
-     * {@link ACRA#getConfig()} dynamically. Configuration changes to the
-     * formUri are applied automatically.
+     * Create a new HttpSender instance with its destination taken from the supplied config.
      * </p>
-     * 
+     *
+     * @param config    AcraConfig declaring the
      * @param method
      *            HTTP {@link Method} to be used to send data. Currently only
      *            {@link Method#POST} and {@link Method#PUT} are available. If
@@ -140,13 +135,8 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(Method method, Type type, Map<ReportField, String> mapping) {
-        mMethod = method;
-        mFormUri = null;
-        mMapping = mapping;
-        mType = type;
-        mUsername = null;
-        mPassword = null;
+    public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type, @Nullable Map<ReportField, String> mapping) {
+        this(config, method, type, null, mapping);
     }
 
     /**
@@ -154,7 +144,8 @@ public class HttpSender implements ReportSender {
      * Create a new HttpPostSender instance with a fixed destination provided as
      * a parameter. Configuration changes to the formUri are not applied.
      * </p>
-     * 
+     *
+     * @param config    AcraConfig declaring the
      * @param method
      *            HTTP {@link Method} to be used to send data. Currently only
      *            {@link Method#POST} and {@link Method#PUT} are available. If
@@ -174,9 +165,10 @@ public class HttpSender implements ReportSender {
      *            parameters will be named with the result of
      *            mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(Method method, Type type, String formUri, Map<ReportField, String> mapping) {
+    public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type, @Nullable String formUri, @Nullable Map<ReportField, String> mapping) {
+        this.config = config;
         mMethod = method;
-        mFormUri = Uri.parse(formUri);
+        mFormUri = (formUri == null) ? null : Uri.parse(formUri);
         mMapping = mapping;
         mType = type;
         mUsername = null;
@@ -195,29 +187,27 @@ public class HttpSender implements ReportSender {
      *            The password to set for HTTP Basic Auth.
      */
     @SuppressWarnings( "unused" )
-    public void setBasicAuth(String username, String password) {
+    public void setBasicAuth(@Nullable String username, @Nullable String password) {
         mUsername = username;
         mPassword = password;
     }    
 
     @Override
-    public void send(Context context, CrashReportData report) throws ReportSenderException {
+    public void send(@NonNull Context context, @NonNull CrashReportData report) throws ReportSenderException {
 
         try {
-            URL reportUrl = mFormUri == null ? new URL(ACRA.getConfig().formUri()) : new URL(mFormUri.toString());
-            ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
+            URL reportUrl = mFormUri == null ? new URL(config.formUri()) : new URL(mFormUri.toString());
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
 
-            final String login = mUsername != null ? mUsername : ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthLogin()) ? null : ACRA
-                    .getConfig().formUriBasicAuthLogin();
-            final String password = mPassword != null ? mPassword : ACRAConfiguration.isNull(ACRA.getConfig().formUriBasicAuthPassword()) ? null : ACRA
-                    .getConfig().formUriBasicAuthPassword();
+            final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
+            final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
 
-            final HttpRequest request = new HttpRequest();
-            request.setConnectionTimeOut(ACRA.getConfig().connectionTimeout());
-            request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
+            final HttpRequest request = new HttpRequest(config);
+            request.setConnectionTimeOut(config.connectionTimeout());
+            request.setSocketTimeOut(config.socketTimeout());
             request.setLogin(login);
             request.setPassword(password);
-            request.setHeaders(ACRA.getConfig().getHttpHeaders());
+            request.setHeaders(config.getHttpHeaders());
 
             // Generate report body depending on requested type
             final String reportAsString;
@@ -242,22 +232,23 @@ public class HttpSender implements ReportSender {
             default:
                 throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
             }
-            request.send(reportUrl, mMethod, reportAsString, mType);
+            request.send(context, reportUrl, mMethod, reportAsString, mType);
 
-        } catch (IOException e) {
-            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType()
+        } catch (@NonNull IOException e) {
+            throw new ReportSenderException("Error while sending " + config.reportType()
                     + " report via Http " + mMethod.name(), e);
-        } catch (JSONReportException e) {
-            throw new ReportSenderException("Error while sending " + ACRA.getConfig().reportType()
+        } catch (@NonNull JSONReportException e) {
+            throw new ReportSenderException("Error while sending " + config.reportType()
                     + " report via Http " + mMethod.name(), e);
         }
     }
 
-    private Map<String, String> remap(Map<ReportField, String> report) {
+    @NonNull
+    private Map<String, String> remap(@NonNull Map<ReportField, String> report) {
 
-        ReportField[] fields = ACRA.getConfig().customReportContent();
-        if (fields.length == 0) {
-            fields = ACRAConstants.DEFAULT_REPORT_FIELDS;
+        Set<ReportField> fields = config.getReportFields();
+        if (fields.isEmpty()) {
+            fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_REPORT_FIELDS);
         }
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());
@@ -271,4 +262,7 @@ public class HttpSender implements ReportSender {
         return finalReport;
     }
 
+    private boolean isNull(@Nullable String aString) {
+        return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
+    }
 }

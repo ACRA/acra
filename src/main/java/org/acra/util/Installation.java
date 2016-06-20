@@ -4,15 +4,16 @@
  */
 package org.acra.util;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import org.acra.ACRA;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.UUID;
-
-import org.acra.ACRA;
-
-import android.content.Context;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -27,12 +28,14 @@ import static org.acra.ACRA.LOG_TAG;
  * android developers blog.</a>
  * </p>
  */
-public class Installation {
+public final class Installation {
+    private Installation(){}
 
     private static String sID;
     private static final String INSTALLATION = "ACRA-INSTALLATION";
 
-    public synchronized static String id(Context context) {
+    @NonNull
+    public static synchronized String id(@NonNull Context context) {
         if (sID == null) {
             final File installation = new File(context.getFilesDir(), INSTALLATION);
             try {
@@ -51,18 +54,19 @@ public class Installation {
         return sID;
     }
 
-    private static String readInstallationFile(File installation) throws IOException {
+    @NonNull
+    private static String readInstallationFile(@NonNull File installation) throws IOException {
         final RandomAccessFile f = new RandomAccessFile(installation, "r");
         final byte[] bytes = new byte[(int) f.length()];
         try {
             f.readFully(bytes);
         } finally {
-            f.close();
+            IOUtils.safeClose(f);
         }
         return new String(bytes);
     }
 
-    private static void writeInstallationFile(File installation) throws IOException {
+    private static void writeInstallationFile(@NonNull File installation) throws IOException {
         final FileOutputStream out = new FileOutputStream(installation);
         try {
             final String id = UUID.randomUUID().toString();

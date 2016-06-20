@@ -9,8 +9,6 @@
   ~ Contact support@xandar.com.au for copyright requests.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="0"
-          android:versionName="UPDATED-BY-BUILD"
           package="ch.acra.acra">
     
     <!--
@@ -38,5 +36,20 @@
         1.1     2
         1.0     1
     -->
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="23"/>
+    <uses-sdk android:minSdkVersion="8"/>
+
+    <application>
+        <activity
+            android:name="org.acra.dialog.CrashReportDialog"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:process=":acra"/>
+
+        <service
+            android:name="org.acra.sender.SenderService"
+            android:exported="false"
+            android:process=":acra" />
+    </application>
 </manifest>

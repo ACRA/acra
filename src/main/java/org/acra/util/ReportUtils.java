@@ -1,10 +1,12 @@
 package org.acra.util;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
-import android.util.SparseArray;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 
@@ -21,11 +23,12 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for providing base utilities used when constructing the report.
- * <p/>
+ *
  * @author William Ferguson
  * @since 4.3.0
  */
 public final class ReportUtils {
+    private ReportUtils(){}
 
     /**
      * Calculates the free memory of the device. This is based on an inspection of the filesystem, which in android
@@ -36,8 +39,17 @@ public final class ReportUtils {
     public static long getAvailableInternalMemorySize() {
         final File path = Environment.getDataDirectory();
         final StatFs stat = new StatFs(path.getPath());
-        final long blockSize = stat.getBlockSize();
-        final long availableBlocks = stat.getAvailableBlocks();
+        final long blockSize;
+        final long availableBlocks;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSizeLong();
+            availableBlocks = stat.getAvailableBlocksLong();
+        } else {
+            //noinspection deprecation
+            blockSize = stat.getBlockSize();
+            //noinspection deprecation
+            availableBlocks = stat.getAvailableBlocks();
+        }
         return availableBlocks * blockSize;
     }
 
@@ -50,18 +62,29 @@ public final class ReportUtils {
     public static long getTotalInternalMemorySize() {
         final File path = Environment.getDataDirectory();
         final StatFs stat = new StatFs(path.getPath());
-        final long blockSize = stat.getBlockSize();
-        final long totalBlocks = stat.getBlockCount();
+        final long blockSize;
+        final long totalBlocks;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSizeLong();
+            totalBlocks = stat.getBlockCountLong();
+        }
+        else {
+            //noinspection deprecation
+            blockSize = stat.getBlockSize();
+            //noinspection deprecation
+            totalBlocks = stat.getBlockCount();
+        }
         return totalBlocks * blockSize;
     }
 
     /**
      * Returns the DeviceId according to the TelephonyManager.
      *
-     * @param context   Context for the application being reported.
+     * @param context Context for the application being reported.
      * @return Returns the DeviceId according to the TelephonyManager or null if there is no TelephonyManager.
      */
-    public static String getDeviceId(Context context) {
+    @Nullable
+    public static String getDeviceId(@NonNull Context context) {
         try {
             final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             return tm.getDeviceId();
@@ -71,7 +94,8 @@ public final class ReportUtils {
         }
     }
 
-    public static String getApplicationFilePath(Context context) {
+    @NonNull
+    public static String getApplicationFilePath(@NonNull Context context) {
         final File filesDir = context.getFilesDir();
         if (filesDir != null) {
             return filesDir.getAbsolutePath();
@@ -80,48 +104,21 @@ public final class ReportUtils {
         ACRA.log.w(LOG_TAG, "Couldn't retrieve ApplicationFilePath for : " + context.getPackageName());
         return "Couldn't retrieve ApplicationFilePath";
     }
-    
-    /**
-     * Utility method used for debugging purposes, writes the content of a SparseArray to a String.
-     * @param sparseArray
-     * @return "{ key1 => value1, key2 => value2, ...}"
-     */
-    public static String sparseArrayToString(SparseArray<?> sparseArray) {
-        StringBuilder result = new StringBuilder();
-        if (sparseArray == null) {
-            return "null";
-        }
 
-        result.append('{');
-        for (int i = 0; i < sparseArray.size(); i++) {
-            result.append(sparseArray.keyAt(i));
-            result.append(" => ");
-            if (sparseArray.valueAt(i) == null) {
-                result.append("null");
-            } else {
-                result.append(sparseArray.valueAt(i).toString());
-            }
-            if(i < sparseArray.size() - 1) {
-                result.append(", ");
-            }
-        }
-        result.append('}');
-        return result.toString();
-    }
-
+    @NonNull
     public static String getLocalIpAddress() {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         boolean first = true;
         try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                final NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    final InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress()) {
-                        if(!first) {
+                        if (!first) {
                             result.append('\n');
                         }
-                        result.append(inetAddress.getHostAddress().toString());
+                        result.append(inetAddress.getHostAddress());
                         first = false;
                     }
                 }
@@ -132,9 +129,9 @@ public final class ReportUtils {
         return result.toString();
     }
 
-    public static String getTimeString(Calendar time)
-    {
-        SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
+    @NonNull
+    public static String getTimeString(@NonNull Calendar time) {
+        final SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
         return format.format(time.getTimeInMillis());
     }
 }

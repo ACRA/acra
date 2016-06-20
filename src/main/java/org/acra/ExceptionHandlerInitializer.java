@@ -7,6 +7,7 @@ package org.acra;
  * exception is handled.
  * 
  * @see ErrorReporter#setExceptionHandlerInitializer(ExceptionHandlerInitializer)
+ * @deprecated since 4.8.0 use {@link org.acra.builder.ReportPrimer} mechanism instead.
  */
 public interface ExceptionHandlerInitializer {
     /**

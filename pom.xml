@@ -8,7 +8,7 @@
 	<groupId>ch.acra</groupId>
 	<artifactId>acra</artifactId>
 	<packaging>aar</packaging>
-	<version>4.7.1-SNAPSHOT</version>
+	<version>4.9.1-SNAPSHOT</version>
 
 	<name>Application Crash Report for Android</name>
 
@@ -49,11 +49,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!--
-			NB ACRA supports back to API3.
+			NB ACRA supports back to API 8.
+
 			But in order to compile classes and method that will NOT be used except when the target platform is of sufficient version
-			we need to compile against version 23.
+			we need to compile against version 23. All such classes are in the org.acra.jraf package.
 		-->
         <android.version>23</android.version>
+		<support.version>23.3.0</support.version>
 	</properties>
 
 	<dependencies>
@@ -76,9 +78,17 @@
 		<dependency>
 			<groupId>com.android.support</groupId>
 			<artifactId>support-v4</artifactId>
-			<version>23.0.1</version>
+			<version>${support.version}</version>
 			<type>aar</type>
 		</dependency>
+
+		<dependency>
+			<groupId>com.android.support</groupId>
+			<artifactId>support-annotations</artifactId>
+			<version>${support.version}</version>
+			<type>jar</type>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -86,13 +96,6 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20080701</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
 	<build>
@@ -112,7 +115,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.7</version>
+					<version>2.10.3</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-source-plugin</artifactId>
@@ -125,8 +128,22 @@
 			<plugin>
 				<groupId>com.simpligility.maven.plugins</groupId>
 				<artifactId>android-maven-plugin</artifactId>
-				<version>4.3.0</version>
+				<version>4.4.2</version>
 				<extensions>true</extensions>
+				<configuration>
+					<consumerProguardFiles>
+						<consumerProguardFile>src/main/proguard/proguard.cfg</consumerProguardFile>
+					</consumerProguardFiles>
+
+					<buildConfigConstants>
+						<buildConfigConstant>
+							<name>VERSION_NAME</name>
+							<type>String</type>
+							<value>${project.version}</value>
+						</buildConfigConstant>
+					</buildConfigConstants>
+
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -151,7 +168,7 @@
 					</execution>
 				</executions>
                 <configuration>
-					<bootclasspath>${env.ANDROID_HOME}/platforms/android-${android.version}/android.jar</bootclasspath>
+					<bootclasspath>${env.JAVA_HOME}/jre/lib/rt.jar;${env.ANDROID_HOME}/platforms/android-${android.version}/android.jar</bootclasspath>
                     <excludePackageNames>org.acra.log,org.acra.util</excludePackageNames>
                 </configuration>
 			</plugin>

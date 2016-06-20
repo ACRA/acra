@@ -15,25 +15,38 @@
  */
 package org.acra.annotation;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
+import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
+
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.ReportField;
+import org.acra.ReportingInteractionMode;
+import org.acra.builder.NoOpReportPrimer;
+import org.acra.builder.ReportPrimer;
+import org.acra.config.DefaultRetryPolicy;
+import org.acra.config.RetryPolicy;
+import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.CrashReportDialog;
+import org.acra.security.KeyStoreFactory;
+import org.acra.security.NoKeyStoreFactory;
+import org.acra.sender.DefaultReportSenderFactory;
+import org.acra.sender.HttpSender.Method;
+import org.acra.sender.HttpSender.Type;
+import org.acra.sender.ReportSenderFactory;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
-import org.acra.BaseCrashReportDialog;
-import org.acra.CrashReportDialog;
-import org.acra.ReportField;
-import org.acra.ReportingInteractionMode;
-import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 /**
  * Provide configuration elements to the
@@ -57,7 +70,7 @@ public @interface ReportsCrashes {
      * 
      * @return URI of a custom server to which to post reports.
      */
-    String formUri() default ACRAConstants.DEFAULT_STRING_VALUE;
+    @NonNull String formUri() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * <p>
@@ -84,74 +97,80 @@ public @interface ReportsCrashes {
      * 
      * @return the interaction mode that you want ACRA to implement.
      */
-    ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
+    @NonNull ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
 
     /**
      * @return Resource id for the label of positive button in the crash dialog.
      *         If not provided, defaults to 'OK'.
      */
-    int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
+    @StringRes int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
 
     /**
      * @return Resource id for the label of negative button in the crash dialog.
      *         If not provided, defaults to 'cancel'.
      */
-    int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
+    @StringRes int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
 
     /**
      * @return Resource id for the user comment input label in the crash dialog.
      *         If not provided, disables the input field.
      */
-    int resDialogCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the user email address input label in the crash
      *         dialog. If not provided, disables the input field.
      */
-    int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the crash dialog. Default value is
      *         the system alert icon.
      */
-    int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
+    @DrawableRes int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
 
     /**
      * @return Resource id for the Toast text triggered when the user accepts to
      *         send a report in the crash dialog.
      */
-    int resDialogOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the text in the crash dialog.
      */
-    int resDialogText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the crash dialog.
      */
-    int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     *
+     * @return resource id for the crash dialog theme
+     */
+    @StyleRes int resDialogTheme() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the status bar notification. Default
      *         is the system error notification icon.
      */
-    int resNotifIcon() default ACRAConstants.DEFAULT_NOTIFICATION_ICON;
+    @DrawableRes int resNotifIcon() default ACRAConstants.DEFAULT_NOTIFICATION_ICON;
 
     /**
      * @return Resource id for the text in the status bar notification.
      */
-    int resNotifText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resNotifText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the ticker text in the status bar notification.
      */
-    int resNotifTickerText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resNotifTickerText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the status bar notification.
      */
-    int resNotifTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resNotifTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * Resource id for the Toast text triggered when the application crashes if
@@ -165,7 +184,7 @@ public @interface ReportsCrashes {
      * @return Resource id for the Toast text triggered when the application
      *         crashes.
      */
-    int resToastText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resToastText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Name of the SharedPreferences that will host ACRA settings you
@@ -184,7 +203,7 @@ public @interface ReportsCrashes {
      *         SharedPreferences, as retrieved with
      *         {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
      */
-    String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
+    @NonNull String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * If using a custom {@link ReportsCrashes#sharedPreferencesName()}, pass
@@ -226,7 +245,7 @@ public @interface ReportsCrashes {
      * @return Array of tags that you want to be fetched when collecting DropBox
      *         entries.
      */
-    String[] additionalDropBoxTags() default {};
+    @NonNull String[] additionalDropBoxTags() default {};
 
     /**
      * @return Number of minutes to look back when collecting events from
@@ -261,7 +280,7 @@ public @interface ReportsCrashes {
      * @return Array of arguments to supply if retrieving the log as part of the
      *         report.
      */
-    String[] logcatArguments() default { "-t", "" + ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
+    @NonNull String[] logcatArguments() default { "-t", "" + ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time" };
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom
@@ -271,7 +290,7 @@ public @interface ReportsCrashes {
      * 
      * @return Login to use when posting reports to a custom server.
      */
-    String formUriBasicAuthLogin() default ACRAConstants.NULL_VALUE;
+    @NonNull String formUriBasicAuthLogin() default ACRAConstants.NULL_VALUE;
 
     /**
      * When using the {@link #formUri()} parameter to send reports to a custom
@@ -281,7 +300,7 @@ public @interface ReportsCrashes {
      * 
      * @return Password to use when posting reports to a custom server.
      */
-    String formUriBasicAuthPassword() default ACRAConstants.NULL_VALUE;
+    @NonNull String formUriBasicAuthPassword() default ACRAConstants.NULL_VALUE;
 
     /**
      * <p>
@@ -365,7 +384,7 @@ public @interface ReportsCrashes {
      * @return ReportField Array listing the fields to be included in the
      *         report.
      */
-    ReportField[] customReportContent() default {};
+    @NonNull ReportField[] customReportContent() default {};
 
     /**
      * <p>
@@ -393,20 +412,24 @@ public @interface ReportsCrashes {
      * 
      * @return email address to which to send reports.
      */
-    String mailTo() default ACRAConstants.DEFAULT_STRING_VALUE;
+    @NonNull String mailTo() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
-     * Controls whether unapproved reports are deleted on application start or
-     * not. Default is true. This is a change from versions of ACRA before 3.2
-     * as in {@link ReportingInteractionMode#NOTIFICATION} mode reports were
-     * previously kept until the user explicitly opens the Notification dialog
-     * AND choose to send or discard the report. Until then, on application
-     * restart, ACRA was issuing a new crash notification for previous reports
-     * pending for approval. This could be misunderstood by the user with a new
-     * crash, resulting in bad appreciation of the application.
-     * 
-     * @return true if ACRA should delete unapproved reports on application
-     *         start.
+     * Controls whether unapproved reports are deleted on application start or not.
+     * Default is true.
+     *
+     * Silent and Toast reports are automatically approved.
+     * Dialog and Notification reports required explicit approval by the user before they are sent.
+     *
+     * On application restart the user is prompted with approval for any unsent reports.
+     * So you generally don't want to accumulate unapproved reports, otherwise you will prompt them multiple times.
+     *
+     * If this is set to true then all unapproved reports bar one will be deleted on application start.
+     * The last report is always retained because that is the report that probably just happened.
+     *
+     * If set to false then on restart the user will be prompted with approval for each unapproved report.
+     *
+     * @return true if ACRA should delete unapproved reports on application start.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
 
@@ -434,12 +457,12 @@ public @interface ReportsCrashes {
     int socketTimeout() default ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
 
     /**
-     * In {@link ReportingInteractionMode#TOAST} mode, set this to true if you
-     * prefer displaying the native Force Close dialog after the Toast.
+     * Set this to true if you prefer displaying the native force close dialog after the ACRA is done.
+     * Recommended: Keep this set to false if using {@link ReportingInteractionMode#DIALOG} for notification.
      * 
-     * @return true if the Force Close dialog has to be displayed.
+     * @return true if the native force close dialog should be displayed.
      */
-    boolean forceCloseDialogAfterToast() default ACRAConstants.DEFAULT_FORCE_CLOSE_DIALOG_AFTER_TOAST;
+    boolean alsoReportToAndroidFramework() default ACRAConstants.DEFAULT_REPORT_TO_ANDROID_FRAMEWORK;
 
     /**
      * Add here your {@link SharedPreferences} identifier Strings if you use
@@ -448,7 +471,7 @@ public @interface ReportsCrashes {
      * 
      * @return String Array containing the names of the additional preferences.
      */
-    String[] additionalSharedPreferences() default {};
+    @NonNull String[] additionalSharedPreferences() default {};
 
     /**
      * Set this to true if you want to include only logcat lines related to your
@@ -468,13 +491,10 @@ public @interface ReportsCrashes {
     boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
 
     /**
-     * Set this to false if you want to disable sending reports at the time the
-     * exception is caught. In this case, reports will not be sent until the
-     * application is restarted.
-     *
-     * @return false if reports should not be sent.
+     * @return true.
+     * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process we always send at shutdown.
      */
-    boolean sendReportsAtShutdown() default ACRAConstants.DEFAULT_SEND_REPORTS_AT_SHUTDOWN;
+    boolean sendReportsAtShutdown() default true;
 
     /**
      * Provide here regex patterns to be evaluated on each SharedPreference key
@@ -483,7 +503,7 @@ public @interface ReportsCrashes {
      * 
      * @return an array of regex patterns, every matching key is not collected.
      */
-    String[] excludeMatchingSharedPreferencesKeys() default {};
+    @NonNull String[] excludeMatchingSharedPreferencesKeys() default {};
 
     /**
      * Provide here regex patterns to be evaluated on each Settings.System,
@@ -493,14 +513,24 @@ public @interface ReportsCrashes {
      * 
      * @return an array of regex patterns, every matching key is not collected.
      */
-    String[] excludeMatchingSettingsKeys() default {};
+    @NonNull String[] excludeMatchingSettingsKeys() default {};
 
     /**
      * The default value will be a BuildConfig class residing in the same package as the Application class.
      *
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
-    Class buildConfigClass() default Object.class;
+    @NonNull Class buildConfigClass() default Object.class;
+
+    /**
+     * The default {@link org.acra.sender.ReportSenderFactory} creates an {@link org.acra.sender.EmailIntentSender}
+     * if the 'mailTo' parameter is defined or an {@link org.acra.sender.HttpSender} if the 'formUri' parameter
+     * is defined (and internet permission has been granted.
+     *
+     * @return List of the {@link org.acra.sender.ReportSenderFactory} with which to construct the
+     *         {@link org.acra.sender.ReportSender}s that will send the crash reports.
+     */
+    @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
@@ -509,10 +539,10 @@ public @interface ReportsCrashes {
      * {@link Context#getFilesDir()}.
      * 
      * @return a String containing the path/name of your application log file.
-     *         If the string does not containt any path separator, the file is
+     *         If the string does not contain any path separator, the file is
      *         assumed as being in {@link Context#getFilesDir()}.
      */
-    String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
+    @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
@@ -524,10 +554,15 @@ public @interface ReportsCrashes {
     int applicationLogFileLines() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
 
     /**
-     * @return Class for the CrashReportDialog used when sending intent.
-     *  If not provided, defaults to CrashReportDialog.class
+     * @return Class for the CrashReportDialog used when prompting the user for crash details.
+     *          If not provided, defaults to CrashReportDialog.class
      */
-    Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
+    @NonNull Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
+
+    /**
+     * @return Class that is ued to provide any extra details for a crash.
+     */
+    @NonNull Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
 
     /**
      * <p>
@@ -536,7 +571,33 @@ public @interface ReportsCrashes {
      *
      * @return HTTP method used when posting reports.
      */
-    Method httpMethod() default Method.POST;
+    @NonNull Method httpMethod() default Method.POST;
 
-    Type reportType() default Type.FORM;
+    @NonNull Type reportType() default Type.FORM;
+
+    /**
+     * @return Class which creates a keystore that can contain trusted certificates
+     */
+    @NonNull Class<? extends KeyStoreFactory> keyStoreFactoryClass() default NoKeyStoreFactory.class;
+
+    /**
+     * @return path to a custom trusted certificate. Must start with "asset://" if the file is in the assets folder
+     */
+    @NonNull String certificatePath() default ACRAConstants.DEFAULT_STRING_VALUE;
+
+    /**
+     * @return resource id of a custom trusted certificate.
+     */
+    @RawRes int resCertificate() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return specify the type of the certificate set in either {@link #certificatePath()} or {@link #resCertificate()}
+     */
+    @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
+
+    /**
+     * @return a Class that decides if a report should be resent (usually if one or more senders failed).
+     * @since 4.9.1
+     */
+    @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
 }
