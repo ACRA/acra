@@ -37,10 +37,18 @@ public final class ServiceHelper {
 
     private final Class<? extends Service> service;
 
+    /**
+     * Create a new ServiceHelper for the specified service
+     *
+     * @param service the service which owns all threads registered in this ServiceHelper
+     */
     public ServiceHelper(Class<? extends Service> service) {
         this.service = service;
     }
 
+    /**
+     * @return a new ThreadPoolExecutor which automatically registers its Threads
+     */
     public ThreadPoolExecutor getNewExecutor() {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
@@ -49,12 +57,21 @@ public final class ServiceHelper {
         return executor;
     }
 
+    /**
+     * register a thread for this service
+     *
+     * @param thread the thread to register
+     */
     public void registerThread(Thread thread) {
         map.put(thread, service);
     }
 
+    /**
+     * @param thread a thread
+     * @return the owner class of the thread if known. null otherwise.
+     */
     @Nullable
-    public static Class<? extends Service> getOwner(Thread thread){
+    public static Class<? extends Service> getOwner(Thread thread) {
         return map.get(thread);
     }
 
