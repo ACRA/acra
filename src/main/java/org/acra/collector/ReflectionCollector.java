@@ -50,7 +50,7 @@ final class ReflectionCollector {
 
         final Field[] fields = someClass.getFields();
         for (final Field field : fields) {
-            if (prefix != null && !prefix.isEmpty()) {
+            if (prefix != null && prefix.length() != 0) {
                 result.append(prefix).append('.');
             }
             result.append(field.getName()).append('=');
