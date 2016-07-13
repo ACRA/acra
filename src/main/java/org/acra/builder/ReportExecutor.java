@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.sender.SenderServiceStarter;
+import org.acra.service.ServiceHelper;
 import org.acra.util.ToastSender;
 
 import java.io.File;
@@ -259,6 +261,12 @@ public final class ReportExecutor {
             // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
             // Determine the current/last Activity that was started and close
             // it. Activity#finish (and maybe it's parent too).
+            final Class<? extends Service> service = ServiceHelper.getOwner(uncaughtExceptionThread);
+            ACRA.log.d(LOG_TAG, "Service is " + (service != null ? service.getName() : "null"));
+            if (service != null) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Stopping owner service of the crashed thread: " + service.getName());
+                context.stopService(new Intent(context, service));
+            }
             final Activity lastActivity = lastActivityManager.getLastActivity();
             if (lastActivity != null) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
