@@ -55,6 +55,7 @@ public abstract class BaseCrashReportDialog extends Activity {
      */
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
+        preInit(savedInstanceState);
         super.onCreate(savedInstanceState);
 
 
@@ -80,6 +81,16 @@ public abstract class BaseCrashReportDialog extends Activity {
             ACRA.log.w(LOG_TAG, "Illegal or incomplete call of BaseCrashReportDialog.");
             finish();
         }
+    }
+
+    /**
+     * Handle any necessary pre-onCreate() setup here.
+     *
+     * @param savedInstanceState    If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
+    protected void preInit(@Nullable Bundle savedInstanceState) {
     }
 
     /**
