@@ -121,6 +121,13 @@ public final class ConfigurationBuilder {
     private String certificateType;
     private Class<? extends RetryPolicy> retryPolicyClass;
 
+    /**
+     * Constructs a ConfigurationBuilder with default values.
+     */
+    public ConfigurationBuilder(){
+        annotationType = null;
+    }
+
 
     /**
      * Constructs a ConfigurationBuilder that is prepopulated with any

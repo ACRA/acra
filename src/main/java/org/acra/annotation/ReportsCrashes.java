@@ -59,7 +59,7 @@ import java.lang.annotation.Target;
  * 
  */
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 @Inherited
 public @interface ReportsCrashes {
