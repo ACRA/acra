@@ -29,8 +29,8 @@ import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
-import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.dialog.ICrashReportDialog;
 import org.acra.file.Directory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
@@ -81,7 +81,7 @@ public final class ConfigurationBuilder {
     private String[] logcatArguments;
     private String mailTo;
     private ReportingInteractionMode reportingInteractionMode;
-    private Class<? extends BaseCrashReportDialog> reportDialogClass;
+    private Class<? extends ICrashReportDialog> reportDialogClass;
     private Class<? extends ReportPrimer> reportPrimerClass;
 
     @StringRes private Integer resDialogPositiveButtonText;
@@ -451,7 +451,7 @@ public final class ConfigurationBuilder {
     }
 
     @NonNull
-    public ConfigurationBuilder setReportDialogClass(@NonNull Class<? extends BaseCrashReportDialog> reportDialogClass) {
+    public ConfigurationBuilder setReportDialogClass(@NonNull Class<? extends ICrashReportDialog> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
         return this;
     }
@@ -1171,7 +1171,7 @@ public final class ConfigurationBuilder {
     }
 
     @NonNull
-    Class<? extends BaseCrashReportDialog> reportDialogClass() {
+    Class<? extends ICrashReportDialog> reportDialogClass() {
         if (reportDialogClass != null) {
             return reportDialogClass;
         }

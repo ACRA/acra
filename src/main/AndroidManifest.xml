@@ -39,8 +39,9 @@
     <uses-sdk android:minSdkVersion="8"/>
 
     <application>
+        <!--suppress AndroidDomInspection -->
         <activity
-            android:name="org.acra.dialog.CrashReportDialog"
+            android:name="org.acra.CrashReportDialogImpl"
             android:theme="@android:style/Theme.Dialog"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
