@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.annotation.Size;
 
 import org.acra.ACRA;
 import org.acra.file.Directory;
@@ -45,7 +44,7 @@ class LogFileCollector extends Collector{
     private final Context context;
     private final ACRAConfiguration config;
 
-    public LogFileCollector(Context context, ACRAConfiguration config) {
+    LogFileCollector(Context context, ACRAConfiguration config) {
         super(ReportField.APPLICATION_LOG);
         this.context = context;
         this.config = config;
@@ -57,11 +56,10 @@ class LogFileCollector extends Collector{
      * contain any path separator.
      *
      * @return A single String containing all of the requested lines.
-     * @throws IOException
      */
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
             return IOUtils.streamToString(getStream(context, config.applicationLogFileDir(), config.applicationLogFile()), config.applicationLogFileLines());
         } catch (IOException e) {

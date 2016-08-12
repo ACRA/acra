@@ -17,7 +17,6 @@
 package org.acra.collector;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -29,12 +28,12 @@ import org.acra.builder.ReportBuilder;
  * 
  */
 final class ThreadCollector extends Collector{
-    public ThreadCollector(){
+    ThreadCollector(){
         super(ReportField.THREAD_DETAILS);
     }
 
     @Override
-    public int getPriority() {
+    int getPriority() {
         return -1;
     }
 
@@ -46,7 +45,7 @@ final class ThreadCollector extends Collector{
      */
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         Thread t = reportBuilder.getUncaughtExceptionThread();
         final StringBuilder result = new StringBuilder();
         if (t != null) {

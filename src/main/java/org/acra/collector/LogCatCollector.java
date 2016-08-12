@@ -50,7 +50,7 @@ class LogCatCollector extends Collector {
     private final ACRAConfiguration config;
     private final PackageManagerWrapper pm;
 
-    public LogCatCollector(ACRAConfiguration config, PackageManagerWrapper pm) {
+    LogCatCollector(ACRAConfiguration config, PackageManagerWrapper pm) {
         super(ReportField.LOGCAT, ReportField.EVENTSLOG, ReportField.RADIOLOG);
         this.config = config;
         this.pm = pm;
@@ -73,7 +73,7 @@ class LogCatCollector extends Collector {
      * report generation time and a bigger footprint on the device data
      * plan consumption.
      */
-    public String collectLogCat(@Nullable String bufferName) {
+    private String collectLogCat(@Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
         String myPidStr = null;
         if (config.logcatFilterByPid() && myPid > 0) {
@@ -140,18 +140,18 @@ class LogCatCollector extends Collector {
     }
 
     @Override
-    public boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
         return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }
 
     @Override
-    public int getPriority() {
+    int getPriority() {
         return 10;
     }
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         String bufferName = null;
         switch (reportField) {
             case LOGCAT:

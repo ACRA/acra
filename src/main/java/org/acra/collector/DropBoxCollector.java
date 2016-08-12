@@ -52,7 +52,7 @@ final class DropBoxCollector extends Collector {
     private final ACRAConfiguration config;
     private final PackageManagerWrapper pm;
 
-    public DropBoxCollector(Context context, ACRAConfiguration config, PackageManagerWrapper pm){
+    DropBoxCollector(Context context, ACRAConfiguration config, PackageManagerWrapper pm){
         super(ReportField.DROPBOX);
         this.context = context;
         this.config = config;
@@ -75,7 +75,7 @@ final class DropBoxCollector extends Collector {
      */
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
             final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
@@ -129,12 +129,12 @@ final class DropBoxCollector extends Collector {
     }
 
     @Override
-    public int getPriority() {
+    int getPriority() {
         return 10;
     }
 
     @Override
-    public boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
         return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }
 }

@@ -36,18 +36,18 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin
  */
 final class MemoryInfoCollector extends Collector {
-    public MemoryInfoCollector() {
+    MemoryInfoCollector() {
         super(ReportField.DUMPSYS_MEMINFO, ReportField.TOTAL_MEM_SIZE, ReportField.AVAILABLE_MEM_SIZE);
     }
 
     @Override
-    public boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
         return super.shouldCollect(crashReportFields, collect, reportBuilder) && !(reportBuilder.getException() instanceof OutOfMemoryError);
     }
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField){
             case DUMPSYS_MEMINFO:
                 return collectMemInfo();
@@ -68,7 +68,7 @@ final class MemoryInfoCollector extends Collector {
      * @return The execution result.
      */
     @NonNull
-    public static String collectMemInfo() {
+    private static String collectMemInfo() {
 
         final StringBuilder meminfo = new StringBuilder();
         try {

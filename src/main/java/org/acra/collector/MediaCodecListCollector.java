@@ -38,18 +38,18 @@ import java.util.Arrays;
  * @author Kevin Gaudin
  */
 final class MediaCodecListCollector extends Collector {
-    public MediaCodecListCollector() {
+    MediaCodecListCollector() {
         super(ReportField.MEDIA_CODEC_LIST);
     }
 
     @Override
-    public int getPriority() {
+    int getPriority() {
         return -1;
     }
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         return collectMediaCodecList();
     }
 
@@ -127,7 +127,7 @@ final class MediaCodecListCollector extends Collector {
      * @return The media codecs information
      */
     @NonNull
-    public static String collectMediaCodecList() {
+    private static String collectMediaCodecList() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             return "";
         }

@@ -69,7 +69,7 @@ public final class ConfigurationCollector extends Collector {
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case INITIAL_CONFIGURATION:
                 return initialConfiguration;

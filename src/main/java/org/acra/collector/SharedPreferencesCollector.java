@@ -59,7 +59,7 @@ final class SharedPreferencesCollector extends Collector {
      * @return A readable formatted String containing all key/value pairs.
      */
     @NonNull
-    public String collect() {
+    private String collect() {
         final StringBuilder result = new StringBuilder();
 
         // Include the default SharedPreferences
@@ -120,7 +120,7 @@ final class SharedPreferencesCollector extends Collector {
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case USER_EMAIL:
                 return prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A");

@@ -34,14 +34,14 @@ import static org.acra.ACRA.LOG_TAG;
 final class DeviceFeaturesCollector extends Collector{
     private final Context context;
 
-    public DeviceFeaturesCollector(Context context){
+    DeviceFeaturesCollector(Context context){
         super(ReportField.DEVICE_FEATURES);
         this.context = context;
     }
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
 
         final StringBuilder result = new StringBuilder();
         try {

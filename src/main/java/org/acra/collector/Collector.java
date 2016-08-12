@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2016
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra.collector;
 
 import android.support.annotation.NonNull;
@@ -9,12 +24,20 @@ import org.acra.builder.ReportBuilder;
 import java.util.Set;
 
 /**
- * Created by Lukas on 11.08.2016.
+ * Created on 11.08.2016.
+ *
+ * @author F43nd1r
  */
-public abstract class Collector implements Comparable<Collector> {
+abstract class Collector implements Comparable<Collector> {
     private final ReportField[] reportFields;
 
-    protected Collector(@Size(min = 1) ReportField... reportFields) {
+    /**
+     * create a new Collector that is able to collect these reportFields
+     * (Note: @Size is currently not working for varargs, it is still here as a hint to developers)
+     *
+     * @param reportFields the supported reportFields
+     */
+    Collector(@Size(min = 1) @NonNull ReportField... reportFields) {
         this.reportFields = reportFields;
     }
 
@@ -22,25 +45,25 @@ public abstract class Collector implements Comparable<Collector> {
      * @return all fields this collector can collect
      */
     @NonNull
-    public final ReportField[] canCollect() {
+    final ReportField[] canCollect() {
         return reportFields;
     }
 
     /**
      * Should be:
-     * > 0 if this should be called as early as possible
+     * > 0 if this class should be called as early as possible
      * = 0 if the relative position isn't important
-     * < 0 if this is dodgy
+     * < 0 if this class performs dodgy operations
      *
      * @return priority of this collector
      */
-    public int getPriority() {
+    int getPriority() {
         return 0;
     }
 
     @Override
     public final int compareTo(@NonNull Collector another) {
-        return another.getPriority() - getPriority();
+        return getPriority() - another.getPriority();
     }
 
     /**
@@ -51,7 +74,7 @@ public abstract class Collector implements Comparable<Collector> {
      * @param reportBuilder     the current reportBuilder
      * @return if this field should be collected now
      */
-    public boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
         return crashReportFields.contains(collect);
     }
 
@@ -63,5 +86,5 @@ public abstract class Collector implements Comparable<Collector> {
      * @return String of what was collected
      */
     @NonNull
-    public abstract String collect(ReportField reportField, ReportBuilder reportBuilder);
+    abstract String collect(ReportField reportField, ReportBuilder reportBuilder);
 }

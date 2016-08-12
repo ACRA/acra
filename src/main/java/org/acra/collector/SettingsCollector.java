@@ -61,7 +61,7 @@ final class SettingsCollector extends Collector{
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    public String collectSystemSettings() {
+    private String collectSystemSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.System.class.getFields();
         for (final Field key : keys) {
@@ -93,7 +93,7 @@ final class SettingsCollector extends Collector{
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    public String collectSecureSettings() {
+    private String collectSecureSettings() {
         final StringBuilder result = new StringBuilder();
         final Field[] keys = Settings.Secure.class.getFields();
         for (final Field key : keys) {
@@ -122,7 +122,7 @@ final class SettingsCollector extends Collector{
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    public String collectGlobalSettings() {
+    private String collectGlobalSettings() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return "";
         }
@@ -162,7 +162,7 @@ final class SettingsCollector extends Collector{
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField){
             case SETTINGS_SYSTEM:
                 return collectSystemSettings();

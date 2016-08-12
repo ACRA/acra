@@ -46,7 +46,7 @@ final class ReflectionCollector extends Collector {
     private final Context context;
     private final ACRAConfiguration config;
 
-    public ReflectionCollector(Context context, ACRAConfiguration config) {
+    ReflectionCollector(Context context, ACRAConfiguration config) {
         super(ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.ENVIRONMENT);
         this.context = context;
         this.config = config;
@@ -59,7 +59,7 @@ final class ReflectionCollector extends Collector {
      * @return A human readable string with a key=value pair on each line.
      */
     @NonNull
-    public static String collectConstants(@NonNull Class<?> someClass, @Nullable String prefix) {
+    private static String collectConstants(@NonNull Class<?> someClass, @Nullable String prefix) {
 
         final StringBuilder result = new StringBuilder();
 
@@ -96,7 +96,7 @@ final class ReflectionCollector extends Collector {
      * @return A human readable string with a key=value pair on each line.
      */
     @NonNull
-    public static String collectStaticGettersResults(@NonNull Class<?> someClass) {
+    private static String collectStaticGettersResults(@NonNull Class<?> someClass) {
         final StringBuilder result = new StringBuilder();
         final Method[] methods = someClass.getMethods();
         for (final Method method : methods) {
@@ -122,13 +122,13 @@ final class ReflectionCollector extends Collector {
     }
 
     @NonNull
-    public static String collectConstants(@NonNull Class<?> someClass) {
+    private static String collectConstants(@NonNull Class<?> someClass) {
         return collectConstants(someClass, "");
     }
 
     @NonNull
     @Override
-    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case BUILD:
                 return collectConstants(Build.class) + collectConstants(Build.VERSION.class, "VERSION");

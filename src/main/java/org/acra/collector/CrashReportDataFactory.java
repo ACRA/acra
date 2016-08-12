@@ -16,11 +16,8 @@
 
 package org.acra.collector;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -29,30 +26,16 @@ import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.PackageManagerWrapper;
-import org.acra.util.ReportUtils;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.APPLICATION_LOG;
-import static org.acra.ReportField.APP_VERSION_CODE;
-import static org.acra.ReportField.APP_VERSION_NAME;
-import static org.acra.ReportField.DEVICE_FEATURES;
-import static org.acra.ReportField.DEVICE_ID;
-import static org.acra.ReportField.ENVIRONMENT;
-import static org.acra.ReportField.MEDIA_CODEC_LIST;
-import static org.acra.ReportField.SETTINGS_GLOBAL;
-import static org.acra.ReportField.SETTINGS_SECURE;
-import static org.acra.ReportField.SETTINGS_SYSTEM;
-import static org.acra.ReportField.SHARED_PREFERENCES;
-import static org.acra.ReportField.THREAD_DETAILS;
-import static org.acra.ReportField.USER_EMAIL;
-import static org.acra.ReportField.USER_IP;
 
 /**
  * Responsible for creating the CrashReportData for an Exception.
@@ -138,7 +121,7 @@ public final class CrashReportDataFactory {
         final CrashReportData crashReportData = new CrashReportData();
         try {
             final Set<ReportField> crashReportFields = config.getReportFields();
-            final TreeSet<Collector> collectors = getCollectors();
+            final List<Collector> collectors = getCollectorsDescending();
 
             //this will iterate over all collectors in descending order of priority
             for (Collector collector : collectors) {
@@ -165,8 +148,8 @@ public final class CrashReportDataFactory {
         return crashReportData;
     }
 
-    private TreeSet<Collector> getCollectors() {
-        TreeSet<Collector> collectors = new TreeSet<Collector>();
+    private List<Collector> getCollectorsDescending() {
+        List<Collector> collectors = new ArrayList<Collector>();
         PackageManagerWrapper pm = new PackageManagerWrapper(context);
         collectors.add(new LogCatCollector(config, pm));
         collectors.add(new DropBoxCollector(context, config, pm));
@@ -186,6 +169,7 @@ public final class CrashReportDataFactory {
         collectors.add(new LogFileCollector(context, config));
         collectors.add(new MediaCodecListCollector());
         collectors.add(new ThreadCollector());
+        Collections.sort(collectors, Collections.<Collector>reverseOrder());
         return collectors;
     }
 }
