@@ -20,6 +20,8 @@ import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -29,15 +31,21 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin
  * 
  */
-final class DeviceFeaturesCollector {
-    private DeviceFeaturesCollector(){}
+final class DeviceFeaturesCollector extends Collector{
+    private final Context context;
+
+    public DeviceFeaturesCollector(Context context){
+        super(ReportField.DEVICE_FEATURES);
+        this.context = context;
+    }
 
     @NonNull
-    public static String getFeatures(@NonNull Context ctx) {
+    @Override
+    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
 
         final StringBuilder result = new StringBuilder();
         try {
-            final PackageManager pm = ctx.getPackageManager();
+            final PackageManager pm = context.getPackageManager();
             final FeatureInfo[] features = pm.getSystemAvailableFeatures();
             for (final FeatureInfo feature : features) {
                 final String featureName = feature.name;
@@ -49,7 +57,7 @@ final class DeviceFeaturesCollector {
                 result.append('\n');
             }
         } catch (Throwable e) {
-            ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + ctx.getPackageName(), e);
+            ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + context.getPackageName(), e);
             result.append("Could not retrieve data: ");
             result.append(e.getMessage());
         }

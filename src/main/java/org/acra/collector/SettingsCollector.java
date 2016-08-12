@@ -25,6 +25,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 
 import java.lang.reflect.Field;
@@ -38,7 +40,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin
  *
  */
-final class SettingsCollector {
+final class SettingsCollector extends Collector{
 
     private static final String ERROR = "Error: ";
 
@@ -46,6 +48,7 @@ final class SettingsCollector {
     private final ACRAConfiguration config;
 
     SettingsCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
+        super(ReportField.SETTINGS_SYSTEM, ReportField.SETTINGS_SECURE, ReportField.SETTINGS_GLOBAL);
         this.context = context;
         this.config = config;
     }
@@ -157,4 +160,19 @@ final class SettingsCollector {
         return true;
     }
 
+    @NonNull
+    @Override
+    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        switch (reportField){
+            case SETTINGS_SYSTEM:
+                return collectSystemSettings();
+            case SETTINGS_SECURE:
+                return collectSecureSettings();
+            case SETTINGS_GLOBAL:
+                return collectGlobalSettings();
+            default:
+                //will never happen
+                throw new IllegalArgumentException();
+        }
+    }
 }

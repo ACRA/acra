@@ -12,28 +12,37 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
+
 import java.lang.reflect.Field;
 
-final class DisplayManagerCollector {
-    private DisplayManagerCollector(){}
+final class DisplayManagerCollector extends Collector {
+    private final Context context;
+
+    public DisplayManagerCollector(Context context) {
+        super(ReportField.DISPLAY);
+        this.context = context;
+    }
 
     private static final SparseArray<String> mFlagsNames = new SparseArray<String>();
 
     @NonNull
-    public static String collectDisplays(@NonNull Context ctx) {
+    @Override
+    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
         final Display[] displays;
         final StringBuilder result = new StringBuilder();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             // Before Android 4.2, there was a single display available from the
             // window manager
-            final WindowManager windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+            final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             displays = new Display[1];
             displays[0] = windowManager.getDefaultDisplay();
         } else {
             // Since Android 4.2, we can fetch multiple displays with the
             // DisplayManager.
-            final DisplayManager displayManager = (DisplayManager) ctx.getSystemService(Context.DISPLAY_SERVICE);
+            final DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
             displays = displayManager.getDisplays();
         }
 

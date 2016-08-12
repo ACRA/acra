@@ -21,9 +21,13 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Size;
 
 import org.acra.ACRA;
 import org.acra.file.Directory;
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
+import org.acra.config.ACRAConfiguration;
 import org.acra.util.IOUtils;
 
 import java.io.*;
@@ -37,23 +41,32 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin
  * 
  */
-class LogFileCollector {
+class LogFileCollector extends Collector{
+    private final Context context;
+    private final ACRAConfiguration config;
+
+    public LogFileCollector(Context context, ACRAConfiguration config) {
+        super(ReportField.APPLICATION_LOG);
+        this.context = context;
+        this.config = config;
+    }
 
     /**
      * Reads the last lines of a custom log file. The file name is assumed as
      * located in the {@link Application#getFilesDir()} directory if it does not
      * contain any path separator.
-     * 
-     * @param context       Application context.
-     * @param fileName      Log file to read. It can be an absolute path, or a relative path from the application
-     *                      files folder, or a file within the application files folder.
-     * @param numberOfLines Number of lines to retrieve.
+     *
      * @return A single String containing all of the requested lines.
      * @throws IOException
      */
     @NonNull
-    public String collectLogFile(@NonNull Context context, @NonNull Directory directory, @NonNull String fileName, int numberOfLines) throws IOException {
-        return IOUtils.streamToString(getStream(context, directory, fileName), numberOfLines);
+    @Override
+    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        try {
+            return IOUtils.streamToString(getStream(context, config.applicationLogFileDir(), config.applicationLogFile()), config.applicationLogFileLines());
+        } catch (IOException e) {
+            return "Application log not available";
+        }
     }
 
     @NonNull

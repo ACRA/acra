@@ -24,6 +24,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -34,18 +37,32 @@ import java.util.Arrays;
  *
  * @author Kevin Gaudin
  */
-final class MediaCodecListCollector {
-    private MediaCodecListCollector(){}
+final class MediaCodecListCollector extends Collector {
+    public MediaCodecListCollector() {
+        super(ReportField.MEDIA_CODEC_LIST);
+    }
+
+    @Override
+    public int getPriority() {
+        return -1;
+    }
+
+    @NonNull
+    @Override
+    public String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        return collectMediaCodecList();
+    }
+
     private enum CodecType {
         AVC, H263, MPEG4, AAC
 
     }
 
     private static final String COLOR_FORMAT_PREFIX = "COLOR_";
-    private static final String[] MPEG4_TYPES = { "mp4", "mpeg4", "MP4", "MPEG4" };
-    private static final String[] AVC_TYPES = { "avc", "h264", "AVC", "H264" };
-    private static final String[] H263_TYPES = { "h263", "H263" };
-    private static final String[] AAC_TYPES = { "aac", "AAC" };
+    private static final String[] MPEG4_TYPES = {"mp4", "mpeg4", "MP4", "MPEG4"};
+    private static final String[] AVC_TYPES = {"avc", "h264", "AVC", "H264"};
+    private static final String[] H263_TYPES = {"h263", "H263"};
+    private static final String[] AAC_TYPES = {"aac", "AAC"};
 
     private static final SparseArray<String> mColorFormatValues = new SparseArray<String>();
     private static final SparseArray<String> mAVCLevelValues = new SparseArray<String>();
@@ -156,7 +173,7 @@ final class MediaCodecListCollector {
      */
     @NonNull
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, @NonNull String type){
+    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, @NonNull String type) {
 
         final StringBuilder result = new StringBuilder();
         final MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);
@@ -229,7 +246,7 @@ final class MediaCodecListCollector {
      */
     @Nullable
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static CodecType identifyCodecType(@NonNull MediaCodecInfo codecInfo)  {
+    private static CodecType identifyCodecType(@NonNull MediaCodecInfo codecInfo) {
 
         final String name = codecInfo.getName();
         for (String token : AVC_TYPES) {
