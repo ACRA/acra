@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Debug;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -145,6 +146,7 @@ public final class ReportExecutor {
                 || (config.resToastText() != 0 && (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG));
 
         final TimeHelper sentToastTimeMillis = new TimeHelper();
+        boolean displayingToast = false;
         if (shouldDisplayToast) {
             new Thread() {
 
@@ -162,9 +164,24 @@ public final class ReportExecutor {
                 }
 
             }.start();
+            displayingToast = true;
 
             // We will wait a few seconds at the end of the method to be sure
             // that the Toast can be read by the user.
+        }
+        if (Debug.isDebuggerConnected()) {
+            final String warning = "Warning: Acra may behave differently with a debugger attached";
+            new Thread() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    Toast.makeText(context, warning, Toast.LENGTH_LONG).show();
+                    sentToastTimeMillis.setInitialTimeMillis(System.currentTimeMillis());
+                    Looper.loop();
+                }
+            }.start();
+            ACRA.log.w(LOG_TAG, warning);
+            displayingToast = true;
         }
 
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder);
@@ -195,7 +212,7 @@ public final class ReportExecutor {
         final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
                 && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
-        if (shouldDisplayToast) {
+        if (displayingToast) {
             // A toast is being displayed, we have to wait for its end before doing anything else.
             new Thread() {
 
@@ -277,8 +294,10 @@ public final class ReportExecutor {
                 lastActivityManager.clearLastActivity();
             }
 
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(10);
+            if (!Debug.isDebuggerConnected()) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(10);
+            }
         }
     }
 
