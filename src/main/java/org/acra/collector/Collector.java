@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * @author F43nd1r
  */
-abstract class Collector implements Comparable<Collector> {
+abstract class Collector {
     private final ReportField[] reportFields;
 
     /**
@@ -47,23 +47,6 @@ abstract class Collector implements Comparable<Collector> {
     @NonNull
     final ReportField[] canCollect() {
         return reportFields;
-    }
-
-    /**
-     * Should be:
-     * > 0 if this class should be called as early as possible
-     * = 0 if the relative position isn't important
-     * < 0 if this class performs dodgy operations
-     *
-     * @return priority of this collector
-     */
-    int getPriority() {
-        return 0;
-    }
-
-    @Override
-    public final int compareTo(@NonNull Collector another) {
-        return getPriority() - another.getPriority();
     }
 
     /**

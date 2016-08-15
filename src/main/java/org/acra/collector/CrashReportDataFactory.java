@@ -29,7 +29,6 @@ import org.acra.util.PackageManagerWrapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +120,7 @@ public final class CrashReportDataFactory {
         final CrashReportData crashReportData = new CrashReportData();
         try {
             final Set<ReportField> crashReportFields = config.getReportFields();
-            final List<Collector> collectors = getCollectorsDescending();
+            final List<Collector> collectors = getCollectorsOrdered();
 
             //this will iterate over all collectors in descending order of priority
             for (Collector collector : collectors) {
@@ -148,7 +147,7 @@ public final class CrashReportDataFactory {
         return crashReportData;
     }
 
-    private List<Collector> getCollectorsDescending() {
+    private List<Collector> getCollectorsOrdered() {
         List<Collector> collectors = new ArrayList<Collector>();
         PackageManagerWrapper pm = new PackageManagerWrapper(context);
         collectors.add(new LogCatCollector(config, pm));
@@ -169,7 +168,6 @@ public final class CrashReportDataFactory {
         collectors.add(new LogFileCollector(context, config));
         collectors.add(new MediaCodecListCollector());
         collectors.add(new ThreadCollector());
-        Collections.sort(collectors, Collections.<Collector>reverseOrder());
         return collectors;
     }
 }

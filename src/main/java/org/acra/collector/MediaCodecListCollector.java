@@ -42,11 +42,6 @@ final class MediaCodecListCollector extends Collector {
         super(ReportField.MEDIA_CODEC_LIST);
     }
 
-    @Override
-    int getPriority() {
-        return -1;
-    }
-
     @NonNull
     @Override
     String collect(ReportField reportField, ReportBuilder reportBuilder) {

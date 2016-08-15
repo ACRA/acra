@@ -129,11 +129,6 @@ final class DropBoxCollector extends Collector {
     }
 
     @Override
-    int getPriority() {
-        return 10;
-    }
-
-    @Override
     boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
         return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }

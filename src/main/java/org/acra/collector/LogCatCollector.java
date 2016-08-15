@@ -144,11 +144,6 @@ class LogCatCollector extends Collector {
         return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }
 
-    @Override
-    int getPriority() {
-        return 10;
-    }
-
     @NonNull
     @Override
     String collect(ReportField reportField, ReportBuilder reportBuilder) {

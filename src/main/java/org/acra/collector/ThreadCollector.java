@@ -32,11 +32,6 @@ final class ThreadCollector extends Collector{
         super(ReportField.THREAD_DETAILS);
     }
 
-    @Override
-    int getPriority() {
-        return -1;
-    }
-
     /**
      * Convenience method that collects some data identifying a Thread, usually the Thread which
      * crashed and returns a string containing the thread's id, name, priority and group name.
