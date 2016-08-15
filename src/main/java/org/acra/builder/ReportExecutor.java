@@ -146,7 +146,6 @@ public final class ReportExecutor {
                 || (config.resToastText() != 0 && (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION || reportingInteractionMode == ReportingInteractionMode.DIALOG));
 
         final TimeHelper sentToastTimeMillis = new TimeHelper();
-        boolean displayingToast = false;
         if (shouldDisplayToast) {
             new Thread() {
 
@@ -164,12 +163,12 @@ public final class ReportExecutor {
                 }
 
             }.start();
-            displayingToast = true;
 
             // We will wait a few seconds at the end of the method to be sure
             // that the Toast can be read by the user.
         }
-        if (Debug.isDebuggerConnected()) {
+        //we cannot kill the process if a debugger is connected, as this would kill the whole application
+        if (Debug.isDebuggerConnected() && reportBuilder.isEndApplication()) {
             final String warning = "Warning: Acra may behave differently with a debugger attached";
             new Thread() {
                 @Override
@@ -181,7 +180,6 @@ public final class ReportExecutor {
                 }
             }.start();
             ACRA.log.w(LOG_TAG, warning);
-            displayingToast = true;
         }
 
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder);
@@ -212,7 +210,7 @@ public final class ReportExecutor {
         final boolean showDirectDialog = (reportingInteractionMode == ReportingInteractionMode.DIALOG)
                 && !prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false);
 
-        if (displayingToast) {
+        if (shouldDisplayToast) {
             // A toast is being displayed, we have to wait for its end before doing anything else.
             new Thread() {
 
@@ -264,7 +262,8 @@ public final class ReportExecutor {
         final boolean letDefaultHandlerEndApplication = config.alsoReportToAndroidFramework();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
-        if (handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {
+        //defaultExceptionHandler kills the application, so don't do this if a debugger is connected
+        if (!Debug.isDebuggerConnected() && handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {
             // Let the system default handler do it's job and display the force close dialog.
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
@@ -293,7 +292,7 @@ public final class ReportExecutor {
                 }
                 lastActivityManager.clearLastActivity();
             }
-
+            //prevent process kill if a debugger is attached, as this would kill the whole application
             if (!Debug.isDebuggerConnected()) {
                 android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(10);
