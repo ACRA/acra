@@ -32,15 +32,18 @@ import org.acra.builder.ReportBuilder;
 
 import java.lang.reflect.Field;
 
+/**
+ * Collects information about the connected display(s)
+ */
 final class DisplayManagerCollector extends Collector {
     private final Context context;
+    private final SparseArray<String> flagNames = new SparseArray<String>();
 
     DisplayManagerCollector(Context context) {
         super(ReportField.DISPLAY);
         this.context = context;
     }
 
-    private static final SparseArray<String> mFlagsNames = new SparseArray<String>();
 
     @NonNull
     @Override
@@ -69,7 +72,7 @@ final class DisplayManagerCollector extends Collector {
     }
 
     @NonNull
-    private static Object collectDisplayData(@NonNull Display display) {
+    private Object collectDisplayData(@NonNull Display display) {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
@@ -165,18 +168,18 @@ final class DisplayManagerCollector extends Collector {
     }
 
     @NonNull
-    private static String collectFlags(@NonNull Display display) {
+    private String collectFlags(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
                 if (field.getName().startsWith("FLAG_")) {
                     try {
-                        mFlagsNames.put(field.getInt(null), field.getName());
+                        flagNames.put(field.getInt(null), field.getName());
                     } catch (IllegalAccessException ignored) {
                     }
                 }
             }
-            return display.getDisplayId() + ".flags=" + activeFlags(mFlagsNames, flags) + '\n';
+            return display.getDisplayId() + ".flags=" + activeFlags(flags) + '\n';
         }
         return "";
     }
@@ -222,25 +225,23 @@ final class DisplayManagerCollector extends Collector {
      * applying a bitmask. That method returns the concatenation of active
      * values.
      *
-     * @param valueNames The array containing the different values and names for this
-     *                   field. Must contain mask values too.
      * @param bitfield   The bitfield to inspect.
      * @return The names of the different values contained in the bitfield,
      * separated by '+'.
      */
     @NonNull
-    private static String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
+    private String activeFlags(int bitfield) {
         final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value
-        for (int i = 0; i < valueNames.size(); i++) {
-            final int maskValue = valueNames.keyAt(i);
+        for (int i = 0; i < flagNames.size(); i++) {
+            final int maskValue = flagNames.keyAt(i);
             final int value = bitfield & maskValue;
             if (value > 0) {
                 if (result.length() > 0) {
                     result.append('+');
                 }
-                result.append(valueNames.get(value));
+                result.append(flagNames.get(value));
             }
         }
         return result.toString();

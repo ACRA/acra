@@ -28,11 +28,12 @@ import java.io.Writer;
 import java.util.Set;
 
 /**
- * Created on 12.08.2016.
+ * Collects the holy stacktrace
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
-class StacktraceCollector extends Collector {
+final class StacktraceCollector extends Collector {
     StacktraceCollector() {
         super(ReportField.STACK_TRACE, ReportField.STACK_TRACE_HASH);
     }
@@ -51,7 +52,7 @@ class StacktraceCollector extends Collector {
             case STACK_TRACE_HASH:
                 return getStackTraceHash(reportBuilder.getException());
             default:
-                //will never happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
     }

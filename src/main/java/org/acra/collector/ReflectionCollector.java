@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
@@ -79,9 +80,9 @@ final class ReflectionCollector extends Collector {
                     }
                 }
             } catch (@NonNull IllegalArgumentException e) {
-                result.append("N/A");
+                result.append(ACRAConstants.NOT_AVAILABLE);
             } catch (@NonNull IllegalAccessException e) {
-                result.append("N/A");
+                result.append(ACRAConstants.NOT_AVAILABLE);
             }
             result.append('\n');
         }
@@ -142,11 +143,16 @@ final class ReflectionCollector extends Collector {
             case ENVIRONMENT:
                 return collectStaticGettersResults(Environment.class);
             default:
-                //will never happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
     }
 
+    /**
+     * get the configured BuildConfigClass or guess it if not configured
+     * @return the BuildConfigClass
+     * @throws ClassNotFoundException if the class cannot be found
+     */
     @NonNull
     private Class<?> getBuildConfigClass() throws ClassNotFoundException {
         final Class configuredBuildConfig = config.buildConfigClass();

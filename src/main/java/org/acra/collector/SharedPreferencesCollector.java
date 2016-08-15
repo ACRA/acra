@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportBuilder;
@@ -123,11 +124,11 @@ final class SharedPreferencesCollector extends Collector {
     String collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case USER_EMAIL:
-                return prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "N/A");
+                return prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ACRAConstants.NOT_AVAILABLE);
             case SHARED_PREFERENCES:
                 return collect();
             default:
-                //will never happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
     }

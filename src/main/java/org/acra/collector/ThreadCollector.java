@@ -22,21 +22,19 @@ import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 
 /**
- * Collects some data identifying a Thread, usually the Thread which crashed.
- * 
+ * Collects some data identifying a Thread
+ *
  * @author Kevin Gaudin
- * 
  */
-final class ThreadCollector extends Collector{
-    ThreadCollector(){
+final class ThreadCollector extends Collector {
+    ThreadCollector() {
         super(ReportField.THREAD_DETAILS);
     }
 
     /**
-     * Convenience method that collects some data identifying a Thread, usually the Thread which
-     * crashed and returns a string containing the thread's id, name, priority and group name.
+     * collects some data identifying the crashed thread
      *
-     * @return a string representation of the string including the id, name and priority of the thread.
+     * @return a string representation of the information including the id, name and priority of the thread.
      */
     @NonNull
     @Override

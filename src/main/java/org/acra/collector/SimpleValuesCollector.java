@@ -19,20 +19,28 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
+import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.util.Installation;
-import org.acra.util.ReportUtils;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.acra.ACRA.LOG_TAG;
+
 /**
- * Created on 12.08.2016.
+ * Collects various simple values
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
-class SimpleValuesCollector extends Collector {
+final class SimpleValuesCollector extends Collector {
     private final Context context;
 
     SimpleValuesCollector(Context context) {
@@ -68,12 +76,47 @@ class SimpleValuesCollector extends Collector {
             case PRODUCT:
                 return Build.PRODUCT;
             case FILE_PATH:
-                return ReportUtils.getApplicationFilePath(context);
+                return getApplicationFilePath();
             case USER_IP:
-                return ReportUtils.getLocalIpAddress();
+                return getLocalIpAddress();
             default:
-                //will never happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
+    }
+
+    @NonNull
+    private String getApplicationFilePath() {
+        final File filesDir = context.getFilesDir();
+        if (filesDir != null) {
+            return filesDir.getAbsolutePath();
+        }
+
+        ACRA.log.w(LOG_TAG, "Couldn't retrieve ApplicationFilePath for : " + context.getPackageName());
+        return "Couldn't retrieve ApplicationFilePath";
+    }
+
+    @NonNull
+    private static String getLocalIpAddress() {
+        final StringBuilder result = new StringBuilder();
+        boolean first = true;
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                final NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    final InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        if (!first) {
+                            result.append('\n');
+                        }
+                        result.append(inetAddress.getHostAddress());
+                        first = false;
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            ACRA.log.w(LOG_TAG, ex.toString());
+        }
+        return result.toString();
     }
 }

@@ -45,7 +45,11 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin
  */
-class LogCatCollector extends Collector {
+final class LogCatCollector extends Collector {
+    /**
+     * Default number of latest lines kept from the logcat output.
+     */
+    private static final int DEFAULT_TAIL_COUNT = 100;
 
     private final ACRAConfiguration config;
     private final PackageManagerWrapper pm;
@@ -55,11 +59,6 @@ class LogCatCollector extends Collector {
         this.config = config;
         this.pm = pm;
     }
-
-    /**
-     * Default number of latest lines kept from the logcat output.
-     */
-    private static final int DEFAULT_TAIL_COUNT = 100;
 
     /**
      * Executes the logcat command with arguments taken from

@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.file.Directory;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
@@ -36,11 +37,10 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Collects the N last lines of a text stream. Use this collector if your
  * application handles its own logging system.
- * 
+ *
  * @author Kevin Gaudin
- * 
  */
-class LogFileCollector extends Collector{
+final class LogFileCollector extends Collector {
     private final Context context;
     private final ACRAConfiguration config;
 
@@ -61,14 +61,21 @@ class LogFileCollector extends Collector{
     @Override
     String collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
-            return IOUtils.streamToString(getStream(context, config.applicationLogFileDir(), config.applicationLogFile()), config.applicationLogFileLines());
+            return IOUtils.streamToString(getStream(config.applicationLogFileDir(), config.applicationLogFile()), config.applicationLogFileLines());
         } catch (IOException e) {
-            return "Application log not available";
+            return ACRAConstants.NOT_AVAILABLE;
         }
     }
 
+    /**
+     * guess the application log file location and open it
+     *
+     * @param directory the base directory for the file path
+     * @param fileName the name of the file
+     * @return a stream to the file or an empty stream if the file was not found
+     */
     @NonNull
-    private static InputStream getStream(@NonNull Context context, @NonNull Directory directory, @NonNull String fileName) {
+    private InputStream getStream(@NonNull Directory directory, @NonNull String fileName) {
         if (directory == Directory.FILES_LEGACY) {
             directory = fileName.startsWith("/") ? Directory.ROOT : Directory.FILES;
         }

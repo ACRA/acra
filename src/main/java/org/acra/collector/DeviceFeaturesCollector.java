@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -27,29 +28,34 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Features declared as available on the device.
- * 
+ *
  * @author Kevin Gaudin
- * 
  */
-final class DeviceFeaturesCollector extends Collector{
+final class DeviceFeaturesCollector extends Collector {
     private final Context context;
 
-    DeviceFeaturesCollector(Context context){
+    DeviceFeaturesCollector(Context context) {
         super(ReportField.DEVICE_FEATURES);
         this.context = context;
     }
 
+    /**
+     * collects device features
+     *
+     * @param reportField   the ReportField to collect
+     * @param reportBuilder the current reportBuilder
+     * @return String of all device feature names
+     */
     @NonNull
     @Override
     String collect(ReportField reportField, ReportBuilder reportBuilder) {
-
         final StringBuilder result = new StringBuilder();
         try {
             final PackageManager pm = context.getPackageManager();
             final FeatureInfo[] features = pm.getSystemAvailableFeatures();
             for (final FeatureInfo feature : features) {
                 final String featureName = feature.name;
-                if(featureName != null) {
+                if (featureName != null) {
                     result.append(featureName);
                 } else {
                     result.append("glEsVersion = ").append(feature.getGlEsVersion());

@@ -15,14 +15,17 @@
  */
 package org.acra.collector;
 
+import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.util.IOUtils;
-import org.acra.util.ReportUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +55,11 @@ final class MemoryInfoCollector extends Collector {
             case DUMPSYS_MEMINFO:
                 return collectMemInfo();
             case TOTAL_MEM_SIZE:
-                return Long.toString(ReportUtils.getTotalInternalMemorySize());
+                return Long.toString(getTotalInternalMemorySize());
             case AVAILABLE_MEM_SIZE:
-                return Long.toString(ReportUtils.getAvailableInternalMemorySize());
+                return Long.toString(getAvailableInternalMemorySize());
             default:
-                //will newver happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
     }
@@ -86,4 +89,52 @@ final class MemoryInfoCollector extends Collector {
 
         return meminfo.toString();
     }
+
+    /**
+     * Calculates the free memory of the device. This is based on an inspection of the filesystem, which in android
+     * devices is stored in RAM.
+     *
+     * @return Number of bytes available.
+     */
+    private static long getAvailableInternalMemorySize() {
+        final File path = Environment.getDataDirectory();
+        final StatFs stat = new StatFs(path.getPath());
+        final long blockSize;
+        final long availableBlocks;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSizeLong();
+            availableBlocks = stat.getAvailableBlocksLong();
+        } else {
+            //noinspection deprecation
+            blockSize = stat.getBlockSize();
+            //noinspection deprecation
+            availableBlocks = stat.getAvailableBlocks();
+        }
+        return availableBlocks * blockSize;
+    }
+
+    /**
+     * Calculates the total memory of the device. This is based on an inspection of the filesystem, which in android
+     * devices is stored in RAM.
+     *
+     * @return Total number of bytes.
+     */
+    private static long getTotalInternalMemorySize() {
+        final File path = Environment.getDataDirectory();
+        final StatFs stat = new StatFs(path.getPath());
+        final long blockSize;
+        final long totalBlocks;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSizeLong();
+            totalBlocks = stat.getBlockCountLong();
+        }
+        else {
+            //noinspection deprecation
+            blockSize = stat.getBlockSize();
+            //noinspection deprecation
+            totalBlocks = stat.getBlockCount();
+        }
+        return totalBlocks * blockSize;
+    }
+
 }

@@ -25,11 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created on 12.08.2016.
+ * Collects custom data supplied by the user
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
-class CustomDataCollector extends Collector {
+final class CustomDataCollector extends Collector {
     private final Map<String, String> customParameters;
 
     CustomDataCollector(Map<String, String> customParameters){
@@ -44,8 +45,7 @@ class CustomDataCollector extends Collector {
 
 
     /**
-     * Generates the string which is posted in the single custom data field in
-     * the GoogleDocs Form.
+     * Generates the string which is posted in the single custom data field
      *
      * @return A string with a 'key = value' pair on each line.
      */

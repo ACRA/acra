@@ -24,9 +24,12 @@ import org.acra.builder.ReportBuilder;
 import java.util.Set;
 
 /**
- * Created on 11.08.2016.
+ * Represents a collector.
+ * Maintains information on which fields can be collected by this collector.
+ * Validates constraints in which a field should (not) be collected.
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
 abstract class Collector {
     private final ReportField[] reportFields;

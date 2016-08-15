@@ -18,16 +18,18 @@ package org.acra.collector;
 import android.content.pm.PackageInfo;
 import android.support.annotation.NonNull;
 
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.util.PackageManagerWrapper;
 
 /**
- * Created on 12.08.2016.
+ * Collects PackageInfo values
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
-class PackageManagerCollector extends Collector {
+final class PackageManagerCollector extends Collector {
     private final PackageManagerWrapper pm;
 
     PackageManagerCollector(PackageManagerWrapper pm) {
@@ -47,6 +49,6 @@ class PackageManagerCollector extends Collector {
                     return Integer.toString(info.versionCode);
             }
         }
-        return "Package info unavailable";
+        return ACRAConstants.NOT_AVAILABLE;
     }
 }

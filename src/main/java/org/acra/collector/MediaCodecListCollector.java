@@ -30,6 +30,7 @@ import org.acra.builder.ReportBuilder;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Collects data about available codecs on the device through the MediaCodecList
@@ -38,15 +39,6 @@ import java.util.Arrays;
  * @author Kevin Gaudin
  */
 final class MediaCodecListCollector extends Collector {
-    MediaCodecListCollector() {
-        super(ReportField.MEDIA_CODEC_LIST);
-    }
-
-    @NonNull
-    @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        return collectMediaCodecList();
-    }
 
     private enum CodecType {
         AVC, H263, MPEG4, AAC
@@ -59,17 +51,35 @@ final class MediaCodecListCollector extends Collector {
     private static final String[] H263_TYPES = {"h263", "H263"};
     private static final String[] AAC_TYPES = {"aac", "AAC"};
 
-    private static final SparseArray<String> mColorFormatValues = new SparseArray<String>();
-    private static final SparseArray<String> mAVCLevelValues = new SparseArray<String>();
-    private static final SparseArray<String> mAVCProfileValues = new SparseArray<String>();
-    private static final SparseArray<String> mH263LevelValues = new SparseArray<String>();
-    private static final SparseArray<String> mH263ProfileValues = new SparseArray<String>();
-    private static final SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
-    private static final SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
-    private static final SparseArray<String> mAACProfileValues = new SparseArray<String>();
+    private final SparseArray<String> mColorFormatValues = new SparseArray<String>();
+    private final SparseArray<String> mAVCLevelValues = new SparseArray<String>();
+    private final SparseArray<String> mAVCProfileValues = new SparseArray<String>();
+    private final SparseArray<String> mH263LevelValues = new SparseArray<String>();
+    private final SparseArray<String> mH263ProfileValues = new SparseArray<String>();
+    private final SparseArray<String> mMPEG4LevelValues = new SparseArray<String>();
+    private final SparseArray<String> mMPEG4ProfileValues = new SparseArray<String>();
+    private final SparseArray<String> mAACProfileValues = new SparseArray<String>();
 
-    // static init where nearly all reflection inspection is done.
-    static {
+    MediaCodecListCollector() {
+        super(ReportField.MEDIA_CODEC_LIST);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @NonNull
+    @Override
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        return collectMediaCodecList();
+    }
+
+    @Override
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+        return super.shouldCollect(crashReportFields, collect, reportBuilder) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    }
+
+    /**
+     * use reflection to prepare field arrays.
+     */
+    private void prepare() {
         try {
             final Class<?> codecCapabilitiesClass = Class.forName("android.media.MediaCodecInfo$CodecCapabilities");
 
@@ -121,12 +131,10 @@ final class MediaCodecListCollector extends Collector {
      *
      * @return The media codecs information
      */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @NonNull
-    private static String collectMediaCodecList() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            return "";
-        }
-
+    private String collectMediaCodecList() {
+        prepare();
         final MediaCodecInfo[] infos;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             //noinspection deprecation
@@ -161,15 +169,14 @@ final class MediaCodecListCollector extends Collector {
      * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a
      * specific codec type.
      *
-     * @param codecInfo //TODO describe param
-     * @param type      //TODO describe param
+     * @param codecInfo the currently inspected codec
+     * @param type      supported type to collect
      * @return A string describing the color formats and codec profile levels
      * available for a specific codec type.
      */
     @NonNull
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, @NonNull String type) {
-
+    private String collectCapabilitiesForType(@NonNull final MediaCodecInfo codecInfo, @NonNull String type) {
         final StringBuilder result = new StringBuilder();
         final MediaCodecInfo.CodecCapabilities codecCapabilities = codecInfo.getCapabilitiesForType(type);
 
@@ -236,12 +243,12 @@ final class MediaCodecListCollector extends Collector {
     /**
      * Looks for keywords in the codec name to identify its nature ({@link CodecType}).
      *
-     * @param codecInfo //TODO describe param
-     * @return //TODO describe return
+     * @param codecInfo the currently inspected codec
+     * @return type of the codec or null if it could bot be guessed
      */
     @Nullable
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private static CodecType identifyCodecType(@NonNull MediaCodecInfo codecInfo) {
+    private CodecType identifyCodecType(@NonNull MediaCodecInfo codecInfo) {
 
         final String name = codecInfo.getName();
         for (String token : AVC_TYPES) {

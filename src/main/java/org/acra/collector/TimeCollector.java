@@ -17,20 +17,23 @@ package org.acra.collector;
 
 import android.support.annotation.NonNull;
 
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.util.ReportUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Set;
 
 /**
- * Created on 12.08.2016.
+ * collects time information
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
-class TimeCollector extends Collector {
+final class TimeCollector extends Collector {
     private final Calendar appStartDate;
 
     TimeCollector(Calendar appStartDate) {
@@ -55,9 +58,15 @@ class TimeCollector extends Collector {
                 time = new GregorianCalendar();
                 break;
             default:
-                //will never happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return ReportUtils.getTimeString(time);
+        return getTimeString(time);
+    }
+
+    @NonNull
+    private static String getTimeString(@NonNull Calendar time) {
+        final SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
+        return format.format(time.getTimeInMillis());
     }
 }

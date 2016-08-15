@@ -18,7 +18,7 @@ package org.acra.collector;
 
 import android.content.Context;
 import android.os.Build;
-import android.provider.Settings;
+import android.provider.Settings.Global;
 import android.provider.Settings.Secure;
 import android.provider.Settings.System;
 import android.support.annotation.NonNull;
@@ -34,13 +34,12 @@ import java.lang.reflect.Field;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Helper to collect data from {@link System} and {@link Secure} Settings
+ * Helper to collect data from {@link System}, {@link Global} and {@link Secure} Settings
  * classes.
  *
  * @author Kevin Gaudin
- *
  */
-final class SettingsCollector extends Collector{
+final class SettingsCollector extends Collector {
 
     private static final String ERROR = "Error: ";
 
@@ -54,7 +53,7 @@ final class SettingsCollector extends Collector{
     }
 
     /**
-     * Collect data from {@link android.provider.Settings.System}. This
+     * Collect data from {@link System}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      *
@@ -63,14 +62,14 @@ final class SettingsCollector extends Collector{
     @NonNull
     private String collectSystemSettings() {
         final StringBuilder result = new StringBuilder();
-        final Field[] keys = Settings.System.class.getFields();
+        final Field[] keys = System.class.getFields();
         for (final Field key : keys) {
             // Avoid retrieving deprecated fields... it is useless, has an
             // impact on prefs, and the system writes many warnings in the
             // logcat.
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class) {
                 try {
-                    final Object value = Settings.System.getString(context.getContentResolver(), (String) key.get(null));
+                    final Object value = System.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append('=').append(value).append('\n');
                     }
@@ -86,7 +85,7 @@ final class SettingsCollector extends Collector{
     }
 
     /**
-     * Collect data from {@link android.provider.Settings.Secure}. This
+     * Collect data from {@link Secure}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      *
@@ -95,11 +94,11 @@ final class SettingsCollector extends Collector{
     @NonNull
     private String collectSecureSettings() {
         final StringBuilder result = new StringBuilder();
-        final Field[] keys = Settings.Secure.class.getFields();
+        final Field[] keys = Secure.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                 try {
-                    final Object value = Settings.Secure.getString(context.getContentResolver(), (String) key.get(null));
+                    final Object value = Secure.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append('=').append(value).append('\n');
                     }
@@ -115,7 +114,7 @@ final class SettingsCollector extends Collector{
     }
 
     /**
-     * Collect data from {@link android.provider.Settings.Global}. This
+     * Collect data from {@link Global}. This
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      *
@@ -128,11 +127,11 @@ final class SettingsCollector extends Collector{
         }
 
         final StringBuilder result = new StringBuilder();
-        final Field[] keys = Settings.Global.class.getFields();
+        final Field[] keys = Global.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                 try {
-                    final Object value = Settings.Global.getString(context.getContentResolver(), (String) key.get(null));
+                    final Object value = Global.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.append(key.getName()).append('=').append(value).append('\n');
                     }
@@ -153,8 +152,8 @@ final class SettingsCollector extends Collector{
             return false;
         }
         for (String regex : config.excludeMatchingSettingsKeys()) {
-            if(key.getName().matches(regex)) {
-               return false;
+            if (key.getName().matches(regex)) {
+                return false;
             }
         }
         return true;
@@ -163,7 +162,7 @@ final class SettingsCollector extends Collector{
     @NonNull
     @Override
     String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        switch (reportField){
+        switch (reportField) {
             case SETTINGS_SYSTEM:
                 return collectSystemSettings();
             case SETTINGS_SECURE:
@@ -171,7 +170,7 @@ final class SettingsCollector extends Collector{
             case SETTINGS_GLOBAL:
                 return collectGlobalSettings();
             default:
-                //will never happen
+                //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
     }

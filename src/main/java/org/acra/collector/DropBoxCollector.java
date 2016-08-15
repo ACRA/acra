@@ -22,6 +22,7 @@ import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
@@ -64,7 +65,6 @@ final class DropBoxCollector extends Collector {
             "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
             "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
-    private static final String NO_RESULT = "N/A";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used to prevent logic changes). Why use this bad readable format?
 
     /**
@@ -125,7 +125,7 @@ final class DropBoxCollector extends Collector {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");
         }
 
-        return NO_RESULT;
+        return ACRAConstants.NOT_AVAILABLE;
     }
 
     @Override
