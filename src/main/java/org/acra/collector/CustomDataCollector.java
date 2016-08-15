@@ -29,10 +29,10 @@ import java.util.Map;
  *
  * @author F43nd1r
  */
-class CustomDataColletor extends Collector {
+class CustomDataCollector extends Collector {
     private final Map<String, String> customParameters;
 
-    CustomDataColletor(Map<String, String> customParameters){
+    CustomDataCollector(Map<String, String> customParameters){
         super(ReportField.CUSTOM_DATA);
         this.customParameters = customParameters;
     }

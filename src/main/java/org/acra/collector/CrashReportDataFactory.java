@@ -159,7 +159,7 @@ public final class CrashReportDataFactory {
         collectors.add(new MemoryInfoCollector());
         collectors.add(new ReflectionCollector(context, config));
         collectors.add(new DisplayManagerCollector(context));
-        collectors.add(new CustomDataColletor(customParameters));
+        collectors.add(new CustomDataCollector(customParameters));
         collectors.add(new SharedPreferencesCollector(context, config, prefs));
         collectors.add(new DeviceFeaturesCollector(context));
         collectors.add(new SettingsCollector(context, config));
