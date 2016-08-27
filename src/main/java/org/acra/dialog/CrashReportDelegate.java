@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2016
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra.dialog;
 
 import android.content.Context;
@@ -25,18 +40,19 @@ import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_EMAIL;
 
 /**
- * Created on 03.08.2016.
+ * Does all the work for dialog implementations
  *
  * @author F43nd1r
+ * @since 4.9.1
  */
-public class CrashReportDelegate implements ICrashReportDialog {
+class CrashReportDelegate implements ICrashReportDialog {
 
     private final Context context;
     private File reportFile;
     private ACRAConfiguration config;
     private Throwable exception;
 
-    public CrashReportDelegate(Context context) {
+    CrashReportDelegate(Context context) {
         this.context = context;
     }
 
@@ -46,7 +62,7 @@ public class CrashReportDelegate implements ICrashReportDialog {
      * @param intent Intent which started the dialog
      * @return if the activity should continue
      */
-    public final boolean loadFromIntent(@NonNull Intent intent) {
+    final boolean loadFromIntent(@NonNull Intent intent) {
 
 
         if (ACRA.DEV_LOGGING) {

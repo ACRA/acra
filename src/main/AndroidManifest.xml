@@ -41,7 +41,7 @@
     <application>
         <!--suppress AndroidDomInspection -->
         <activity
-            android:name="org.acra.CrashReportDialogImpl"
+            android:name="org.acra.dialog.CrashReportDialogImpl"
             android:theme="@android:style/Theme.Dialog"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"

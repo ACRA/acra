@@ -40,7 +40,7 @@ public abstract class BaseCrashReportDialog extends Activity implements ICrashRe
      *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
     @Override
-    protected final void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (delegate.loadFromIntent(getIntent())) {
             init(savedInstanceState);
