@@ -1,6 +1,5 @@
 package org.acra.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -27,7 +26,7 @@ import org.acra.prefs.SharedPreferencesFactory;
  * AndroidManifest to work properly.
  **/
 @SuppressWarnings({"WeakerAccess", "unused"})
-public abstract class CrashReportDialog extends Activity implements DialogInterface.OnClickListener, ICrashReportDialog {
+public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener {
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";

@@ -48,6 +48,14 @@
             android:finishOnTaskLaunch="true"
             android:process=":acra"/>
 
+        <activity
+            android:name="org.acra.dialog.CrashReportDialog"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:process=":acra"/>
+
         <service
             android:name="org.acra.sender.SenderService"
             android:exported="false"

@@ -10,7 +10,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @deprecated since 4.8.0 use {@link org.acra.dialog.CrashReportDialog} instead
  **/
-public abstract class CrashReportDialog extends org.acra.dialog.CrashReportDialog {
+public final class CrashReportDialog extends org.acra.dialog.CrashReportDialog {
 
     @Override
     protected void buildAndShowDialog(Bundle savedInstanceState){

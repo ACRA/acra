@@ -1,5 +1,6 @@
 package org.acra.dialog;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -11,7 +12,13 @@ import org.acra.config.ACRAConfiguration;
  * @author F43nd1r
  */
 public interface ICrashReportDialog {
-
+    /**
+     * Responsible for creating and showing the crash report dialog.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in {@link Activity#onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     void init(@Nullable Bundle savedInstanceState);
 
     /**

@@ -15,6 +15,7 @@
  */
 package org.acra.config;
 
+import android.app.Activity;
 import android.app.Application;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -451,7 +452,7 @@ public final class ConfigurationBuilder {
     }
 
     @NonNull
-    public ConfigurationBuilder setReportDialogClass(@NonNull Class<? extends ICrashReportDialog> reportDialogClass) {
+    public <T extends Activity & ICrashReportDialog> ConfigurationBuilder setReportDialogClass(@NonNull Class<T> reportDialogClass) {
         this.reportDialogClass = reportDialogClass;
         return this;
     }

@@ -73,14 +73,16 @@ public class CrashReportDelegate implements ICrashReportDialog {
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
         //no-op
     }
 
     /**
-     * Cancel any pending crash reports.
+     * {@inheritDoc}
      */
     @Override
     public final void cancelReports() {
@@ -89,10 +91,7 @@ public class CrashReportDelegate implements ICrashReportDialog {
 
 
     /**
-     * Send crash report given user's comment and email address. If none should be empty strings
-     *
-     * @param comment   Comment (may be null) provided by the user.
-     * @param userEmail Email address (may be null) provided by the client.
+     * {@inheritDoc}
      */
     @Override
     public final void sendCrash(@Nullable String comment, @Nullable String userEmail) {
