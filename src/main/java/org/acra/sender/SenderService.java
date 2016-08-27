@@ -13,6 +13,7 @@ import org.acra.file.ReportLocator;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -21,7 +22,6 @@ public class SenderService extends IntentService {
 
     public static final String EXTRA_ONLY_SEND_SILENT_REPORTS = "onlySendSilentReports";
     public static final String EXTRA_APPROVE_REPORTS_FIRST = "approveReportsFirst";
-    public static final String EXTRA_REPORT_SENDER_FACTORIES = "reportSenderFactories";
     public static final String EXTRA_ACRA_CONFIG = "acraConfig";
 
     private final ReportLocator locator = new ReportLocator(this);
@@ -40,10 +40,9 @@ public class SenderService extends IntentService {
         final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
         final boolean approveReportsFirst = intent.getBooleanExtra(EXTRA_APPROVE_REPORTS_FIRST, false);
 
-        //noinspection unchecked
-        final List<Class<? extends ReportSenderFactory>> senderFactoryClasses = (List<Class<? extends ReportSenderFactory>>) intent.getSerializableExtra(EXTRA_REPORT_SENDER_FACTORIES);
-
         final ACRAConfiguration config = (ACRAConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
+
+        final Collection<Class<? extends ReportSenderFactory>> senderFactoryClasses = config.reportSenderFactoryClasses();
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
@@ -82,7 +81,7 @@ public class SenderService extends IntentService {
     }
 
     @NonNull
-    private List<ReportSender> getSenderInstances(@NonNull ACRAConfiguration config, @NonNull List<Class<? extends ReportSenderFactory>> factoryClasses) {
+    private List<ReportSender> getSenderInstances(@NonNull ACRAConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
         final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
         for (final Class<? extends ReportSenderFactory> factoryClass : factoryClasses) {
             try {
