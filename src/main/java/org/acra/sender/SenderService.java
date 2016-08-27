@@ -34,6 +34,7 @@ public class SenderService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
         if (intent == null || !intent.hasExtra(EXTRA_ACRA_CONFIG)) {
+            if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SenderService was started but no valid intent was delivered, will now quit");
             return;
         }
 

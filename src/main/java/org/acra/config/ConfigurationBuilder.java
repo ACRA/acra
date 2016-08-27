@@ -223,6 +223,10 @@ public final class ConfigurationBuilder {
                 break;
         }
 
+        if(reportSenderFactoryClasses().length == 0){
+            throw new ACRAConfigurationException("Report sender factories: using no report senders will make ACRA useless. Configure at least one ReportSenderFactory.");
+        }
+
         return new ACRAConfiguration(this);
     }
 
