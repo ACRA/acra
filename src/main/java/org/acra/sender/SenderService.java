@@ -3,6 +3,7 @@ package org.acra.sender;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -27,10 +28,14 @@ public class SenderService extends IntentService {
 
     public SenderService() {
         super("ACRA SenderService");
+        setIntentRedelivery(true);
     }
 
     @Override
-    protected void onHandleIntent(@NonNull final Intent intent) {
+    protected void onHandleIntent(@Nullable final Intent intent) {
+        if (intent == null || !intent.hasExtra(EXTRA_ACRA_CONFIG)) {
+            return;
+        }
 
         final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
         final boolean approveReportsFirst = intent.getBooleanExtra(EXTRA_APPROVE_REPORTS_FIRST, false);
