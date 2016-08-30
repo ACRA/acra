@@ -24,12 +24,10 @@ import com.android.internal.util.Predicate;
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
-import org.acra.collections.BoundedLinkedList;
 import org.acra.util.IOUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -63,10 +61,7 @@ class LogCatCollector {
      */
     public String collectLogCat(@NonNull ACRAConfiguration config, @Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
-        String myPidStr = null;
-        if (config.logcatFilterByPid() && myPid > 0) {
-            myPidStr = Integer.toString(myPid) +"):";
-        }
+        final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
         final List<String> commandLine = new ArrayList<String>();
         commandLine.add("logcat");
@@ -92,8 +87,7 @@ class LogCatCollector {
             tailCount = -1;
         }
 
-        final LinkedList<String> logcatBuf = new BoundedLinkedList<String>(tailCount > 0 ? tailCount
-                : DEFAULT_TAIL_COUNT);
+        String logcat = "N/A";
         commandLine.addAll(logcatArgumentsList);
 
         try {
@@ -112,18 +106,17 @@ class LogCatCollector {
                 }
             }).start();
 
-            final String finalMyPidStr = myPidStr;
-            logcatBuf.add(IOUtils.streamToString(process.getInputStream(), new Predicate<String>() {
+            logcat = IOUtils.streamToString(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
-                    return finalMyPidStr == null || s.contains(finalMyPidStr);
+                    return myPidStr == null || s.contains(myPidStr);
                 }
-            }));
+            }, tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
         }
 
-        return logcatBuf.toString();
+        return logcat;
     }
 }
