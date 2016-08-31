@@ -31,6 +31,7 @@ import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.file.Directory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
 import org.acra.sender.DefaultReportSenderFactory;
@@ -108,6 +109,7 @@ public final class ConfigurationBuilder {
     private Class buildConfigClass;
     private String applicationLogFile;
     private Integer applicationLogFileLines;
+    private Directory applicationLogFileDir;
 
     private Method httpMethod;
     private Type reportType;
@@ -173,6 +175,7 @@ public final class ConfigurationBuilder {
             buildConfigClass = annotationConfig.buildConfigClass();
             applicationLogFile = annotationConfig.applicationLogFile();
             applicationLogFileLines = annotationConfig.applicationLogFileLines();
+            applicationLogFileDir = annotationConfig.applicationLogFileDir();
             reportDialogClass = annotationConfig.reportDialogClass();
             reportPrimerClass = annotationConfig.reportPrimerClass();
             httpMethod = annotationConfig.httpMethod();
@@ -723,6 +726,18 @@ public final class ConfigurationBuilder {
     }
 
     /**
+     * @param directory The directory in which the application log file will be searched,
+     *                                to be used with {@link ReportField#APPLICATION_LOG} and
+     *                                {@link ReportsCrashes#applicationLogFile()}
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setApplicationLogFileDir(@NonNull Directory directory){
+        this.applicationLogFileDir = directory;
+        return this;
+    }
+
+    /**
      * @param httpMethod The method to be used to send data to the server.
      * @return this instance
      */
@@ -1134,6 +1149,14 @@ public final class ConfigurationBuilder {
             return applicationLogFileLines;
         }
         return DEFAULT_APPLICATION_LOGFILE_LINES;
+    }
+
+    @NonNull
+    Directory applicationLogFileDir() {
+        if(applicationLogFileDir != null){
+            return applicationLogFileDir;
+        }
+        return Directory.FILES_LEGACY;
     }
 
     @NonNull

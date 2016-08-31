@@ -27,6 +27,7 @@ import org.acra.ReportingInteractionMode;
 import org.acra.builder.ReportPrimer;
 import org.acra.collections.ImmutableList;
 import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.file.Directory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -101,6 +102,7 @@ public final class ACRAConfiguration implements Serializable {
     private final Class buildConfigClass;
     private final String applicationLogFile;
     private final int applicationLogFileLines;
+    private final Directory applicationLogFileDir;
 
     private final Method httpMethod;
     private final Type reportType;
@@ -156,6 +158,7 @@ public final class ACRAConfiguration implements Serializable {
         buildConfigClass = builder.buildConfigClass();
         applicationLogFile = builder.applicationLogFile();
         applicationLogFileLines = builder.applicationLogFileLines();
+        applicationLogFileDir = builder.applicationLogFileDir();
         reportDialogClass = builder.reportDialogClass();
         reportPrimerClass = builder.reportPrimerClass();
         httpMethod = builder.httpMethod();
@@ -372,6 +375,11 @@ public final class ACRAConfiguration implements Serializable {
 
     public int applicationLogFileLines() {
         return applicationLogFileLines;
+    }
+
+    @NonNull
+    public Directory applicationLogFileDir() {
+        return applicationLogFileDir;
     }
 
     @NonNull

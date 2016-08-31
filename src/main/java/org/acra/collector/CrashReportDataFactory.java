@@ -500,7 +500,7 @@ public final class CrashReportDataFactory {
             // Application specific log file
             if (crashReportFields.contains(APPLICATION_LOG)) {
                 try {
-                    final String logFile = new LogFileCollector().collectLogFile(context, config.applicationLogFile(), config.applicationLogFileLines());
+                    final String logFile = new LogFileCollector().collectLogFile(context, config.applicationLogFileDir(), config.applicationLogFile(), config.applicationLogFileLines());
                     crashReportData.put(APPLICATION_LOG, logFile);
                 } catch (IOException e) {
                     ACRA.log.e(LOG_TAG, "Error while reading application log file " + config.applicationLogFile(), e);
