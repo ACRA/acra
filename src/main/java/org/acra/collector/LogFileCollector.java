@@ -18,9 +18,12 @@ package org.acra.collector;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.file.Directory;
 import org.acra.util.IOUtils;
 
 import java.io.*;
@@ -49,28 +52,59 @@ class LogFileCollector {
      * @throws IOException
      */
     @NonNull
-    public String collectLogFile(@NonNull Context context, @NonNull String fileName, int numberOfLines) throws IOException {
-        return IOUtils.streamToString(getStream(context, fileName), numberOfLines);
+    public String collectLogFile(@NonNull Context context, @NonNull Directory directory, @NonNull String fileName, int numberOfLines) throws IOException {
+        return IOUtils.streamToString(getStream(context, directory, fileName), numberOfLines);
     }
 
     @NonNull
-    private static InputStream getStream(@NonNull Context context, @NonNull String fileName) {
-        try {
-            final FileInputStream inputStream;
-            if (fileName.startsWith("/")) {
-                // Absolute path
-                inputStream = new FileInputStream(fileName);
-            } else if (fileName.contains("/")) {
-                // Relative path from the application files folder (ie a sub folder)
-                inputStream = new FileInputStream(new File(context.getFilesDir(), fileName));
-            } else {
-                // A file directly contained within the application files folder.
-                inputStream = context.openFileInput(fileName);
-            }
-            return inputStream;
-        } catch (FileNotFoundException e) {
-            ACRA.log.e(LOG_TAG, "Cannot find application log file : '" + fileName + '\'');
-            return new ByteArrayInputStream(new byte[0]);
+    private static InputStream getStream(@NonNull Context context, @NonNull Directory directory, @NonNull String fileName) {
+        if (directory == Directory.FILES_LEGACY) {
+            directory = fileName.startsWith("/") ? Directory.ROOT : Directory.FILES;
         }
+        final File dir;
+        switch (directory) {
+            case FILES:
+                dir = context.getFilesDir();
+                break;
+            case EXTERNAL_FILES:
+                dir = context.getExternalFilesDir(null);
+                break;
+            case CACHE:
+                dir = context.getCacheDir();
+                break;
+            case EXTERNAL_CACHE:
+                dir = context.getExternalCacheDir();
+                break;
+            case NO_BACKUP_FILES:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    dir = context.getNoBackupFilesDir();
+                } else {
+                    dir = context.getFilesDir();
+                }
+                break;
+            case EXTERNAL_STORAGE:
+                dir = Environment.getExternalStorageDirectory();
+                break;
+            case ROOT:
+            default:
+                dir = new File("/");
+                break;
+        }
+        final File file = new File(dir, fileName);
+        if (!file.exists()) {
+            if (ACRA.DEV_LOGGING)
+                ACRA.log.d(LOG_TAG, "Log file '" + file.getPath() + "' does not exist");
+        } else if (file.isDirectory()) {
+            ACRA.log.e(LOG_TAG, "Log file '" + file.getPath() + "' is a directory");
+        } else if (!file.canRead()) {
+            ACRA.log.e(LOG_TAG, "Log file '" + file.getPath() + "' can't be read");
+        } else {
+            try {
+                return new FileInputStream(file);
+            } catch (IOException e) {
+                ACRA.log.e(LOG_TAG, "Could not open stream for log file '" + file.getPath() + "'");
+            }
+        }
+        return new ByteArrayInputStream(new byte[0]);
     }
 }

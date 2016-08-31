@@ -34,6 +34,7 @@ import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.file.Directory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
 import org.acra.sender.DefaultReportSenderFactory;
@@ -552,6 +553,14 @@ public @interface ReportsCrashes {
      * @return number of lines to collect.
      */
     int applicationLogFileLines() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
+
+    /**
+     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the root
+     * for the path provided in {@link #applicationLogFile()}
+     *
+     * @return the directory of the application log file
+     */
+    @NonNull Directory applicationLogFileDir() default Directory.FILES_LEGACY;
 
     /**
      * @return Class for the CrashReportDialog used when prompting the user for crash details.
