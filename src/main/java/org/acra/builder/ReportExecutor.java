@@ -167,20 +167,6 @@ public final class ReportExecutor {
             // We will wait a few seconds at the end of the method to be sure
             // that the Toast can be read by the user.
         }
-        //we cannot kill the process if a debugger is connected, as this would kill the whole application
-        if (Debug.isDebuggerConnected() && reportBuilder.isEndApplication()) {
-            final String warning = "Warning: Acra may behave differently with a debugger attached";
-            new Thread() {
-                @Override
-                public void run() {
-                    Looper.prepare();
-                    Toast.makeText(context, warning, Toast.LENGTH_LONG).show();
-                    sentToastTimeMillis.setInitialTimeMillis(System.currentTimeMillis());
-                    Looper.loop();
-                }
-            }.start();
-            ACRA.log.w(LOG_TAG, warning);
-        }
 
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder);
 
@@ -251,7 +237,23 @@ public final class ReportExecutor {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
         if (reportBuilder.isEndApplication()) {
-            endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
+            if(Debug.isDebuggerConnected()){
+                //Killing a process with a debugger attached would kill the whole application, so don't do that.
+                final String warning = "Warning: Acra may behave differently with a debugger attached";
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        Toast.makeText(context, warning, Toast.LENGTH_LONG).show();
+                        Looper.loop();
+                    }
+                }.start();
+                ACRA.log.w(LOG_TAG, warning);
+                //do as much cleanup as we can without killing the process
+                finishLastActivity(reportBuilder.getUncaughtExceptionThread());
+            }else {
+                endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
+            }
         }
     }
 
@@ -262,41 +264,41 @@ public final class ReportExecutor {
         final boolean letDefaultHandlerEndApplication = config.alsoReportToAndroidFramework();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
-        //defaultExceptionHandler kills the application, so don't do this if a debugger is connected
-        if (!Debug.isDebuggerConnected() && handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {
+        if (handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {
             // Let the system default handler do it's job and display the force close dialog.
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
         } else {
+            finishLastActivity(uncaughtExceptionThread);
             // If ACRA handles user notifications with a Toast or a Notification
             // the Force Close dialog is one more notification to the user...
             // We choose to close the process ourselves using the same actions.
 
-            // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
-            // Determine the current/last Activity that was started and close
-            // it. Activity#finish (and maybe it's parent too).
-            final Activity lastActivity = lastActivityManager.getLastActivity();
-            if (lastActivity != null) {
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
-                lastActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        lastActivity.finish();
-                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
-                    }
-                });
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(10);
+        }
+    }
 
-                // A crashed activity won't continue its lifecycle. So we only wait if something else crashed
-                if (uncaughtExceptionThread != lastActivity.getMainLooper().getThread()) {
-                    lastActivityManager.waitForActivityStop(100);
+    private void finishLastActivity(Thread uncaughtExceptionThread){
+        // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
+        // Determine the current/last Activity that was started and close
+        // it. Activity#finish (and maybe it's parent too).
+        final Activity lastActivity = lastActivityManager.getLastActivity();
+        if (lastActivity != null) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
+            lastActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    lastActivity.finish();
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
                 }
-                lastActivityManager.clearLastActivity();
+            });
+
+            // A crashed activity won't continue its lifecycle. So we only wait if something else crashed
+            if (uncaughtExceptionThread != lastActivity.getMainLooper().getThread()) {
+                lastActivityManager.waitForActivityStop(100);
             }
-            //prevent process kill if a debugger is attached, as this would kill the whole application
-            if (!Debug.isDebuggerConnected()) {
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(10);
-            }
+            lastActivityManager.clearLastActivity();
         }
     }
 
