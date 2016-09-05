@@ -19,7 +19,7 @@
 			<directory>${project.build.directory}</directory>
 			<outputDirectory>build</outputDirectory>
 			<includes>
-				<include>${project.build.finalName}.jar</include>
+				<include>${project.build.finalName}.aar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
