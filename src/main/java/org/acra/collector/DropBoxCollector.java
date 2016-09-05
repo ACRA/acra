@@ -15,12 +15,18 @@
  */
 package org.acra.collector;
 
+import android.Manifest;
 import android.content.Context;
+import android.os.Build;
 import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.util.PackageManagerWrapper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,26 +47,35 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin
  */
-final class DropBoxCollector {
+final class DropBoxCollector extends Collector {
+
+    private final Context context;
+    private final ACRAConfiguration config;
+    private final PackageManagerWrapper pm;
+
+    DropBoxCollector(Context context, ACRAConfiguration config, PackageManagerWrapper pm){
+        super(ReportField.DROPBOX);
+        this.context = context;
+        this.config = config;
+        this.pm = pm;
+    }
 
     private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
             "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
             "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
-    private static final String NO_RESULT = "N/A";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used to prevent logic changes). Why use this bad readable format?
 
     /**
      * Read latest messages contained in the DropBox for system related tags and
      * optional developer-set tags.
      *
-     * @param context The application context.
-     * @param config  AcraConfig describe what to collect.
      * @return A readable formatted String listing messages retrieved.
      */
     @NonNull
-    public String read(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    @Override
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
             final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
@@ -110,6 +125,11 @@ final class DropBoxCollector {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");
         }
 
-        return NO_RESULT;
+        return ACRAConstants.NOT_AVAILABLE;
+    }
+
+    @Override
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+        return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }
 }

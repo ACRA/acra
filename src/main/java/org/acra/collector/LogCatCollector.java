@@ -15,6 +15,7 @@
  */
 package org.acra.collector;
 
+import android.Manifest;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,44 +23,54 @@ import android.support.annotation.Nullable;
 import com.android.internal.util.Predicate;
 
 import org.acra.ACRA;
+import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.IOUtils;
+import org.acra.util.PackageManagerWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
 
 /**
  * Executes logcat commands and collects it's output.
- * 
+ *
  * @author Kevin Gaudin
- * 
  */
-class LogCatCollector {
-
+final class LogCatCollector extends Collector {
     /**
      * Default number of latest lines kept from the logcat output.
      */
     private static final int DEFAULT_TAIL_COUNT = 100;
 
+    private final ACRAConfiguration config;
+    private final PackageManagerWrapper pm;
+
+    LogCatCollector(ACRAConfiguration config, PackageManagerWrapper pm) {
+        super(ReportField.LOGCAT, ReportField.EVENTSLOG, ReportField.RADIOLOG);
+        this.config = config;
+        this.pm = pm;
+    }
+
     /**
      * Executes the logcat command with arguments taken from
      * {@link ReportsCrashes#logcatArguments()}
      *
-     * @param config        AcraConfig to use when collecting logcat.
-     * @param bufferName    The name of the buffer to be read: "main" (default), "radio" or "events".
+     * @param bufferName The name of the buffer to be read: "main" (default), "radio" or "events".
      * @return A {@link String} containing the latest lines of the output.
-     *         Default is 100 lines, use "-t", "300" in
-     *         {@link ReportsCrashes#logcatArguments()} if you want 300 lines.
-     *         You should be aware that increasing this value causes a longer
-     *         report generation time and a bigger footprint on the device data
-     *         plan consumption.
+     * Default is 100 lines, use "-t", "300" in
+     * {@link ReportsCrashes#logcatArguments()} if you want 300 lines.
+     * You should be aware that increasing this value causes a longer
+     * report generation time and a bigger footprint on the device data
+     * plan consumption.
      */
-    public String collectLogCat(@NonNull ACRAConfiguration config, @Nullable String bufferName) {
+    private String collectLogCat(@Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
         final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
@@ -118,5 +129,28 @@ class LogCatCollector {
         }
 
         return logcat;
+    }
+
+    @Override
+    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
+        return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+    }
+
+    @NonNull
+    @Override
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        String bufferName = null;
+        switch (reportField) {
+            case LOGCAT:
+                bufferName = null;
+                break;
+            case EVENTSLOG:
+                bufferName = "events";
+                break;
+            case RADIOLOG:
+                bufferName = "radio";
+                break;
+        }
+        return collectLogCat(bufferName);
     }
 }

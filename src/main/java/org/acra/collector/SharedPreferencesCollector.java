@@ -21,7 +21,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
+import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 
 import java.util.Map;
@@ -34,14 +37,17 @@ import static org.acra.ACRA.LOG_TAG;
  * application default preferences or any other preferences asked by the
  * application developer.
  */
-final class SharedPreferencesCollector {
+final class SharedPreferencesCollector extends Collector {
 
     private final Context context;
     private final ACRAConfiguration config;
+    private final SharedPreferences prefs;
 
-    SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config, SharedPreferences prefs) {
+        super(ReportField.USER_EMAIL, ReportField.SHARED_PREFERENCES);
         this.context = context;
         this.config = config;
+        this.prefs = prefs;
     }
 
     /**
@@ -54,7 +60,7 @@ final class SharedPreferencesCollector {
      * @return A readable formatted String containing all key/value pairs.
      */
     @NonNull
-    public String collect() {
+    private String collect() {
         final StringBuilder result = new StringBuilder();
 
         // Include the default SharedPreferences
@@ -82,7 +88,8 @@ final class SharedPreferencesCollector {
             // Add all non-filtered preferences from that preference file.
             for (final Map.Entry<String, ?> prefEntry : prefEntries.entrySet()) {
                 if (filteredKey(prefEntry.getKey())) {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + prefEntry.getKey() + " due to filtering rule");
+                    if (ACRA.DEV_LOGGING)
+                        ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + prefEntry.getKey() + " due to filtering rule");
                 } else {
                     final Object prefValue = prefEntry.getValue();
                     result.append(sharedPrefId).append('.').append(prefEntry.getKey()).append('=');
@@ -110,5 +117,19 @@ final class SharedPreferencesCollector {
             }
         }
         return false;
+    }
+
+    @NonNull
+    @Override
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        switch (reportField) {
+            case USER_EMAIL:
+                return prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ACRAConstants.NOT_AVAILABLE);
+            case SHARED_PREFERENCES:
+                return collect();
+            default:
+                //will not happen if used correctly
+                throw new IllegalArgumentException();
+        }
     }
 }

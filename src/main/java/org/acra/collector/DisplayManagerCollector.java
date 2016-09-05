@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2016
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra.collector;
 
 import android.content.Context;
@@ -12,28 +27,40 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
+
 import java.lang.reflect.Field;
 
-final class DisplayManagerCollector {
-    private DisplayManagerCollector(){}
+/**
+ * Collects information about the connected display(s)
+ */
+final class DisplayManagerCollector extends Collector {
+    private final Context context;
+    private final SparseArray<String> flagNames = new SparseArray<String>();
 
-    private static final SparseArray<String> mFlagsNames = new SparseArray<String>();
+    DisplayManagerCollector(Context context) {
+        super(ReportField.DISPLAY);
+        this.context = context;
+    }
+
 
     @NonNull
-    public static String collectDisplays(@NonNull Context ctx) {
+    @Override
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
         final Display[] displays;
         final StringBuilder result = new StringBuilder();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             // Before Android 4.2, there was a single display available from the
             // window manager
-            final WindowManager windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+            final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             displays = new Display[1];
             displays[0] = windowManager.getDefaultDisplay();
         } else {
             // Since Android 4.2, we can fetch multiple displays with the
             // DisplayManager.
-            final DisplayManager displayManager = (DisplayManager) ctx.getSystemService(Context.DISPLAY_SERVICE);
+            final DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
             displays = displayManager.getDisplays();
         }
 
@@ -45,7 +72,7 @@ final class DisplayManagerCollector {
     }
 
     @NonNull
-    private static Object collectDisplayData(@NonNull Display display) {
+    private Object collectDisplayData(@NonNull Display display) {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
@@ -141,18 +168,18 @@ final class DisplayManagerCollector {
     }
 
     @NonNull
-    private static String collectFlags(@NonNull Display display) {
+    private String collectFlags(@NonNull Display display) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
                 if (field.getName().startsWith("FLAG_")) {
                     try {
-                        mFlagsNames.put(field.getInt(null), field.getName());
+                        flagNames.put(field.getInt(null), field.getName());
                     } catch (IllegalAccessException ignored) {
                     }
                 }
             }
-            return display.getDisplayId() + ".flags=" + activeFlags(mFlagsNames, flags) + '\n';
+            return display.getDisplayId() + ".flags=" + activeFlags(flags) + '\n';
         }
         return "";
     }
@@ -198,25 +225,23 @@ final class DisplayManagerCollector {
      * applying a bitmask. That method returns the concatenation of active
      * values.
      *
-     * @param valueNames The array containing the different values and names for this
-     *                   field. Must contain mask values too.
      * @param bitfield   The bitfield to inspect.
      * @return The names of the different values contained in the bitfield,
      * separated by '+'.
      */
     @NonNull
-    private static String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
+    private String activeFlags(int bitfield) {
         final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value
-        for (int i = 0; i < valueNames.size(); i++) {
-            final int maskValue = valueNames.keyAt(i);
+        for (int i = 0; i < flagNames.size(); i++) {
+            final int maskValue = flagNames.keyAt(i);
             final int value = bitfield & maskValue;
             if (value > 0) {
                 if (result.length() > 0) {
                     result.append('+');
                 }
-                result.append(valueNames.get(value));
+                result.append(flagNames.get(value));
             }
         }
         return result.toString();
