@@ -17,26 +17,29 @@
 package org.acra.collector;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import org.acra.ReportField;
+import org.acra.builder.ReportBuilder;
 
 /**
- * Collects some data identifying a Thread, usually the Thread which crashed.
- * 
+ * Collects some data identifying a Thread
+ *
  * @author Kevin Gaudin
- * 
  */
-final class ThreadCollector {
-    private ThreadCollector(){}
+final class ThreadCollector extends Collector {
+    ThreadCollector() {
+        super(ReportField.THREAD_DETAILS);
+    }
 
     /**
-     * Convenience method that collects some data identifying a Thread, usually the Thread which
-     * crashed and returns a string containing the thread's id, name, priority and group name.
-     * 
-     * @param t the thread
-     * @return a string representation of the string including the id, name and priority of the thread.
+     * collects some data identifying the crashed thread
+     *
+     * @return a string representation of the information including the id, name and priority of the thread.
      */
     @NonNull
-    public static String collect(@Nullable Thread t) {
+    @Override
+    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+        Thread t = reportBuilder.getUncaughtExceptionThread();
         final StringBuilder result = new StringBuilder();
         if (t != null) {
             result.append("id=").append(t.getId()).append('\n');

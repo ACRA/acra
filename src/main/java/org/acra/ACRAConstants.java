@@ -159,4 +159,6 @@ public final class ACRAConstants {
     public static final String DATE_TIME_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
 
     public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
+
+    public static final String NOT_AVAILABLE = "N/A";
 }
