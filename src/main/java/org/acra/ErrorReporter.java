@@ -304,7 +304,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * This method looks for pending reports and does the action required depending on the interaction mode set.
      *
-     * @deprecated since 4.8.0 No replacement. Whether to send report on app start is controlled by {@link ACRA#init(Application, ACRAConfiguration, boolean)}.
+     * There is no need to call this method as ACRA will by default check for errors on report start.
+     *
+     * Whether ACRA checks for reports on app start is controlled by {@link ACRA#init(Application, ACRAConfiguration, boolean)},
+     * but the default is that it will.
+     *
+     * @deprecated since 4.8.0 No replacement.
      */
     @SuppressWarnings( " unused" )
     public void checkReportsOnApplicationStart() {
