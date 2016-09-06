@@ -1,8 +1,8 @@
 package org.acra.dialog;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import org.acra.ACRA;
@@ -39,7 +39,7 @@ import static org.acra.ReportField.USER_EMAIL;
  * </ol>
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public abstract class BaseCrashReportDialog extends Activity {
+public abstract class BaseCrashReportDialog extends FragmentActivity {
 
     private File reportFile;
     private ACRAConfiguration config;
