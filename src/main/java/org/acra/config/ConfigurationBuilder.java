@@ -41,6 +41,7 @@ import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -197,6 +198,7 @@ public final class ConfigurationBuilder {
      * You can pass this {@link ConfigurationBuilder} to {@link ACRA#init(Application, ConfigurationBuilder)} and
      * {@link ACRA#init(Application, ConfigurationBuilder)} will handle any Exception.
      * </p>
+     *
      * @return new ACRAConfiguration containing all the properties configured on this builder.
      * @throws ACRAConfigurationException if the required values for the configured notification mode have not been provided.
      */
@@ -226,11 +228,28 @@ public final class ConfigurationBuilder {
                 break;
         }
 
-        if(reportSenderFactoryClasses().length == 0){
+        if (reportSenderFactoryClasses().length == 0) {
             throw new ACRAConfigurationException("Report sender factories: using no report senders will make ACRA useless. Configure at least one ReportSenderFactory.");
         }
+        checkValidity((Class[]) reportSenderFactoryClasses());
+        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass(), buildConfigClass());
 
         return new ACRAConfiguration(this);
+    }
+
+    private void checkValidity(Class<?>... classes) throws ACRAConfigurationException {
+        for(Class<?> clazz : classes) {
+            if (clazz.isInterface()) {
+                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName()+".");
+            } else if (Modifier.isAbstract(clazz.getModifiers())) {
+                throw new ACRAConfigurationException("Class " + clazz.getName() + " cannot be abstract.");
+            }
+            try {
+                clazz.getConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new ACRAConfigurationException("Class "+clazz.getName()+ " is missing a no-args Constructor.", e);
+            }
+        }
     }
 
     /**
@@ -731,12 +750,12 @@ public final class ConfigurationBuilder {
 
     /**
      * @param directory The directory in which the application log file will be searched,
-     *                                to be used with {@link ReportField#APPLICATION_LOG} and
-     *                                {@link ReportsCrashes#applicationLogFile()}
+     *                  to be used with {@link ReportField#APPLICATION_LOG} and
+     *                  {@link ReportsCrashes#applicationLogFile()}
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setApplicationLogFileDir(@NonNull Directory directory){
+    public ConfigurationBuilder setApplicationLogFileDir(@NonNull Directory directory) {
         this.applicationLogFileDir = directory;
         return this;
     }
@@ -767,7 +786,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setKeyStoreFactoryClass(Class<?extends KeyStoreFactory> keyStoreFactoryClass) {
+    public ConfigurationBuilder setKeyStoreFactoryClass(Class<? extends KeyStoreFactory> keyStoreFactoryClass) {
         this.keyStoreFactoryClass = keyStoreFactoryClass;
         return this;
     }
@@ -777,7 +796,7 @@ public final class ConfigurationBuilder {
      * @return this instance
      */
     @NonNull
-    public ConfigurationBuilder setCertificate(@RawRes int resCertificate){
+    public ConfigurationBuilder setCertificate(@RawRes int resCertificate) {
         this.resCertificate = resCertificate;
         return this;
     }
@@ -1134,7 +1153,7 @@ public final class ConfigurationBuilder {
      */
     @NonNull
     Class buildConfigClass() {
-        if(buildConfigClass != null) {
+        if (buildConfigClass != null) {
             return buildConfigClass;
         }
         return Object.class;
@@ -1157,7 +1176,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     Directory applicationLogFileDir() {
-        if(applicationLogFileDir != null){
+        if (applicationLogFileDir != null) {
             return applicationLogFileDir;
         }
         return Directory.FILES_LEGACY;
@@ -1206,7 +1225,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
-        if(keyStoreFactoryClass != null) {
+        if (keyStoreFactoryClass != null) {
             return keyStoreFactoryClass;
         }
         return NoKeyStoreFactory.class;
@@ -1214,7 +1233,7 @@ public final class ConfigurationBuilder {
 
     @RawRes
     int resCertificate() {
-        if(resCertificate != null){
+        if (resCertificate != null) {
             return resCertificate;
         }
         return DEFAULT_RES_VALUE;
@@ -1222,7 +1241,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     String certificatePath() {
-        if(certificatePath != null){
+        if (certificatePath != null) {
             return certificatePath;
         }
         return DEFAULT_STRING_VALUE;
@@ -1230,7 +1249,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     String certificateType() {
-        if(certificateType != null){
+        if (certificateType != null) {
             return certificateType;
         }
         return DEFAULT_CERTIFICATE_TYPE;
@@ -1242,8 +1261,8 @@ public final class ConfigurationBuilder {
     }
 
     @NonNull
-    Class<? extends RetryPolicy> retryPolicyClass(){
-        if(retryPolicyClass != null){
+    Class<? extends RetryPolicy> retryPolicyClass() {
+        if (retryPolicyClass != null) {
             return retryPolicyClass;
         }
         return DefaultRetryPolicy.class;

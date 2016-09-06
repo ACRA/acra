@@ -27,4 +27,8 @@ public class ACRAConfigurationException extends Exception {
     public ACRAConfigurationException(String msg) {
         super(msg);
     }
+
+    public ACRAConfigurationException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
 }
