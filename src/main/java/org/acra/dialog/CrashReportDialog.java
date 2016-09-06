@@ -41,7 +41,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
 
     @CallSuper
     @Override
-    protected void init(@Nullable Bundle savedInstanceState) {
+    public void init(@Nullable Bundle savedInstanceState) {
         scrollable = new LinearLayout(this);
         scrollable.setOrientation(LinearLayout.VERTICAL);
         sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), getConfig());

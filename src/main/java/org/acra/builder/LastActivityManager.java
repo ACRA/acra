@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
-import org.acra.dialog.BaseCrashReportDialog;
+import org.acra.dialog.ICrashReportDialog;
 
 import java.lang.ref.WeakReference;
 
@@ -32,7 +32,7 @@ public final class LastActivityManager {
                 @Override
                 public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
-                    if (!(activity instanceof BaseCrashReportDialog)) {
+                    if (!(activity instanceof ICrashReportDialog)) {
                         // Ignore CrashReportDialog because we want the last
                         // application Activity that was started so that we can explicitly kill it off.
                         lastActivityCreated = new WeakReference<Activity>(activity);
