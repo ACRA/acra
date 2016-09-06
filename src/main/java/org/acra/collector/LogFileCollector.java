@@ -18,19 +18,23 @@ package org.acra.collector;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 
 import org.acra.ACRA;
-import org.acra.file.Directory;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.file.Directory;
 import org.acra.util.IOUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -94,11 +98,7 @@ final class LogFileCollector extends Collector {
                 dir = context.getExternalCacheDir();
                 break;
             case NO_BACKUP_FILES:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    dir = context.getNoBackupFilesDir();
-                } else {
-                    dir = context.getFilesDir();
-                }
+                dir = ContextCompat.getNoBackupFilesDir(context);
                 break;
             case EXTERNAL_STORAGE:
                 dir = Environment.getExternalStorageDirectory();

@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
+import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 
 
@@ -220,7 +221,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
                 userEmail = userEmailView.getText().toString();
                 final SharedPreferences.Editor prefEditor = prefs.edit();
                 prefEditor.putString(ACRA.PREF_USER_EMAIL_ADDRESS, userEmail);
-                prefEditor.commit();
+                PrefUtils.save(prefEditor);
             } else {
                 userEmail = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "");
             }
