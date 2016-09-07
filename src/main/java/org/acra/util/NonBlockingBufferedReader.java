@@ -1,36 +1,41 @@
 package org.acra.util;
 
+import org.acra.ACRA;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static org.acra.ACRA.LOG_TAG;
+
 /**
+ * Asynchronously reads a buffer into a List of String.
+ *
  * @author C-Romeo
  * @since 4.9.0
  */
-public class NonBlockingBufferedReader {
+final class NonBlockingBufferedReader {
+
     private final BlockingQueue<String> lines = new LinkedBlockingQueue<String>();
-    private boolean closed = false;
     private Thread backgroundReaderThread = null;
 
-    public NonBlockingBufferedReader(final BufferedReader bufferedReader) {
+    NonBlockingBufferedReader(final BufferedReader bufferedReader) {
         backgroundReaderThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     while (!Thread.interrupted()) {
-                        String line = bufferedReader.readLine();
+                        final String line = bufferedReader.readLine();
                         if (line == null) {
                             break;
                         }
                         lines.add(line);
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    ACRA.log.w(LOG_TAG, "Could not read buffer", e);
                 } finally {
-                    closed = true;
                     IOUtils.safeClose(bufferedReader);
                 }
             }
@@ -39,11 +44,11 @@ public class NonBlockingBufferedReader {
         backgroundReaderThread.start();
     }
 
-    public String readLine() throws InterruptedException {
-        return closed && lines.isEmpty() ? null : lines.poll(500L, TimeUnit.MILLISECONDS);
+    String readLine() throws InterruptedException {
+        return lines.isEmpty() ? null : lines.poll(500L, TimeUnit.MILLISECONDS);
     }
 
-    public void close() {
+    void close() {
         if (backgroundReaderThread != null) {
             backgroundReaderThread.interrupt();
             backgroundReaderThread = null;
