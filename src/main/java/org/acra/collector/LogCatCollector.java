@@ -31,6 +31,7 @@ import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -97,27 +98,17 @@ final class LogCatCollector extends Collector {
         commandLine.addAll(logcatArgumentsList);
 
         try {
-            final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
+            final Process process =  new ProcessBuilder().command(commandLine).redirectErrorStream(true).start();
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
-            // Dump stderr to null
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        IOUtils.streamToString(process.getErrorStream());
-                    } catch (IOException ignored) {
-                    }
-                }
-            }).start();
-
-            logcat = IOUtils.streamToString(process.getInputStream(), new Predicate<String>() {
+            logcat = streamToString(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return myPidStr == null || s.contains(myPidStr);
                 }
-            }, tailCount > 0 ? tailCount : DEFAULT_TAIL_COUNT);
+            }, tailCount);
+            process.destroy();
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
@@ -147,5 +138,24 @@ final class LogCatCollector extends Collector {
                 break;
         }
         return collectLogCat(bufferName);
+    }
+
+    /**
+     * Reads an InputStream into a string in an non blocking way for current thread
+     * It has a default timeout of 3 seconds.
+     *
+     * @param input  the stream
+     * @param filter should return false for lines which should be excluded
+     * @param limit  the maximum number of lines to read (the last x lines are kept)
+     * @return the String that was read.
+     * @throws IOException if the stream cannot be read.
+     */
+    @NonNull
+    private String streamToString(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+        if (config.nonBlockingReadForLogcat()) {
+            return IOUtils.streamToStringNonBlockingRead(input, filter, limit);
+        } else {
+            return IOUtils.streamToString(input, filter, limit);
+        }
     }
 }

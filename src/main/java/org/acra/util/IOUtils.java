@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.android.internal.util.Predicate;
 
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collections.BoundedLinkedList;
 
@@ -31,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * @author William Ferguson, F43nd1r
@@ -45,6 +48,7 @@ public final class IOUtils {
         }
     };
     private static final int NO_LIMIT = -1;
+	private static final int READ_TIMEOUT = 3000;
 
     private IOUtils() {
     }
@@ -68,9 +72,9 @@ public final class IOUtils {
     /**
      * Reads an InputStream into a string
      *
-     * @param input the stream
-     * @return the read string
-     * @throws IOException
+     * @param input  InputStream to read.
+     * @return the String that was read.
+     * @throws IOException if the InputStream could not be read.
      */
     @NonNull
     public static String streamToString(@NonNull InputStream input) throws IOException {
@@ -80,10 +84,10 @@ public final class IOUtils {
     /**
      * Reads an InputStream into a string
      *
-     * @param input  the stream
+     * @param input  InputStream to read.
      * @param filter should return false for lines which should be excluded
-     * @return the read string
-     * @throws IOException
+     * @return the String that was read.
+     * @throws IOException if the InputStream could not be read.
      */
     @NonNull
     public static String streamToString(@NonNull InputStream input, Predicate<String> filter) throws IOException {
@@ -93,10 +97,10 @@ public final class IOUtils {
     /**
      * Reads an InputStream into a string
      *
-     * @param input the stream
+     * @param input  InputStream to read.
      * @param limit the maximum number of lines to read (the last x lines are kept)
-     * @return the read string
-     * @throws IOException
+     * @return the String that was read.
+     * @throws IOException if the InputStream could not be read.
      */
     @NonNull
     public static String streamToString(@NonNull InputStream input, int limit) throws IOException {
@@ -106,11 +110,11 @@ public final class IOUtils {
     /**
      * Reads an InputStream into a string
      *
-     * @param input  the stream
-     * @param filter should return false for lines which should be excluded
+     * @param input  InputStream to read.
+     * @param filter Predicate that should return false for lines which should be excluded.
      * @param limit the maximum number of lines to read (the last x lines are kept)
-     * @return the read string
-     * @throws IOException
+     * @return the String that was read.
+     * @throws IOException if the InputStream could not be read.
      */
     @NonNull
     public static String streamToString(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
@@ -126,6 +130,42 @@ public final class IOUtils {
             return TextUtils.join("\n", buffer);
         } finally {
             safeClose(reader);
+        }
+    }
+	
+	/**
+     * Reads an InputStream into a string without blocking the current thread.
+     * It has a default timeout of 3 seconds.
+     *
+     * @param input  InputStream to read.
+     * @param filter Predicate that should return false for lines which should be excluded.
+     * @param limit the maximum number of lines to read (the last x lines are kept).
+     * @return the String that was read.
+     * @throws IOException if the InputStream could not be read.
+     */
+    @NonNull
+    public static String streamToStringNonBlockingRead(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(input), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
+        final NonBlockingBufferedReader nonBlockingReader = new NonBlockingBufferedReader(reader);
+        try {
+            final List<String> buffer = limit == NO_LIMIT ? new LinkedList<String>() : new BoundedLinkedList<String>(limit);
+            final long end = System.currentTimeMillis() + READ_TIMEOUT;
+            try {
+                while ((System.currentTimeMillis() < end)) {
+                    final String line = nonBlockingReader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    if (filter.apply(line)) {
+                        buffer.add(line);
+                    }
+                }
+            } catch (InterruptedException e) {
+                ACRA.log.d(LOG_TAG, "Interrupted while reading stream", e);
+            }
+            return TextUtils.join("\n", buffer);
+        } finally {
+            nonBlockingReader.close();
         }
     }
 }

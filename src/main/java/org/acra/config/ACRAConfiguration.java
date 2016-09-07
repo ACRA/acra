@@ -95,6 +95,7 @@ public final class ACRAConfiguration implements Serializable {
     private final String sharedPreferencesName;
     private final int socketTimeout;
     private final boolean logcatFilterByPid;
+    private final boolean nonBlockingReadForLogcat;
     private final boolean sendReportsInDevMode;
 
     private final ImmutableSet<String> excludeMatchingSharedPreferencesKeys;
@@ -152,6 +153,7 @@ public final class ACRAConfiguration implements Serializable {
         sharedPreferencesName = builder.sharedPreferencesName();
         socketTimeout = builder.socketTimeout();
         logcatFilterByPid = builder.logcatFilterByPid();
+        nonBlockingReadForLogcat = builder.nonBlockingReadForLogcat();
         sendReportsInDevMode = builder.sendReportsInDevMode();
         excludeMatchingSharedPreferencesKeys = new ImmutableSet<String>(builder.excludeMatchingSharedPreferencesKeys());
         excludeMatchingSettingsKeys = new ImmutableSet<String>(builder.excludeMatchingSettingsKeys());
@@ -341,6 +343,10 @@ public final class ACRAConfiguration implements Serializable {
 
     public boolean logcatFilterByPid() {
         return logcatFilterByPid;
+    }
+
+    public boolean nonBlockingReadForLogcat() {
+        return nonBlockingReadForLogcat;
     }
 
     public boolean sendReportsInDevMode() {
