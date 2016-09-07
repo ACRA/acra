@@ -483,6 +483,14 @@ public @interface ReportsCrashes {
     boolean logcatFilterByPid() default ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
 
     /**
+     * Set this to true if you want to read logcat lines in a non blocking way for your
+     * thread. It has a default timeout of 3 seconds.
+     *
+     * @return true if you want that reading of logcat lines to not block current thread.
+     */
+    boolean nonBlockingReadForLogcat() default  ACRAConstants.DEFAULT_NON_BLOCKING_READ_FOR_LOGCAT;
+
+    /**
      * Set this to false if you want to disable sending reports in development
      * mode. Only signed application packages will send reports. Default value
      * is true.

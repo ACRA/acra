@@ -103,6 +103,7 @@ public final class ConfigurationBuilder {
     private String sharedPreferencesName;
     private Integer socketTimeout;
     private Boolean logcatFilterByPid;
+    private Boolean nonBlockingReadForLogcat;
     private Boolean sendReportsInDevMode;
 
     private String[] excludeMatchingSharedPreferencesKeys;
@@ -170,6 +171,7 @@ public final class ConfigurationBuilder {
             sharedPreferencesName = annotationConfig.sharedPreferencesName();
             socketTimeout = annotationConfig.socketTimeout();
             logcatFilterByPid = annotationConfig.logcatFilterByPid();
+            nonBlockingReadForLogcat = annotationConfig.nonBlockingReadForLogcat();
             sendReportsInDevMode = annotationConfig.sendReportsInDevMode();
             excludeMatchingSharedPreferencesKeys = annotationConfig.excludeMatchingSharedPreferencesKeys();
             excludeMatchingSettingsKeys = annotationConfig.excludeMatchingSettingsKeys();
@@ -675,6 +677,18 @@ public final class ConfigurationBuilder {
     }
 
     /**
+     * @param nonBlockingRead true if you want that collecting of logcat lines
+     *                        should not block current thread. Read operation
+     *                        has a timeout of 3 seconds.
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setNonBlockingReadForLogcat(boolean nonBlockingRead) {
+        nonBlockingReadForLogcat = nonBlockingRead;
+        return this;
+    }
+
+    /**
      * @param sendReportsInDevMode false if you want to disable sending reports in development
      *                             mode. Reports will be sent only on signed applications.
      * @return this instance
@@ -1122,6 +1136,13 @@ public final class ConfigurationBuilder {
             return logcatFilterByPid;
         }
         return DEFAULT_LOGCAT_FILTER_BY_PID;
+    }
+
+    boolean nonBlockingReadForLogcat() {
+        if (nonBlockingReadForLogcat != null) {
+            return nonBlockingReadForLogcat;
+        }
+        return DEFAULT_NON_BLOCKING_READ_FOR_LOGCAT;
     }
 
     boolean sendReportsInDevMode() {
