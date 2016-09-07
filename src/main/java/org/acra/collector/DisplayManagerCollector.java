@@ -18,14 +18,13 @@ package org.acra.collector;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.hardware.display.DisplayManagerCompat;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.Surface;
-import android.view.WindowManager;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -48,23 +47,8 @@ final class DisplayManagerCollector extends Collector {
     @NonNull
     @Override
     String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final Display[] displays;
         final StringBuilder result = new StringBuilder();
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            // Before Android 4.2, there was a single display available from the
-            // window manager
-            final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            displays = new Display[1];
-            displays[0] = windowManager.getDefaultDisplay();
-        } else {
-            // Since Android 4.2, we can fetch multiple displays with the
-            // DisplayManager.
-            final DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
-            displays = displayManager.getDisplays();
-        }
-
-        for (Display display : displays) {
+        for (Display display : DisplayManagerCompat.getInstance(context).getDisplays()) {
             result.append(collectDisplayData(display));
         }
 

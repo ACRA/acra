@@ -89,11 +89,6 @@ final class LogCatCollector extends Collector {
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
             tailCount = Integer.parseInt(logcatArgumentsList.get(tailIndex + 1));
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
-                logcatArgumentsList.remove(tailIndex + 1);
-                logcatArgumentsList.remove(tailIndex);
-                logcatArgumentsList.add("-d");
-            }
         } else {
             tailCount = -1;
         }
