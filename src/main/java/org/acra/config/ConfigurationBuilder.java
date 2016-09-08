@@ -122,6 +122,7 @@ public final class ConfigurationBuilder {
     private String certificatePath;
     private String certificateType;
     private Class<? extends RetryPolicy> retryPolicyClass;
+    private Boolean stopServicesOnCrash;
 
 
     /**
@@ -189,6 +190,7 @@ public final class ConfigurationBuilder {
             certificatePath = annotationConfig.certificatePath();
             certificateType = annotationConfig.certificateType();
             retryPolicyClass = annotationConfig.retryPolicyClass();
+            stopServicesOnCrash = annotationConfig.stopServicesOnCrash();
         } else {
             annotationType = null;
         }
@@ -240,16 +242,16 @@ public final class ConfigurationBuilder {
     }
 
     private void checkValidity(Class<?>... classes) throws ACRAConfigurationException {
-        for(Class<?> clazz : classes) {
+        for (Class<?> clazz : classes) {
             if (clazz.isInterface()) {
-                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName()+".");
+                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName() + ".");
             } else if (Modifier.isAbstract(clazz.getModifiers())) {
                 throw new ACRAConfigurationException("Class " + clazz.getName() + " cannot be abstract.");
             }
             try {
                 clazz.getConstructor();
             } catch (NoSuchMethodException e) {
-                throw new ACRAConfigurationException("Class "+clazz.getName()+ " is missing a no-args Constructor.", e);
+                throw new ACRAConfigurationException("Class " + clazz.getName() + " is missing a no-args Constructor.", e);
             }
         }
     }
@@ -854,6 +856,12 @@ public final class ConfigurationBuilder {
         return this;
     }
 
+    @NonNull
+    public ConfigurationBuilder setStopServicesOnCrash(boolean stopServicesOnCrash) {
+        this.stopServicesOnCrash = stopServicesOnCrash;
+        return this;
+    }
+
 
     // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
 
@@ -1287,5 +1295,12 @@ public final class ConfigurationBuilder {
             return retryPolicyClass;
         }
         return DefaultRetryPolicy.class;
+    }
+
+    boolean stopServicesOnCrash() {
+        if (stopServicesOnCrash != null) {
+            return stopServicesOnCrash;
+        }
+        return false;
     }
 }

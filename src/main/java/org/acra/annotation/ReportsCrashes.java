@@ -617,4 +617,10 @@ public @interface ReportsCrashes {
      * @since 4.9.1
      */
     @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
+
+    /**
+     * @return true if all services running in a process should be stopped before it is killed.
+     * @since 4.9.1
+     */
+    boolean stopServicesOnCrash() default false;
 }

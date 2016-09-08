@@ -115,6 +115,7 @@ public final class ACRAConfiguration implements Serializable {
     private final String certificatePath;
     private final String certificateType;
     private final Class<? extends RetryPolicy> retryPolicyClass;
+    private final boolean stopServicesOnCrash;
 
     /**
      * @param builder ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
@@ -172,6 +173,7 @@ public final class ACRAConfiguration implements Serializable {
         certificatePath = builder.certificatePath();
         certificateType = builder.certificateType();
         retryPolicyClass = builder.retryPolicyClass();
+        stopServicesOnCrash = builder.stopServicesOnCrash();
     }
 
     /**
@@ -436,5 +438,9 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     public Class<? extends RetryPolicy> retryPolicyClass() {
         return retryPolicyClass;
+    }
+
+    public boolean stopServicesOnCrash(){
+        return stopServicesOnCrash;
     }
 }
