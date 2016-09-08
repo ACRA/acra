@@ -161,7 +161,7 @@ public final class IOUtils {
                     }
                 }
             } catch (InterruptedException e) {
-                ACRA.log.d(LOG_TAG, "Interrupted while reading stream", e);
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Interrupted while reading stream", e);
             }
             return TextUtils.join("\n", buffer);
         } finally {
