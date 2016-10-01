@@ -63,9 +63,11 @@ final class LogFileCollector extends Collector {
      */
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
-            return IOUtils.streamToString(getStream(config.applicationLogFileDir(), config.applicationLogFile()), config.applicationLogFileLines());
+            return new CrashReportData.SimpleElement(IOUtils.streamToString(
+                    getStream(config.applicationLogFileDir(), config.applicationLogFile()),
+                    config.applicationLogFileLines()));
         } catch (IOException e) {
             return ACRAConstants.NOT_AVAILABLE;
         }

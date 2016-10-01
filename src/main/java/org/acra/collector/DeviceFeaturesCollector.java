@@ -48,26 +48,23 @@ final class DeviceFeaturesCollector extends Collector {
      */
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final StringBuilder result = new StringBuilder();
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
         try {
             final PackageManager pm = context.getPackageManager();
             final FeatureInfo[] features = pm.getSystemAvailableFeatures();
             for (final FeatureInfo feature : features) {
                 final String featureName = feature.name;
                 if (featureName != null) {
-                    result.append(featureName);
+                    result.put(featureName, true);
                 } else {
-                    result.append("glEsVersion = ").append(feature.getGlEsVersion());
+                    result.put("glEsVersion", feature.getGlEsVersion());
                 }
-                result.append('\n');
             }
         } catch (Throwable e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + context.getPackageName(), e);
-            result.append("Could not retrieve data: ");
-            result.append(e.getMessage());
         }
 
-        return result.toString();
+        return result;
     }
 }

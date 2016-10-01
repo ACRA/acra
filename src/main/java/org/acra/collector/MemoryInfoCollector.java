@@ -21,6 +21,7 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.util.IOUtils;
@@ -50,14 +51,14 @@ final class MemoryInfoCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField){
             case DUMPSYS_MEMINFO:
                 return collectMemInfo();
             case TOTAL_MEM_SIZE:
-                return Long.toString(getTotalInternalMemorySize());
+                return new CrashReportData.SimpleElement(Long.toString(getTotalInternalMemorySize()));
             case AVAILABLE_MEM_SIZE:
-                return Long.toString(getAvailableInternalMemorySize());
+                return new CrashReportData.SimpleElement(Long.toString(getAvailableInternalMemorySize()));
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
@@ -71,9 +72,9 @@ final class MemoryInfoCollector extends Collector {
      * @return The execution result.
      */
     @NonNull
-    private static String collectMemInfo() {
+    private static CrashReportData.Element collectMemInfo() {
 
-        final StringBuilder meminfo = new StringBuilder();
+        String meminfo;
         try {
             final List<String> commandLine = new ArrayList<String>();
             commandLine.add("dumpsys");
@@ -81,13 +82,14 @@ final class MemoryInfoCollector extends Collector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            meminfo.append(IOUtils.streamToString(process.getInputStream()));
+            meminfo = IOUtils.streamToString(process.getInputStream());
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "MemoryInfoCollector.meminfo could not retrieve data", e);
+            return ACRAConstants.NOT_AVAILABLE;
         }
 
-        return meminfo.toString();
+        return new CrashReportData.SimpleElement(meminfo);
     }
 
     /**

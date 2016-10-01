@@ -26,6 +26,8 @@ import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -60,8 +62,8 @@ final class SharedPreferencesCollector extends Collector {
      * @return A readable formatted String containing all key/value pairs.
      */
     @NonNull
-    private String collect() {
-        final StringBuilder result = new StringBuilder();
+    private CrashReportData.Element collect() throws JSONException {
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
 
         // Include the default SharedPreferences
         final Map<String, SharedPreferences> sharedPrefs = new TreeMap<String, SharedPreferences>();
@@ -81,26 +83,13 @@ final class SharedPreferencesCollector extends Collector {
 
             // Show that we have no preferences saved for that preference file.
             if (prefEntries.isEmpty()) {
-                result.append(sharedPrefId).append('=').append("empty\n");
-                continue;
+                result.put(sharedPrefId, "empty");
+            } else {
+                result.put(sharedPrefId, new JSONObject(prefEntries));
             }
-
-            // Add all non-filtered preferences from that preference file.
-            for (final Map.Entry<String, ?> prefEntry : prefEntries.entrySet()) {
-                if (filteredKey(prefEntry.getKey())) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "Filtered out sharedPreference=" + sharedPrefId + "  key=" + prefEntry.getKey() + " due to filtering rule");
-                } else {
-                    final Object prefValue = prefEntry.getValue();
-                    result.append(sharedPrefId).append('.').append(prefEntry.getKey()).append('=');
-                    result.append(prefValue == null ? "null" : prefValue.toString());
-                    result.append('\n');
-                }
-            }
-            result.append('\n');
         }
 
-        return result.toString();
+        return result;
     }
 
     /**
@@ -121,12 +110,18 @@ final class SharedPreferencesCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case USER_EMAIL:
-                return prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, ACRAConstants.NOT_AVAILABLE);
+                String email = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, null);
+                return email != null ? new CrashReportData.SimpleElement(email) : ACRAConstants.NOT_AVAILABLE;
             case SHARED_PREFERENCES:
-                return collect();
+                try {
+                    return collect();
+                } catch (JSONException e) {
+                    ACRA.log.w(LOG_TAG, "Could not collect shared preferences", e);
+                    return ACRAConstants.NOT_AVAILABLE;
+                }
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

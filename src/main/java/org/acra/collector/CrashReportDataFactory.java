@@ -19,7 +19,6 @@ package org.acra.collector;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -52,11 +51,11 @@ public final class CrashReportDataFactory {
     private final SharedPreferences prefs;
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Calendar appStartDate;
-    private final String initialConfiguration;
+    private final CrashReportData.Element initialConfiguration;
 
     public CrashReportDataFactory(@NonNull Context context, @NonNull ACRAConfiguration config,
                                   @NonNull SharedPreferences prefs, @NonNull Calendar appStartDate,
-                                  @Nullable String initialConfiguration) {
+                                  @NonNull CrashReportData.Element initialConfiguration) {
         this.context = context;
         this.config = config;
         this.prefs = prefs;

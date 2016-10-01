@@ -46,7 +46,7 @@ final class SimpleValuesCollector extends Collector {
     SimpleValuesCollector(Context context) {
         super(ReportField.IS_SILENT, ReportField.REPORT_ID, ReportField.INSTALLATION_ID,
                 ReportField.PACKAGE_NAME, ReportField.PHONE_MODEL, ReportField.ANDROID_VERSION,
-                ReportField.BRAND,ReportField.PRODUCT,ReportField.FILE_PATH, ReportField.USER_IP);
+                ReportField.BRAND, ReportField.PRODUCT, ReportField.FILE_PATH, ReportField.USER_IP);
         this.context = context;
     }
 
@@ -57,32 +57,44 @@ final class SimpleValuesCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        String value;
         switch (reportField) {
             case IS_SILENT:
-                return String.valueOf(reportBuilder.isSendSilently());
+                value = String.valueOf(reportBuilder.isSendSilently());
+                break;
             case REPORT_ID:
-                return UUID.randomUUID().toString();
+                value = UUID.randomUUID().toString();
+                break;
             case INSTALLATION_ID:
-                return Installation.id(context);
+                value = Installation.id(context);
+                break;
             case PACKAGE_NAME:
-                return context.getPackageName();
+                value = context.getPackageName();
+                break;
             case PHONE_MODEL:
-                return Build.MODEL;
+                value = Build.MODEL;
+                break;
             case ANDROID_VERSION:
-                return Build.VERSION.RELEASE;
+                value = Build.VERSION.RELEASE;
+                break;
             case BRAND:
-                return Build.BRAND;
+                value = Build.BRAND;
+                break;
             case PRODUCT:
-                return Build.PRODUCT;
+                value = Build.PRODUCT;
+                break;
             case FILE_PATH:
-                return getApplicationFilePath();
+                value = getApplicationFilePath();
+                break;
             case USER_IP:
-                return getLocalIpAddress();
+                value = getLocalIpAddress();
+                break;
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
+        return new CrashReportData.SimpleElement(value);
     }
 
     @NonNull

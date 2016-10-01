@@ -26,10 +26,15 @@ import android.util.SparseArray;
 import android.view.Display;
 import android.view.Surface;
 
+import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Collects information about the connected display(s)
@@ -46,49 +51,52 @@ final class DisplayManagerCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final StringBuilder result = new StringBuilder();
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
         for (Display display : DisplayManagerCompat.getInstance(context).getDisplays()) {
-            result.append(collectDisplayData(display));
+            try {
+                result.put(String.valueOf(display.getDisplayId()), collectDisplayData(display));
+            } catch (JSONException e) {
+                ACRA.log.w(ACRA.LOG_TAG, "Failed to collect data for display " + display.getDisplayId(), e);
+            }
         }
 
-        return result.toString();
+        return result;
     }
 
     @NonNull
-    private Object collectDisplayData(@NonNull Display display) {
+    private JSONObject collectDisplayData(@NonNull Display display) throws JSONException {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
+        final JSONObject result = new JSONObject();
+        collectCurrentSizeRange(display, result);
+        collectFlags(display, result);
+        collectMetrics(display, result);
+        collectRealMetrics(display, result);
+        collectName(display, result);
+        collectRealSize(display, result);
+        collectRectSize(display, result);
+        collectSize(display, result);
+        collectRotation(display, result);
+        collectIsValid(display, result);
+        result.put("orientation", display.getRotation())
+                .put("refreshRate", display.getRefreshRate());
         //noinspection deprecation
-        return collectCurrentSizeRange(display) +
-                collectFlags(display) +
-                display.getDisplayId() + ".height=" + display.getHeight() + '\n' +
-                collectMetrics(display) +
-                collectName(display) +
-                display.getDisplayId() + ".orientation=" + display.getRotation() + '\n' +
-                display.getDisplayId() + ".pixelFormat=" + display.getPixelFormat() + '\n' +
-                collectRealMetrics(display) +
-                collectRealSize(display) +
-                collectRectSize(display) +
-                display.getDisplayId() + ".refreshRate=" + display.getRefreshRate() + '\n' +
-                collectRotation(display) +
-                collectSize(display) +
-                display.getDisplayId() + ".width=" + display.getWidth() + '\n' +
-                collectIsValid(display);
+        result.put("height", display.getHeight())
+                .put("width", display.getWidth())
+                .put("pixelFormat", display.getPixelFormat());
+        return result;
     }
 
-    @NonNull
-    private static String collectIsValid(@NonNull Display display) {
+    private static void collectIsValid(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return display.getDisplayId() + ".isValid=" + display.isValid() + '\n';
+            container.put("isValid", display.isValid());
         }
-        return "";
     }
 
-    @NonNull
-    private static String collectRotation(@NonNull Display display) {
-        return display.getDisplayId() + ".rotation=" + rotationToString(display.getRotation()) + '\n';
+    private static void collectRotation(@NonNull Display display, JSONObject container) throws JSONException {
+        container.put("rotation", rotationToString(display.getRotation()));
     }
 
     @NonNull
@@ -107,52 +115,43 @@ final class DisplayManagerCollector extends Collector {
         }
     }
 
-    @NonNull
-    private static String collectRectSize(@NonNull Display display) {
+    private static void collectRectSize(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             final Rect size = new Rect();
             display.getRectSize(size);
-            return display.getDisplayId() + ".rectSize=[" + size.top + ',' + size.left +
-                    ',' + size.width() + ',' + size.height() + ']' + '\n';
+            container.put("rectSize", new JSONArray(Arrays.asList(size.top, size.left, size.width(), size.height())));
         }
-        return "";
     }
 
-    @NonNull
-    private static String collectSize(@NonNull Display display) {
+    private static void collectSize(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             final Point size = new Point();
             display.getSize(size);
-            return display.getDisplayId() + ".size=[" + size.x
-                    + ',' + size.y + ']' + '\n';
+            container.put("size", new JSONArray(Arrays.asList(size.x, size.y)));
         }
-        return "";
     }
 
-    private static String collectRealSize(@NonNull Display display) {
+    private static void collectRealSize(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final Point size = new Point();
             display.getRealSize(size);
-            return display.getDisplayId() + ".realSize=[" + size.x
-                    + ',' + size.y + ']' + '\n';
+            container.put("realSize", new JSONArray(Arrays.asList(size.x, size.y)));
         }
-        return "";
     }
 
-    @NonNull
-    private static String collectCurrentSizeRange(@NonNull Display display) {
+    private static void collectCurrentSizeRange(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final Point smallest = new Point();
             final Point largest = new Point();
             display.getCurrentSizeRange(smallest, largest);
-            return display.getDisplayId() + ".currentSizeRange.smallest=[" + smallest.x + ',' + smallest.y + "]\n"
-                    + display.getDisplayId() + ".currentSizeRange.largest=[" + largest.x + ',' + largest.y + "]\n";
+            JSONObject result = new JSONObject();
+            result.put("smallest", new JSONArray(Arrays.asList(smallest.x, smallest.y)));
+            result.put("largest", new JSONArray(Arrays.asList(largest.x, largest.y)));
+            container.put("currentSizeRange", result);
         }
-        return "";
     }
 
-    @NonNull
-    private String collectFlags(@NonNull Display display) {
+    private void collectFlags(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
@@ -163,45 +162,42 @@ final class DisplayManagerCollector extends Collector {
                     }
                 }
             }
-            return display.getDisplayId() + ".flags=" + activeFlags(flags) + '\n';
+            container.put("flags", activeFlags(flags));
         }
-        return "";
     }
 
-    @NonNull
-    private static String collectName(@NonNull Display display) {
+    private static void collectName(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return display.getDisplayId() + ".name=" + display.getName() + '\n';
+            container.put("name", display.getName());
         }
-        return "";
     }
 
-    @NonNull
-    private static String collectMetrics(@NonNull Display display) {
+    private static void collectMetrics(@NonNull Display display, JSONObject container) throws JSONException {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
-        return collectMetrics(display.getDisplayId() + ".metrics", metrics);
+        JSONObject result = new JSONObject();
+        collectMetrics(metrics, result);
+        container.put("metrics", result);
     }
 
-    @NonNull
-    private static String collectRealMetrics(@NonNull Display display) {
+    private static void collectRealMetrics(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final DisplayMetrics metrics = new DisplayMetrics();
             display.getRealMetrics(metrics);
-            return collectMetrics(display.getDisplayId() + ".realMetrics", metrics);
+            JSONObject result = new JSONObject();
+            collectMetrics(metrics, result);
+            container.put("realMetrics", result);
         }
-        return "";
     }
 
-    @NonNull
-    private static String collectMetrics(@NonNull String prefix, @NonNull DisplayMetrics metrics) {
-        return prefix + ".density=" + metrics.density + '\n'
-                + prefix + ".densityDpi=" + metrics.densityDpi + '\n'
-                + prefix + ".scaledDensity=x" + metrics.scaledDensity + '\n'
-                + prefix + ".widthPixels=" + metrics.widthPixels + '\n'
-                + prefix + ".heightPixels=" + metrics.heightPixels + '\n'
-                + prefix + ".xdpi=" + metrics.xdpi + '\n'
-                + prefix + ".ydpi=" + metrics.ydpi + '\n';
+    private static void collectMetrics(@NonNull DisplayMetrics metrics, JSONObject container) throws JSONException {
+        container.put("density", metrics.density)
+                .put("densityDpi", metrics.densityDpi)
+                .put("scaledDensity", "x" + metrics.scaledDensity)
+                .put("widthPixels", metrics.widthPixels)
+                .put("heightPixels", metrics.heightPixels)
+                .put("xdpi", metrics.xdpi)
+                .put("ydpi", metrics.ydpi);
     }
 
     /**
@@ -209,7 +205,7 @@ final class DisplayManagerCollector extends Collector {
      * applying a bitmask. That method returns the concatenation of active
      * values.
      *
-     * @param bitfield   The bitfield to inspect.
+     * @param bitfield The bitfield to inspect.
      * @return The names of the different values contained in the bitfield,
      * separated by '+'.
      */

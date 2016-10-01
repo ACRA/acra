@@ -75,7 +75,7 @@ final class DropBoxCollector extends Collector {
      */
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
             final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
@@ -94,7 +94,7 @@ final class DropBoxCollector extends Collector {
             }
 
             if (tags.isEmpty()) {
-                return "No tag configured for collection.";
+                return ACRAConstants.NOT_AVAILABLE;
             }
 
             final StringBuilder dropboxContent = new StringBuilder();
@@ -119,7 +119,7 @@ final class DropBoxCollector extends Collector {
                     entry = dropbox.getNextEntry(tag, msec);
                 }
             }
-            return dropboxContent.toString();
+            return new CrashReportData.SimpleElement(dropboxContent.toString());
 
         } catch (Exception e) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");

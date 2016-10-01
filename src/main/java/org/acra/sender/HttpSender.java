@@ -19,16 +19,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.HttpRequest;
-import org.acra.collections.ImmutableSet;
-import org.acra.util.JSONReportBuilder.JSONReportException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -237,14 +237,11 @@ public class HttpSender implements ReportSender {
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
                     + " report via Http " + mMethod.name(), e);
-        } catch (@NonNull JSONReportException e) {
-            throw new ReportSenderException("Error while sending " + config.reportType()
-                    + " report via Http " + mMethod.name(), e);
         }
     }
 
     @NonNull
-    private Map<String, String> remap(@NonNull Map<ReportField, String> report) {
+    private Map<String, String> remap(@NonNull Map<ReportField, CrashReportData.Element> report) {
 
         Set<ReportField> fields = config.getReportFields();
         if (fields.isEmpty()) {
@@ -253,10 +250,11 @@ public class HttpSender implements ReportSender {
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
+            String value = TextUtils.join("\n", report.get(field).flatten());
             if (mMapping == null || mMapping.get(field) == null) {
-                finalReport.put(field.toString(), report.get(field));
+                finalReport.put(field.toString(), value);
             } else {
-                finalReport.put(mMapping.get(field), report.get(field));
+                finalReport.put(mMapping.get(field), value);
             }
         }
         return finalReport;

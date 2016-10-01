@@ -25,9 +25,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.json.JSONException;
 
 import java.lang.reflect.Field;
 
@@ -60,8 +62,8 @@ final class SettingsCollector extends Collector {
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    private String collectSystemSettings() {
-        final StringBuilder result = new StringBuilder();
+    private CrashReportData.Element collectSystemSettings() throws JSONException {
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
         final Field[] keys = System.class.getFields();
         for (final Field key : keys) {
             // Avoid retrieving deprecated fields... it is useless, has an
@@ -71,7 +73,7 @@ final class SettingsCollector extends Collector {
                 try {
                     final Object value = System.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append('=').append(value).append('\n');
+                        result.put(key.getName(), value);
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -80,8 +82,7 @@ final class SettingsCollector extends Collector {
                 }
             }
         }
-
-        return result.toString();
+        return result;
     }
 
     /**
@@ -92,15 +93,15 @@ final class SettingsCollector extends Collector {
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    private String collectSecureSettings() {
-        final StringBuilder result = new StringBuilder();
+    private CrashReportData.Element collectSecureSettings() throws JSONException {
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
         final Field[] keys = Secure.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                 try {
                     final Object value = Secure.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append('=').append(value).append('\n');
+                        result.put(key.getName(), value);
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -109,8 +110,7 @@ final class SettingsCollector extends Collector {
                 }
             }
         }
-
-        return result.toString();
+        return result;
     }
 
     /**
@@ -121,19 +121,19 @@ final class SettingsCollector extends Collector {
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    private String collectGlobalSettings() {
+    private CrashReportData.Element collectGlobalSettings() throws JSONException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return "";
+            return ACRAConstants.NOT_AVAILABLE;
         }
 
-        final StringBuilder result = new StringBuilder();
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
         final Field[] keys = Global.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
                 try {
                     final Object value = Global.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
-                        result.append(key.getName()).append('=').append(value).append('\n');
+                        result.put(key.getName(), value);
                     }
                 } catch (@NonNull IllegalArgumentException e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
@@ -144,7 +144,7 @@ final class SettingsCollector extends Collector {
                 }
             }
         }
-        return result.toString();
+        return result;
     }
 
     private boolean isAuthorized(@Nullable Field key) {
@@ -161,10 +161,11 @@ final class SettingsCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        try {
         switch (reportField) {
             case SETTINGS_SYSTEM:
-                return collectSystemSettings();
+                    return collectSystemSettings();
             case SETTINGS_SECURE:
                 return collectSecureSettings();
             case SETTINGS_GLOBAL:
@@ -172,6 +173,10 @@ final class SettingsCollector extends Collector {
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
+        }
+        } catch (JSONException e) {
+            ACRA.log.w("Could not collect Settings", e);
+            return ACRAConstants.NOT_AVAILABLE;
         }
     }
 }

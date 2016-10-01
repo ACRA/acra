@@ -39,14 +39,14 @@ final class PackageManagerCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         PackageInfo info = pm.getPackageInfo();
         if (info != null) {
             switch (reportField) {
                 case APP_VERSION_NAME:
-                    return info.versionName;
+                    return new CrashReportData.SimpleElement(info.versionName);
                 case APP_VERSION_CODE:
-                    return Integer.toString(info.versionCode);
+                    return new CrashReportData.SimpleElement(Integer.toString(info.versionCode));
             }
         }
         return ACRAConstants.NOT_AVAILABLE;

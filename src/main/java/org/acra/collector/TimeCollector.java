@@ -48,7 +48,7 @@ final class TimeCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         Calendar time;
         switch (reportField) {
             case USER_APP_START_DATE:
@@ -61,7 +61,7 @@ final class TimeCollector extends Collector {
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return getTimeString(time);
+        return new CrashReportData.SimpleElement(getTimeString(time));
     }
 
     @NonNull

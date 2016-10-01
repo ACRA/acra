@@ -39,8 +39,8 @@ final class CustomDataCollector extends Collector {
     }
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        return createCustomInfoString(reportBuilder.getCustomData());
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        return createCustomInfoElement(reportBuilder.getCustomData());
     }
 
 
@@ -50,29 +50,12 @@ final class CustomDataCollector extends Collector {
      * @return A string with a 'key = value' pair on each line.
      */
     @NonNull
-    private String createCustomInfoString(@Nullable Map<String, String> reportCustomData) {
+    private CrashReportData.Element createCustomInfoElement(@Nullable Map<String, String> reportCustomData) {
         Map<String, String> params = customParameters;
-
         if (reportCustomData != null) {
             params = new HashMap<String, String>(params);
             params.putAll(reportCustomData);
         }
-
-        final StringBuilder customInfo = new StringBuilder();
-        for (final Map.Entry<String, String> currentEntry : params.entrySet()) {
-            customInfo.append(currentEntry.getKey());
-            customInfo.append(" = ");
-
-            // We need to escape new lines in values or they are transformed into new
-            // custom fields. => let's replace all '\n' with "\\n"
-            final String currentVal = currentEntry.getValue();
-            if (currentVal != null) {
-                customInfo.append(currentVal.replaceAll("\n", "\\\\n"));
-            } else {
-                customInfo.append("null");
-            }
-            customInfo.append('\n');
-        }
-        return customInfo.toString();
+        return new CrashReportData.ComplexElement(params);
     }
 }

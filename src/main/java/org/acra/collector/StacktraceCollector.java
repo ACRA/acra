@@ -45,12 +45,13 @@ final class StacktraceCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case STACK_TRACE:
-                return getStackTrace(reportBuilder.getMessage(), reportBuilder.getException());
+                return new CrashReportData.SimpleElement(
+                        getStackTrace(reportBuilder.getMessage(), reportBuilder.getException()));
             case STACK_TRACE_HASH:
-                return getStackTraceHash(reportBuilder.getException());
+                return new CrashReportData.SimpleElement(getStackTraceHash(reportBuilder.getException()));
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

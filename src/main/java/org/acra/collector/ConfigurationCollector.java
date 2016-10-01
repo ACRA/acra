@@ -21,8 +21,10 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.json.JSONException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -59,9 +61,9 @@ public final class ConfigurationCollector extends Collector {
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
     private final Context context;
-    private final String initialConfiguration;
+    private final CrashReportData.Element initialConfiguration;
 
-    public ConfigurationCollector(Context context, String initialConfiguration) {
+    public ConfigurationCollector(@NonNull Context context, @NonNull CrashReportData.Element initialConfiguration) {
         super(ReportField.INITIAL_CONFIGURATION, ReportField.CRASH_CONFIGURATION);
         this.context = context;
         this.initialConfiguration = initialConfiguration;
@@ -69,7 +71,7 @@ public final class ConfigurationCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case INITIAL_CONFIGURATION:
                 return initialConfiguration;
@@ -89,20 +91,22 @@ public final class ConfigurationCollector extends Collector {
      * with values replaced by constant names.
      */
     @NonNull
-    private static String configToString(@NonNull Configuration conf) {
-        final StringBuilder result = new StringBuilder();
+    private static CrashReportData.Element configToElement(@NonNull Configuration conf) {
+        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
         Map<String, SparseArray<String>> valueArrays = getValueArrays();
         for (final Field f : conf.getClass().getFields()) {
             try {
                 if (!Modifier.isStatic(f.getModifiers())) {
                     final String fieldName = f.getName();
-                    result.append(fieldName).append('=');
-                    if (f.getType().equals(int.class)) {
-                        result.append(getFieldValueName(valueArrays, conf, f));
-                    } else if (f.get(conf) != null) {
-                        result.append(f.get(conf).toString());
+                    try {
+                        if (f.getType().equals(int.class)) {
+                            result.put(fieldName, getFieldValueName(valueArrays, conf, f));
+                        } else if (f.get(conf) != null) {
+                            result.put(fieldName, f.get(conf).toString());
+                        }
+                    } catch (JSONException e) {
+                        ACRA.log.w(LOG_TAG, "Could not collect configuration field " + fieldName, e);
                     }
-                    result.append('\n');
                 }
             } catch (@NonNull IllegalArgumentException e) {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
@@ -110,7 +114,7 @@ public final class ConfigurationCollector extends Collector {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
             }
         }
-        return result.toString();
+        return result;
     }
 
     private static Map<String, SparseArray<String>> getValueArrays() {
@@ -243,12 +247,12 @@ public final class ConfigurationCollector extends Collector {
      * @return A String representation of the current configuration for the application.
      */
     @NonNull
-    public static String collectConfiguration(@NonNull Context context) {
+    public static CrashReportData.Element collectConfiguration(@NonNull Context context) {
         try {
-            return configToString(context.getResources().getConfiguration());
+            return configToElement(context.getResources().getConfiguration());
         } catch (RuntimeException e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
-            return "Couldn't retrieve crash config";
+            return ACRAConstants.NOT_AVAILABLE;
         }
     }
 }

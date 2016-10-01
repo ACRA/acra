@@ -72,5 +72,5 @@ abstract class Collector {
      * @return String of what was collected
      */
     @NonNull
-    abstract String collect(ReportField reportField, ReportBuilder reportBuilder);
+    abstract CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder);
 }

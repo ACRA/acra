@@ -123,8 +123,8 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         try {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
             final CrashReportData crashData = persister.load(reportFile);
-            crashData.put(USER_COMMENT, comment == null ? "" : comment);
-            crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
+            crashData.putSimple(USER_COMMENT, comment == null ? "" : comment);
+            crashData.putSimple(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, reportFile);
         } catch (IOException e) {
             ACRA.log.w(LOG_TAG, "User comment not added: ", e);

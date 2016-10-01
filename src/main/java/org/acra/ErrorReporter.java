@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.*;
 import org.acra.collector.ConfigurationCollector;
+import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.config.ACRAConfiguration;
@@ -96,11 +97,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         // Store the initial Configuration state.
         // This is expensive to gather, so only do so if we plan to report it.
-        final String initialConfiguration;
+        final CrashReportData.Element initialConfiguration;
         if (config.getReportFields().contains(ReportField.INITIAL_CONFIGURATION)) {
             initialConfiguration = ConfigurationCollector.collectConfiguration(this.context);
         } else {
-            initialConfiguration = null;
+            initialConfiguration = new CrashReportData.SimpleElement(null);
         }
 
         // Sets the application start date.

@@ -23,10 +23,20 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.util.IOUtils;
 import org.acra.collector.CrashReportData;
+import org.acra.util.IOUtils;
+import org.json.JSONException;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.util.Map;
 
 /**
@@ -74,11 +84,11 @@ public final class CrashReportPersister {
         try {
             final StringBuilder buffer = new StringBuilder(200);
 
-            for (final Map.Entry<ReportField, String> entry : crashData.entrySet()) {
+            for (final Map.Entry<ReportField, CrashReportData.Element> entry : crashData.entrySet()) {
                 final String key = entry.getKey().toString();
                 dumpString(buffer, key, true);
                 buffer.append('=');
-                dumpString(buffer, entry.getValue(), false);
+                dumpString(buffer, entry.getValue().asString(), false);
                 buffer.append(LINE_SEPARATOR);
                 writer.write(buffer.toString());
                 buffer.setLength(0);
@@ -222,7 +232,13 @@ public final class CrashReportPersister {
                                     keyLength = offset;
                                 }
                                 final String temp = new String(buf, 0, offset);
-                                crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), temp.substring(keyLength));
+                                CrashReportData.Element element;
+                                try {
+                                    element = new CrashReportData.ComplexElement(temp.substring(keyLength));
+                                } catch (JSONException e) {
+                                    element = new CrashReportData.SimpleElement(temp.substring(keyLength));
+                                }
+                                crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), element);
                             }
                             keyLength = -1;
                             offset = 0;
@@ -280,7 +296,13 @@ public final class CrashReportPersister {
                 if (mode == SLASH) {
                     value += "\u0000";
                 }
-                crashData.put(key, value);
+                CrashReportData.Element element;
+                try {
+                    element = new CrashReportData.ComplexElement(value);
+                } catch (JSONException e) {
+                    element = new CrashReportData.SimpleElement(value);
+                }
+                crashData.put(key, element);
             }
 
             IOUtils.safeClose(reader);

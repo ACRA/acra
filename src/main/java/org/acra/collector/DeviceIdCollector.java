@@ -59,9 +59,9 @@ final class DeviceIdCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         String result = getDeviceId();
-        return result != null ? result : ACRAConstants.NOT_AVAILABLE;
+        return result != null ? new CrashReportData.SimpleElement(result) : ACRAConstants.NOT_AVAILABLE;
     }
 
     /**
