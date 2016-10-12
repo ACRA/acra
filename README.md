@@ -3,7 +3,7 @@
 What is ACRA ?
 ==============
 
-ACRA is a library enabling Android Application to automatically post their crash reports to a GoogleDoc form. It is targeted to android applications developers to help them get data from their applications when they crash or behave erroneously.
+ACRA is a library enabling Android Application to automatically post their crash reports to a report server. It is targeted to android applications developers to help them get data from their applications when they crash or behave erroneously.
 
 ACRA is used in 2.68% ([See AppBrain/stats](http://www.appbrain.com/stats/libraries/details/acra/acra)) of all apps on Google Play as of Feb 2016. That's over 53K **apps** using ACRA. And since the average US user has 41 apps installed on their phone that means there is a 70% chance that ACRA is running on any phone. That means ACRA is running on over a **billion devices**.
 
@@ -19,9 +19,8 @@ A crash reporting feature for android apps is native since Android 2.2 (FroYo) b
   * works for any application even if not delivered through Google PLay => great for devices/regions where the Google Play is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
   * can be used with [your own self-hosted report receiver script](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Reports_destination)
-  * google doc reports can be shared with a whole development team. Other benefits from the Google Docs platform are still to be investigated (stats, macros...)
 
-ACRA's notification systems are clean. If a crash occurs, your application does not add user notifications over existing system's crash notifications or reporting features. If you use the Toast, Status bar notification or direct dialog modes, the "force close" dialog is not displayed anymore and devices where the system native reporting feature is enabled do not offer the user to send an additional report.
+ACRA's notification systems are clean. If a crash occurs, your application does not add user notifications over existing system's crash notifications or reporting features. By default, the "force close" dialog is not displayed anymore, to enable it set `alsoReportToAndroidFramework` to `true`.
 
 The user is notified of an error only once, and you might enhance the perceived quality of your application by defining your own texts in the notifications/dialogs.
 
