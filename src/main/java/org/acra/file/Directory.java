@@ -20,7 +20,7 @@ import android.os.Environment;
 
 /**
  * @author F43nd1r
- * @since 31.08.2016
+ * @since 4.9.1
  */
 public enum Directory {
     /**
@@ -46,8 +46,8 @@ public enum Directory {
      */
     EXTERNAL_CACHE,
     /**
-     * Directory returned by {@link Context#getNoBackupFilesDir()}
-     * Will fall back to {@link Context#getFilesDir()} on API < 21
+     * Directory returned by {@link Context#getNoBackupFilesDir()}.
+     * Will fall back to {@link Context#getFilesDir()} on API &lt; 21
      */
     NO_BACKUP_FILES,
     /**
