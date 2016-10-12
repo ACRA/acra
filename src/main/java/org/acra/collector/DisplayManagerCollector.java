@@ -40,6 +40,8 @@ import java.util.Arrays;
 
 /**
  * Collects information about the connected display(s)
+ *
+ * @author (original author unknown) & F43nd1r
  */
 final class DisplayManagerCollector extends Collector {
     private final Context context;

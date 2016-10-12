@@ -32,6 +32,7 @@ import org.acra.model.SimpleElement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -56,13 +57,13 @@ final class SharedPreferencesCollector extends Collector {
     }
 
     /**
-     * Collects all key/value pairs in SharedPreferences and writes them in a
-     * result String. The application default SharedPreferences are always
+     * Collects all key/value pairs in SharedPreferences.
+     * The application default SharedPreferences are always
      * collected, and the developer can provide additional SharedPreferences
      * names in the {@link ReportsCrashes#additionalSharedPreferences()}
      * configuration item.
      *
-     * @return A readable formatted String containing all key/value pairs.
+     * @return the collected key/value pairs.
      */
     @NonNull
     private Element collect() throws JSONException {
@@ -88,6 +89,11 @@ final class SharedPreferencesCollector extends Collector {
             if (prefEntries.isEmpty()) {
                 result.put(sharedPrefId, "empty");
             } else {
+                for (Iterator<String> iterator = prefEntries.keySet().iterator(); iterator.hasNext();){
+                    if(filteredKey(iterator.next())){
+                        iterator.remove();
+                    }
+                }
                 result.put(sharedPrefId, new JSONObject(prefEntries));
             }
         }

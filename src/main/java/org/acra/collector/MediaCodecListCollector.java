@@ -42,7 +42,7 @@ import java.util.Set;
  * Collects data about available codecs on the device through the MediaCodecList
  * API introduced in Android 4.1 JellyBean.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class MediaCodecListCollector extends Collector {
 
@@ -136,7 +136,7 @@ final class MediaCodecListCollector extends Collector {
     }
 
     /**
-     * Builds a String describing the list of available codecs on the device
+     * Builds an Element describing the list of available codecs on the device
      * with their capabilities (supported Color Formats, Codec Profiles et
      * Levels).
      *
@@ -182,7 +182,7 @@ final class MediaCodecListCollector extends Collector {
      *
      * @param codecInfo the currently inspected codec
      * @param type      supported type to collect
-     * @return A string describing the color formats and codec profile levels
+     * @return the color formats and codec profile levels
      * available for a specific codec type.
      */
     @NonNull

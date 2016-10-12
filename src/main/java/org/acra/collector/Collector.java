@@ -70,7 +70,7 @@ abstract class Collector {
      *
      * @param reportField   the ReportField to collect
      * @param reportBuilder the current reportBuilder
-     * @return String of what was collected
+     * @return Element of what was collected
      */
     @NonNull
     abstract Element collect(ReportField reportField, ReportBuilder reportBuilder);

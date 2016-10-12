@@ -44,7 +44,7 @@ import static org.acra.ACRA.LOG_TAG;
  * Collects the N last lines of a text stream. Use this collector if your
  * application handles its own logging system.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class LogFileCollector extends Collector {
     private final Context context;
@@ -61,7 +61,7 @@ final class LogFileCollector extends Collector {
      * located in the {@link Application#getFilesDir()} directory if it does not
      * contain any path separator.
      *
-     * @return A single String containing all of the requested lines.
+     * @return An Element containing all of the requested lines.
      */
     @NonNull
     @Override
@@ -76,7 +76,7 @@ final class LogFileCollector extends Collector {
     }
 
     /**
-     * guess the application log file location and open it
+     * get the application log file location and open it
      *
      * @param directory the base directory for the file path
      * @param fileName the name of the file

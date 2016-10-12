@@ -54,17 +54,12 @@ public final class CrashReportPersister {
      * @throws java.io.IOException if error occurs during reading from the {@code File}.
      */
     @NonNull
-    public CrashReportData load(@NonNull File file) throws IOException {
+    public CrashReportData load(@NonNull File file) throws IOException, JSONException {
 
         final InputStream in = new BufferedInputStream(new FileInputStream(file), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
         try {
             return JsonUtils.toCrashReportData(new JSONObject(IOUtils.streamToString(in)));
-        } catch (JSONException e) {
-            IOException exception = new IOException();
-            //noinspection UnnecessaryInitCause
-            exception.initCause(e);
-            throw exception;
-        } finally {
+        }finally {
             IOUtils.safeClose(in);
         }
     }
@@ -86,53 +81,6 @@ public final class CrashReportPersister {
             writer.flush();
         } finally {
             IOUtils.safeClose(writer);
-        }
-    }
-
-    /**
-     * Constructs a new {@code Properties} object.
-     *
-     * @param buffer    StringBuilder to populate with the supplied property.
-     * @param string    String to append to the buffer.
-     * @param key       Whether the String is a key value or not.
-     */
-    private void dumpString(@NonNull StringBuilder buffer, @NonNull String string, boolean key) {
-        int i = 0;
-        if (!key && i < string.length() && string.charAt(i) == ' ') {
-            buffer.append("\\ "); //$NON-NLS-1$
-            i++;
-        }
-
-        for (; i < string.length(); i++) {
-            char ch = string.charAt(i);
-            switch (ch) {
-            case '\t':
-                buffer.append("\\t"); //$NON-NLS-1$
-                break;
-            case '\n':
-                buffer.append("\\n"); //$NON-NLS-1$
-                break;
-            case '\f':
-                buffer.append("\\f"); //$NON-NLS-1$
-                break;
-            case '\r':
-                buffer.append("\\r"); //$NON-NLS-1$
-                break;
-            default:
-                if ("\\#!=:".indexOf(ch) >= 0 || (key && ch == ' ')) {
-                    buffer.append('\\');
-                }
-                if (ch >= ' ' && ch <= '~') {
-                    buffer.append(ch);
-                } else {
-                    final String hex = Integer.toHexString(ch);
-                    buffer.append("\\u"); //$NON-NLS-1$
-                    for (int j = 0; j < 4 - hex.length(); j++) {
-                        buffer.append('0'); //$NON-NLS-1$
-                    }
-                    buffer.append(hex);
-                }
-            }
         }
     }
 }

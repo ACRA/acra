@@ -47,9 +47,9 @@ final class CustomDataCollector extends Collector {
 
 
     /**
-     * Generates the string which is posted in the single custom data field
+     * Generates the Element which is posted in the single custom data field
      *
-     * @return A string with a 'key = value' pair on each line.
+     * @return An Element with  key-value-pairs fro the supplied custom data.
      */
     @NonNull
     private Element createCustomInfoElement(@Nullable Map<String, String> reportCustomData) {

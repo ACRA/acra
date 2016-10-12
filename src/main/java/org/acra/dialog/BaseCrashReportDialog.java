@@ -13,6 +13,7 @@ import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,6 +128,8 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
             crashData.putSimple(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, reportFile);
         } catch (IOException e) {
+            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+        } catch (JSONException e) {
             ACRA.log.w(LOG_TAG, "User comment not added: ", e);
         }
 

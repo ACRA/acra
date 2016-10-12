@@ -39,7 +39,7 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Collects results of the <code>dumpsys</code> command.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class MemoryInfoCollector extends Collector {
     MemoryInfoCollector() {

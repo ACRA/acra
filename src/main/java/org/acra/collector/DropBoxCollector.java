@@ -26,8 +26,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.ComplexElement;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
 import org.acra.util.PackageManagerWrapper;
 
 import java.text.SimpleDateFormat;
@@ -41,13 +41,13 @@ import java.util.Set;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Collects data from the DropBoxManager introduced with Android API Level 8. A
+ * Collects data from the {@link DropBoxManager}. A
  * set of DropBox tags have been identified in the Android source code. , we
  * collect data associated to these tags with hope that some of them could help
  * debugging applications. Application specific tags can be provided by the app
  * dev to track his own usage of the DropBoxManager.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class DropBoxCollector extends Collector {
 
@@ -67,13 +67,13 @@ final class DropBoxCollector extends Collector {
             "SYSTEM_RECOVERY_LOG", "SYSTEM_BOOT", "SYSTEM_LAST_KMSG", "APANIC_CONSOLE", "APANIC_THREADS",
             "SYSTEM_RESTART", "SYSTEM_TOMBSTONE", "data_app_strictmode"};
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used to prevent logic changes). Why use this bad readable format?
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used for backwards compatibility)
 
     /**
      * Read latest messages contained in the DropBox for system related tags and
      * optional developer-set tags.
      *
-     * @return A readable formatted String listing messages retrieved.
+     * @return An Element listing messages retrieved.
      */
     @NonNull
     @Override
@@ -99,29 +99,30 @@ final class DropBoxCollector extends Collector {
                 return ACRAConstants.NOT_AVAILABLE;
             }
 
-            final StringBuilder dropboxContent = new StringBuilder();
+            final ComplexElement dropboxContent = new ComplexElement();
             for (String tag : tags) {
-                dropboxContent.append("Tag: ").append(tag).append('\n');
+                final StringBuilder builder = new StringBuilder();
                 DropBoxManager.Entry entry = dropbox.getNextEntry(tag, time);
                 if (entry == null) {
-                    dropboxContent.append("Nothing.").append('\n');
+                    builder.append("Nothing.").append('\n');
                     continue;
                 }
                 while (entry != null) {
                     final long msec = entry.getTimeMillis();
                     calendar.setTimeInMillis(msec);
-                    dropboxContent.append('@').append(dateFormat.format(calendar.getTime())).append('\n');
+                    builder.append('@').append(dateFormat.format(calendar.getTime())).append('\n');
                     final String text = entry.getText(500);
                     if (text != null) {
-                        dropboxContent.append("Text: ").append(text).append('\n');
+                        builder.append("Text: ").append(text).append('\n');
                     } else {
-                        dropboxContent.append("Not Text!").append('\n');
+                        builder.append("Not Text!").append('\n');
                     }
                     entry.close();
                     entry = dropbox.getNextEntry(tag, msec);
                 }
+                dropboxContent.put(tag, builder.toString());
             }
-            return new SimpleElement(dropboxContent.toString());
+            return dropboxContent;
 
         } catch (Exception e) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");

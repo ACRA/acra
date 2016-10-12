@@ -27,6 +27,7 @@ import org.acra.collections.BoundedLinkedList;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -166,6 +167,13 @@ public final class IOUtils {
             return TextUtils.join("\n", buffer);
         } finally {
             nonBlockingReader.close();
+        }
+    }
+
+    public static void deleteReport(@NonNull File file) {
+        final boolean deleted = file.delete();
+        if (!deleted) {
+            ACRA.log.w(LOG_TAG, "Could not delete error report : " + file);
         }
     }
 }

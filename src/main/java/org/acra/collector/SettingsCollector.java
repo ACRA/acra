@@ -38,10 +38,10 @@ import java.lang.reflect.Field;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Helper to collect data from {@link System}, {@link Global} and {@link Secure} Settings
+ * collects data from {@link System}, {@link Global} and {@link Secure} Settings
  * classes.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class SettingsCollector extends Collector {
 
@@ -61,7 +61,7 @@ final class SettingsCollector extends Collector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      *
-     * @return A human readable String containing one key=value pair per line.
+     * @return collected key-value pairs.
      */
     @NonNull
     private Element collectSystemSettings() throws JSONException {
@@ -92,7 +92,7 @@ final class SettingsCollector extends Collector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      *
-     * @return A human readable String containing one key=value pair per line.
+     * @return collected key-value pairs.
      */
     @NonNull
     private Element collectSecureSettings() throws JSONException {
@@ -120,7 +120,7 @@ final class SettingsCollector extends Collector {
      * collector uses reflection to be sure to always get the most accurate data
      * whatever Android API level it runs on.
      *
-     * @return A human readable String containing one key=value pair per line.
+     * @return collected key-value pairs.
      */
     @NonNull
     private Element collectGlobalSettings() throws JSONException {

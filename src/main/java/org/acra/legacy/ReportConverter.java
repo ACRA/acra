@@ -77,7 +77,7 @@ class ReportConverter {
                     persister.store(data, report);
                 } else {
                     //reports without these keys are probably invalid
-                    report.delete();
+                    IOUtils.deleteReport(report);
                 }
             } catch (IOException e) {
                 ACRA.log.w(LOG_TAG, "Unable to read report file " + report.getPath(), e);

@@ -45,13 +45,9 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Executes logcat commands and collects it's output.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class LogCatCollector extends Collector {
-    /**
-     * Default number of latest lines kept from the logcat output.
-     */
-    private static final int DEFAULT_TAIL_COUNT = 100;
 
     private final ACRAConfiguration config;
     private final PackageManagerWrapper pm;
@@ -85,8 +81,6 @@ final class LogCatCollector extends Collector {
             commandLine.add(bufferName);
         }
 
-        // "-t n" argument has been introduced in FroYo (API level 8). For
-        // devices with lower API level, we will have to emulate its job.
         final int tailCount;
         final List<String> logcatArgumentsList = config.logcatArguments();
 
@@ -123,7 +117,9 @@ final class LogCatCollector extends Collector {
 
     @Override
     boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+        return super.shouldCollect(crashReportFields, collect, reportBuilder)
+                && (pm.hasPermission(Manifest.permission.READ_LOGS)
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }
 
     @NonNull

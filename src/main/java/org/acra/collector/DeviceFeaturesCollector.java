@@ -31,7 +31,7 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Features declared as available on the device.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class DeviceFeaturesCollector extends Collector {
     private final Context context;
@@ -46,7 +46,7 @@ final class DeviceFeaturesCollector extends Collector {
      *
      * @param reportField   the ReportField to collect
      * @param reportBuilder the current reportBuilder
-     * @return String of all device feature names
+     * @return Element of all device feature names
      */
     @NonNull
     @Override

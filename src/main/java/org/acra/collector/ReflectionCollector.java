@@ -40,8 +40,8 @@ import java.util.Arrays;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Tools to retrieve key/value pairs from static fields and getters of any
- * class. Reflection API usage allows to retrieve data without having to
+ * Collector retrieving key/value pairs from static fields and getters.
+ * Reflection API usage allows to retrieve data without having to
  * implement a class for each android version of each interesting class.
  * It can also help find hidden properties.
  *
@@ -149,7 +149,7 @@ final class ReflectionCollector extends Collector {
         final Class configuredBuildConfig = config.buildConfigClass();
         if (!configuredBuildConfig.equals(Object.class)) {
             // If set via annotations or programmatically then it will have a real value,
-            // otherwise it will be Object.class (annotation default) or null (explicit programmatic).
+            // otherwise it will be Object.class (default).
             return configuredBuildConfig;
         }
 

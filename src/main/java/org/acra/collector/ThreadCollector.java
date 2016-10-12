@@ -28,7 +28,7 @@ import org.json.JSONException;
 /**
  * Collects some data identifying a Thread
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class ThreadCollector extends Collector {
     ThreadCollector() {
@@ -38,7 +38,7 @@ final class ThreadCollector extends Collector {
     /**
      * collects some data identifying the crashed thread
      *
-     * @return a string representation of the information including the id, name and priority of the thread.
+     * @return the information including the id, name and priority of the thread.
      */
     @NonNull
     @Override

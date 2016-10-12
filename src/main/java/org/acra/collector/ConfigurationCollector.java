@@ -39,11 +39,11 @@ import static org.acra.ACRA.LOG_TAG;
  * Inspects a {@link Configuration} object through reflection API in order to
  * generate a human readable String with values replaced with their constants
  * names. The {@link Configuration#toString()} method was not enough as values
- * like 0, 1, 2 or 3 don't look readable to me. Using reflection API allows to
+ * like 0, 1, 2 or 3 aren't readable. Using reflection API allows to
  * retrieve hidden fields and can make us hope to be compatible with all Android
  * API levels, even those which are not published yet.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 public final class ConfigurationCollector extends Collector {
 
@@ -85,11 +85,11 @@ public final class ConfigurationCollector extends Collector {
     }
 
     /**
-     * Use this method to generate a human readable String listing all values
+     * Creates an Element listing all values human readable
      * from the provided Configuration instance.
      *
      * @param conf The Configuration to be described.
-     * @return A String describing all the fields of the given Configuration,
+     * @return An Element describing all the fields of the given Configuration,
      * with values replaced by constant names.
      */
     @NonNull
