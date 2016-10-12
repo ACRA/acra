@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.collector.CrashReportData;
+import org.acra.model.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;

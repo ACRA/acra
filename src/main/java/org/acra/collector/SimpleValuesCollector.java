@@ -22,6 +22,8 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.Installation;
 
 import java.io.File;
@@ -57,7 +59,7 @@ final class SimpleValuesCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         String value;
         switch (reportField) {
             case IS_SILENT:
@@ -94,7 +96,7 @@ final class SimpleValuesCollector extends Collector {
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return new CrashReportData.SimpleElement(value);
+        return new SimpleElement(value);
     }
 
     @NonNull

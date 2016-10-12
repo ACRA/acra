@@ -29,6 +29,8 @@ import android.view.Surface;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,8 +53,8 @@ final class DisplayManagerCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        final ComplexElement result = new ComplexElement();
         for (Display display : DisplayManagerCompat.getInstance(context).getDisplays()) {
             try {
                 result.put(String.valueOf(display.getDisplayId()), collectDisplayData(display));

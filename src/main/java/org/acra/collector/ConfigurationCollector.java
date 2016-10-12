@@ -24,6 +24,8 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 import org.json.JSONException;
 
 import java.lang.reflect.Field;
@@ -61,9 +63,9 @@ public final class ConfigurationCollector extends Collector {
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
     private final Context context;
-    private final CrashReportData.Element initialConfiguration;
+    private final Element initialConfiguration;
 
-    public ConfigurationCollector(@NonNull Context context, @NonNull CrashReportData.Element initialConfiguration) {
+    public ConfigurationCollector(@NonNull Context context, @NonNull Element initialConfiguration) {
         super(ReportField.INITIAL_CONFIGURATION, ReportField.CRASH_CONFIGURATION);
         this.context = context;
         this.initialConfiguration = initialConfiguration;
@@ -71,7 +73,7 @@ public final class ConfigurationCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case INITIAL_CONFIGURATION:
                 return initialConfiguration;
@@ -91,8 +93,8 @@ public final class ConfigurationCollector extends Collector {
      * with values replaced by constant names.
      */
     @NonNull
-    private static CrashReportData.Element configToElement(@NonNull Configuration conf) {
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    private static Element configToElement(@NonNull Configuration conf) {
+        final ComplexElement result = new ComplexElement();
         Map<String, SparseArray<String>> valueArrays = getValueArrays();
         for (final Field f : conf.getClass().getFields()) {
             try {
@@ -247,7 +249,7 @@ public final class ConfigurationCollector extends Collector {
      * @return A String representation of the current configuration for the application.
      */
     @NonNull
-    public static CrashReportData.Element collectConfiguration(@NonNull Context context) {
+    public static Element collectConfiguration(@NonNull Context context) {
         try {
             return configToElement(context.getResources().getConfiguration());
         } catch (RuntimeException e) {

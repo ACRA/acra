@@ -27,6 +27,8 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.PackageManagerWrapper;
 
 import java.util.Set;
@@ -59,9 +61,9 @@ final class DeviceIdCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         String result = getDeviceId();
-        return result != null ? new CrashReportData.SimpleElement(result) : ACRAConstants.NOT_AVAILABLE;
+        return result != null ? new SimpleElement(result) : ACRAConstants.NOT_AVAILABLE;
     }
 
     /**

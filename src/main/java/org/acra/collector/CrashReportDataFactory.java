@@ -24,6 +24,8 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.CrashReportData;
+import org.acra.model.Element;
 import org.acra.util.PackageManagerWrapper;
 
 import java.util.ArrayList;
@@ -51,11 +53,11 @@ public final class CrashReportDataFactory {
     private final SharedPreferences prefs;
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Calendar appStartDate;
-    private final CrashReportData.Element initialConfiguration;
+    private final Element initialConfiguration;
 
     public CrashReportDataFactory(@NonNull Context context, @NonNull ACRAConfiguration config,
                                   @NonNull SharedPreferences prefs, @NonNull Calendar appStartDate,
-                                  @NonNull CrashReportData.Element initialConfiguration) {
+                                  @NonNull Element initialConfiguration) {
         this.context = context;
         this.config = config;
         this.prefs = prefs;

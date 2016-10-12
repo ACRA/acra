@@ -28,6 +28,8 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,7 +73,7 @@ final class MediaCodecListCollector extends Collector {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
             return collectMediaCodecList();
         } catch (JSONException e) {
@@ -142,7 +144,7 @@ final class MediaCodecListCollector extends Collector {
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @NonNull
-    private CrashReportData.Element collectMediaCodecList() throws JSONException {
+    private Element collectMediaCodecList() throws JSONException {
         prepare();
         final MediaCodecInfo[] infos;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -157,7 +159,7 @@ final class MediaCodecListCollector extends Collector {
             infos = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
         }
 
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+        final ComplexElement result = new ComplexElement();
         for (int i = 0; i < infos.length; i++) {
             final MediaCodecInfo codecInfo = infos[i];
             JSONObject codec = new JSONObject();

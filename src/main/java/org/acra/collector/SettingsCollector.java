@@ -29,6 +29,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 import org.json.JSONException;
 
 import java.lang.reflect.Field;
@@ -62,8 +64,8 @@ final class SettingsCollector extends Collector {
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    private CrashReportData.Element collectSystemSettings() throws JSONException {
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    private Element collectSystemSettings() throws JSONException {
+        final ComplexElement result = new ComplexElement();
         final Field[] keys = System.class.getFields();
         for (final Field key : keys) {
             // Avoid retrieving deprecated fields... it is useless, has an
@@ -93,8 +95,8 @@ final class SettingsCollector extends Collector {
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    private CrashReportData.Element collectSecureSettings() throws JSONException {
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    private Element collectSecureSettings() throws JSONException {
+        final ComplexElement result = new ComplexElement();
         final Field[] keys = Secure.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
@@ -121,12 +123,12 @@ final class SettingsCollector extends Collector {
      * @return A human readable String containing one key=value pair per line.
      */
     @NonNull
-    private CrashReportData.Element collectGlobalSettings() throws JSONException {
+    private Element collectGlobalSettings() throws JSONException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return ACRAConstants.NOT_AVAILABLE;
         }
 
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+        final ComplexElement result = new ComplexElement();
         final Field[] keys = Global.class.getFields();
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
@@ -161,7 +163,7 @@ final class SettingsCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
         switch (reportField) {
             case SETTINGS_SYSTEM:

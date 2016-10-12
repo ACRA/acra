@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.PackageManagerWrapper;
 
 /**
@@ -39,14 +41,14 @@ final class PackageManagerCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         PackageInfo info = pm.getPackageInfo();
         if (info != null) {
             switch (reportField) {
                 case APP_VERSION_NAME:
-                    return new CrashReportData.SimpleElement(info.versionName);
+                    return new SimpleElement(info.versionName);
                 case APP_VERSION_CODE:
-                    return new CrashReportData.SimpleElement(Integer.toString(info.versionCode));
+                    return new SimpleElement(Integer.toString(info.versionCode));
             }
         }
         return ACRAConstants.NOT_AVAILABLE;

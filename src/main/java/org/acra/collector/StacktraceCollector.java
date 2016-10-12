@@ -21,6 +21,8 @@ import android.text.TextUtils;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -45,13 +47,13 @@ final class StacktraceCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case STACK_TRACE:
-                return new CrashReportData.SimpleElement(
+                return new SimpleElement(
                         getStackTrace(reportBuilder.getMessage(), reportBuilder.getException()));
             case STACK_TRACE_HASH:
-                return new CrashReportData.SimpleElement(getStackTraceHash(reportBuilder.getException()));
+                return new SimpleElement(getStackTraceHash(reportBuilder.getException()));
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

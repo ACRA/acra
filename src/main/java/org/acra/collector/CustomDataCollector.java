@@ -20,6 +20,8 @@ import android.support.annotation.Nullable;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +41,7 @@ final class CustomDataCollector extends Collector {
     }
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         return createCustomInfoElement(reportBuilder.getCustomData());
     }
 
@@ -50,12 +52,12 @@ final class CustomDataCollector extends Collector {
      * @return A string with a 'key = value' pair on each line.
      */
     @NonNull
-    private CrashReportData.Element createCustomInfoElement(@Nullable Map<String, String> reportCustomData) {
+    private Element createCustomInfoElement(@Nullable Map<String, String> reportCustomData) {
         Map<String, String> params = customParameters;
         if (reportCustomData != null) {
             params = new HashMap<String, String>(params);
             params.putAll(reportCustomData);
         }
-        return new CrashReportData.ComplexElement(params);
+        return new ComplexElement(params);
     }
 }

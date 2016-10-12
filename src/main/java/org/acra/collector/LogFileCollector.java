@@ -28,6 +28,8 @@ import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.file.Directory;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -63,9 +65,9 @@ final class LogFileCollector extends Collector {
      */
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
-            return new CrashReportData.SimpleElement(IOUtils.streamToString(
+            return new SimpleElement(IOUtils.streamToString(
                     getStream(config.applicationLogFileDir(), config.applicationLogFile()),
                     config.applicationLogFileLines()));
         } catch (IOException e) {

@@ -28,6 +28,8 @@ import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
 
@@ -72,7 +74,7 @@ final class LogCatCollector extends Collector {
      * report generation time and a bigger footprint on the device data
      * plan consumption.
      */
-    private CrashReportData.Element collectLogCat(@Nullable String bufferName) {
+    private Element collectLogCat(@Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
         final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
@@ -95,7 +97,7 @@ final class LogCatCollector extends Collector {
             tailCount = -1;
         }
 
-        CrashReportData.Element logcat;
+        Element logcat;
         commandLine.addAll(logcatArgumentsList);
 
         try {
@@ -103,7 +105,7 @@ final class LogCatCollector extends Collector {
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
-            logcat = new CrashReportData.SimpleElement(streamToString(process.getInputStream(), new Predicate<String>() {
+            logcat = new SimpleElement(streamToString(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return myPidStr == null || s.contains(myPidStr);
@@ -126,7 +128,7 @@ final class LogCatCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         String bufferName = null;
         switch (reportField) {
             case LOGCAT:

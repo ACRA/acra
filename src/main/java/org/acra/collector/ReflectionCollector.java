@@ -26,6 +26,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,8 +108,8 @@ final class ReflectionCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        ComplexElement result = new ComplexElement();
         try {
             switch (reportField) {
                 case BUILD:

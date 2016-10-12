@@ -24,6 +24,8 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.IOUtils;
 
 import java.io.File;
@@ -51,14 +53,14 @@ final class MemoryInfoCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField){
             case DUMPSYS_MEMINFO:
                 return collectMemInfo();
             case TOTAL_MEM_SIZE:
-                return new CrashReportData.SimpleElement(Long.toString(getTotalInternalMemorySize()));
+                return new SimpleElement(Long.toString(getTotalInternalMemorySize()));
             case AVAILABLE_MEM_SIZE:
-                return new CrashReportData.SimpleElement(Long.toString(getAvailableInternalMemorySize()));
+                return new SimpleElement(Long.toString(getAvailableInternalMemorySize()));
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
@@ -72,7 +74,7 @@ final class MemoryInfoCollector extends Collector {
      * @return The execution result.
      */
     @NonNull
-    private static CrashReportData.Element collectMemInfo() {
+    private static Element collectMemInfo() {
 
         String meminfo;
         try {
@@ -89,7 +91,7 @@ final class MemoryInfoCollector extends Collector {
             return ACRAConstants.NOT_AVAILABLE;
         }
 
-        return new CrashReportData.SimpleElement(meminfo);
+        return new SimpleElement(meminfo);
     }
 
     /**

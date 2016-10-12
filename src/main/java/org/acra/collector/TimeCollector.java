@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,7 +50,7 @@ final class TimeCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         Calendar time;
         switch (reportField) {
             case USER_APP_START_DATE:
@@ -61,7 +63,7 @@ final class TimeCollector extends Collector {
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return new CrashReportData.SimpleElement(getTimeString(time));
+        return new SimpleElement(getTimeString(time));
     }
 
     @NonNull

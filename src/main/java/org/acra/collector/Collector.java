@@ -20,6 +20,7 @@ import android.support.annotation.Size;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.Element;
 
 import java.util.Set;
 
@@ -72,5 +73,5 @@ abstract class Collector {
      * @return String of what was collected
      */
     @NonNull
-    abstract CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder);
+    abstract Element collect(ReportField reportField, ReportBuilder reportBuilder);
 }

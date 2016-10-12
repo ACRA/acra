@@ -26,6 +26,9 @@ import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,8 +65,8 @@ final class SharedPreferencesCollector extends Collector {
      * @return A readable formatted String containing all key/value pairs.
      */
     @NonNull
-    private CrashReportData.Element collect() throws JSONException {
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    private Element collect() throws JSONException {
+        final ComplexElement result = new ComplexElement();
 
         // Include the default SharedPreferences
         final Map<String, SharedPreferences> sharedPrefs = new TreeMap<String, SharedPreferences>();
@@ -110,11 +113,11 @@ final class SharedPreferencesCollector extends Collector {
 
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case USER_EMAIL:
                 String email = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, null);
-                return email != null ? new CrashReportData.SimpleElement(email) : ACRAConstants.NOT_AVAILABLE;
+                return email != null ? new SimpleElement(email) : ACRAConstants.NOT_AVAILABLE;
             case SHARED_PREFERENCES:
                 try {
                     return collect();

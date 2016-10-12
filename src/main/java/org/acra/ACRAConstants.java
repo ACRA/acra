@@ -19,8 +19,9 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import org.acra.collector.CrashReportData;
 import org.acra.dialog.CrashReportDialog;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 
 import static org.acra.ReportField.*;
 
@@ -163,5 +164,5 @@ public final class ACRAConstants {
 
     public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 
-    public static final CrashReportData.Element NOT_AVAILABLE = new CrashReportData.SimpleElement("N/A");
+    public static final Element NOT_AVAILABLE = new SimpleElement("N/A");
 }

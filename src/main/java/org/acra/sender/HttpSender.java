@@ -26,8 +26,9 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.collections.ImmutableSet;
-import org.acra.collector.CrashReportData;
+import org.acra.model.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.Element;
 import org.acra.util.HttpRequest;
 
 import java.io.IOException;
@@ -241,7 +242,7 @@ public class HttpSender implements ReportSender {
     }
 
     @NonNull
-    private Map<String, String> remap(@NonNull Map<ReportField, CrashReportData.Element> report) {
+    private Map<String, String> remap(@NonNull Map<ReportField, Element> report) {
 
         Set<ReportField> fields = config.getReportFields();
         if (fields.isEmpty()) {

@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 import org.json.JSONException;
 
 /**
@@ -40,9 +42,9 @@ final class ThreadCollector extends Collector {
      */
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         Thread t = reportBuilder.getUncaughtExceptionThread();
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+        final ComplexElement result = new ComplexElement();
         if (t != null) {
             try {
                 result.put("id", t.getId());

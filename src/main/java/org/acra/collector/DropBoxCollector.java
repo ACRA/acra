@@ -26,6 +26,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.Element;
+import org.acra.model.SimpleElement;
 import org.acra.util.PackageManagerWrapper;
 
 import java.text.SimpleDateFormat;
@@ -75,7 +77,7 @@ final class DropBoxCollector extends Collector {
      */
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
             final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
@@ -119,7 +121,7 @@ final class DropBoxCollector extends Collector {
                     entry = dropbox.getNextEntry(tag, msec);
                 }
             }
-            return new CrashReportData.SimpleElement(dropboxContent.toString());
+            return new SimpleElement(dropboxContent.toString());
 
         } catch (Exception e) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");

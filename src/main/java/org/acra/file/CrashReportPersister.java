@@ -22,22 +22,19 @@ package org.acra.file;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
-import org.acra.ReportField;
-import org.acra.collector.CrashReportData;
+import org.acra.model.CrashReportData;
+import org.acra.util.JsonUtils;
 import org.acra.util.IOUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.util.Map;
 
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
@@ -47,23 +44,26 @@ import java.util.Map;
  * file.
  */
 public final class CrashReportPersister {
-
-    private static final int NONE = 0, SLASH = 1, UNICODE = 2, CONTINUE = 3, KEY_DONE = 4, IGNORE = 5;
-    private static final String LINE_SEPARATOR = "\n";
+    private static final String CHARSET = "UTF-8";
 
     /**
-     * Loads properties from the specified {@code InputStream}. The encoding is ISO8859-1.
+     * Loads properties from the specified {@code File}.
      *
      * @param file  Report file from which to load the CrashData.
-     * @return CrashReportData read from the supplied InputStream.
-     * @throws java.io.IOException if error occurs during reading from the {@code InputStream}.
+     * @return CrashReportData read from the supplied File.
+     * @throws java.io.IOException if error occurs during reading from the {@code File}.
      */
     @NonNull
     public CrashReportData load(@NonNull File file) throws IOException {
 
         final InputStream in = new BufferedInputStream(new FileInputStream(file), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
         try {
-            return load(new InputStreamReader(in, "ISO8859-1")); //$NON-NLS-1$
+            return JsonUtils.toCrashReportData(new JSONObject(IOUtils.streamToString(in)));
+        } catch (JSONException e) {
+            IOException exception = new IOException();
+            //noinspection UnnecessaryInitCause
+            exception.initCause(e);
+            throw exception;
         } finally {
             IOUtils.safeClose(in);
         }
@@ -80,236 +80,12 @@ public final class CrashReportPersister {
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
 
-        final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "ISO8859_1"); //$NON-NLS-1$
+        final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), CHARSET);
         try {
-            final StringBuilder buffer = new StringBuilder(200);
-
-            for (final Map.Entry<ReportField, CrashReportData.Element> entry : crashData.entrySet()) {
-                final String key = entry.getKey().toString();
-                dumpString(buffer, key, true);
-                buffer.append('=');
-                dumpString(buffer, entry.getValue().asString(), false);
-                buffer.append(LINE_SEPARATOR);
-                writer.write(buffer.toString());
-                buffer.setLength(0);
-            }
+            writer.write(crashData.toJSON().toString());
             writer.flush();
         } finally {
             IOUtils.safeClose(writer);
-        }
-    }
-
-    /**
-     * Loads properties from the specified InputStream. The properties are of
-     * the form <code>key=value</code>, one property per line. It may be not
-     * encode as 'ISO-8859-1'.The {@code Properties} file is interpreted
-     * according to the following rules:
-     * <ul>
-     * <li>Empty lines are ignored.</li>
-     * <li>Lines starting with either a "#" or a "!" are comment lines and are
-     * ignored.</li>
-     * <li>A backslash at the end of the line escapes the following newline
-     * character ("\r", "\n", "\r\n"). If there's a whitespace after the
-     * backslash it will just escape that whitespace instead of concatenating
-     * the lines. This does not apply to comment lines.</li>
-     * <li>A property line consists of the key, the space between the key and
-     * the value, and the value. The key goes up to the first whitespace, "=" or
-     * ":" that is not escaped. The space between the key and the value contains
-     * either one whitespace, one "=" or one ":" and any number of additional
-     * whitespaces before and after that character. The value starts with the
-     * first character after the space between the key and the value.</li>
-     * <li>Following escape sequences are recognized: "\ ", "\\", "\r", "\n",
-     * "\!", "\#", "\t", "\b", "\f", and "&#92;uXXXX" (unicode character).</li>
-     * </ul>
-     *
-     * @param reader    Reader from which to read the properties of this CrashReportData.
-     * @return CrashReportData read from the supplied Reader.
-     * @throws java.io.IOException if the properties could not be read.
-     * @since 1.6
-     */
-    @NonNull
-    private synchronized CrashReportData load(@NonNull Reader reader) throws IOException {
-        int mode = NONE, unicode = 0, count = 0;
-        char nextChar;
-        char[] buf = new char[40]; //TODO: consider using a list instead of manually increasing the size when needed
-        int offset = 0, keyLength = -1, intVal;
-        boolean firstChar = true;
-
-        final CrashReportData crashData = new CrashReportData();
-        final BufferedReader br = new BufferedReader(reader, ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-        try {
-            while (true) {
-                intVal = br.read();
-                if (intVal == -1) {
-                    break;
-                }
-                nextChar = (char) intVal;
-
-                if (offset == buf.length) {
-                    final char[] newBuf = new char[buf.length * 2];
-                    System.arraycopy(buf, 0, newBuf, 0, offset);
-                    buf = newBuf;
-                }
-                if (mode == UNICODE) {
-                    final int digit = Character.digit(nextChar, 16);
-                    if (digit >= 0) {
-                        unicode = (unicode << 4) + digit;
-                        if (++count < 4) {
-                            continue;
-                        }
-                    } else if (count <= 4) {
-                        // luni.09=Invalid Unicode sequence: illegal character
-                        throw new IllegalArgumentException("luni.09");
-                    }
-                    mode = NONE;
-                    buf[offset++] = (char) unicode;
-                    if (nextChar != '\n' && nextChar != '\u0085') {
-                        continue;
-                    }
-                }
-                if (mode == SLASH) {
-                    mode = NONE;
-                    switch (nextChar) {
-                        case '\r':
-                            mode = CONTINUE; // Look for a following \n
-                            continue;
-                        case '\u0085':
-                        case '\n':
-                            mode = IGNORE; // Ignore whitespace on the next line
-                            continue;
-                        case 'b':
-                            nextChar = '\b';
-                            break;
-                        case 'f':
-                            nextChar = '\f';
-                            break;
-                        case 'n':
-                            nextChar = '\n';
-                            break;
-                        case 'r':
-                            nextChar = '\r';
-                            break;
-                        case 't':
-                            nextChar = '\t';
-                            break;
-                        case 'u':
-                            mode = UNICODE;
-                            unicode = count = 0;
-                            continue;
-                    }
-                } else {
-                    switch (nextChar) {
-                        case '#':
-                        case '!':
-                            if (firstChar) {
-                                while (true) {
-                                    intVal = br.read();
-                                    if (intVal == -1) {
-                                        break;
-                                    }
-                                    nextChar = (char) intVal; // & 0xff
-                                    // not
-                                    // required
-                                    if (nextChar == '\r' || nextChar == '\n' || nextChar == '\u0085') {
-                                        break;
-                                    }
-                                }
-                                continue;
-                            }
-                            break;
-                        case '\n':
-                            if (mode == CONTINUE) { // Part of a \r\n sequence
-                                mode = IGNORE; // Ignore whitespace on the next line
-                                continue;
-                            }
-                            // fall into the next case
-                        case '\u0085':
-                        case '\r':
-                            mode = NONE;
-                            firstChar = true;
-                            if (offset > 0 || (offset == 0 && keyLength == 0)) {
-                                if (keyLength == -1) {
-                                    keyLength = offset;
-                                }
-                                final String temp = new String(buf, 0, offset);
-                                CrashReportData.Element element;
-                                try {
-                                    element = new CrashReportData.ComplexElement(temp.substring(keyLength));
-                                } catch (JSONException e) {
-                                    element = new CrashReportData.SimpleElement(temp.substring(keyLength));
-                                }
-                                crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), element);
-                            }
-                            keyLength = -1;
-                            offset = 0;
-                            continue;
-                        case '\\':
-                            if (mode == KEY_DONE) {
-                                keyLength = offset;
-                            }
-                            mode = SLASH;
-                            continue;
-                        case ':':
-                        case '=':
-                            if (keyLength == -1) { // if parsing the key
-                                mode = NONE;
-                                keyLength = offset;
-                                continue;
-                            }
-                            break;
-                    }
-                    if (Character.isWhitespace(nextChar)) {
-                        if (mode == CONTINUE) {
-                            mode = IGNORE;
-                        }
-                        // if key length == 0 or value length == 0
-                        if (offset == 0 || offset == keyLength || mode == IGNORE) {
-                            continue;
-                        }
-                        if (keyLength == -1) { // if parsing the key
-                            mode = KEY_DONE;
-                            continue;
-                        }
-                    }
-                    if (mode == IGNORE || mode == CONTINUE) {
-                        mode = NONE;
-                    }
-                }
-                firstChar = false;
-                if (mode == KEY_DONE) {
-                    keyLength = offset;
-                    mode = NONE;
-                }
-                buf[offset++] = nextChar;
-            }
-            if (mode == UNICODE && count <= 4) {
-                // luni.08=Invalid Unicode sequence: expected format \\uxxxx
-                throw new IllegalArgumentException("luni.08");
-            }
-            if (keyLength == -1 && offset > 0) {
-                keyLength = offset;
-            }
-            if (keyLength >= 0) {
-                final String temp = new String(buf, 0, offset);
-                final ReportField key = Enum.valueOf(ReportField.class, temp.substring(0, keyLength));
-                String value = temp.substring(keyLength);
-                if (mode == SLASH) {
-                    value += "\u0000";
-                }
-                CrashReportData.Element element;
-                try {
-                    element = new CrashReportData.ComplexElement(value);
-                } catch (JSONException e) {
-                    element = new CrashReportData.SimpleElement(value);
-                }
-                crashData.put(key, element);
-            }
-
-            IOUtils.safeClose(reader);
-
-            return crashData;
-        } finally {
-            IOUtils.safeClose(br);
         }
     }
 

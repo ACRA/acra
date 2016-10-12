@@ -23,6 +23,8 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -48,8 +50,8 @@ final class DeviceFeaturesCollector extends Collector {
      */
     @NonNull
     @Override
-    CrashReportData.Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final CrashReportData.ComplexElement result = new CrashReportData.ComplexElement();
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        final ComplexElement result = new ComplexElement();
         try {
             final PackageManager pm = context.getPackageManager();
             final FeatureInfo[] features = pm.getSystemAvailableFeatures();
