@@ -21,7 +21,7 @@ import android.support.annotation.StringRes;
 
 import org.acra.dialog.CrashReportDialog;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.StringElement;
 
 import static org.acra.ReportField.*;
 
@@ -164,5 +164,5 @@ public final class ACRAConstants {
 
     public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 
-    public static final Element NOT_AVAILABLE = new SimpleElement("N/A");
+    public static final Element NOT_AVAILABLE = new StringElement("N/A");
 }

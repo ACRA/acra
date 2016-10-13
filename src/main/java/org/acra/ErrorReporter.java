@@ -21,13 +21,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.annotation.ReportsCrashes;
-import org.acra.builder.*;
+import org.acra.builder.LastActivityManager;
+import org.acra.builder.NoOpReportPrimer;
+import org.acra.builder.ReportBuilder;
+import org.acra.builder.ReportExecutor;
+import org.acra.builder.ReportPrimer;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.model.Element;
-import org.acra.model.SimpleElement;
-import org.acra.util.ApplicationStartupProcessor;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.Element;
+import org.acra.util.ApplicationStartupProcessor;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
@@ -102,7 +105,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         if (config.getReportFields().contains(ReportField.INITIAL_CONFIGURATION)) {
             initialConfiguration = ConfigurationCollector.collectConfiguration(this.context);
         } else {
-            initialConfiguration = new SimpleElement(null);
+            initialConfiguration = ACRAConstants.NOT_AVAILABLE;
         }
 
         // Sets the application start date.

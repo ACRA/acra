@@ -104,7 +104,7 @@ public final class ConfigurationCollector extends Collector {
                         if (f.getType().equals(int.class)) {
                             result.put(fieldName, getFieldValueName(valueArrays, conf, f));
                         } else if (f.get(conf) != null) {
-                            result.put(fieldName, f.get(conf).toString());
+                            result.put(fieldName, f.get(conf));
                         }
                     } catch (JSONException e) {
                         ACRA.log.w(LOG_TAG, "Could not collect configuration field " + fieldName, e);
@@ -187,10 +187,10 @@ public final class ConfigurationCollector extends Collector {
      * constant name.
      * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private static String getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
+    private static Object getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
-            return Integer.toString(f.getInt(conf));
+            return f.getInt(conf);
         } else if (fieldName.equals(FIELD_UIMODE)) {
             return activeFlags(valueArrays.get(PREFIX_UI_MODE), f.getInt(conf));
         } else if (fieldName.equals(FIELD_SCREENLAYOUT)) {
@@ -199,13 +199,13 @@ public final class ConfigurationCollector extends Collector {
             final SparseArray<String> values = valueArrays.get(fieldName.toUpperCase() + '_');
             if (values == null) {
                 // Unknown field, return the raw int as String
-                return Integer.toString(f.getInt(conf));
+                return f.getInt(conf);
             }
 
             final String value = values.get(f.getInt(conf));
             if (value == null) {
                 // Unknown value, return the raw int as String
-                return Integer.toString(f.getInt(conf));
+                return f.getInt(conf);
             }
             return value;
         }

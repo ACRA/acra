@@ -22,12 +22,14 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.model.CrashReportData;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
+import org.acra.model.BooleanElement;
 import org.acra.model.ComplexElement;
+import org.acra.collector.CrashReportData;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.NumberElement;
+import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 import org.json.JSONException;
 
@@ -73,7 +75,7 @@ class ReportConverter {
             try {
                 in = new BufferedInputStream(new FileInputStream(report), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
                 CrashReportData data = legacyLoad(new InputStreamReader(in, "ISO8859-1")); //$NON-NLS-1$
-                if(data.containsKey(ReportField.REPORT_ID) && data.containsKey(ReportField.USER_CRASH_DATE)){
+                if (data.containsKey(ReportField.REPORT_ID) && data.containsKey(ReportField.USER_CRASH_DATE)) {
                     persister.store(data, report);
                 } else {
                     //reports without these keys are probably invalid
@@ -222,11 +224,22 @@ class ReportConverter {
                                     keyLength = offset;
                                 }
                                 final String temp = new String(buf, 0, offset);
+                                final String elementString = temp.substring(keyLength);
                                 Element element;
                                 try {
-                                    element = new ComplexElement(temp.substring(keyLength));
-                                } catch (JSONException e) {
-                                    element = new SimpleElement(temp.substring(keyLength));
+                                    element = new ComplexElement(elementString);
+                                } catch (JSONException e1) {
+                                    try {
+                                        element = new NumberElement(Double.valueOf(elementString));
+                                    } catch (NumberFormatException e2) {
+                                        if (elementString.equals("true")) {
+                                            element = new BooleanElement(true);
+                                        } else if (elementString.equals("false")) {
+                                            element = new BooleanElement(false);
+                                        } else {
+                                            element = new StringElement(elementString);
+                                        }
+                                    }
                                 }
                                 crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), element);
                             }
@@ -289,8 +302,18 @@ class ReportConverter {
                 Element element;
                 try {
                     element = new ComplexElement(value);
-                } catch (JSONException e) {
-                    element = new SimpleElement(value);
+                } catch (JSONException e1) {
+                    try {
+                        element = new NumberElement(Double.valueOf(value));
+                    } catch (NumberFormatException e2) {
+                        if (value.equals("true")) {
+                            element = new BooleanElement(true);
+                        } else if (value.equals("false")) {
+                            element = new BooleanElement(false);
+                        } else {
+                            element = new StringElement(value);
+                        }
+                    }
                 }
                 crashData.put(key, element);
             }

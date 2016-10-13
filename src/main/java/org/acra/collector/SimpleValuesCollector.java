@@ -22,8 +22,9 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.BooleanElement;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.StringElement;
 import org.acra.util.Installation;
 
 import java.io.File;
@@ -60,43 +61,31 @@ final class SimpleValuesCollector extends Collector {
     @NonNull
     @Override
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        String value;
         switch (reportField) {
             case IS_SILENT:
-                value = String.valueOf(reportBuilder.isSendSilently());
-                break;
+                return new BooleanElement(reportBuilder.isSendSilently());
             case REPORT_ID:
-                value = UUID.randomUUID().toString();
-                break;
+                return new StringElement(UUID.randomUUID().toString());
             case INSTALLATION_ID:
-                value = Installation.id(context);
-                break;
+                return new StringElement(Installation.id(context));
             case PACKAGE_NAME:
-                value = context.getPackageName();
-                break;
+                return new StringElement(context.getPackageName());
             case PHONE_MODEL:
-                value = Build.MODEL;
-                break;
+                return new StringElement(Build.MODEL);
             case ANDROID_VERSION:
-                value = Build.VERSION.RELEASE;
-                break;
+                return new StringElement(Build.VERSION.RELEASE);
             case BRAND:
-                value = Build.BRAND;
-                break;
+                return new StringElement(Build.BRAND);
             case PRODUCT:
-                value = Build.PRODUCT;
-                break;
+                return new StringElement(Build.PRODUCT);
             case FILE_PATH:
-                value = getApplicationFilePath();
-                break;
+                return new StringElement(getApplicationFilePath());
             case USER_IP:
-                value = getLocalIpAddress();
-                break;
+                return new StringElement(getLocalIpAddress());
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return new SimpleElement(value);
     }
 
     @NonNull

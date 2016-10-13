@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package org.acra.model;
+package org.acra.collector;
 
 import android.support.annotation.NonNull;
 
 import org.acra.ReportField;
+import org.acra.model.BooleanElement;
+import org.acra.model.Element;
+import org.acra.model.NumberElement;
+import org.acra.model.StringElement;
 import org.acra.util.JsonUtils;
 import org.json.JSONObject;
 
@@ -50,11 +54,19 @@ public final class CrashReportData extends EnumMap<ReportField, Element> {
      * @return the named property value, or {@code null} if it can't be found.
      */
     public String getProperty(@NonNull ReportField key) {
-        return super.get(key).asString();
+        return super.get(key).toString();
     }
 
-    public Element putSimple(@NonNull ReportField key, String value) {
-        return put(key, new SimpleElement(value));
+    public Element putString(@NonNull ReportField key, String value) {
+        return put(key, new StringElement(value));
+    }
+
+    public Element putNumber(@NonNull ReportField key, Number value) {
+        return put(key, new NumberElement(value));
+    }
+
+    public Element putBoolean(@NonNull ReportField key, boolean value) {
+        return put(key, new BooleanElement(value));
     }
 
     @NonNull

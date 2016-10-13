@@ -18,14 +18,28 @@ package org.acra.model;
 
 /**
  * @author F43nd1r
- * @since 12.10.2016
+ * @since 13.10.2016
  */
-public interface Element {
-    /**
-     * @return this elements json value.
-     * This must be one of the valid json types: bull, boolean, number, String, JSONObject or JSONArray
-     */
-    Object value();
 
-    String[] flatten();
+public class NumberElement implements Element {
+    private final Number content;
+
+    public NumberElement(Number content) {
+        this.content = content;
+    }
+
+    @Override
+    public Object value() {
+        return content;
+    }
+
+    @Override
+    public String[] flatten() {
+        return new String[]{toString()};
+    }
+
+    @Override
+    public String toString() {
+        return content.toString();
+    }
 }

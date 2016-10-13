@@ -28,7 +28,7 @@ import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.model.ComplexElement;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.StringElement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -123,7 +123,7 @@ final class SharedPreferencesCollector extends Collector {
         switch (reportField) {
             case USER_EMAIL:
                 String email = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, null);
-                return email != null ? new SimpleElement(email) : ACRAConstants.NOT_AVAILABLE;
+                return email != null ? new StringElement(email) : ACRAConstants.NOT_AVAILABLE;
             case SHARED_PREFERENCES:
                 try {
                     return collect();

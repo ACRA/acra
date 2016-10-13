@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.model.CrashReportData;
+import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.collections.ImmutableSet;
 

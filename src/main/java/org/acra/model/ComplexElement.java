@@ -16,6 +16,8 @@
 
 package org.acra.model;
 
+import android.support.annotation.NonNull;
+
 import org.acra.util.JsonUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,18 +45,22 @@ public class ComplexElement extends JSONObject implements Element {
         super(copyFrom, getNames(copyFrom));
     }
 
+    @NonNull
     private static String[] getNames(JSONObject object) throws JSONException {
         JSONArray json = object.names();
-        String[] names = new String[json.length()];
-        for (int i = 0; i < json.length(); i++) {
-            names[i] = json.getString(i);
+        if(json != null) {
+            String[] names = new String[json.length()];
+            for (int i = 0; i < json.length(); i++) {
+                names[i] = json.getString(i);
+            }
+            return names;
         }
-        return names;
+        return new String[0];
     }
 
     @Override
-    public String asString() {
-        return toString();
+    public Object value() {
+        return this;
     }
 
     @Override

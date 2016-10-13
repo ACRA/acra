@@ -29,7 +29,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
 
@@ -99,7 +99,7 @@ final class LogCatCollector extends Collector {
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
-            logcat = new SimpleElement(streamToString(process.getInputStream(), new Predicate<String>() {
+            logcat = new StringElement(streamToString(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return myPidStr == null || s.contains(myPidStr);

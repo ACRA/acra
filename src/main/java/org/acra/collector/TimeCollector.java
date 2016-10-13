@@ -21,7 +21,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.StringElement;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -63,7 +63,7 @@ final class TimeCollector extends Collector {
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return new SimpleElement(getTimeString(time));
+        return new StringElement(getTimeString(time));
     }
 
     @NonNull

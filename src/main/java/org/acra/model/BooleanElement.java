@@ -18,27 +18,28 @@ package org.acra.model;
 
 /**
  * @author F43nd1r
- * @since 12.10.2016
+ * @since 13.10.2016
  */
-public class SimpleElement implements Element {
-    private final String content;
 
-    public SimpleElement(String content) {
+public class BooleanElement implements Element {
+    private final boolean content;
+
+    public BooleanElement(boolean content) {
         this.content = content;
     }
 
     @Override
-    public String asString() {
-        return toString();
+    public Object value() {
+        return content;
     }
 
     @Override
     public String[] flatten() {
-        return new String[]{content};
+        return new String[]{toString()};
     }
 
     @Override
     public String toString() {
-        return content;
+        return String.valueOf(content);
     }
 }

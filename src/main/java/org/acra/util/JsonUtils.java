@@ -20,9 +20,8 @@ import android.util.Log;
 
 import org.acra.ReportField;
 import org.acra.model.ComplexElement;
-import org.acra.model.CrashReportData;
+import org.acra.collector.CrashReportData;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,20 +39,19 @@ import static org.acra.ACRA.LOG_TAG;
  */
 
 public final class JsonUtils {
-    private JsonUtils(){
+    private JsonUtils() {
     }
 
-    public static JSONObject toJson(CrashReportData data){
+    public static JSONObject toJson(CrashReportData data) {
         Map<String, Object> map = new HashMap<String, Object>();
         for (Map.Entry<ReportField, Element> entry : data.entrySet()) {
             Element element = entry.getValue();
-            Object value = element instanceof SimpleElement ? element.asString() : element;
-            map.put(entry.getKey().name(), value);
+            map.put(entry.getKey().name(), element.value());
         }
         return new JSONObject(map);
     }
 
-    public static CrashReportData toCrashReportData(JSONObject json){
+    public static CrashReportData toCrashReportData(JSONObject json) {
         CrashReportData data = new CrashReportData();
         for (Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
             String key = iterator.next();
@@ -62,10 +60,13 @@ public final class JsonUtils {
                 Object value = json.get(key);
                 if (value instanceof JSONObject) {
                     data.put(field, new ComplexElement((JSONObject) value));
+                } else if (value instanceof Number) {
+                    data.putNumber(field, (Number) value);
+                } else if (value instanceof Boolean) {
+                    data.putBoolean(field, (Boolean) value);
                 } else {
-                    data.putSimple(field, value.toString());
+                    data.putString(field, value.toString());
                 }
-
             } catch (IllegalArgumentException e) {
                 Log.w(LOG_TAG, "Unknown report key " + key, e);
             } catch (JSONException e) {
@@ -85,7 +86,7 @@ public final class JsonUtils {
                     result.add(key + "." + s);
                 }
             } else {
-                result.add(key + "." + value);
+                result.add(key + "=" + value);
             }
         }
         return result;

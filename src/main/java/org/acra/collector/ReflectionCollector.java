@@ -71,7 +71,7 @@ final class ReflectionCollector extends Collector {
                     if (field.getType().isArray()) {
                         container.put(field.getName(), new JSONArray(Arrays.asList((Object[]) value)));
                     } else {
-                        container.put(field.getName(), value.toString());
+                        container.put(field.getName(), value);
                     }
                 }
             } catch (IllegalArgumentException ignored) {

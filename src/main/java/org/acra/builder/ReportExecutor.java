@@ -17,7 +17,7 @@ import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportingInteractionMode;
-import org.acra.model.CrashReportData;
+import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.dialog.CrashReportDialog;

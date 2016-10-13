@@ -22,7 +22,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.NumberElement;
+import org.acra.model.StringElement;
 import org.acra.util.PackageManagerWrapper;
 
 /**
@@ -46,9 +47,9 @@ final class PackageManagerCollector extends Collector {
         if (info != null) {
             switch (reportField) {
                 case APP_VERSION_NAME:
-                    return new SimpleElement(info.versionName);
+                    return new StringElement(info.versionName);
                 case APP_VERSION_CODE:
-                    return new SimpleElement(Integer.toString(info.versionCode));
+                    return new NumberElement(info.versionCode);
             }
         }
         return ACRAConstants.NOT_AVAILABLE;

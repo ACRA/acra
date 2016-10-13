@@ -24,7 +24,6 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
-import org.acra.model.CrashReportData;
 import org.acra.model.Element;
 import org.acra.util.PackageManagerWrapper;
 

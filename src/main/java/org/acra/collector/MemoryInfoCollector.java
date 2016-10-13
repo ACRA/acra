@@ -25,7 +25,8 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.model.Element;
-import org.acra.model.SimpleElement;
+import org.acra.model.NumberElement;
+import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 
 import java.io.File;
@@ -54,13 +55,13 @@ final class MemoryInfoCollector extends Collector {
     @NonNull
     @Override
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        switch (reportField){
+        switch (reportField) {
             case DUMPSYS_MEMINFO:
                 return collectMemInfo();
             case TOTAL_MEM_SIZE:
-                return new SimpleElement(Long.toString(getTotalInternalMemorySize()));
+                return new NumberElement(getTotalInternalMemorySize());
             case AVAILABLE_MEM_SIZE:
-                return new SimpleElement(Long.toString(getAvailableInternalMemorySize()));
+                return new NumberElement(getAvailableInternalMemorySize());
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
@@ -76,7 +77,6 @@ final class MemoryInfoCollector extends Collector {
     @NonNull
     private static Element collectMemInfo() {
 
-        String meminfo;
         try {
             final List<String> commandLine = new ArrayList<String>();
             commandLine.add("dumpsys");
@@ -84,14 +84,11 @@ final class MemoryInfoCollector extends Collector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            meminfo = IOUtils.streamToString(process.getInputStream());
-
+            return new StringElement(IOUtils.streamToString(process.getInputStream()));
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "MemoryInfoCollector.meminfo could not retrieve data", e);
             return ACRAConstants.NOT_AVAILABLE;
         }
-
-        return new SimpleElement(meminfo);
     }
 
     /**
@@ -131,8 +128,7 @@ final class MemoryInfoCollector extends Collector {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             blockSize = stat.getBlockSizeLong();
             totalBlocks = stat.getBlockCountLong();
-        }
-        else {
+        } else {
             //noinspection deprecation
             blockSize = stat.getBlockSize();
             //noinspection deprecation

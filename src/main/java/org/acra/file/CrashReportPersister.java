@@ -22,7 +22,7 @@ package org.acra.file;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
-import org.acra.model.CrashReportData;
+import org.acra.collector.CrashReportData;
 import org.acra.util.JsonUtils;
 import org.acra.util.IOUtils;
 import org.json.JSONException;
