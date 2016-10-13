@@ -41,8 +41,6 @@ import static org.acra.ReportField.USER_CRASH_DATE;
  */
 public final class ReportExecutor {
 
-    private static final int THREAD_SLEEP_INTERVAL_MILLIS = 100;
-
     private final Context context;
     private final ACRAConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;

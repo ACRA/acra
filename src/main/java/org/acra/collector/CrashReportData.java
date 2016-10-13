@@ -57,16 +57,16 @@ public final class CrashReportData extends EnumMap<ReportField, Element> {
         return super.get(key).toString();
     }
 
-    public Element putString(@NonNull ReportField key, String value) {
-        return put(key, new StringElement(value));
+    public void putString(@NonNull ReportField key, String value) {
+        put(key, new StringElement(value));
     }
 
-    public Element putNumber(@NonNull ReportField key, Number value) {
-        return put(key, new NumberElement(value));
+    public void putNumber(@NonNull ReportField key, Number value) {
+        put(key, new NumberElement(value));
     }
 
-    public Element putBoolean(@NonNull ReportField key, boolean value) {
-        return put(key, new BooleanElement(value));
+    public void putBoolean(@NonNull ReportField key, boolean value) {
+        put(key, new BooleanElement(value));
     }
 
     @NonNull

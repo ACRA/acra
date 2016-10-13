@@ -72,7 +72,7 @@ public final class Installation {
             final String id = UUID.randomUUID().toString();
             out.write(id.getBytes());
         } finally {
-            out.close();
+            IOUtils.safeClose(out);
         }
     }
 }

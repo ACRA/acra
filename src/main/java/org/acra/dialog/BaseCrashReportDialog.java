@@ -33,7 +33,7 @@ import static org.acra.ReportField.USER_EMAIL;
  *
  * This Activity will be instantiated with 3 (or 4) arguments:
  * <ol>
- * <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
+ * <li>{@link ACRAConstants#EXTRA_REPORT_FILE}</li>
  * <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
  * <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
  * <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>

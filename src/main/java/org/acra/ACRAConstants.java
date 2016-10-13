@@ -58,7 +58,6 @@ public final class ACRAConstants {
      * comment.
      */
     public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
-    public static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
     /**
      * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
