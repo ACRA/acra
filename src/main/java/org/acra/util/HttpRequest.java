@@ -38,14 +38,6 @@ import static org.acra.ACRA.LOG_TAG;
 public final class HttpRequest {
 
     private static final String UTF8 = "UTF-8";
-    private static final int HTTP_SUCCESS = 200;
-    private static final int HTTP_REDIRECT = 300;
-    private static final int HTTP_CLIENT_ERROR = 400;
-    private static final int HTTP_UNAUTHORIZED = 401;
-    private static final int HTTP_FORBIDDEN = 403;
-    private static final int HTTP_METHOD_NOT_ALLOWED = 405;
-    private static final int HTTP_CONFLICT = 409;
-    private static final int MAX_HTTP_CODE = 600;
 
     private final ACRAConfiguration config;
     private String login;
@@ -157,28 +149,17 @@ public final class HttpRequest {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, content);
 
         final int responseCode = urlConnection.getResponseCode();
-        if (ACRA.DEV_LOGGING)
-            ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
-        if ((responseCode >= HTTP_SUCCESS) && (responseCode < HTTP_REDIRECT)) {
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + urlConnection.getResponseMessage());
+        if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
             // All is good
             ACRA.log.i(LOG_TAG, "Request received by server");
-        } else if (responseCode == HTTP_UNAUTHORIZED) {
-            //401 means the server rejected the authentication. The request must not be repeated. Discard it.
-            //This probably means that nothing can be sent with this configuration, maybe ACRA should disable itself after it?
-            ACRA.log.w(LOG_TAG, "401: Login validation error on server - request will be discarded");
-        } else if (responseCode == HTTP_FORBIDDEN) {
-            // 403 is an explicit data validation refusal from the server. The request must not be repeated. Discard it.
-            ACRA.log.w(LOG_TAG, "403: Data validation error on server - request will be discarded");
-        } else if (responseCode == HTTP_METHOD_NOT_ALLOWED) {
-            //405 means the server doesn't allow this request method. The request must not be repeated. Discard it.
-            //This probably means that nothing can be sent with this configuration, maybe ACRA should disable itself after it?
-            ACRA.log.w(LOG_TAG, "405: Server rejected Http " + method + " - request will be discarded");
-        } else if (responseCode == HTTP_CONFLICT) {
-            // 409 means that the report has been received already. So we can discard it.
-            ACRA.log.w(LOG_TAG, "409: Server has already received this post - request will be discarded");
-        } else if ((responseCode >= HTTP_CLIENT_ERROR) && (responseCode < MAX_HTTP_CODE)) {
+        } else if (responseCode == HttpURLConnection.HTTP_CLIENT_TIMEOUT || responseCode >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            //timeout or server error. Repeat the request later.
             ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
             throw new IOException("Host returned error code " + responseCode);
+        } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST && responseCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            // Client error. The request must not be repeated. Discard it.
+            ACRA.log.w(LOG_TAG, responseCode+": Client error - request will be discarded");
         } else {
             ACRA.log.w(LOG_TAG, "Could not send ACRA Post - request will be discarded. responseCode=" + responseCode + " message=" + urlConnection.getResponseMessage());
         }
