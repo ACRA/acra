@@ -20,12 +20,12 @@ import android.support.annotation.NonNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Naive (not optimized) implementation of an Immutable Set
+ * Naive (not optimized) implementation of an Immutable Set with reliable, user-specified iteration order.
  *
  * @author F43nd1r
  * @since 4.9.0
@@ -39,7 +39,7 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
     }
 
     public ImmutableSet(Collection<E> collection) {
-        this.mSet = new HashSet<E>(collection);
+        this.mSet = new LinkedHashSet<E>(collection);
     }
 
     @Override
@@ -115,7 +115,7 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
         private final Set<E> mSet;
 
         public Builder() {
-            mSet = new HashSet<E>();
+            mSet = new LinkedHashSet<E>();
         }
 
         public void add(E element) {
