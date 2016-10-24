@@ -234,7 +234,7 @@ public final class ConfigurationBuilder {
             throw new ACRAConfigurationException("Report sender factories: using no report senders will make ACRA useless. Configure at least one ReportSenderFactory.");
         }
         checkValidity((Class[]) reportSenderFactoryClasses());
-        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass(), buildConfigClass());
+        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass());
 
         return new ACRAConfiguration(this);
     }
