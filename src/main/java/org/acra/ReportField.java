@@ -287,7 +287,11 @@ public enum ReportField {
     /**
      * Retrieves the user IP address(es).
      */
-    USER_IP;
+    USER_IP,
+    /**
+     * Retrieves the last visible screen (as Base64-encoded Bitmap)
+     */
+    SCREENSHOT;
 
     /**
      * Whether this field is a collection of key/value pairs.

@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
+import org.acra.builder.LastActivityManager;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.PackageManagerWrapper;
@@ -53,15 +54,17 @@ public final class CrashReportDataFactory {
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Calendar appStartDate;
     private final String initialConfiguration;
+    private final LastActivityManager lastActivityManager;
 
     public CrashReportDataFactory(@NonNull Context context, @NonNull ACRAConfiguration config,
                                   @NonNull SharedPreferences prefs, @NonNull Calendar appStartDate,
-                                  @Nullable String initialConfiguration) {
+                                  @Nullable String initialConfiguration, @NonNull LastActivityManager lastActivityManager) {
         this.context = context;
         this.config = config;
         this.prefs = prefs;
         this.appStartDate = appStartDate;
         this.initialConfiguration = initialConfiguration;
+        this.lastActivityManager = lastActivityManager;
     }
 
     /**
@@ -168,6 +171,7 @@ public final class CrashReportDataFactory {
         collectors.add(new LogFileCollector(context, config));
         collectors.add(new MediaCodecListCollector());
         collectors.add(new ThreadCollector());
+        collectors.add(new ScreenshotCollector(lastActivityManager));
         return collectors;
     }
 }
