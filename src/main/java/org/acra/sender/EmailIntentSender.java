@@ -66,8 +66,12 @@ public class EmailIntentSender implements ReportSender {
 
         final StringBuilder builder = new StringBuilder();
         for (ReportField field : fields) {
+            String value = errorContent.get(field);
+            if (value != null) {
+                value = value.replaceAll("\\\\n","\n");
+            }
             builder.append(field.toString()).append('=');
-            builder.append(errorContent.get(field));
+            builder.append(value);
             builder.append('\n');
         }
         return builder.toString();
