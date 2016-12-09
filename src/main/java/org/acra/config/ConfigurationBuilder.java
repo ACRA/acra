@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -890,7 +891,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     Set<ReportField> reportContent() {
-        final Set<ReportField> reportContent = new HashSet<ReportField>();
+        final Set<ReportField> reportContent = new LinkedHashSet<ReportField>();
         if (customReportContent != null && customReportContent.length != 0) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             reportContent.addAll(Arrays.asList(customReportContent));
