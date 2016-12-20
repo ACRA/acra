@@ -37,7 +37,7 @@ import static org.acra.ACRA.LOG_TAG;
  * Takes care of cleaning up a process and killing it.
  *
  * @author F43nd1r
- * @since 09.09.2016
+ * @since 4.9.2
  */
 
 public final class ProcessFinisher {

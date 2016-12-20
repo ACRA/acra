@@ -620,7 +620,7 @@ public @interface ReportsCrashes {
 
     /**
      * @return true if all services running in a process should be stopped before it is killed.
-     * @since 4.9.1
+     * @since 4.9.2
      */
     boolean stopServicesOnCrash() default false;
 }
