@@ -107,8 +107,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Sets the application start date.
         // This will be included in the reports, will be helpful compared to user_crash date.
         final Calendar appStartDate = new GregorianCalendar();
+        final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
 
-        crashReportDataFactory = new CrashReportDataFactory(this.context, config, prefs, appStartDate, initialConfiguration);
+        crashReportDataFactory = new CrashReportDataFactory(this.context, config, prefs, appStartDate, initialConfiguration, lastActivityManager);
 
         final Thread.UncaughtExceptionHandler defaultExceptionHandler;
         if (listenForUncaughtExceptions) {
@@ -118,7 +119,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
             defaultExceptionHandler = null;
         }
 
-        final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
         final ReportPrimer reportPrimer = getReportPrimer(config);
         final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
