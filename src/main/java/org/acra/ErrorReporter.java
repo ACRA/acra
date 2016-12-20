@@ -31,6 +31,7 @@ import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.model.Element;
 import org.acra.util.ApplicationStartupProcessor;
+import org.acra.util.ProcessFinisher;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
@@ -124,8 +125,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
         final ReportPrimer reportPrimer = getReportPrimer(config);
+        final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
-        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, lastActivityManager, defaultExceptionHandler, reportPrimer);
+        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, reportPrimer, processFinisher);
         reportExecutor.setEnabled(enabled);
     }
 

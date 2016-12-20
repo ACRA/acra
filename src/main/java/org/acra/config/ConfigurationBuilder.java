@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -122,6 +123,7 @@ public final class ConfigurationBuilder {
     private String certificatePath;
     private String certificateType;
     private Class<? extends RetryPolicy> retryPolicyClass;
+    private Boolean stopServicesOnCrash;
 
 
     /**
@@ -189,6 +191,7 @@ public final class ConfigurationBuilder {
             certificatePath = annotationConfig.certificatePath();
             certificateType = annotationConfig.certificateType();
             retryPolicyClass = annotationConfig.retryPolicyClass();
+            stopServicesOnCrash = annotationConfig.stopServicesOnCrash();
         } else {
             annotationType = null;
         }
@@ -234,22 +237,22 @@ public final class ConfigurationBuilder {
             throw new ACRAConfigurationException("Report sender factories: using no report senders will make ACRA useless. Configure at least one ReportSenderFactory.");
         }
         checkValidity((Class[]) reportSenderFactoryClasses());
-        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass(), buildConfigClass());
+        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass());
 
         return new ACRAConfiguration(this);
     }
 
     private void checkValidity(Class<?>... classes) throws ACRAConfigurationException {
-        for(Class<?> clazz : classes) {
+        for (Class<?> clazz : classes) {
             if (clazz.isInterface()) {
-                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName()+".");
+                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName() + ".");
             } else if (Modifier.isAbstract(clazz.getModifiers())) {
                 throw new ACRAConfigurationException("Class " + clazz.getName() + " cannot be abstract.");
             }
             try {
                 clazz.getConstructor();
             } catch (NoSuchMethodException e) {
-                throw new ACRAConfigurationException("Class "+clazz.getName()+ " is missing a no-args Constructor.", e);
+                throw new ACRAConfigurationException("Class " + clazz.getName() + " is missing a no-args Constructor.", e);
             }
         }
     }
@@ -854,6 +857,12 @@ public final class ConfigurationBuilder {
         return this;
     }
 
+    @NonNull
+    public ConfigurationBuilder setStopServicesOnCrash(boolean stopServicesOnCrash) {
+        this.stopServicesOnCrash = stopServicesOnCrash;
+        return this;
+    }
+
 
     // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
 
@@ -890,7 +899,7 @@ public final class ConfigurationBuilder {
 
     @NonNull
     Set<ReportField> reportContent() {
-        final Set<ReportField> reportContent = new HashSet<ReportField>();
+        final Set<ReportField> reportContent = new LinkedHashSet<ReportField>();
         if (customReportContent != null && customReportContent.length != 0) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             reportContent.addAll(Arrays.asList(customReportContent));
@@ -1287,5 +1296,12 @@ public final class ConfigurationBuilder {
             return retryPolicyClass;
         }
         return DefaultRetryPolicy.class;
+    }
+
+    boolean stopServicesOnCrash() {
+        if (stopServicesOnCrash != null) {
+            return stopServicesOnCrash;
+        }
+        return false;
     }
 }
