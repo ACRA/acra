@@ -151,10 +151,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * latest value is kept for each key (no history of the values is sent in
      * the report).
      * </p>
-     * <p>
-     * The key/value pairs will be stored in the GoogleDoc spreadsheet in the
-     * "custom" column, as a text containing a 'key = value' pair on each line.
-     * </p>
      *
      * @param key   A key for your custom data.
      * @param value The value associated to your key.
