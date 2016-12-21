@@ -25,6 +25,8 @@ import org.acra.config.ACRAConfiguration;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.file.CrashReportPersister;
+import org.acra.util.IOUtils;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,14 +72,17 @@ final class ReportDistributor {
             final CrashReportPersister persister = new CrashReportPersister();
             final CrashReportData previousCrashReport = persister.load(reportFile);
             sendCrashReport(previousCrashReport);
-            deleteFile(reportFile);
+            IOUtils.deleteReport(reportFile);
         } catch (RuntimeException e) {
             ACRA.log.e(LOG_TAG, "Failed to send crash reports for " + reportFile, e);
-            deleteFile(reportFile);
+            IOUtils.deleteReport(reportFile);
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "Failed to load crash report for " + reportFile, e);
-            deleteFile(reportFile);
-        } catch (ReportSenderException e) {
+            IOUtils.deleteReport(reportFile);
+        } catch (JSONException e) {
+            ACRA.log.e(LOG_TAG, "Failed to load crash report for " + reportFile, e);
+            IOUtils.deleteReport(reportFile);
+        }catch (ReportSenderException e) {
             ACRA.log.e(LOG_TAG, "Failed to send crash report for " + reportFile, e);
             // An issue occurred while sending this report but we can still try to
             // send other reports. Report sending is limited by ACRAConstants.MAX_SEND_REPORTS
@@ -133,13 +138,6 @@ final class ReportDistributor {
         }
 
         return new DefaultRetryPolicy();
-    }
-
-    private void deleteFile(@NonNull File file) {
-        final boolean deleted = file.delete();
-        if (!deleted) {
-            ACRA.log.w(LOG_TAG, "Could not delete error report : " + file);
-        }
     }
 
     /**

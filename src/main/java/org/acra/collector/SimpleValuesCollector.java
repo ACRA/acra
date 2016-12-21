@@ -22,6 +22,9 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.BooleanElement;
+import org.acra.model.Element;
+import org.acra.model.StringElement;
 import org.acra.util.Installation;
 
 import java.io.File;
@@ -46,7 +49,7 @@ final class SimpleValuesCollector extends Collector {
     SimpleValuesCollector(Context context) {
         super(ReportField.IS_SILENT, ReportField.REPORT_ID, ReportField.INSTALLATION_ID,
                 ReportField.PACKAGE_NAME, ReportField.PHONE_MODEL, ReportField.ANDROID_VERSION,
-                ReportField.BRAND,ReportField.PRODUCT,ReportField.FILE_PATH, ReportField.USER_IP);
+                ReportField.BRAND, ReportField.PRODUCT, ReportField.FILE_PATH, ReportField.USER_IP);
         this.context = context;
     }
 
@@ -57,28 +60,28 @@ final class SimpleValuesCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case IS_SILENT:
-                return String.valueOf(reportBuilder.isSendSilently());
+                return new BooleanElement(reportBuilder.isSendSilently());
             case REPORT_ID:
-                return UUID.randomUUID().toString();
+                return new StringElement(UUID.randomUUID().toString());
             case INSTALLATION_ID:
-                return Installation.id(context);
+                return new StringElement(Installation.id(context));
             case PACKAGE_NAME:
-                return context.getPackageName();
+                return new StringElement(context.getPackageName());
             case PHONE_MODEL:
-                return Build.MODEL;
+                return new StringElement(Build.MODEL);
             case ANDROID_VERSION:
-                return Build.VERSION.RELEASE;
+                return new StringElement(Build.VERSION.RELEASE);
             case BRAND:
-                return Build.BRAND;
+                return new StringElement(Build.BRAND);
             case PRODUCT:
-                return Build.PRODUCT;
+                return new StringElement(Build.PRODUCT);
             case FILE_PATH:
-                return getApplicationFilePath();
+                return new StringElement(getApplicationFilePath());
             case USER_IP:
-                return getLocalIpAddress();
+                return new StringElement(getLocalIpAddress());
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

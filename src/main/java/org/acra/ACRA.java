@@ -27,10 +27,9 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.config.ACRAConfiguration;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.ConfigurationBuilder;
-import org.acra.legacy.ReportMigrator;
+import org.acra.legacy.LegacyFileHandler;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
-import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.IOUtils;
@@ -106,8 +105,6 @@ public final class ACRA {
      * because they are old and out of date.
      */
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
-
-    private static final String PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0 = "acra.legacyAlreadyConvertedTo4.8.0";
 
     private static Application mApplication;
     @Nullable
@@ -236,15 +233,7 @@ public final class ACRA {
 
         final SharedPreferences prefs = new SharedPreferencesFactory(mApplication, configProxy).create();
 
-        // Check prefs to see if we have converted from legacy (pre 4.8.0) ACRA
-        if (!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, false)) {
-            // If not then move reports to approved/unapproved folders and mark as converted.
-            new ReportMigrator(app).migrate();
-
-            // Mark as converted.
-            final SharedPreferences.Editor editor = prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, true);
-            PrefUtils.save(editor);
-        }
+        new LegacyFileHandler(app, prefs).updateToCurrentVersionIfNecessary();
 
         // Initialize ErrorReporter with all required data
         final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);

@@ -13,6 +13,7 @@ import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import static org.acra.ReportField.USER_EMAIL;
  *
  * This Activity will be instantiated with 3 (or 4) arguments:
  * <ol>
- * <li>{@link ACRAConstants#EXTRA_REPORT_FILE_NAME}</li>
+ * <li>{@link ACRAConstants#EXTRA_REPORT_FILE}</li>
  * <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
  * <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
  * <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
@@ -123,10 +124,12 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         try {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
             final CrashReportData crashData = persister.load(reportFile);
-            crashData.put(USER_COMMENT, comment == null ? "" : comment);
-            crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
+            crashData.putString(USER_COMMENT, comment == null ? "" : comment);
+            crashData.putString(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, reportFile);
         } catch (IOException e) {
+            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+        } catch (JSONException e) {
             ACRA.log.w(LOG_TAG, "User comment not added: ", e);
         }
 

@@ -23,10 +23,13 @@ import android.support.annotation.Nullable;
 import com.android.internal.util.Predicate;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.Element;
+import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
 
@@ -42,13 +45,9 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Executes logcat commands and collects it's output.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class LogCatCollector extends Collector {
-    /**
-     * Default number of latest lines kept from the logcat output.
-     */
-    private static final int DEFAULT_TAIL_COUNT = 100;
 
     private final ACRAConfiguration config;
     private final PackageManagerWrapper pm;
@@ -71,7 +70,7 @@ final class LogCatCollector extends Collector {
      * report generation time and a bigger footprint on the device data
      * plan consumption.
      */
-    private String collectLogCat(@Nullable String bufferName) {
+    private Element collectLogCat(@Nullable String bufferName) {
         final int myPid = android.os.Process.myPid();
         final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
@@ -82,8 +81,6 @@ final class LogCatCollector extends Collector {
             commandLine.add(bufferName);
         }
 
-        // "-t n" argument has been introduced in FroYo (API level 8). For
-        // devices with lower API level, we will have to emulate its job.
         final int tailCount;
         final List<String> logcatArgumentsList = config.logcatArguments();
 
@@ -94,7 +91,7 @@ final class LogCatCollector extends Collector {
             tailCount = -1;
         }
 
-        String logcat = "N/A";
+        Element logcat;
         commandLine.addAll(logcatArgumentsList);
 
         try {
@@ -102,16 +99,17 @@ final class LogCatCollector extends Collector {
 
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
-            logcat = streamToString(process.getInputStream(), new Predicate<String>() {
+            logcat = new StringElement(streamToString(process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return myPidStr == null || s.contains(myPidStr);
                 }
-            }, tailCount);
+            }, tailCount));
             process.destroy();
 
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
+            logcat = ACRAConstants.NOT_AVAILABLE;
         }
 
         return logcat;
@@ -119,12 +117,14 @@ final class LogCatCollector extends Collector {
 
     @Override
     boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+        return super.shouldCollect(crashReportFields, collect, reportBuilder)
+                && (pm.hasPermission(Manifest.permission.READ_LOGS)
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
     }
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         String bufferName = null;
         switch (reportField) {
             case LOGCAT:

@@ -20,13 +20,17 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -36,8 +40,8 @@ import java.util.Arrays;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Tools to retrieve key/value pairs from static fields and getters of any
- * class. Reflection API usage allows to retrieve data without having to
+ * Collector retrieving key/value pairs from static fields and getters.
+ * Reflection API usage allows to retrieve data without having to
  * implement a class for each android version of each interesting class.
  * It can also help find hidden properties.
  *
@@ -57,58 +61,40 @@ final class ReflectionCollector extends Collector {
      * Retrieves key/value pairs from static fields of a class.
      *
      * @param someClass the class to be inspected.
-     * @return A human readable string with a key=value pair on each line.
      */
-    @NonNull
-    private static String collectConstants(@NonNull Class<?> someClass, @Nullable String prefix) {
-
-        final StringBuilder result = new StringBuilder();
-
+    private static void collectConstants(@NonNull Class<?> someClass, @NonNull JSONObject container) throws JSONException {
         final Field[] fields = someClass.getFields();
         for (final Field field : fields) {
-            if (prefix != null && prefix.length() != 0) {
-                result.append(prefix).append('.');
-            }
-            result.append(field.getName()).append('=');
             try {
                 final Object value = field.get(null);
                 if (value != null) {
                     if (field.getType().isArray()) {
-                        result.append(Arrays.toString((Object[]) value));
+                        container.put(field.getName(), new JSONArray(Arrays.asList((Object[]) value)));
                     } else {
-                        result.append(value.toString());
+                        container.put(field.getName(), value);
                     }
                 }
-            } catch (@NonNull IllegalArgumentException e) {
-                result.append(ACRAConstants.NOT_AVAILABLE);
-            } catch (@NonNull IllegalAccessException e) {
-                result.append(ACRAConstants.NOT_AVAILABLE);
+            } catch (IllegalArgumentException ignored) {
+                // NOOP
+            } catch (IllegalAccessException ignored) {
+                // NOOP
             }
-            result.append('\n');
         }
-
-        return result.toString();
     }
 
     /**
      * Retrieves key/value pairs from static getters of a class (get*() or is*()).
      *
      * @param someClass the class to be inspected.
-     * @return A human readable string with a key=value pair on each line.
      */
-    @NonNull
-    private static String collectStaticGettersResults(@NonNull Class<?> someClass) {
-        final StringBuilder result = new StringBuilder();
+    private static void collectStaticGettersResults(@NonNull Class<?> someClass, JSONObject container) throws JSONException {
         final Method[] methods = someClass.getMethods();
         for (final Method method : methods) {
             if (method.getParameterTypes().length == 0
                     && (method.getName().startsWith("get") || method.getName().startsWith("is"))
                     && !"getClass".equals(method.getName())) {
                 try {
-                    result.append(method.getName());
-                    result.append('=');
-                    result.append(method.invoke(null, (Object[]) null));
-                    result.append('\n');
+                    container.put(method.getName(), method.invoke(null, (Object[]) null));
                 } catch (@NonNull IllegalArgumentException ignored) {
                     // NOOP
                 } catch (@NonNull InvocationTargetException ignored) {
@@ -118,34 +104,39 @@ final class ReflectionCollector extends Collector {
                 }
             }
         }
-
-        return result.toString();
-    }
-
-    @NonNull
-    private static String collectConstants(@NonNull Class<?> someClass) {
-        return collectConstants(someClass, "");
     }
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        switch (reportField) {
-            case BUILD:
-                return collectConstants(Build.class) + collectConstants(Build.VERSION.class, "VERSION");
-            case BUILD_CONFIG:
-                try {
-                    return collectConstants(getBuildConfigClass());
-                } catch (ClassNotFoundException e) {
-                    //already logged in getBuildConfigClass
-                    return "";
-                }
-            case ENVIRONMENT:
-                return collectStaticGettersResults(Environment.class);
-            default:
-                //will not happen if used correctly
-                throw new IllegalArgumentException();
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        ComplexElement result = new ComplexElement();
+        try {
+            switch (reportField) {
+                case BUILD:
+                    collectConstants(Build.class, result);
+                    JSONObject version = new JSONObject();
+                    collectConstants(Build.VERSION.class, version);
+                    result.put("VERSION", version);
+                    break;
+                case BUILD_CONFIG:
+                    try {
+                        collectConstants(getBuildConfigClass(), result);
+                    } catch (ClassNotFoundException e) {
+                        //already logged in getBuildConfigClass
+                    }
+                    break;
+                case ENVIRONMENT:
+                    collectStaticGettersResults(Environment.class, result);
+                    break;
+                default:
+                    //will not happen if used correctly
+                    throw new IllegalArgumentException();
+            }
+        } catch (JSONException e) {
+            ACRA.log.w("Couldn't collect constants", e);
+            return ACRAConstants.NOT_AVAILABLE;
         }
+        return result;
     }
 
     /**
@@ -158,7 +149,7 @@ final class ReflectionCollector extends Collector {
         final Class configuredBuildConfig = config.buildConfigClass();
         if (!configuredBuildConfig.equals(Object.class)) {
             // If set via annotations or programmatically then it will have a real value,
-            // otherwise it will be Object.class (annotation default) or null (explicit programmatic).
+            // otherwise it will be Object.class (default).
             return configuredBuildConfig;
         }
 

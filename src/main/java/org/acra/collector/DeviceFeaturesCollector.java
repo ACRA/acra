@@ -23,13 +23,15 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 
 import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Features declared as available on the device.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class DeviceFeaturesCollector extends Collector {
     private final Context context;
@@ -44,30 +46,27 @@ final class DeviceFeaturesCollector extends Collector {
      *
      * @param reportField   the ReportField to collect
      * @param reportBuilder the current reportBuilder
-     * @return String of all device feature names
+     * @return Element of all device feature names
      */
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final StringBuilder result = new StringBuilder();
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        final ComplexElement result = new ComplexElement();
         try {
             final PackageManager pm = context.getPackageManager();
             final FeatureInfo[] features = pm.getSystemAvailableFeatures();
             for (final FeatureInfo feature : features) {
                 final String featureName = feature.name;
                 if (featureName != null) {
-                    result.append(featureName);
+                    result.put(featureName, true);
                 } else {
-                    result.append("glEsVersion = ").append(feature.getGlEsVersion());
+                    result.put("glEsVersion", feature.getGlEsVersion());
                 }
-                result.append('\n');
             }
         } catch (Throwable e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + context.getPackageName(), e);
-            result.append("Could not retrieve data: ");
-            result.append(e.getMessage());
         }
 
-        return result.toString();
+        return result;
     }
 }

@@ -1,14 +1,10 @@
 package org.acra.util;
 
-import org.acra.ACRA;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Asynchronously reads a buffer into a List of String.
@@ -20,6 +16,7 @@ final class NonBlockingBufferedReader {
 
     private final BlockingQueue<String> lines = new LinkedBlockingQueue<String>();
     private Thread backgroundReaderThread = null;
+    private volatile IOException exception = null;
 
     NonBlockingBufferedReader(final BufferedReader bufferedReader) {
         backgroundReaderThread = new Thread(new Runnable() {
@@ -34,7 +31,7 @@ final class NonBlockingBufferedReader {
                         lines.add(line);
                     }
                 } catch (IOException e) {
-                    ACRA.log.w(LOG_TAG, "Could not read buffer", e);
+                    exception = e;
                 } finally {
                     IOUtils.safeClose(bufferedReader);
                 }
@@ -44,7 +41,10 @@ final class NonBlockingBufferedReader {
         backgroundReaderThread.start();
     }
 
-    String readLine() throws InterruptedException {
+    String readLine() throws InterruptedException, IOException {
+        if(exception != null){
+            throw exception;
+        }
         return lines.isEmpty() ? null : lines.poll(500L, TimeUnit.MILLISECONDS);
     }
 

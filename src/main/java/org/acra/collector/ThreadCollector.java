@@ -18,13 +18,17 @@ package org.acra.collector;
 
 import android.support.annotation.NonNull;
 
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
+import org.json.JSONException;
 
 /**
  * Collects some data identifying a Thread
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class ThreadCollector extends Collector {
     ThreadCollector() {
@@ -34,23 +38,27 @@ final class ThreadCollector extends Collector {
     /**
      * collects some data identifying the crashed thread
      *
-     * @return a string representation of the information including the id, name and priority of the thread.
+     * @return the information including the id, name and priority of the thread.
      */
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         Thread t = reportBuilder.getUncaughtExceptionThread();
-        final StringBuilder result = new StringBuilder();
+        final ComplexElement result = new ComplexElement();
         if (t != null) {
-            result.append("id=").append(t.getId()).append('\n');
-            result.append("name=").append(t.getName()).append('\n');
-            result.append("priority=").append(t.getPriority()).append('\n');
-            if (t.getThreadGroup() != null) {
-                result.append("groupName=").append(t.getThreadGroup().getName()).append('\n');
+            try {
+                result.put("id", t.getId());
+                result.put("name", t.getName());
+                result.put("priority", t.getPriority());
+                if (t.getThreadGroup() != null) {
+                    result.put("groupName", t.getThreadGroup().getName());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         } else {
-            result.append("No broken thread, this might be a silent exception.");
+            return ACRAConstants.NOT_AVAILABLE;
         }
-        return result.toString();
+        return result;
     }
 }

@@ -21,11 +21,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.annotation.ReportsCrashes;
-import org.acra.builder.*;
+import org.acra.builder.LastActivityManager;
+import org.acra.builder.NoOpReportPrimer;
+import org.acra.builder.ReportBuilder;
+import org.acra.builder.ReportExecutor;
+import org.acra.builder.ReportPrimer;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.util.ApplicationStartupProcessor;
 import org.acra.config.ACRAConfiguration;
+import org.acra.model.Element;
+import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.ProcessFinisher;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -97,11 +102,11 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
         // Store the initial Configuration state.
         // This is expensive to gather, so only do so if we plan to report it.
-        final String initialConfiguration;
+        final Element initialConfiguration;
         if (config.getReportFields().contains(ReportField.INITIAL_CONFIGURATION)) {
             initialConfiguration = ConfigurationCollector.collectConfiguration(this.context);
         } else {
-            initialConfiguration = null;
+            initialConfiguration = ACRAConstants.NOT_AVAILABLE;
         }
 
         // Sets the application start date.
@@ -145,10 +150,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * same way as you would output important debug data in a log file. Only the
      * latest value is kept for each key (no history of the values is sent in
      * the report).
-     * </p>
-     * <p>
-     * The key/value pairs will be stored in the GoogleDoc spreadsheet in the
-     * "custom" column, as a text containing a 'key = value' pair on each line.
      * </p>
      *
      * @param key   A key for your custom data.

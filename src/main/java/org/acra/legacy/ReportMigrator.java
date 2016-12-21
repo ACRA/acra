@@ -16,19 +16,19 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Migrates reports from the pre 4.8.0 location to the 4.8.0+ locations.
  */
-public final class ReportMigrator {
+final class ReportMigrator {
 
     private final Context context;
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
     @NonNull
     private final ReportLocator reportLocator;
 
-    public ReportMigrator(@NonNull Context context) {
+    ReportMigrator(@NonNull Context context) {
         this.context = context;
         this.reportLocator = new ReportLocator(context);
     }
 
-    public void migrate() {
+    void migrate() {
         ACRA.log.i(LOG_TAG, "Migrating unsent ACRA reports to new file locations");
 
         final File[] reportFiles = getCrashReportFiles();

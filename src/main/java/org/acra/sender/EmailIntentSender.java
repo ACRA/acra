@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
@@ -26,12 +27,13 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.collections.ImmutableSet;
+import org.acra.model.Element;
 
 import java.util.Set;
 
 /**
  * Send reports through an email intent.
- *
+ * <p>
  * The user will be asked to chose his preferred email client. Included report fields can be defined using
  * {@link org.acra.annotation.ReportsCrashes#customReportContent()}. Crash receiving mailbox has to be
  * defined with {@link ReportsCrashes#mailTo()}.
@@ -60,14 +62,17 @@ public class EmailIntentSender implements ReportSender {
 
     private String buildBody(@NonNull CrashReportData errorContent) {
         Set<ReportField> fields = config.getReportFields();
-        if(fields.isEmpty()) {
+        if (fields.isEmpty()) {
             fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS);
         }
 
         final StringBuilder builder = new StringBuilder();
         for (ReportField field : fields) {
             builder.append(field.toString()).append('=');
-            builder.append(errorContent.get(field));
+            Element value = errorContent.get(field);
+            if (value != null) {
+                builder.append(TextUtils.join("\n\t", value.flatten()));
+            }
             builder.append('\n');
         }
         return builder.toString();

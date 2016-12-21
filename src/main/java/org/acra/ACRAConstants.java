@@ -20,6 +20,8 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
 import org.acra.dialog.CrashReportDialog;
+import org.acra.model.Element;
+import org.acra.model.StringElement;
 
 import static org.acra.ReportField.*;
 
@@ -56,7 +58,6 @@ public final class ACRAConstants {
      * comment.
      */
     public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
-    public static final String EXTRA_REPORT_FILE_NAME = "REPORT_FILE_NAME";
 
     /**
      * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
@@ -162,5 +163,5 @@ public final class ACRAConstants {
 
     public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 
-    public static final String NOT_AVAILABLE = "N/A";
+    public static final Element NOT_AVAILABLE = new StringElement("N/A");
 }

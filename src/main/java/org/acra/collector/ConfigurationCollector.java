@@ -21,8 +21,12 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
+import org.json.JSONException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -35,11 +39,11 @@ import static org.acra.ACRA.LOG_TAG;
  * Inspects a {@link Configuration} object through reflection API in order to
  * generate a human readable String with values replaced with their constants
  * names. The {@link Configuration#toString()} method was not enough as values
- * like 0, 1, 2 or 3 don't look readable to me. Using reflection API allows to
+ * like 0, 1, 2 or 3 aren't readable. Using reflection API allows to
  * retrieve hidden fields and can make us hope to be compatible with all Android
  * API levels, even those which are not published yet.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 public final class ConfigurationCollector extends Collector {
 
@@ -59,9 +63,9 @@ public final class ConfigurationCollector extends Collector {
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
     private final Context context;
-    private final String initialConfiguration;
+    private final Element initialConfiguration;
 
-    public ConfigurationCollector(Context context, String initialConfiguration) {
+    public ConfigurationCollector(@NonNull Context context, @NonNull Element initialConfiguration) {
         super(ReportField.INITIAL_CONFIGURATION, ReportField.CRASH_CONFIGURATION);
         this.context = context;
         this.initialConfiguration = initialConfiguration;
@@ -69,7 +73,7 @@ public final class ConfigurationCollector extends Collector {
 
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case INITIAL_CONFIGURATION:
                 return initialConfiguration;
@@ -81,28 +85,30 @@ public final class ConfigurationCollector extends Collector {
     }
 
     /**
-     * Use this method to generate a human readable String listing all values
+     * Creates an Element listing all values human readable
      * from the provided Configuration instance.
      *
      * @param conf The Configuration to be described.
-     * @return A String describing all the fields of the given Configuration,
+     * @return An Element describing all the fields of the given Configuration,
      * with values replaced by constant names.
      */
     @NonNull
-    private static String configToString(@NonNull Configuration conf) {
-        final StringBuilder result = new StringBuilder();
+    private static Element configToElement(@NonNull Configuration conf) {
+        final ComplexElement result = new ComplexElement();
         Map<String, SparseArray<String>> valueArrays = getValueArrays();
         for (final Field f : conf.getClass().getFields()) {
             try {
                 if (!Modifier.isStatic(f.getModifiers())) {
                     final String fieldName = f.getName();
-                    result.append(fieldName).append('=');
-                    if (f.getType().equals(int.class)) {
-                        result.append(getFieldValueName(valueArrays, conf, f));
-                    } else if (f.get(conf) != null) {
-                        result.append(f.get(conf).toString());
+                    try {
+                        if (f.getType().equals(int.class)) {
+                            result.put(fieldName, getFieldValueName(valueArrays, conf, f));
+                        } else if (f.get(conf) != null) {
+                            result.put(fieldName, f.get(conf));
+                        }
+                    } catch (JSONException e) {
+                        ACRA.log.w(LOG_TAG, "Could not collect configuration field " + fieldName, e);
                     }
-                    result.append('\n');
                 }
             } catch (@NonNull IllegalArgumentException e) {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
@@ -110,7 +116,7 @@ public final class ConfigurationCollector extends Collector {
                 ACRA.log.e(LOG_TAG, "Error while inspecting device configuration: ", e);
             }
         }
-        return result.toString();
+        return result;
     }
 
     private static Map<String, SparseArray<String>> getValueArrays() {
@@ -181,10 +187,10 @@ public final class ConfigurationCollector extends Collector {
      * constant name.
      * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private static String getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
+    private static Object getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
-            return Integer.toString(f.getInt(conf));
+            return f.getInt(conf);
         } else if (fieldName.equals(FIELD_UIMODE)) {
             return activeFlags(valueArrays.get(PREFIX_UI_MODE), f.getInt(conf));
         } else if (fieldName.equals(FIELD_SCREENLAYOUT)) {
@@ -193,13 +199,13 @@ public final class ConfigurationCollector extends Collector {
             final SparseArray<String> values = valueArrays.get(fieldName.toUpperCase() + '_');
             if (values == null) {
                 // Unknown field, return the raw int as String
-                return Integer.toString(f.getInt(conf));
+                return f.getInt(conf);
             }
 
             final String value = values.get(f.getInt(conf));
             if (value == null) {
                 // Unknown value, return the raw int as String
-                return Integer.toString(f.getInt(conf));
+                return f.getInt(conf);
             }
             return value;
         }
@@ -243,12 +249,12 @@ public final class ConfigurationCollector extends Collector {
      * @return A String representation of the current configuration for the application.
      */
     @NonNull
-    public static String collectConfiguration(@NonNull Context context) {
+    public static Element collectConfiguration(@NonNull Context context) {
         try {
-            return configToString(context.getResources().getConfiguration());
+            return configToElement(context.getResources().getConfiguration());
         } catch (RuntimeException e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
-            return "Couldn't retrieve crash config";
+            return ACRAConstants.NOT_AVAILABLE;
         }
     }
 }

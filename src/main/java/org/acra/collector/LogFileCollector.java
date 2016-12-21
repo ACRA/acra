@@ -28,6 +28,8 @@ import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.ACRAConfiguration;
 import org.acra.file.Directory;
+import org.acra.model.Element;
+import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -42,7 +44,7 @@ import static org.acra.ACRA.LOG_TAG;
  * Collects the N last lines of a text stream. Use this collector if your
  * application handles its own logging system.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin & F43nd1r
  */
 final class LogFileCollector extends Collector {
     private final Context context;
@@ -59,20 +61,22 @@ final class LogFileCollector extends Collector {
      * located in the {@link Application#getFilesDir()} directory if it does not
      * contain any path separator.
      *
-     * @return A single String containing all of the requested lines.
+     * @return An Element containing all of the requested lines.
      */
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         try {
-            return IOUtils.streamToString(getStream(config.applicationLogFileDir(), config.applicationLogFile()), config.applicationLogFileLines());
+            return new StringElement(IOUtils.streamToString(
+                    getStream(config.applicationLogFileDir(), config.applicationLogFile()),
+                    config.applicationLogFileLines()));
         } catch (IOException e) {
             return ACRAConstants.NOT_AVAILABLE;
         }
     }
 
     /**
-     * guess the application log file location and open it
+     * get the application log file location and open it
      *
      * @param directory the base directory for the file path
      * @param fileName the name of the file

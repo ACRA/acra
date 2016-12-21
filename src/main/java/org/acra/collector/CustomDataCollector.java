@@ -20,6 +20,8 @@ import android.support.annotation.Nullable;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
+import org.acra.model.ComplexElement;
+import org.acra.model.Element;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,40 +41,23 @@ final class CustomDataCollector extends Collector {
     }
     @NonNull
     @Override
-    String collect(ReportField reportField, ReportBuilder reportBuilder) {
-        return createCustomInfoString(reportBuilder.getCustomData());
+    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+        return createCustomInfoElement(reportBuilder.getCustomData());
     }
 
 
     /**
-     * Generates the string which is posted in the single custom data field
+     * Generates the Element which is posted in the single custom data field
      *
-     * @return A string with a 'key = value' pair on each line.
+     * @return An Element with  key-value-pairs for the supplied custom data.
      */
     @NonNull
-    private String createCustomInfoString(@Nullable Map<String, String> reportCustomData) {
+    private Element createCustomInfoElement(@Nullable Map<String, String> reportCustomData) {
         Map<String, String> params = customParameters;
-
         if (reportCustomData != null) {
             params = new HashMap<String, String>(params);
             params.putAll(reportCustomData);
         }
-
-        final StringBuilder customInfo = new StringBuilder();
-        for (final Map.Entry<String, String> currentEntry : params.entrySet()) {
-            customInfo.append(currentEntry.getKey());
-            customInfo.append(" = ");
-
-            // We need to escape new lines in values or they are transformed into new
-            // custom fields. => let's replace all '\n' with "\\n"
-            final String currentVal = currentEntry.getValue();
-            if (currentVal != null) {
-                customInfo.append(currentVal.replaceAll("\n", "\\\\n"));
-            } else {
-                customInfo.append("null");
-            }
-            customInfo.append('\n');
-        }
-        return customInfo.toString();
+        return new ComplexElement(params);
     }
 }
