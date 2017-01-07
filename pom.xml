@@ -131,6 +131,11 @@
 				<version>4.4.2</version>
 				<extensions>true</extensions>
 				<configuration>
+
+					<sdk>
+						<platform>${android.version}</platform>
+					</sdk>
+
 					<consumerProguardFiles>
 						<consumerProguardFile>src/main/proguard/proguard.cfg</consumerProguardFile>
 					</consumerProguardFiles>
