@@ -43,7 +43,7 @@ import static org.acra.ACRA.LOG_TAG;
  * retrieve hidden fields and can make us hope to be compatible with all Android
  * API levels, even those which are not published yet.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin and F43nd1r
  */
 public final class ConfigurationCollector extends Collector {
 
