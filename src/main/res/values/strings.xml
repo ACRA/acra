@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is just here to force android-maven-plugin:4.4.3 to include a /res folder in the AAR
+which is now a requirement https://developer.android.com/studio/projects/android-library.html#aar-contents
+-->
+<resources>
+    <string name="not_used">Only here to ensure that android-maven-plugin:4.4.3 creates an R.txt</string>
+</resources>
