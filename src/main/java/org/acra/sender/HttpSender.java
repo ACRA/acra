@@ -251,7 +251,8 @@ public class HttpSender implements ReportSender {
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
-            String value = TextUtils.join("\n", report.get(field).flatten());
+            Element element = report.get(field);
+            String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), value);
             } else {
