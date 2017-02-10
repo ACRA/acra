@@ -51,11 +51,9 @@ import static org.acra.ACRA.LOG_TAG;
  * {@link ReportField} values to String.
  * </p>
  * <p>
- * <p>
  * To use specific POST parameter names, you can provide your own report fields
  * mapping scheme:
  * </p>
- * <p>
  * <pre>
  * Just create and declare a {@link ReportSenderFactory} that constructs a mapping
  * from each {@link ReportField} to another name.
