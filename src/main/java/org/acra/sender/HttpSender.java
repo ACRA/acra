@@ -30,8 +30,10 @@ import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.model.Element;
 import org.acra.util.HttpRequest;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,17 +50,14 @@ import static org.acra.ACRA.LOG_TAG;
  * {@link ReportField} enum values) or based on your own conversion Map from
  * {@link ReportField} values to String.
  * </p>
- * 
  * <p>
  * To use specific POST parameter names, you can provide your own report fields
  * mapping scheme:
  * </p>
- * 
  * <pre>
  * Just create and declare a {@link ReportSenderFactory} that constructs a mapping
  * from each {@link ReportField} to another name.
  * </pre>
- * 
  */
 public class HttpSender implements ReportSender {
 
@@ -67,7 +66,20 @@ public class HttpSender implements ReportSender {
      * supported.
      */
     public enum Method {
-        POST, PUT
+        POST {
+            @Override
+            URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException {
+                return new URL(baseUrl);
+            }
+        },
+        PUT {
+            @Override
+            URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException {
+                return new URL(baseUrl + '/' + report.getProperty(ReportField.REPORT_ID));
+            }
+        };
+
+        abstract URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException;
     }
 
     /**
@@ -77,28 +89,36 @@ public class HttpSender implements ReportSender {
     public enum Type {
         /**
          * Send data as a www form encoded list of key/values.
+         *
          * @see <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4">Form content types</a>
          */
-        FORM {
-            @NonNull
+        FORM("application/x-www-form-urlencoded") {
             @Override
-            public String getContentType() {
-                return "application/x-www-form-urlencoded";
+            String convertReport(HttpSender sender, CrashReportData report) throws IOException {
+                return HttpRequest.getParamsAsFormString(sender.convertToForm(report));
             }
         },
         /**
          * Send data as a structured JSON tree.
          */
-        JSON {
-            @NonNull
+        JSON("application/json") {
             @Override
-            public String getContentType() {
-                return "application/json";
+            String convertReport(HttpSender sender, CrashReportData report) throws IOException {
+                return sender.convertToJson(report).toString();
             }
         };
+        private final String contentType;
+
+        Type(String contentType) {
+            this.contentType = contentType;
+        }
 
         @NonNull
-        public abstract String getContentType();
+        public String getContentType() {
+            return contentType;
+        }
+
+        abstract String convertReport(HttpSender sender, CrashReportData report) throws IOException;
     }
 
     private final ACRAConfiguration config;
@@ -115,26 +135,40 @@ public class HttpSender implements ReportSender {
     /**
      * <p>
      * Create a new HttpSender instance with its destination taken from the supplied config.
+     * Uses {@link ReportField} values converted to String with .toString() as form parameters.
      * </p>
      *
-     * @param config    AcraConfig declaring the
-     * @param method
-     *            HTTP {@link Method} to be used to send data. Currently only
-     *            {@link Method#POST} and {@link Method#PUT} are available. If
-     *            {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
-     *            is appended to the formUri to be compliant with RESTful APIs.
-     * 
-     * @param type
-     *            {@link Type} of encoding used to send the report body.
-     *            {@link Type#FORM} is a simple Key/Value pairs list as defined
-     *            by the application/x-www-form-urlencoded mime type.
-     * 
-     * @param mapping
-     *            Applies only to {@link Method#POST} method parameter. If null,
-     *            POST parameters will be named with {@link ReportField} values
-     *            converted to String with .toString(). If not null, POST
-     *            parameters will be named with the result of
-     *            mapping.get(ReportField.SOME_FIELD);
+     * @param config AcraConfig declaring the
+     * @param method HTTP {@link Method} to be used to send data. Currently only
+     *               {@link Method#POST} and {@link Method#PUT} are available. If
+     *               {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
+     *               is appended to the formUri to be compliant with RESTful APIs.
+     * @param type   {@link Type} of encoding used to send the report body.
+     *               {@link Type#FORM} is a simple Key/Value pairs list as defined
+     *               by the application/x-www-form-urlencoded mime type.
+     */
+    public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type) {
+        this(config, method, type, null);
+    }
+
+    /**
+     * <p>
+     * Create a new HttpSender instance with its destination taken from the supplied config.
+     * </p>
+     *
+     * @param config  AcraConfig declaring the
+     * @param method  HTTP {@link Method} to be used to send data. Currently only
+     *                {@link Method#POST} and {@link Method#PUT} are available. If
+     *                {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
+     *                is appended to the formUri to be compliant with RESTful APIs.
+     * @param type    {@link Type} of encoding used to send the report body.
+     *                {@link Type#FORM} is a simple Key/Value pairs list as defined
+     *                by the application/x-www-form-urlencoded mime type.
+     * @param mapping Applies only to {@link Method#POST} method parameter. If null,
+     *                POST parameters will be named with {@link ReportField} values
+     *                converted to String with .toString(). If not null, POST
+     *                parameters will be named with the result of
+     *                mapping.get(ReportField.SOME_FIELD);
      */
     public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type, @Nullable Map<ReportField, String> mapping) {
         this(config, method, type, null, mapping);
@@ -146,25 +180,20 @@ public class HttpSender implements ReportSender {
      * a parameter. Configuration changes to the formUri are not applied.
      * </p>
      *
-     * @param config    AcraConfig declaring the
-     * @param method
-     *            HTTP {@link Method} to be used to send data. Currently only
-     *            {@link Method#POST} and {@link Method#PUT} are available. If
-     *            {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
-     *            is appended to the formUri to be compliant with RESTful APIs.
-     * 
-     * @param type
-     *            {@link Type} of encoding used to send the report body.
-     *            {@link Type#FORM} is a simple Key/Value pairs list as defined
-     *            by the application/x-www-form-urlencoded mime type.
-     * @param formUri
-     *            The URL of your server-side crash report collection script.
-     * @param mapping
-     *            Applies only to {@link Method#POST} method parameter. If null,
-     *            POST parameters will be named with {@link ReportField} values
-     *            converted to String with .toString(). If not null, POST
-     *            parameters will be named with the result of
-     *            mapping.get(ReportField.SOME_FIELD);
+     * @param config  AcraConfig declaring the
+     * @param method  HTTP {@link Method} to be used to send data. Currently only
+     *                {@link Method#POST} and {@link Method#PUT} are available. If
+     *                {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
+     *                is appended to the formUri to be compliant with RESTful APIs.
+     * @param type    {@link Type} of encoding used to send the report body.
+     *                {@link Type#FORM} is a simple Key/Value pairs list as defined
+     *                by the application/x-www-form-urlencoded mime type.
+     * @param formUri The URL of your server-side crash report collection script.
+     * @param mapping Applies only to {@link Method#POST} method parameter. If null,
+     *                POST parameters will be named with {@link ReportField} values
+     *                converted to String with .toString(). If not null, POST
+     *                parameters will be named with the result of
+     *                mapping.get(ReportField.SOME_FIELD);
      */
     public HttpSender(@NonNull ACRAConfiguration config, @NonNull Method method, @NonNull Type type, @Nullable String formUri, @Nullable Map<ReportField, String> mapping) {
         this.config = config;
@@ -173,72 +202,83 @@ public class HttpSender implements ReportSender {
         mMapping = mapping;
         mType = type;
         mUsername = null;
-        mPassword = null;        
+        mPassword = null;
     }
-    
+
     /**
      * <p>
      * Set credentials for this HttpSender that override (if present) the ones
      * set globally.
      * </p>
-     * 
-     * @param username
-     *            The username to set for HTTP Basic Auth.
-     * @param password
-     *            The password to set for HTTP Basic Auth.
+     *
+     * @param username The username to set for HTTP Basic Auth.
+     * @param password The password to set for HTTP Basic Auth.
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public void setBasicAuth(@Nullable String username, @Nullable String password) {
         mUsername = username;
         mPassword = password;
-    }    
+    }
 
     @Override
     public void send(@NonNull Context context, @NonNull CrashReportData report) throws ReportSenderException {
 
         try {
-            URL reportUrl = mFormUri == null ? new URL(config.formUri()) : new URL(mFormUri.toString());
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + reportUrl.toString());
-
-            final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
-            final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
+            String baseUrl = mFormUri == null ? config.formUri() : mFormUri.toString();
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + baseUrl);
 
             final HttpRequest request = new HttpRequest(config);
-            request.setConnectionTimeOut(config.connectionTimeout());
-            request.setSocketTimeOut(config.socketTimeout());
-            request.setLogin(login);
-            request.setPassword(password);
-            request.setHeaders(config.getHttpHeaders());
+            configureHttpRequest(request);
 
             // Generate report body depending on requested type
-            final String reportAsString;
-            switch (mType) {
-            case JSON:
-                reportAsString = report.toJSON().toString();
-                break;
-            case FORM:
-            default:
-                final Map<String, String> finalReport = remap(report);
-                reportAsString = HttpRequest.getParamsAsFormString(finalReport);
-                break;
-            }
+            final String reportAsString = mType.convertReport(this, report);
 
             // Adjust URL depending on method
-            switch (mMethod) {
-            case POST:
-                break;
-            case PUT:
-                reportUrl = new URL(reportUrl.toString() + '/' + report.getProperty(ReportField.REPORT_ID));
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown method: " + mMethod.name());
-            }
+            URL reportUrl = mMethod.createURL(baseUrl, report);
             request.send(context, reportUrl, mMethod, reportAsString, mType);
 
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
                     + " report via Http " + mMethod.name(), e);
         }
+    }
+
+    /**
+     * Configure the HttpRequest. Subclasses can perform additional configuration here
+     *
+     * @param request the request to configure
+     */
+    @SuppressWarnings({"WeakerAccess"})
+    protected void configureHttpRequest(HttpRequest request) {
+        final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
+        final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
+        request.setConnectionTimeOut(config.connectionTimeout());
+        request.setSocketTimeOut(config.socketTimeout());
+        request.setLogin(login);
+        request.setPassword(password);
+        request.setHeaders(config.getHttpHeaders());
+    }
+
+    /**
+     * Convert a report to json
+     *
+     * @param report the report to convert
+     * @return a json representation of the report
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected JSONObject convertToJson(CrashReportData report) {
+        return report.toJSON();
+    }
+
+    /**
+     * Convert a report to a form-prepared map
+     *
+     * @param report the report to convert
+     * @return a form representation of the report
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected Map<String, String> convertToForm(CrashReportData report) {
+        return remap(report);
     }
 
     @NonNull
@@ -251,7 +291,8 @@ public class HttpSender implements ReportSender {
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
-            String value = TextUtils.join("\n", report.get(field).flatten());
+            Element element = report.get(field);
+            String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), value);
             } else {
