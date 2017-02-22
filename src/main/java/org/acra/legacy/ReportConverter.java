@@ -77,12 +77,21 @@ class ReportConverter {
                 CrashReportData data = legacyLoad(new InputStreamReader(in, "ISO8859-1")); //$NON-NLS-1$
                 if (data.containsKey(ReportField.REPORT_ID) && data.containsKey(ReportField.USER_CRASH_DATE)) {
                     persister.store(data, report);
+                    converted++;
                 } else {
                     //reports without these keys are probably invalid
                     IOUtils.deleteReport(report);
                 }
-            } catch (IOException e) {
-                ACRA.log.w(LOG_TAG, "Unable to read report file " + report.getPath(), e);
+            } catch (Throwable e) {
+                try {
+                    //If this succeeds the report has already been converted, happens e.g. on preference clear.
+                    persister.load(report);
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Tried to convert already converted report file " + report.getPath() + ". Ignoring");
+                } catch (Throwable t) {
+                    //File matches neither of the known formats, remove it.
+                    ACRA.log.w(LOG_TAG, "Unable to read report file " + report.getPath() + ". Deleting", e);
+                    IOUtils.deleteReport(report);
+                }
             } finally {
                 IOUtils.safeClose(in);
             }
