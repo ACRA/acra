@@ -32,8 +32,10 @@ import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.file.Directory;
+import org.acra.security.DefaultSSLSetupFactory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
+import org.acra.security.SSLSetupFactory;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender;
 import org.acra.sender.HttpSender.Method;
@@ -50,7 +52,30 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ACRAConstants.*;
+import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
+import static org.acra.ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
+import static org.acra.ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
+import static org.acra.ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
+import static org.acra.ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+import static org.acra.ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
+import static org.acra.ACRAConstants.DEFAULT_DIALOG_ICON;
+import static org.acra.ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
+import static org.acra.ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
+import static org.acra.ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
+import static org.acra.ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
+import static org.acra.ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
+import static org.acra.ACRAConstants.DEFAULT_LOGCAT_LINES;
+import static org.acra.ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS;
+import static org.acra.ACRAConstants.DEFAULT_NON_BLOCKING_READ_FOR_LOGCAT;
+import static org.acra.ACRAConstants.DEFAULT_NOTIFICATION_ICON;
+import static org.acra.ACRAConstants.DEFAULT_REPORT_FIELDS;
+import static org.acra.ACRAConstants.DEFAULT_REPORT_TO_ANDROID_FRAMEWORK;
+import static org.acra.ACRAConstants.DEFAULT_RES_VALUE;
+import static org.acra.ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+import static org.acra.ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
+import static org.acra.ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
+import static org.acra.ACRAConstants.DEFAULT_STRING_VALUE;
+import static org.acra.ACRAConstants.NULL_VALUE;
 
 /**
  * Builder responsible for programmatic construction of an {@link ACRAConfiguration}.
@@ -117,6 +142,7 @@ public final class ConfigurationBuilder {
     private Type reportType;
     private final Map<String, String> httpHeaders = new HashMap<String, String>();
     private Class<? extends KeyStoreFactory> keyStoreFactoryClass;
+    private Class<? extends SSLSetupFactory> sslSetupFactoryClass;
     private Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses;
     @RawRes private Integer resCertificate;
     private String certificatePath;
@@ -186,6 +212,7 @@ public final class ConfigurationBuilder {
             reportType = annotationConfig.reportType();
             reportSenderFactoryClasses = annotationConfig.reportSenderFactoryClasses();
             keyStoreFactoryClass = annotationConfig.keyStoreFactoryClass();
+            sslSetupFactoryClass = annotationConfig.sslSetupFactoryClass();
             resCertificate = annotationConfig.resCertificate();
             certificatePath = annotationConfig.certificatePath();
             certificateType = annotationConfig.certificateType();
@@ -236,7 +263,7 @@ public final class ConfigurationBuilder {
             throw new ACRAConfigurationException("Report sender factories: using no report senders will make ACRA useless. Configure at least one ReportSenderFactory.");
         }
         checkValidity((Class[]) reportSenderFactoryClasses());
-        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass());
+        checkValidity(reportDialogClass(), reportPrimerClass(), retryPolicyClass(), keyStoreFactoryClass(), sslSetupFactoryClass());
 
         return new ACRAConfiguration(this);
     }
@@ -808,6 +835,16 @@ public final class ConfigurationBuilder {
     }
 
     /**
+     * @param sslSetupFactoryClass Set this to a factory class which creates SSLSetup for HttpsURLConnection
+     * @return this instance
+     */
+    @NonNull
+    public ConfigurationBuilder setSSLSetupFactoryClass(Class<? extends SSLSetupFactory> sslSetupFactoryClass) {
+        this.sslSetupFactoryClass = sslSetupFactoryClass;
+        return this;
+    }
+
+    /**
      * @param resCertificate a raw resource of a custom certificate file
      * @return this instance
      */
@@ -1258,6 +1295,14 @@ public final class ConfigurationBuilder {
             return keyStoreFactoryClass;
         }
         return NoKeyStoreFactory.class;
+    }
+
+    @NonNull
+    Class<? extends SSLSetupFactory> sslSetupFactoryClass() {
+        if (sslSetupFactoryClass != null) {
+            return sslSetupFactoryClass;
+        }
+        return DefaultSSLSetupFactory.class;
     }
 
     @RawRes
