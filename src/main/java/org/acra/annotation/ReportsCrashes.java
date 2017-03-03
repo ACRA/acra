@@ -35,8 +35,10 @@ import org.acra.config.RetryPolicy;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 import org.acra.file.Directory;
+import org.acra.security.DefaultSSLSetupFactory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
+import org.acra.security.SSLSetupFactory;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
@@ -596,6 +598,11 @@ public @interface ReportsCrashes {
      * @return Class which creates a keystore that can contain trusted certificates
      */
     @NonNull Class<? extends KeyStoreFactory> keyStoreFactoryClass() default NoKeyStoreFactory.class;
+
+    /**
+     * @return Class which creates a SSLSetup for HttpsURLConnection
+     */
+    @NonNull Class<? extends SSLSetupFactory> sslSetupFactoryClass() default DefaultSSLSetupFactory.class;
 
     /**
      * @return path to a custom trusted certificate. Must start with "asset://" if the file is in the assets folder

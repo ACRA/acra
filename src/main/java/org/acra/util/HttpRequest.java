@@ -12,7 +12,6 @@ import android.util.Base64;
 
 import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
-import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 
@@ -24,12 +23,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import ch.acra.acra.BuildConfig;
 
@@ -86,18 +82,12 @@ public final class HttpRequest {
         if (urlConnection instanceof HttpsURLConnection) {
             try {
                 final HttpsURLConnection httpsUrlConnection = (HttpsURLConnection) urlConnection;
-
-                final String algorithm = TrustManagerFactory.getDefaultAlgorithm();
-                final TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
-                final KeyStore keyStore = KeyStoreHelper.getKeyStore(context, config);
-
-                tmf.init(keyStore);
-
-                final SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, tmf.getTrustManagers(), null);
-
-                httpsUrlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                config.sslSetupFactoryClass().newInstance().create(httpsUrlConnection, context, config).setup();
             } catch (GeneralSecurityException e) {
+                ACRA.log.e(LOG_TAG, "Could not configure SSL for ACRA request to " + url, e);
+            } catch (InstantiationException e) {
+                ACRA.log.e(LOG_TAG, "Could not configure SSL for ACRA request to " + url, e);
+            } catch (IllegalAccessException e) {
                 ACRA.log.e(LOG_TAG, "Could not configure SSL for ACRA request to " + url, e);
             }
         }

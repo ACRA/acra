@@ -26,14 +26,15 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.builder.ReportPrimer;
 import org.acra.collections.ImmutableList;
+import org.acra.collections.ImmutableMap;
+import org.acra.collections.ImmutableSet;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.file.Directory;
 import org.acra.security.KeyStoreFactory;
+import org.acra.security.SSLSetupFactory;
 import org.acra.sender.HttpSender.Method;
 import org.acra.sender.HttpSender.Type;
 import org.acra.sender.ReportSenderFactory;
-import org.acra.collections.ImmutableMap;
-import org.acra.collections.ImmutableSet;
 
 import java.io.Serializable;
 
@@ -109,6 +110,7 @@ public final class ACRAConfiguration implements Serializable {
     private final Type reportType;
     private final ImmutableMap<String, String> httpHeaders;
     private final Class<? extends KeyStoreFactory> keyStoreFactoryClass;
+    private final Class<? extends SSLSetupFactory> sslSetupFactoryClass;
     private final ImmutableSet<Class<? extends ReportSenderFactory>> reportSenderFactoryClasses;
     @RawRes
     private final int resCertificate;
@@ -169,6 +171,7 @@ public final class ACRAConfiguration implements Serializable {
         reportType = builder.reportType();
         reportSenderFactoryClasses = new ImmutableSet<Class<? extends ReportSenderFactory>>(builder.reportSenderFactoryClasses());
         keyStoreFactoryClass = builder.keyStoreFactoryClass();
+        sslSetupFactoryClass = builder.sslSetupFactoryClass();
         resCertificate = builder.resCertificate();
         certificatePath = builder.certificatePath();
         certificateType = builder.certificateType();
@@ -418,6 +421,11 @@ public final class ACRAConfiguration implements Serializable {
     @NonNull
     public Class<? extends KeyStoreFactory> keyStoreFactoryClass() {
         return keyStoreFactoryClass;
+    }
+
+    @NonNull
+    public Class<? extends SSLSetupFactory> sslSetupFactoryClass() {
+        return sslSetupFactoryClass;
     }
 
     @RawRes
