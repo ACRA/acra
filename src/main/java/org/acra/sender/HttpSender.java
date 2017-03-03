@@ -28,13 +28,16 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.http.DefaultHttpRequest;
+import org.acra.http.HttpRequest;
 import org.acra.model.Element;
-import org.acra.util.HttpRequest;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +63,31 @@ import static org.acra.ACRA.LOG_TAG;
  * </pre>
  */
 public class HttpSender implements ReportSender {
+
+    /**
+     * Converts a Map of parameters into a URL encoded Sting.
+     *
+     * @param parameters Map of parameters to convert.
+     * @return URL encoded String representing the parameters.
+     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
+     */
+    @NonNull
+    private static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
+
+        final StringBuilder dataBfr = new StringBuilder();
+        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
+            if (dataBfr.length() != 0) {
+                dataBfr.append('&');
+            }
+            final Object preliminaryValue = entry.getValue();
+            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
+            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), ACRAConstants.UTF8));
+            dataBfr.append('=');
+            dataBfr.append(URLEncoder.encode(value.toString(), ACRAConstants.UTF8));
+        }
+
+        return dataBfr.toString();
+    }
 
     /**
      * Available HTTP methods to send data. Only POST and PUT are currently
@@ -95,7 +123,7 @@ public class HttpSender implements ReportSender {
         FORM("application/x-www-form-urlencoded") {
             @Override
             String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return HttpRequest.getParamsAsFormString(sender.convertToForm(report));
+                return getParamsAsFormString(sender.convertToForm(report));
             }
         },
         /**
@@ -227,15 +255,16 @@ public class HttpSender implements ReportSender {
             String baseUrl = mFormUri == null ? config.formUri() : mFormUri.toString();
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + baseUrl);
 
-            final HttpRequest request = new HttpRequest(config);
-            configureHttpRequest(request);
+            final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
+            final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
+            final HttpRequest request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.getHttpHeaders());
 
             // Generate report body depending on requested type
             final String reportAsString = mType.convertReport(this, report);
 
             // Adjust URL depending on method
             URL reportUrl = mMethod.createURL(baseUrl, report);
-            request.send(context, reportUrl, mMethod, reportAsString, mType);
+            request.send(reportUrl, reportAsString);
 
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
@@ -243,20 +272,10 @@ public class HttpSender implements ReportSender {
         }
     }
 
-    /**
-     * Configure the HttpRequest. Subclasses can perform additional configuration here
-     *
-     * @param request the request to configure
-     */
-    @SuppressWarnings({"WeakerAccess"})
-    protected void configureHttpRequest(HttpRequest request) {
-        final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
-        final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
-        request.setConnectionTimeOut(config.connectionTimeout());
-        request.setSocketTimeOut(config.socketTimeout());
-        request.setLogin(login);
-        request.setPassword(password);
-        request.setHeaders(config.getHttpHeaders());
+    @SuppressWarnings("WeakerAccess")
+    protected HttpRequest createHttpRequest(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+                                            @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers){
+        return new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers);
     }
 
     /**

@@ -44,7 +44,6 @@ import java.io.OutputStreamWriter;
  * file.
  */
 public final class CrashReportPersister {
-    private static final String CHARSET = "UTF-8";
 
     /**
      * Loads properties from the specified {@code File}.
@@ -76,7 +75,7 @@ public final class CrashReportPersister {
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
 
-        final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), CHARSET);
+        final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), ACRAConstants.UTF8);
         try {
             writer.write(crashData.toJSON().toString());
             writer.flush();

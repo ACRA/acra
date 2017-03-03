@@ -164,4 +164,6 @@ public final class ACRAConstants {
     public static final String DEFAULT_CERTIFICATE_TYPE = "X.509";
 
     public static final Element NOT_AVAILABLE = new StringElement("N/A");
+
+    public static final String UTF8 = "UTF-8";
 }
