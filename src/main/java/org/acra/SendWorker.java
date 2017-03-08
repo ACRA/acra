@@ -152,8 +152,9 @@ final class SendWorker extends Thread {
                        // report. Don't try to send any more reports now.
             } catch (ReportSenderException e) {
                 Log.e(ACRA.LOG_TAG, "Failed to send crash report for " + curFileName, e);
-                break; // Something stopped the report being sent. Don't try to
-                       // send any more reports now.
+                // An issue occurred while sending this report but we can still try to
+                // send other reports. Report sending is limited by ACRAConstants.MAX_SEND_REPORTS
+                // so there's not much to fear about overloading a failing server.
             }
             reportsSentCount++;
         }
