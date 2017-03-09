@@ -24,11 +24,14 @@ import android.text.TextUtils;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.attachment.NoAttachmentUriProvider;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.collections.ImmutableSet;
 import org.acra.model.Element;
+import org.acra.util.InstanceCreator;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -51,12 +54,14 @@ public class EmailIntentSender implements ReportSender {
 
         final String subject = context.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);
+        final ArrayList<Uri> attachments = InstanceCreator.create(NoAttachmentUriProvider.class, new NoAttachmentUriProvider()).getAttachments(context, config);
 
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
         context.startActivity(emailIntent);
     }
 

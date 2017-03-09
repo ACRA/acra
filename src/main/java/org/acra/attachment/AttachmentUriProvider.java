@@ -2,6 +2,7 @@ package org.acra.attachment;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import org.acra.config.ACRAConfiguration;
 
@@ -14,5 +15,6 @@ import java.util.ArrayList;
 
 public interface AttachmentUriProvider {
 
+    @NonNull
     ArrayList<Uri> getAttachments(Context context, ACRAConfiguration configuration);
 }
