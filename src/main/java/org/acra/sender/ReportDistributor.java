@@ -26,6 +26,7 @@ import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.file.CrashReportPersister;
 import org.acra.util.IOUtils;
+import org.acra.util.InstanceCreator;
 import org.json.JSONException;
 
 import java.io.File;
@@ -113,7 +114,7 @@ final class ReportDistributor {
 
             if (failedSenders.isEmpty()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Report was sent by all senders");
-            } else if (getRetryPolicy().shouldRetrySend(reportSenders, failedSenders)) {
+            } else if (InstanceCreator.create(config.retryPolicyClass(), new DefaultRetryPolicy()).shouldRetrySend(reportSenders, failedSenders)) {
                 final Throwable firstFailure = failedSenders.get(0).getException();
                 throw new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.", firstFailure);
             } else {
@@ -126,18 +127,6 @@ final class ReportDistributor {
                 ACRA.log.w(LOG_TAG, builder.toString());
             }
         }
-    }
-
-    private RetryPolicy getRetryPolicy() {
-        try {
-            return config.retryPolicyClass().newInstance();
-        } catch (InstantiationException e) {
-            ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
-        } catch (IllegalAccessException e) {
-            ACRA.log.e(LOG_TAG, "Failed to create policy instance of class " + config.retryPolicyClass().getName(), e);
-        }
-
-        return new DefaultRetryPolicy();
     }
 
     /**

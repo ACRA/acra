@@ -31,6 +31,7 @@ import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.ACRAConfiguration;
 import org.acra.model.Element;
 import org.acra.util.ApplicationStartupProcessor;
+import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -124,7 +125,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
-        final ReportPrimer reportPrimer = getReportPrimer(config);
+        final ReportPrimer reportPrimer = InstanceCreator.create(config.reportPrimerClass(), new NoOpReportPrimer());
         final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
         reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, reportPrimer, processFinisher);
@@ -374,18 +375,5 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         } catch (Exception exceptionInRunnable) {
             ACRA.log.w(LOG_TAG, "Failed to initialize " + exceptionHandlerInitializer + " from #handleException");
         }
-    }
-
-    @NonNull
-    private static ReportPrimer getReportPrimer(@NonNull ACRAConfiguration config) {
-        try {
-            return config.reportPrimerClass().newInstance();
-        } catch (InstantiationException e) {
-            ACRA.log.w(LOG_TAG, "Could not construct ReportPrimer from " + config.reportPrimerClass() + " - not priming", e);
-        } catch (IllegalAccessException e) {
-            ACRA.log.w(LOG_TAG, "Could not construct ReportPrimer from " + config.reportPrimerClass() + " - not priming", e);
-        }
-
-        return new NoOpReportPrimer();
     }
 }
