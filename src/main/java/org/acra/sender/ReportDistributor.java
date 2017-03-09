@@ -114,7 +114,7 @@ final class ReportDistributor {
 
             if (failedSenders.isEmpty()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Report was sent by all senders");
-            } else if (InstanceCreator.create(config.retryPolicyClass(), new DefaultRetryPolicy()).shouldRetrySend(reportSenders, failedSenders)) {
+            } else if (new InstanceCreator().create(config.retryPolicyClass(), new DefaultRetryPolicy()).shouldRetrySend(reportSenders, failedSenders)) {
                 final Throwable firstFailure = failedSenders.get(0).getException();
                 throw new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.", firstFailure);
             } else {

@@ -28,10 +28,8 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 09.03.2017
  */
 public final class InstanceCreator {
-    private InstanceCreator(){
-    }
 
-    public static <T> T create(Class<? extends T> clazz, T fallback) {
+    public  <T> T create(Class<? extends T> clazz, T fallback) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException e) {
@@ -42,7 +40,7 @@ public final class InstanceCreator {
         return fallback;
     }
 
-    public static <T> List<T> create(Collection<Class<? extends T>> classes) {
+    public  <T> List<T> create(Collection<Class<? extends T>> classes) {
         final List<T> result = new ArrayList<T>();
         for (Class<? extends T> clazz : classes) {
             T instance = create(clazz, null);

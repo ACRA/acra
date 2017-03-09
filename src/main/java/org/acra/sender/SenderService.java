@@ -100,7 +100,7 @@ public class SenderService extends IntentService {
     @NonNull
     private List<ReportSender> getSenderInstances(@NonNull ACRAConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
         final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
-        for (ReportSenderFactory factory : InstanceCreator.create(factoryClasses)) {
+        for (ReportSenderFactory factory : new InstanceCreator().create(factoryClasses)) {
             reportSenders.add(factory.create(this.getApplication(), config));
         }
         return reportSenders;
