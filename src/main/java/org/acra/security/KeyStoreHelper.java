@@ -19,13 +19,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.ACRAConfiguration;
+import org.acra.util.InstanceCreator;
 
 import java.security.KeyStore;
-
-import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Helper to get a KeyStore from a configuration
@@ -47,15 +45,7 @@ public final class KeyStoreHelper {
      */
     @Nullable
     public static KeyStore getKeyStore(@NonNull Context context, @NonNull ACRAConfiguration config) {
-        final Class<? extends KeyStoreFactory> keyStoreFactory = config.keyStoreFactoryClass();
-        KeyStore keyStore = null;
-        try {
-            keyStore = keyStoreFactory.newInstance().create(context);
-        } catch (InstantiationException e) {
-            ACRA.log.e(LOG_TAG, "Could not get keystore from factory", e);
-        } catch (IllegalAccessException e) {
-            ACRA.log.e(LOG_TAG, "Could not get keystore from factory", e);
-        }
+        KeyStore keyStore = InstanceCreator.create(config.keyStoreFactoryClass(), new NoKeyStoreFactory()).create(context);
         if(keyStore == null) {
             //either users factory did not create a keystore, or the configuration is default {@link NoKeyStoreFactory}
             final int certificateRes = config.resCertificate();
