@@ -45,7 +45,8 @@ public final class KeyStoreHelper {
      */
     @Nullable
     public static KeyStore getKeyStore(@NonNull Context context, @NonNull ACRAConfiguration config) {
-        KeyStore keyStore = InstanceCreator.create(config.keyStoreFactoryClass(), new NoKeyStoreFactory()).create(context);
+        final InstanceCreator instanceCreator = new InstanceCreator();
+        KeyStore keyStore = instanceCreator.create(config.keyStoreFactoryClass(), new NoKeyStoreFactory()).create(context);
         if(keyStore == null) {
             //either users factory did not create a keystore, or the configuration is default {@link NoKeyStoreFactory}
             final int certificateRes = config.resCertificate();
