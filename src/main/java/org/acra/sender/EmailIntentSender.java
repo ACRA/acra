@@ -17,14 +17,16 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
-import org.acra.attachment.NoAttachmentUriProvider;
+import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.collections.ImmutableSet;
@@ -33,6 +35,8 @@ import org.acra.util.InstanceCreator;
 
 import java.util.ArrayList;
 import java.util.Set;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Send reports through an email intent.
@@ -51,18 +55,35 @@ public class EmailIntentSender implements ReportSender {
 
     @Override
     public void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
+        final PackageManager pm = context.getPackageManager();
 
         final String subject = context.getPackageName() + " Crash Report";
         final String body = buildBody(errorContent);
-        final ArrayList<Uri> attachments = InstanceCreator.create(NoAttachmentUriProvider.class, new NoAttachmentUriProvider()).getAttachments(context, config);
+        final InstanceCreator instanceCreator = new InstanceCreator();
+        final ArrayList<Uri> attachments = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
 
-        final Intent emailIntent = new Intent(android.content.Intent.ACTION_SENDTO);
-        emailIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
+        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+        emailIntent.setType("message/rfc822");
         emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
-        context.startActivity(emailIntent);
+        if (emailIntent.resolveActivity(pm) != null) {
+            context.startActivity(emailIntent);
+        }else {
+            ACRA.log.w(LOG_TAG, "No email client supporting attachments found. Attachments will be ignored");
+            final Intent fallbackIntent = new Intent(android.content.Intent.ACTION_SENDTO);
+            fallbackIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
+            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            fallbackIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+            fallbackIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+            if (fallbackIntent.resolveActivity(pm) != null) {
+                context.startActivity(fallbackIntent);
+            } else {
+                throw new ReportSenderException("No email client found");
+            }
+        }
     }
 
     private String buildBody(@NonNull CrashReportData errorContent) {

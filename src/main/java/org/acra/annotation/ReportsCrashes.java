@@ -28,6 +28,8 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
+import org.acra.attachment.AttachmentUriProvider;
+import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.config.DefaultRetryPolicy;
@@ -623,4 +625,16 @@ public @interface ReportsCrashes {
      * @since 4.9.2
      */
     boolean stopServicesOnCrash() default false;
+
+    /**
+     * @return uris to be attached to crash reports.
+     * @since 4.9.3
+     */
+    @NonNull String[] attachmentUris() default {};
+
+    /**
+     * @return a class that decides which uris should be attached to reports
+     * @since 4.9.3
+     */
+    @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
 }

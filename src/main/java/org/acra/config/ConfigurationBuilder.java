@@ -27,6 +27,8 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.attachment.AttachmentUriProvider;
+import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
 import org.acra.dialog.BaseCrashReportDialog;
@@ -124,6 +126,9 @@ public final class ConfigurationBuilder {
     private Class<? extends RetryPolicy> retryPolicyClass;
     private Boolean stopServicesOnCrash;
 
+    private String[] attachmentUris;
+    private Class<? extends AttachmentUriProvider> attachmentUriProvider;
+
 
     /**
      * Constructs a ConfigurationBuilder that is prepopulated with any
@@ -191,6 +196,8 @@ public final class ConfigurationBuilder {
             certificateType = annotationConfig.certificateType();
             retryPolicyClass = annotationConfig.retryPolicyClass();
             stopServicesOnCrash = annotationConfig.stopServicesOnCrash();
+            attachmentUris = annotationConfig.attachmentUris();
+            attachmentUriProvider = annotationConfig.attachmentUriProvider();
         } else {
             annotationType = null;
         }
@@ -862,7 +869,17 @@ public final class ConfigurationBuilder {
         return this;
     }
 
+    @NonNull
+    public ConfigurationBuilder setAttachmentUris(@NonNull String... attachmentUris) {
+        this.attachmentUris = attachmentUris;
+        return this;
+    }
 
+    @NonNull
+    public ConfigurationBuilder setAttachmentUriProvider(@NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider) {
+        this.attachmentUriProvider = attachmentUriProvider;
+        return this;
+    }
     // Getters - used to provide values and !DEFAULTS! to ACRConfiguration during construction
 
     @NonNull
@@ -1302,5 +1319,21 @@ public final class ConfigurationBuilder {
             return stopServicesOnCrash;
         }
         return false;
+    }
+
+    @NonNull
+    String[] attachmentUris(){
+        if(attachmentUris != null) {
+            return attachmentUris;
+        }
+        return new String[0];
+    }
+
+    @NonNull
+    Class<? extends AttachmentUriProvider> attachmentUriProvider(){
+        if(attachmentUriProvider != null){
+            return attachmentUriProvider;
+        }
+        return DefaultAttachmentProvider.class;
     }
 }
