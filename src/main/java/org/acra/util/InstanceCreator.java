@@ -15,6 +15,9 @@
  */
 package org.acra.util;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.acra.ACRA;
 
 import java.util.ArrayList;
@@ -29,7 +32,14 @@ import static org.acra.ACRA.LOG_TAG;
  */
 public final class InstanceCreator {
 
-    public  <T> T create(Class<? extends T> clazz, T fallback) {
+    /**
+     * Create an instance of clazz
+     * @param clazz the clazz to create an instance of
+     * @param fallback the value to return in case of a failure
+     * @param <T> the return type
+     * @return a new instance of clazz or fallback
+     */
+    public  <T> T create(@NonNull Class<? extends T> clazz, @Nullable T fallback) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException e) {
@@ -40,7 +50,14 @@ public final class InstanceCreator {
         return fallback;
     }
 
-    public  <T> List<T> create(Collection<Class<? extends T>> classes) {
+    /**
+     * Create instances of the given classes
+     * @param classes the classes to create insatnces of
+     * @param <T> the return type
+     * @return a list of successfully created instances, does not contain null
+     */
+    @NonNull
+    public  <T> List<T> create(@NonNull Collection<Class<? extends T>> classes) {
         final List<T> result = new ArrayList<T>();
         for (Class<? extends T> clazz : classes) {
             T instance = create(clazz, null);
