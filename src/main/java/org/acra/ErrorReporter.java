@@ -125,7 +125,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         }
 
         final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
-        final ReportPrimer reportPrimer = new InstanceCreator().create(config.reportPrimerClass(), new NoOpReportPrimer());
+        final InstanceCreator instanceCreator = new InstanceCreator();
+        final ReportPrimer reportPrimer = instanceCreator.create(config.reportPrimerClass(), new NoOpReportPrimer());
         final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
         reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, reportPrimer, processFinisher);

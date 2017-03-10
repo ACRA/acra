@@ -39,7 +39,7 @@ public final class InstanceCreator {
      * @param <T> the return type
      * @return a new instance of clazz or fallback
      */
-    public  <T> T create(@NonNull Class<? extends T> clazz, @Nullable T fallback) {
+    public <T> T create(@NonNull Class<? extends T> clazz, @Nullable T fallback) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException e) {
@@ -57,7 +57,7 @@ public final class InstanceCreator {
      * @return a list of successfully created instances, does not contain null
      */
     @NonNull
-    public  <T> List<T> create(@NonNull Collection<Class<? extends T>> classes) {
+    public <T> List<T> create(@NonNull Collection<Class<? extends T>> classes) {
         final List<T> result = new ArrayList<T>();
         for (Class<? extends T> clazz : classes) {
             T instance = create(clazz, null);
