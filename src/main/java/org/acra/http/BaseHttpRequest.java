@@ -25,7 +25,6 @@ import org.acra.ACRAConstants;
 import org.acra.config.ACRAConfiguration;
 import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
 import org.acra.util.IOUtils;
 
 import java.io.BufferedOutputStream;
@@ -95,7 +94,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             }
         }
         configureTimeouts(urlConnection, connectionTimeOut, socketTimeOut);
-        configureHeaders(urlConnection, login, password, headers);
+        configureHeaders(urlConnection, login, password, headers, content);
         if(ACRA.DEV_LOGGING){
             ACRA.log.d(LOG_TAG, "Sending request to " + url);
             ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
@@ -135,12 +134,12 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
     @SuppressWarnings("WeakerAccess")
     protected void configureHeaders(@NonNull HttpURLConnection connection, @Nullable String login, @Nullable String password,
-                                    @Nullable Map<String, String> customHeaders) throws IOException {
+                                    @Nullable Map<String, String> customHeaders, @NonNull T t) throws IOException {
         // Set Headers
         connection.setRequestProperty("User-Agent", String.format("Android ACRA %1$s", BuildConfig.VERSION_NAME)); //sent ACRA version to server
         connection.setRequestProperty("Accept",
                 "text/html,application/xml,application/json,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5");
-        connection.setRequestProperty("Content-Type", getContentType());
+        connection.setRequestProperty("Content-Type", getContentType(context, t));
 
         // Set Credentials
         if (login != null && password != null) {
@@ -156,7 +155,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         }
     }
 
-    protected abstract String getContentType();
+    protected abstract String getContentType(@NonNull Context context, @NonNull T t);
 
     @SuppressWarnings("WeakerAccess")
     protected void writeContent(@NonNull HttpURLConnection connection, @NonNull Method method, @NonNull T content) throws IOException{

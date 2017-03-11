@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 
 import org.acra.config.ACRAConfiguration;
 import org.acra.sender.HttpSender;
-import org.acra.util.IOUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,12 +27,12 @@ public class BinaryHttpRequest extends BaseHttpRequest<Uri> {
     }
 
     @Override
-    protected String getContentType() {
-        return "application/octet-stream";
+    protected String getContentType(@NonNull Context context, @NonNull Uri uri) {
+        return HttpUtils.getMimeType(context, uri);
     }
 
     @Override
     protected byte[] asBytes(Uri content) throws IOException {
-        return IOUtils.uriToByteArray(context, content);
+        return HttpUtils.uriToByteArray(context, content);
     }
 }

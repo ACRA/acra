@@ -16,9 +16,7 @@
 package org.acra.sender;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
-import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -34,6 +32,7 @@ import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
 import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
+import org.acra.http.HttpUtils;
 import org.acra.http.MultipartHttpRequest;
 import org.acra.http.RequestHolder;
 import org.acra.model.Element;
@@ -41,10 +40,8 @@ import org.acra.util.InstanceCreator;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,31 +69,6 @@ import static org.acra.ACRA.LOG_TAG;
  * </pre>
  */
 public class HttpSender implements ReportSender {
-
-    /**
-     * Converts a Map of parameters into a URL encoded Sting.
-     *
-     * @param parameters Map of parameters to convert.
-     * @return URL encoded String representing the parameters.
-     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
-     */
-    @NonNull
-    private static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
-
-        final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
-            if (dataBfr.length() != 0) {
-                dataBfr.append('&');
-            }
-            final Object preliminaryValue = entry.getValue();
-            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), ACRAConstants.UTF8));
-            dataBfr.append('=');
-            dataBfr.append(URLEncoder.encode(value.toString(), ACRAConstants.UTF8));
-        }
-
-        return dataBfr.toString();
-    }
 
     /**
      * Available HTTP methods to send data. Only POST and PUT are currently
@@ -132,7 +104,7 @@ public class HttpSender implements ReportSender {
         FORM("application/x-www-form-urlencoded") {
             @Override
             String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return getParamsAsFormString(sender.convertToForm(report));
+                return HttpUtils.getParamsAsFormString(sender.convertToForm(report));
             }
         },
         /**
@@ -305,34 +277,10 @@ public class HttpSender implements ReportSender {
             case PUT:
                 result.add(new RequestHolder<String>(new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), content, url));
                 for (Uri uri : attachments){
-                    final URL attachmentUrl = new URL(url.toString() + "-" + getFileName(context, uri));
+                    final URL attachmentUrl = new URL(url.toString() + "-" + HttpUtils.getFileNameFromUri(context, uri));
                     result.add(new RequestHolder<Uri>(new BinaryHttpRequest(configuration, context, method, login, password, connectionTimeOut, socketTimeOut, headers), uri, attachmentUrl));
                 }
                 break;
-        }
-        return result;
-    }
-
-    public static String getFileName(Context context, Uri uri) {
-        String result = null;
-        if (uri.getScheme().equals("content")) {
-            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
         }
         return result;
     }

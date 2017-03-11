@@ -42,7 +42,7 @@ public class DefaultHttpRequest extends BaseHttpRequest<String> {
     }
 
     @Override
-    protected String getContentType() {
+    protected String getContentType(@NonNull Context context, @NonNull String s) {
         return type.getContentType();
     }
 

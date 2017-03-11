@@ -15,8 +15,6 @@
  */
 package org.acra.util;
 
-import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -28,10 +26,8 @@ import org.acra.ACRAConstants;
 import org.acra.collections.BoundedLinkedList;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -136,21 +132,6 @@ public final class IOUtils {
         } finally {
             safeClose(reader);
         }
-    }
-
-    @NonNull
-    public static byte[] uriToByteArray(@NonNull Context context, Uri uri) throws IOException {
-        InputStream inputStream = context.getContentResolver().openInputStream(uri);
-        if (inputStream == null) {
-            throw new FileNotFoundException("Could not open " + uri.toString());
-        }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-        return outputStream.toByteArray();
     }
 
     /**
