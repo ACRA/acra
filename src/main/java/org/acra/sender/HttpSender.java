@@ -16,22 +16,28 @@
 package org.acra.sender;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
-import org.acra.http.BaseHttpRequest;
+import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
-import org.acra.http.HttpRequest;
+import org.acra.http.MultipartHttpRequest;
+import org.acra.http.RequestHolder;
 import org.acra.model.Element;
+import org.acra.util.InstanceCreator;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -39,7 +45,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -258,14 +266,21 @@ public class HttpSender implements ReportSender {
 
             final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
             final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
-            final HttpRequest<String> request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.getHttpHeaders());
+
+            final InstanceCreator instanceCreator = new InstanceCreator();
+            List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
 
             // Generate report body depending on requested type
             final String reportAsString = mType.convertReport(this, report);
 
             // Adjust URL depending on method
             URL reportUrl = mMethod.createURL(baseUrl, report);
-            request.send(reportUrl, reportAsString);
+
+            final List<RequestHolder<?>> requests = createHttpRequests(config, context, mMethod, mType, login, password, config.connectionTimeout(),
+                    config.socketTimeout(), config.getHttpHeaders(), reportAsString, reportUrl, uris);
+            for (RequestHolder<?> holder : requests){
+                holder.send();
+            }
 
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
@@ -273,14 +288,53 @@ public class HttpSender implements ReportSender {
         }
     }
 
-    private void sendAttachments(@NonNull Context context){
-
+    @SuppressWarnings("WeakerAccess")
+    protected List<RequestHolder<?>> createHttpRequests(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+                                                     @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                                     @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
+        List<RequestHolder<?>> result = new ArrayList<RequestHolder<?>>();
+        switch (method){
+            case POST:
+                if(attachments.isEmpty()){
+                    result.add(new RequestHolder<String>(new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), content, url));
+                } else {
+                    result.add(new RequestHolder<Pair<String, List<Uri>>>(
+                            new MultipartHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), Pair.create(content, attachments), url));
+                }
+                break;
+            case PUT:
+                result.add(new RequestHolder<String>(new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), content, url));
+                for (Uri uri : attachments){
+                    final URL attachmentUrl = new URL(url.toString() + "-" + getFileName(context, uri));
+                    result.add(new RequestHolder<Uri>(new BinaryHttpRequest(configuration, context, method, login, password, connectionTimeOut, socketTimeOut, headers), uri, attachmentUrl));
+                }
+                break;
+        }
+        return result;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    protected HttpRequest<String> createHttpRequest(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
-                                            @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers){
-        return new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers);
+    public static String getFileName(Context context, Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     /**
@@ -329,4 +383,5 @@ public class HttpSender implements ReportSender {
     private boolean isNull(@Nullable String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
+
 }
