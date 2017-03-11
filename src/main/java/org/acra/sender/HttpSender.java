@@ -28,6 +28,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.http.BaseHttpRequest;
 import org.acra.http.DefaultHttpRequest;
 import org.acra.http.HttpRequest;
 import org.acra.model.Element;
@@ -257,7 +258,7 @@ public class HttpSender implements ReportSender {
 
             final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
             final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
-            final HttpRequest request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.getHttpHeaders());
+            final HttpRequest<String> request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.getHttpHeaders());
 
             // Generate report body depending on requested type
             final String reportAsString = mType.convertReport(this, report);
@@ -272,8 +273,12 @@ public class HttpSender implements ReportSender {
         }
     }
 
+    private void sendAttachments(@NonNull Context context){
+
+    }
+
     @SuppressWarnings("WeakerAccess")
-    protected HttpRequest createHttpRequest(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+    protected HttpRequest<String> createHttpRequest(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
                                             @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers){
         return new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers);
     }
