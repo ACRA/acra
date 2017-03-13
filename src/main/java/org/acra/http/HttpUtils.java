@@ -107,18 +107,20 @@ public final class HttpUtils {
     }
 
     public static String getMimeType(Context context, Uri uri) {
-        String type = null;
         if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
             ContentResolver contentResolver = context.getContentResolver();
-            type = contentResolver.getType(uri);
+            return contentResolver.getType(uri);
         }
-        if (type == null) {
-            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
-                    .toString());
-            if (fileExtension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                        fileExtension.toLowerCase());
-            }
+        return guessMimeType(uri);
+    }
+
+    public static String guessMimeType(Uri uri){
+        String type = null;
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                .toString());
+        if (fileExtension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    fileExtension.toLowerCase());
         }
         if (type == null) {
             type = "application/octet-stream";

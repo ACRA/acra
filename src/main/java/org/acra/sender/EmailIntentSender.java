@@ -18,7 +18,9 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -27,13 +29,14 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.attachment.DefaultAttachmentProvider;
+import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
-import org.acra.collections.ImmutableSet;
 import org.acra.model.Element;
 import org.acra.util.InstanceCreator;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -70,8 +73,21 @@ public class EmailIntentSender implements ReportSender {
         emailIntent.setType("message/rfc822");
         emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
         if (emailIntent.resolveActivity(pm) != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                //flags do not work on extras prior to android 5, so we have to grant read permissions to all potential activities
+                List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(emailIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    for (Uri uri : attachments) {
+                        context.grantUriPermission(packageName, uri,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    }
+                }
+            }
             context.startActivity(emailIntent);
-        }else {
+        } else {
             ACRA.log.w(LOG_TAG, "No email client supporting attachments found. Attachments will be ignored");
             final Intent fallbackIntent = new Intent(android.content.Intent.ACTION_SENDTO);
             fallbackIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
