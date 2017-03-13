@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2017
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.acra.sender;
 
 import android.app.IntentService;
@@ -10,6 +25,7 @@ import org.acra.ACRAConstants;
 import org.acra.config.ACRAConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
+import org.acra.util.InstanceCreator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -84,16 +100,9 @@ public class SenderService extends IntentService {
     @NonNull
     private List<ReportSender> getSenderInstances(@NonNull ACRAConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
         final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
-        for (final Class<? extends ReportSenderFactory> factoryClass : factoryClasses) {
-            try {
-                final ReportSenderFactory factory = factoryClass.newInstance();
-                final ReportSender sender = factory.create(this.getApplication(), config);
-                reportSenders.add(sender);
-            } catch (InstantiationException e) {
-                ACRA.log.w(LOG_TAG, "Could not construct ReportSender from " + factoryClass, e);
-            } catch (IllegalAccessException e) {
-                ACRA.log.w(LOG_TAG, "Could not construct ReportSender from " + factoryClass, e);
-            }
+        final InstanceCreator instanceCreator = new InstanceCreator();
+        for (ReportSenderFactory factory : instanceCreator.create(factoryClasses)) {
+            reportSenders.add(factory.create(this.getApplication(), config));
         }
         return reportSenders;
     }
