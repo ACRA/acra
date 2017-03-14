@@ -34,7 +34,6 @@ import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
 import org.acra.http.HttpUtils;
 import org.acra.http.MultipartHttpRequest;
-import org.acra.http.RequestHolder;
 import org.acra.model.Element;
 import org.acra.util.InstanceCreator;
 import org.json.JSONObject;
@@ -42,7 +41,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,11 +246,8 @@ public class HttpSender implements ReportSender {
             // Adjust URL depending on method
             URL reportUrl = mMethod.createURL(baseUrl, report);
 
-            final List<RequestHolder<?>> requests = createHttpRequests(config, context, mMethod, mType, login, password, config.connectionTimeout(),
+            sendHttpRequests(config, context, mMethod, mType, login, password, config.connectionTimeout(),
                     config.socketTimeout(), config.getHttpHeaders(), reportAsString, reportUrl, uris);
-            for (RequestHolder<?> holder : requests){
-                holder.send();
-            }
 
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
@@ -261,28 +256,46 @@ public class HttpSender implements ReportSender {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected List<RequestHolder<?>> createHttpRequests(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
-                                                     @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
-                                                     @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
-        List<RequestHolder<?>> result = new ArrayList<RequestHolder<?>>();
-        switch (method){
+    protected void sendHttpRequests(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+                                    @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                    @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
+        switch (method) {
             case POST:
-                if(attachments.isEmpty()){
-                    result.add(new RequestHolder<String>(new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), content, url));
+                if (attachments.isEmpty()) {
+                    sendWithoutAttachments(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
                 } else {
-                    result.add(new RequestHolder<Pair<String, List<Uri>>>(
-                            new MultipartHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), Pair.create(content, attachments), url));
+                    postMultipart(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url, attachments);
                 }
                 break;
             case PUT:
-                result.add(new RequestHolder<String>(new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers), content, url));
-                for (Uri uri : attachments){
-                    final URL attachmentUrl = new URL(url.toString() + "-" + HttpUtils.getFileNameFromUri(context, uri));
-                    result.add(new RequestHolder<Uri>(new BinaryHttpRequest(configuration, context, method, login, password, connectionTimeOut, socketTimeOut, headers), uri, attachmentUrl));
+                sendWithoutAttachments(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
+                for (Uri uri : attachments) {
+                    putAttachment(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers, url, uri);
                 }
                 break;
         }
-        return result;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void sendWithoutAttachments(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+                                          @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                          @NonNull String content, @NonNull URL url) throws IOException {
+        new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void postMultipart(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Type type,
+                                 @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                 @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
+        new MultipartHttpRequest(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, Pair.create(content, attachments));
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void putAttachment(@NonNull ACRAConfiguration configuration, @NonNull Context context,
+                                 @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                 @NonNull URL url, @NonNull Uri attachment) throws IOException {
+        final URL attachmentUrl = new URL(url.toString() + "-" + HttpUtils.getFileNameFromUri(context, attachment));
+        new BinaryHttpRequest(configuration, context, Method.PUT, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
     }
 
     /**

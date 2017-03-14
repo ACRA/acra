@@ -48,9 +48,9 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     @NonNull
     private final HttpSender.Type type;
 
-    public MultipartHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method, @NonNull HttpSender.Type type, @Nullable String login, @Nullable String password,
+    public MultipartHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull HttpSender.Type type, @Nullable String login, @Nullable String password,
                                 int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
-        super(config, context, method, login, password, connectionTimeOut, socketTimeOut, headers);
+        super(config, context, HttpSender.Method.POST, login, password, connectionTimeOut, socketTimeOut, headers);
         this.context = context;
         this.type = type;
     }
