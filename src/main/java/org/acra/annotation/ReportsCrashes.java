@@ -421,14 +421,18 @@ public @interface ReportsCrashes {
      * <p>
      * Silent and Toast reports are automatically approved.
      * Dialog and Notification reports required explicit approval by the user before they are sent.
+     * </p>
      * <p>
      * On application restart the user is prompted with approval for any unsent reports.
      * So you generally don't want to accumulate unapproved reports, otherwise you will prompt them multiple times.
+     * </p>
      * <p>
      * If this is set to true then all unapproved reports bar one will be deleted on application start.
      * The last report is always retained because that is the report that probably just happened.
+     * </p>
      * <p>
      * If set to false then on restart the user will be prompted with approval for each unapproved report.
+     * </p>
      *
      * @return true if ACRA should delete unapproved reports on application start.
      */
