@@ -73,48 +73,52 @@ public class EmailIntentSender implements ReportSender {
         resolveIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
         final ComponentName componentName = resolveIntent.resolveActivity(pm);
         if (componentName != null) {
-            String packageName = componentName.getPackageName();
-            final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
-            emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            emailIntent.putExtra(Intent.EXTRA_TEXT, body);
-            emailIntent.setType("message/rfc822");
-            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
-            if (packageName.equals("android")) {
-                final List<ResolveInfo> resolveInfoList = pm.queryIntentActivities(resolveIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                final List<Intent> initialIntents = new ArrayList<Intent>();
-                for (ResolveInfo info : resolveInfoList) {
-                    final Intent packageSpecificIntent = new Intent(emailIntent);
-                    packageSpecificIntent.setPackage(info.activityInfo.packageName);
-                    if (packageSpecificIntent.resolveActivity(pm) != null) {
-                        initialIntents.add(packageSpecificIntent);
-                    }
-                }
-                if (initialIntents.size() > 1) {
-                    final Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-                    chooser.putExtra(Intent.EXTRA_INTENT, initialIntents.remove(0));
-                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, initialIntents.toArray(new Intent[initialIntents.size()]));
-                    chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(chooser);
-                    return;
-                } else if (initialIntents.size() == 1) {
-                    packageName = initialIntents.get(0).getPackage();
-                }
-                emailIntent.setPackage(packageName);
-                if (emailIntent.resolveActivity(pm) != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    } else {
-                        //flags do not work on extras prior to android 5, so we have to grant read permissions manually
-                        for (Uri uri : attachments) {
-                            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (attachments.size() == 0) {
+                context.startActivity(resolveIntent);
+            } else {
+                String packageName = componentName.getPackageName();
+                final Intent emailIntent = new Intent(attachments.size() == 1 ? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
+                emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+                emailIntent.setType("message/rfc822");
+                emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
+                if (packageName.equals("android")) {
+                    final List<ResolveInfo> resolveInfoList = pm.queryIntentActivities(resolveIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                    final List<Intent> initialIntents = new ArrayList<Intent>();
+                    for (ResolveInfo info : resolveInfoList) {
+                        final Intent packageSpecificIntent = new Intent(emailIntent);
+                        packageSpecificIntent.setPackage(info.activityInfo.packageName);
+                        if (packageSpecificIntent.resolveActivity(pm) != null) {
+                            initialIntents.add(packageSpecificIntent);
                         }
                     }
-                    context.startActivity(emailIntent);
-                } else {
-                    ACRA.log.w(LOG_TAG, "No email client supporting attachments found. Attachments will be ignored");
-                    context.startActivity(resolveIntent);
+                    if (initialIntents.size() > 1) {
+                        final Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+                        chooser.putExtra(Intent.EXTRA_INTENT, initialIntents.remove(0));
+                        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, initialIntents.toArray(new Intent[initialIntents.size()]));
+                        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(chooser);
+                        return;
+                    } else if (initialIntents.size() == 1) {
+                        packageName = initialIntents.get(0).getPackage();
+                    }
+                    emailIntent.setPackage(packageName);
+                    if (emailIntent.resolveActivity(pm) != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        } else {
+                            //flags do not work on extras prior to android 5, so we have to grant read permissions manually
+                            for (Uri uri : attachments) {
+                                context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            }
+                        }
+                        context.startActivity(emailIntent);
+                    } else {
+                        ACRA.log.w(LOG_TAG, "No email client supporting attachments found. Attachments will be ignored");
+                        context.startActivity(resolveIntent);
+                    }
                 }
             }
         } else {
