@@ -150,7 +150,7 @@ public class EmailIntentSender implements ReportSender {
         final StringBuilder builder = new StringBuilder();
         for (ReportField field : fields) {
             builder.append(field.toString()).append('=');
-            Element value = errorContent.get(field);
+            final Element value = errorContent.get(field);
             if (value != null) {
                 builder.append(TextUtils.join("\n\t", value.flatten()));
             }

@@ -44,12 +44,12 @@ public final class HttpUtils {
 
     @NonNull
     public static byte[] uriToByteArray(@NonNull Context context, Uri uri) throws IOException {
-        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        final InputStream inputStream = context.getContentResolver().openInputStream(uri);
         if (inputStream == null) {
             throw new FileNotFoundException("Could not open " + uri.toString());
         }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
         int length;
         while ((length = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, length);
@@ -85,7 +85,7 @@ public final class HttpUtils {
     public static String getFileNameFromUri(Context context, Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
-            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            final Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
@@ -98,7 +98,7 @@ public final class HttpUtils {
         }
         if (result == null) {
             result = uri.getPath();
-            int cut = result.lastIndexOf('/');
+            final int cut = result.lastIndexOf('/');
             if (cut != -1) {
                 result = result.substring(cut + 1);
             }
@@ -108,7 +108,7 @@ public final class HttpUtils {
 
     public static String getMimeType(Context context, Uri uri) {
         if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
-            ContentResolver contentResolver = context.getContentResolver();
+            final ContentResolver contentResolver = context.getContentResolver();
             return contentResolver.getType(uri);
         }
         return guessMimeType(uri);
@@ -116,7 +116,7 @@ public final class HttpUtils {
 
     public static String guessMimeType(Uri uri){
         String type = null;
-        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+        final String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
                 .toString());
         if (fileExtension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(

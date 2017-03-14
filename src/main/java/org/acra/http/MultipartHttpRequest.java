@@ -62,8 +62,8 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
 
     @Override
     protected byte[] asBytes(Pair<String, List<Uri>> content) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
         try {
             writer.append(NEW_LINE).append(BOUNDARY).append(NEW_LINE);
             writer.append(CONTENT_TYPE).append(type.getContentType()).append(NEW_LINE);

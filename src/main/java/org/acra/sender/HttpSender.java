@@ -231,20 +231,20 @@ public class HttpSender implements ReportSender {
     public void send(@NonNull Context context, @NonNull CrashReportData report) throws ReportSenderException {
 
         try {
-            String baseUrl = mFormUri == null ? config.formUri() : mFormUri.toString();
+            final String baseUrl = mFormUri == null ? config.formUri() : mFormUri.toString();
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + baseUrl);
 
             final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
             final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
 
             final InstanceCreator instanceCreator = new InstanceCreator();
-            List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
+            final List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
 
             // Generate report body depending on requested type
             final String reportAsString = mType.convertReport(this, report);
 
             // Adjust URL depending on method
-            URL reportUrl = mMethod.createURL(baseUrl, report);
+            final URL reportUrl = mMethod.createURL(baseUrl, report);
 
             sendHttpRequests(config, context, mMethod, mType, login, password, config.connectionTimeout(),
                     config.socketTimeout(), config.getHttpHeaders(), reportAsString, reportUrl, uris);
@@ -330,8 +330,8 @@ public class HttpSender implements ReportSender {
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
-            Element element = report.get(field);
-            String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
+            final Element element = report.get(field);
+            final String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), value);
             } else {

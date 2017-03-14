@@ -56,11 +56,11 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
     private final Context context;
     @NonNull
     private final Method method;
-    private String login;
-    private String password;
-    private int connectionTimeOut = 3000;
-    private int socketTimeOut = 3000;
-    private Map<String, String> headers;
+    private final String login;
+    private final String password;
+    private final int connectionTimeOut;
+    private final int socketTimeOut;
+    private final Map<String, String> headers;
 
     public BaseHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull Method method,
                            @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {

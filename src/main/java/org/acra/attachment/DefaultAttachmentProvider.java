@@ -20,7 +20,7 @@ public class DefaultAttachmentProvider implements AttachmentUriProvider {
     @NonNull
     @Override
     public ArrayList<Uri> getAttachments(Context context, ACRAConfiguration configuration) {
-        ArrayList<Uri> result = new ArrayList<Uri>();
+        final ArrayList<Uri> result = new ArrayList<Uri>();
         for (String s : configuration.attachmentUris()){
             try {
                 result.add(Uri.parse(s));

@@ -91,11 +91,11 @@ public class AcraContentProvider extends ContentProvider {
         if(match == UriMatcher.NO_MATCH) {
             return null;
         }
-        List<String> segments = new ArrayList<String>(uri.getPathSegments());
+        final List<String> segments = new ArrayList<String>(uri.getPathSegments());
         if(segments.size() < 2) return null;
-        String dir = segments.remove(0).toUpperCase();
+        final String dir = segments.remove(0).toUpperCase();
         try {
-            Directory directory = Directory.valueOf(dir);
+            final Directory directory = Directory.valueOf(dir);
             return directory.getFile(getContext(), TextUtils.join(File.separator, segments));
         }catch (IllegalArgumentException e){
             return null;
