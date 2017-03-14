@@ -15,10 +15,11 @@
  */
 package org.acra.sender;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -36,7 +37,6 @@ import org.acra.model.Element;
 import org.acra.util.InstanceCreator;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -65,40 +65,42 @@ public class EmailIntentSender implements ReportSender {
         final InstanceCreator instanceCreator = new InstanceCreator();
         final ArrayList<Uri> attachments = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
 
-        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
-        emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
-        emailIntent.setType("message/rfc822");
-        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
-        if (emailIntent.resolveActivity(pm) != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            } else {
-                //flags do not work on extras prior to android 5, so we have to grant read permissions to all potential activities
-                List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(emailIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                for (ResolveInfo resolveInfo : resInfoList) {
-                    String packageName = resolveInfo.activityInfo.packageName;
+        final Intent resolveIntent = new Intent(android.content.Intent.ACTION_SENDTO);
+        resolveIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
+        resolveIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        resolveIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+        resolveIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+        ComponentName info = resolveIntent.resolveActivity(pm);
+        if (info != null) {
+            final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+            if(info.getClassName().equals("com.android.internal.app.ResolverActivity")){
+                //we cannot let the user choose the target, as Resolver does not pass on the attachments. Select the first
+                ActivityInfo activityInfo = pm.queryIntentActivities(resolveIntent, PackageManager.MATCH_DEFAULT_ONLY).get(0).activityInfo;
+                info = new ComponentName(activityInfo.packageName, activityInfo.name);
+            }
+                emailIntent.setPackage(info.getPackageName());
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
+            emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+            emailIntent.setType("message/rfc822");
+            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
+            if (emailIntent.resolveActivity(pm) != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    //flags do not work on extras prior to android 5, so we have to grant read permissions manually
                     for (Uri uri : attachments) {
-                        context.grantUriPermission(packageName, uri,
-                                Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        context.grantUriPermission(info.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     }
                 }
-            }
-            context.startActivity(emailIntent);
-        } else {
-            ACRA.log.w(LOG_TAG, "No email client supporting attachments found. Attachments will be ignored");
-            final Intent fallbackIntent = new Intent(android.content.Intent.ACTION_SENDTO);
-            fallbackIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
-            fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            fallbackIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-            fallbackIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
-            if (fallbackIntent.resolveActivity(pm) != null) {
-                context.startActivity(fallbackIntent);
+                context.startActivity(emailIntent);
             } else {
-                throw new ReportSenderException("No email client found");
+                ACRA.log.w(LOG_TAG, "No email client supporting attachments found. Attachments will be ignored");
+                context.startActivity(resolveIntent);
             }
+        } else {
+            throw new ReportSenderException("No email client found");
         }
     }
 
