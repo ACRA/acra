@@ -125,8 +125,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
      * @throws IOException if the class file can't be written
      */
     private Void createConfigClass(TypeElement builder, Set<MethodDefinition> methodDefinitions) throws IOException {
-        final Set<MethodDefinition> methods = getRelevantMethods(builder);
-        methods.addAll(methodDefinitions);
+        final Set<MethodDefinition> methods = getRelevantMethods(builder, methodDefinitions);
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(ACRA_CONFIGURATION)
                 .addSuperinterface(Serializable.class)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
@@ -165,9 +164,11 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
      * @param builder the type to collect methods from
      * @return relevant methods in the type
      */
-    private Set<MethodDefinition> getRelevantMethods(TypeElement builder) {
-        return builder.getEnclosedElements().stream().filter(e -> e.getKind() == ElementKind.METHOD && !e.getModifiers().contains(Modifier.PRIVATE))
-                .map(ExecutableElement.class::cast).map(MethodDefinition::from).filter(utils::shouldRetain).collect(Collectors.toCollection(HashSet::new));
+    private Set<MethodDefinition> getRelevantMethods(TypeElement builder, Set<MethodDefinition> methodDefinitions) {
+        final Set<MethodDefinition> result = builder.getEnclosedElements().stream().filter(e -> e.getKind() == ElementKind.METHOD && !e.getModifiers().contains(Modifier.PRIVATE))
+                .map(ExecutableElement.class::cast).map(MethodDefinition::from).collect(Collectors.toCollection(HashSet::new));
+        result.addAll(methodDefinitions);
+        return result.stream().filter(utils::shouldRetain).collect(Collectors.toSet());
     }
 
     /**

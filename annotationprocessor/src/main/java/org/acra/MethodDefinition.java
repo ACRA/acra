@@ -19,6 +19,7 @@ package org.acra;
 import com.squareup.javapoet.AnnotationSpec;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
@@ -70,5 +71,10 @@ class MethodDefinition {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return annotations.stream().map(AnnotationSpec::toString).collect(Collectors.joining(" ")) + " " + type + " " + name + "()";
     }
 }
