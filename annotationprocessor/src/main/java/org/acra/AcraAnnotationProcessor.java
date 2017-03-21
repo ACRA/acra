@@ -185,7 +185,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
                 .addStatement("final $1T $2L = $3L.getClass().getAnnotation($1T.class)", config.asType(), VAR_ANNOTATION_CONFIG, PARAM_APP)
                 .beginControlFlow("if ($L != null)", VAR_ANNOTATION_CONFIG);
         final Set<MethodDefinition> result = config.getEnclosedElements().stream().filter(element -> element.getKind() == ElementKind.METHOD)
-                .map(e -> handleMethod((ExecutableElement) e, classBuilder, constructor)).collect(Collectors.toSet());
+                .map(ExecutableElement.class::cast).filter(utils::isNotDeprecated).map(e -> handleMethod(e, classBuilder, constructor)).collect(Collectors.toSet());
         constructor.endControlFlow();
         classBuilder.addMethod(MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
                 .addParameter(ParameterSpec.builder(application, PARAM_APP)

@@ -158,4 +158,12 @@ class ModelUtils {
     boolean shouldRetain(MethodDefinition method) {
         return !method.getName().startsWith(PREFIX_SETTER) && !method.getAnnotations().stream().anyMatch(a -> a.type.equals(hide));
     }
+
+    /**
+     * @param method a method
+     * @return false if the method is deprecated
+     */
+    boolean isNotDeprecated(ExecutableElement method){
+        return method.getAnnotation(Deprecated.class) == null;
+    }
 }
