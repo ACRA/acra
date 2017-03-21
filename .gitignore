@@ -5,5 +5,7 @@ target
 pom.xml.releaseBackup
 release.properties
 *.iml
-*.idea/*
+.idea/
 build/
+local.properties
+.gradle

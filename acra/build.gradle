@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+
+def supportVersion = "24.1.1"
+def androidVersion = 23
+def acraVersion = "4.9.3-SNAPSHOT"
+def proguardFile = "src/main/proguard/proguard.cfg"
+
+android {
+    compileSdkVersion androidVersion
+    buildToolsVersion '25.0.2'
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion androidVersion
+        versionName acraVersion
+        consumerProguardFile proguardFile
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+}
+
+dependencies {
+    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:support-annotations:$supportVersion"
+    annotationProcessor project(":annotationprocessor")
+}
