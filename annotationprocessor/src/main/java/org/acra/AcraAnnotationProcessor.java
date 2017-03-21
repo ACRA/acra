@@ -179,7 +179,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
      */
     private Set<MethodDefinition> createBuilderClass(TypeElement config) throws IOException {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(CONFIGURATION_BUILDER)
-                .addModifiers(Modifier.PUBLIC);
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
         final CodeBlock.Builder constructor = CodeBlock.builder()
                 .addStatement("final $1T $2L = $3L.getClass().getAnnotation($1T.class)", config.asType(), VAR_ANNOTATION_CONFIG, PARAM_APP)
                 .beginControlFlow("if ($L != null)", VAR_ANNOTATION_CONFIG);
