@@ -90,7 +90,7 @@ final class DropBoxCollector extends Collector {
             if (config.includeDropBoxSystemTags()) {
                 tags.addAll(Arrays.asList(SYSTEM_TAGS));
             }
-            final Set<String> additionalTags = config.additionalDropBoxTags();
+            final List<String> additionalTags = config.additionalDropBoxTags();
             if (!additionalTags.isEmpty()) {
                 tags.addAll(additionalTags);
             }

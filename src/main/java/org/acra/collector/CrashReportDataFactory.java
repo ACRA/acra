@@ -119,7 +119,7 @@ public final class CrashReportDataFactory {
     public CrashReportData createCrashData(@NonNull ReportBuilder builder) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            final Set<ReportField> crashReportFields = config.getReportFields();
+            final Set<ReportField> crashReportFields = config.reportContent();
             final List<Collector> collectors = getCollectorsOrdered();
 
             //this will iterate over all collectors in descending order of priority

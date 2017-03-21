@@ -128,7 +128,7 @@ public final class ReportExecutor {
         final ReportingInteractionMode reportingInteractionMode;
         if (!reportBuilder.isSendSilently()) {
             // No interaction mode defined in the ReportBuilder, we assume it has been set during ACRA.initACRA()
-            reportingInteractionMode = config.mode();
+            reportingInteractionMode = config.reportingInteractionMode();
         } else {
             reportingInteractionMode = ReportingInteractionMode.SILENT;
 
@@ -136,7 +136,7 @@ public final class ReportExecutor {
             // initialized with a non SILENT mode and this mode is overridden
             // with SILENT, then we have to send only reports which have been
             // explicitly declared as silent via handleSilentException().
-            if (config.mode() != ReportingInteractionMode.SILENT) {
+            if (config.reportingInteractionMode() != ReportingInteractionMode.SILENT) {
                 sendOnlySilentReports = true;
             }
         }

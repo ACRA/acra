@@ -257,7 +257,7 @@ public class HttpSender implements ReportSender {
 
             final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
             final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
-            final HttpRequest request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.getHttpHeaders());
+            final HttpRequest request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.httpHeaders());
 
             // Generate report body depending on requested type
             final String reportAsString = mType.convertReport(this, report);
@@ -303,7 +303,7 @@ public class HttpSender implements ReportSender {
     @NonNull
     private Map<String, String> remap(@NonNull Map<ReportField, Element> report) {
 
-        Set<ReportField> fields = config.getReportFields();
+        Set<ReportField> fields = config.reportContent();
         if (fields.isEmpty()) {
             fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_REPORT_FIELDS);
         }

@@ -62,6 +62,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
+@Configuration
 public @interface ReportsCrashes {
 
     /**
@@ -98,7 +99,7 @@ public @interface ReportsCrashes {
      * 
      * @return the interaction mode that you want ACRA to implement.
      */
-    @NonNull ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
+    @NonNull ReportingInteractionMode reportingInteractionMode() default ReportingInteractionMode.SILENT;
 
     /**
      * @return Resource id for the label of positive button in the crash dialog.
@@ -503,6 +504,7 @@ public @interface ReportsCrashes {
      * @return true.
      * @deprecated since 4.8.3 no replacement. Now that we are using the SenderService in a separate process we always send at shutdown.
      */
+    @Deprecated
     boolean sendReportsAtShutdown() default true;
 
     /**

@@ -104,7 +104,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         // Store the initial Configuration state.
         // This is expensive to gather, so only do so if we plan to report it.
         final Element initialConfiguration;
-        if (config.getReportFields().contains(ReportField.INITIAL_CONFIGURATION)) {
+        if (config.reportContent().contains(ReportField.INITIAL_CONFIGURATION)) {
             initialConfiguration = ConfigurationCollector.collectConfiguration(this.context);
         } else {
             initialConfiguration = ACRAConstants.NOT_AVAILABLE;

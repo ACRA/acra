@@ -73,7 +73,7 @@ public final class ApplicationStartupProcessor {
             return; // There are no approved reports, so bail now.
         }
 
-        if (config.mode() == ReportingInteractionMode.TOAST && hasNonSilentApprovedReports(reportFiles)) {
+        if (config.reportingInteractionMode() == ReportingInteractionMode.TOAST && hasNonSilentApprovedReports(reportFiles)) {
             ToastSender.sendToast(context, config.resToastText(), Toast.LENGTH_LONG);
         }
 

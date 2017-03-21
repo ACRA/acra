@@ -33,4 +33,5 @@ android {
 dependencies {
     compile "com.android.support:support-v4:$supportVersion"
     compile "com.android.support:support-annotations:$supportVersion"
+    annotationProcessor project(":annotationprocessor")
 }
