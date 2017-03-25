@@ -18,9 +18,7 @@ package org.acra.collector;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -84,35 +82,7 @@ final class LogFileCollector extends Collector {
      */
     @NonNull
     private InputStream getStream(@NonNull Directory directory, @NonNull String fileName) {
-        if (directory == Directory.FILES_LEGACY) {
-            directory = fileName.startsWith("/") ? Directory.ROOT : Directory.FILES;
-        }
-        final File dir;
-        switch (directory) {
-            case FILES:
-                dir = context.getFilesDir();
-                break;
-            case EXTERNAL_FILES:
-                dir = context.getExternalFilesDir(null);
-                break;
-            case CACHE:
-                dir = context.getCacheDir();
-                break;
-            case EXTERNAL_CACHE:
-                dir = context.getExternalCacheDir();
-                break;
-            case NO_BACKUP_FILES:
-                dir = ContextCompat.getNoBackupFilesDir(context);
-                break;
-            case EXTERNAL_STORAGE:
-                dir = Environment.getExternalStorageDirectory();
-                break;
-            case ROOT:
-            default:
-                dir = new File("/");
-                break;
-        }
-        final File file = new File(dir, fileName);
+        final File file = directory.getFile(context, fileName);
         if (!file.exists()) {
             if (ACRA.DEV_LOGGING)
                 ACRA.log.d(LOG_TAG, "Log file '" + file.getPath() + "' does not exist");

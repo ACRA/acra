@@ -17,6 +17,9 @@ package org.acra.file;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+
+import java.io.File;
 
 /**
  * @author F43nd1r
@@ -28,34 +31,76 @@ public enum Directory {
      * If the string starts with a path separator, this behaves like {@link #ROOT}.
      * Otherwise it behaves like {@link #FILES}.
      */
-    FILES_LEGACY,
+    FILES_LEGACY {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return (fileName.startsWith("/") ? Directory.ROOT : Directory.FILES).getFile(context, fileName);
+        }
+    },
     /**
      * Directory returned by {@link Context#getFilesDir()}
      */
-    FILES,
+    FILES {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File(context.getFilesDir(), fileName);
+        }
+    },
     /**
      * Directory returned by {@link Context#getExternalFilesDir(String)}
      */
-    EXTERNAL_FILES,
+    EXTERNAL_FILES {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File(context.getExternalFilesDir(null), fileName);
+        }
+    },
     /**
      * Directory returned by {@link Context#getCacheDir()}
      */
-    CACHE,
+    CACHE {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File(context.getCacheDir(), fileName);
+        }
+    },
     /**
      * Directory returned by {@link Context#getExternalCacheDir()}
      */
-    EXTERNAL_CACHE,
+    EXTERNAL_CACHE {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File(context.getExternalCacheDir(), fileName);
+        }
+    },
     /**
      * Directory returned by {@link Context#getNoBackupFilesDir()}.
      * Will fall back to {@link Context#getFilesDir()} on API &lt; 21
      */
-    NO_BACKUP_FILES,
+    NO_BACKUP_FILES {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File(ContextCompat.getNoBackupFilesDir(context), fileName);
+        }
+    },
     /**
      * Directory returned by {@link Environment#getExternalStorageDirectory()}
      */
-    EXTERNAL_STORAGE,
+    EXTERNAL_STORAGE {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File(Environment.getExternalStorageDirectory(), fileName);
+        }
+    },
     /**
      * Root Directory, paths in this directory are absolute paths
      */
-    ROOT
+    ROOT {
+        @Override
+        public File getFile(Context context, String fileName) {
+            return new File("/", fileName);
+        }
+    };
+
+    public abstract File getFile(Context context, String fileName);
 }
