@@ -22,12 +22,14 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.acra.ACRA;
 import org.acra.file.Directory;
 import org.acra.http.HttpUtils;
 
@@ -45,15 +47,16 @@ import java.util.Map;
 
 public class AcraContentProvider extends ContentProvider {
     private static final String[] COLUMNS = {
-            OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
+            OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
     private static final String ANY_MATCH = "/*";
     private UriMatcher uriMatcher;
 
     @Override
     public boolean onCreate() {
         final String authority = getContext().getPackageName() + ".acra";
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Registered content provider for authority " + authority);
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        for (Directory directory : Directory.values()){
+        for (Directory directory : Directory.values()) {
             uriMatcher.addURI(authority, directory.name().toLowerCase() + ANY_MATCH, directory.ordinal());
         }
         return true;
@@ -63,17 +66,17 @@ public class AcraContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         final File file = getFileForUri(uri);
-        if(file == null){
+        if (file == null) {
             return null;
         }
-        if(projection == null){
+        if (projection == null) {
             projection = COLUMNS;
         }
         final Map<String, Object> columnValueMap = new LinkedHashMap<String, Object>();
-        for (String column : projection){
+        for (String column : projection) {
             if (column.equals(OpenableColumns.DISPLAY_NAME)) {
                 columnValueMap.put(OpenableColumns.DISPLAY_NAME, file.getName());
-            }else if(column.equals(OpenableColumns.SIZE)){
+            } else if (column.equals(OpenableColumns.SIZE)) {
                 columnValueMap.put(OpenableColumns.SIZE, file.length());
             }
         }
@@ -83,18 +86,18 @@ public class AcraContentProvider extends ContentProvider {
     }
 
     @Nullable
-    private File getFileForUri(Uri uri){
+    private File getFileForUri(Uri uri) {
         final int match = uriMatcher.match(uri);
-        if(match == UriMatcher.NO_MATCH) {
+        if (match == UriMatcher.NO_MATCH) {
             return null;
         }
         final List<String> segments = new ArrayList<String>(uri.getPathSegments());
-        if(segments.size() < 2) return null;
+        if (segments.size() < 2) return null;
         final String dir = segments.remove(0).toUpperCase();
         try {
             final Directory directory = Directory.valueOf(dir);
             return directory.getFile(getContext(), TextUtils.join(File.separator, segments));
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
@@ -125,7 +128,14 @@ public class AcraContentProvider extends ContentProvider {
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
         final File file = getFileForUri(uri);
-        if(file == null || ! file.exists()) throw new FileNotFoundException("File represented by uri "+uri+ " could not be found");
+        if (file == null || !file.exists()) throw new FileNotFoundException("File represented by uri " + uri + " could not be found");
+        if(ACRA.DEV_LOGGING) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                ACRA.log.d(ACRA.LOG_TAG, getCallingPackage() + " opened " + file.getPath());
+            }else {
+                ACRA.log.d(ACRA.LOG_TAG, file.getPath() + " was opened by an application");
+            }
+        }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 }

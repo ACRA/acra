@@ -635,7 +635,8 @@ public @interface ReportsCrashes {
      * <p>
      * ACRA contains a file provider under the following Uri:
      * content://[applicationId].acra/[Directory]/[Path]
-     * where [Directory] is one of the enum constants in {@link Directory} in lower case
+     * where [applicationId] is your application package name,
+     * [Directory] is one of the enum constants in {@link Directory} in lower case
      * and [Path] is the relative path to the file in that directory
      * e.g. content://org.acra.provider/files/thisIsATest.txt
      * </p>
