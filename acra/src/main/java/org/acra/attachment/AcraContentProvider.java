@@ -46,19 +46,16 @@ import java.util.Map;
 public class AcraContentProvider extends ContentProvider {
     private static final String[] COLUMNS = {
             OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
-    private static final String AUTHORITY = "org.acra.provider";
     private static final String ANY_MATCH = "/*";
-    private final UriMatcher uriMatcher;
-
-    public AcraContentProvider() {
-        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        for (Directory directory : Directory.values()){
-            uriMatcher.addURI(AUTHORITY, directory.name().toLowerCase() + ANY_MATCH, directory.ordinal());
-        }
-    }
+    private UriMatcher uriMatcher;
 
     @Override
     public boolean onCreate() {
+        final String authority = getContext().getPackageName() + ".acra";
+        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        for (Directory directory : Directory.values()){
+            uriMatcher.addURI(authority, directory.name().toLowerCase() + ANY_MATCH, directory.ordinal());
+        }
         return true;
     }
 

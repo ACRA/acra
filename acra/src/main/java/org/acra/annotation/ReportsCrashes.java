@@ -634,7 +634,7 @@ public @interface ReportsCrashes {
      * Allows to attach files to crash reports.
      * <p>
      * ACRA contains a file provider under the following Uri:
-     * content://org.acra.provider/[Directory]/[Path]
+     * content://[applicationId].acra/[Directory]/[Path]
      * where [Directory] is one of the enum constants in {@link Directory} in lower case
      * and [Path] is the relative path to the file in that directory
      * e.g. content://org.acra.provider/files/thisIsATest.txt
