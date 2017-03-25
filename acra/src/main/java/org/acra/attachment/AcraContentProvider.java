@@ -18,7 +18,6 @@ package org.acra.attachment;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -48,17 +47,12 @@ import java.util.Map;
 public class AcraContentProvider extends ContentProvider {
     private static final String[] COLUMNS = {
             OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
-    private static final String ANY_MATCH = "/*";
-    private UriMatcher uriMatcher;
+    private String authority;
 
     @Override
     public boolean onCreate() {
-        final String authority = getContext().getPackageName() + ".acra";
+        authority = getContext().getPackageName() + ".acra";
         if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Registered content provider for authority " + authority);
-        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        for (Directory directory : Directory.values()) {
-            uriMatcher.addURI(authority, directory.name().toLowerCase() + ANY_MATCH, directory.ordinal());
-        }
         return true;
     }
 
@@ -88,8 +82,7 @@ public class AcraContentProvider extends ContentProvider {
 
     @Nullable
     private File getFileForUri(Uri uri) {
-        final int match = uriMatcher.match(uri);
-        if (match == UriMatcher.NO_MATCH) {
+        if(!"content".equals(uri.getScheme()) || !authority.equals(uri.getAuthority())){
             return null;
         }
         final List<String> segments = new ArrayList<String>(uri.getPathSegments());
@@ -130,10 +123,10 @@ public class AcraContentProvider extends ContentProvider {
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
         final File file = getFileForUri(uri);
         if (file == null || !file.exists()) throw new FileNotFoundException("File represented by uri " + uri + " could not be found");
-        if(ACRA.DEV_LOGGING) {
+        if (ACRA.DEV_LOGGING) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 ACRA.log.d(ACRA.LOG_TAG, getCallingPackage() + " opened " + file.getPath());
-            }else {
+            } else {
                 ACRA.log.d(ACRA.LOG_TAG, file.getPath() + " was opened by an application");
             }
         }
