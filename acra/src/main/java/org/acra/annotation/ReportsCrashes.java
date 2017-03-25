@@ -659,4 +659,10 @@ public @interface ReportsCrashes {
      * @since 4.9.3
      */
     @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
+
+    /**
+     *
+     * @return if the report should be an attachment instead of plain text. Supported for email mode.
+     */
+    boolean reportAsFile() default false;
 }

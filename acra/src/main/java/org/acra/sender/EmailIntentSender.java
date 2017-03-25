@@ -33,9 +33,12 @@ import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.file.CrashReportPersister;
 import org.acra.model.Element;
 import org.acra.util.InstanceCreator;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -65,6 +68,16 @@ public class EmailIntentSender implements ReportSender {
         final String body = buildBody(errorContent);
         final InstanceCreator instanceCreator = new InstanceCreator();
         final ArrayList<Uri> attachments = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
+        boolean contentAttached = false;
+        if (config.reportAsFile()) {
+            final File cache = new File(context.getCacheDir(), "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION);
+            try {
+                new CrashReportPersister().store(errorContent, cache);
+                attachments.add(Uri.parse("content://" + context.getPackageName() + ".acra/root" + cache.getPath()));
+                contentAttached = true;
+            } catch (IOException ignored) {
+            }
+        }
 
         final Intent resolveIntent = new Intent(android.content.Intent.ACTION_SENDTO);
         resolveIntent.setData(Uri.fromParts("mailto", config.mailTo(), null));
@@ -81,7 +94,7 @@ public class EmailIntentSender implements ReportSender {
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
                 emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+                if (!contentAttached) emailIntent.putExtra(Intent.EXTRA_TEXT, body);
                 emailIntent.setType("message/rfc822");
                 emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
                 if (packageName.equals("android")) {
