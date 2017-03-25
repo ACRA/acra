@@ -90,7 +90,7 @@ public class EmailIntentSender implements ReportSender {
                 context.startActivity(resolveIntent);
             } else {
                 String packageName = componentName.getPackageName();
-                final Intent emailIntent = new Intent(attachments.size() == 1 ? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
+                final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{config.mailTo()});
                 emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
@@ -99,7 +99,7 @@ public class EmailIntentSender implements ReportSender {
                 emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
                 if (packageName.equals("android")) {
                     //multiple activities support the intent and no default is set
-                    final List<Intent> initialIntents = buildInitialIntents(pm, resolveIntent, emailIntent);
+                    final List<Intent> initialIntents = buildInitialIntents(context, pm, resolveIntent, emailIntent, attachments);
                     if (initialIntents.size() > 1) {
                         showChooser(context, initialIntents);
                         return;
@@ -122,12 +122,13 @@ public class EmailIntentSender implements ReportSender {
         }
     }
 
-    private List<Intent> buildInitialIntents(@NonNull PackageManager pm, @NonNull Intent resolveIntent, @NonNull Intent emailIntent) {
+    private List<Intent> buildInitialIntents(@NonNull Context context, @NonNull PackageManager pm, @NonNull Intent resolveIntent, @NonNull Intent emailIntent, @NonNull List<Uri> attachments) {
         final List<ResolveInfo> resolveInfoList = pm.queryIntentActivities(resolveIntent, PackageManager.MATCH_DEFAULT_ONLY);
         final List<Intent> initialIntents = new ArrayList<Intent>();
         for (ResolveInfo info : resolveInfoList) {
             final Intent packageSpecificIntent = new Intent(emailIntent);
             packageSpecificIntent.setPackage(info.activityInfo.packageName);
+            grantPermission(context, emailIntent, info.activityInfo.packageName, attachments);
             if (packageSpecificIntent.resolveActivity(pm) != null) {
                 initialIntents.add(packageSpecificIntent);
             }

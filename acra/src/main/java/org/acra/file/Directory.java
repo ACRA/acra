@@ -17,6 +17,7 @@ package org.acra.file;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public enum Directory {
      */
     FILES_LEGACY {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return (fileName.startsWith("/") ? Directory.ROOT : Directory.FILES).getFile(context, fileName);
         }
     },
@@ -42,7 +43,7 @@ public enum Directory {
      */
     FILES {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getFilesDir(), fileName);
         }
     },
@@ -51,7 +52,7 @@ public enum Directory {
      */
     EXTERNAL_FILES {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getExternalFilesDir(null), fileName);
         }
     },
@@ -60,7 +61,7 @@ public enum Directory {
      */
     CACHE {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getCacheDir(), fileName);
         }
     },
@@ -69,7 +70,7 @@ public enum Directory {
      */
     EXTERNAL_CACHE {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getExternalCacheDir(), fileName);
         }
     },
@@ -79,7 +80,7 @@ public enum Directory {
      */
     NO_BACKUP_FILES {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(ContextCompat.getNoBackupFilesDir(context), fileName);
         }
     },
@@ -88,7 +89,7 @@ public enum Directory {
      */
     EXTERNAL_STORAGE {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(Environment.getExternalStorageDirectory(), fileName);
         }
     },
@@ -97,10 +98,10 @@ public enum Directory {
      */
     ROOT {
         @Override
-        public File getFile(Context context, String fileName) {
+        public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File("/", fileName);
         }
     };
 
-    public abstract File getFile(Context context, String fileName);
+    public abstract File getFile(@NonNull Context context, @NonNull String fileName);
 }
