@@ -32,7 +32,7 @@
             android:process=":acra" />
 
         <provider
-            android:authorities="org.acra.provider"
+            android:authorities="${applicationId}.acra"
             android:name="org.acra.attachment.AcraContentProvider"
             android:exported="false"
             android:process=":acra"
