@@ -1,0 +1,141 @@
+apply plugin: 'com.android.library'
+apply plugin: 'signing'
+apply plugin: 'maven'
+apply plugin: 'net.researchgate.release'
+
+android {
+    compileSdkVersion Integer.parseInt(androidVersion)
+    buildToolsVersion '25.0.2'
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion androidVersion
+        versionName version
+        consumerProguardFile proguardFile
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+}
+
+dependencies {
+    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:support-annotations:$supportVersion"
+    annotationProcessor project(":annotationprocessor")
+}
+
+
+/*
+* How to oss upload:
+* Edit or create the file at ~/.gradle/gradle.properties and add
+* ossrhUser = <OSSRH user>
+* ossrhPassword = <OSSRH password>
+* signing.keyId=<short ID of your key>
+* signing.password=<passphrase for your key>
+* signing.secretKeyRingFile=<path to your key ring>
+*
+* Then run
+* gradlew release
+*/
+
+release{
+    failOnUnversionedFiles = false
+    failOnCommitNeeded = false
+    tagTemplate = '$name-$version'
+    git{
+        requireBranch = ""
+    }
+}
+afterReleaseBuild.dependsOn ':closeAndPromoteRepository'
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    source += files('build/generated/source/aidl/release') + files('build/generated/source/buildConfig/release')
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+afterEvaluate {
+    javadoc.classpath += files(android.libraryVariants.collect { variant ->
+        variant.javaCompile.classpath.files
+    })
+    javadoc.dependsOn generateReleaseSources
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            // POM signature
+            beforeDeployment { deployment -> signing.signPom(deployment) }
+            // Target repository
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+            pom.project {
+                name 'Application Crash Report for Android'
+                description 'Publishes a report of an Android application crash to Google docs (or some other end point).'
+                packaging 'aar'
+                url 'http://acra.ch'
+
+                scm {
+                    connection 'scm:git:https://github.com/ACRA/acra.git'
+                    developerConnection 'scm:git:git@github.com:ACRA/acra.git'
+                    url 'https://github.com/ACRA/acra.git'
+                }
+
+                licenses {
+                    license {
+                        name 'Apache 2'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'kevin.gaudin'
+                        name = 'Kevin Gaudin'
+                    }
+                    developer {
+                        id = 'william.ferguson'
+                        name = 'William Ferguson'
+                    }
+                    developer {
+                        id = 'f43nd1r'
+                        name = 'Lukas Morawietz'
+                    }
+                }
+            }
+        }
+    }
+}
+
+nexusStaging {
+    username = ossrhUser
+    password = ossrhPassword
+    packageGroup = group
+}
