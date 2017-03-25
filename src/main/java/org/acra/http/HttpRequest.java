@@ -24,6 +24,6 @@ import java.net.URL;
  * @author F43nd1r
  * @since 03.03.2017
  */
-public interface HttpRequest {
-    void send(@NonNull URL url, @NonNull String content) throws IOException;
+public interface HttpRequest<T> {
+    void send(@NonNull URL url, @NonNull T content) throws IOException;
 }

@@ -49,7 +49,7 @@ public final class IOUtils {
         }
     };
     private static final int NO_LIMIT = -1;
-	private static final int READ_TIMEOUT = 3000;
+    private static final int READ_TIMEOUT = 3000;
 
     private IOUtils() {
     }
@@ -73,7 +73,7 @@ public final class IOUtils {
     /**
      * Reads an InputStream into a string
      *
-     * @param input  InputStream to read.
+     * @param input InputStream to read.
      * @return the String that was read.
      * @throws IOException if the InputStream could not be read.
      */
@@ -98,7 +98,7 @@ public final class IOUtils {
     /**
      * Reads an InputStream into a string
      *
-     * @param input  InputStream to read.
+     * @param input InputStream to read.
      * @param limit the maximum number of lines to read (the last x lines are kept)
      * @return the String that was read.
      * @throws IOException if the InputStream could not be read.
@@ -113,7 +113,7 @@ public final class IOUtils {
      *
      * @param input  InputStream to read.
      * @param filter Predicate that should return false for lines which should be excluded.
-     * @param limit the maximum number of lines to read (the last x lines are kept)
+     * @param limit  the maximum number of lines to read (the last x lines are kept)
      * @return the String that was read.
      * @throws IOException if the InputStream could not be read.
      */
@@ -133,14 +133,14 @@ public final class IOUtils {
             safeClose(reader);
         }
     }
-	
-	/**
+
+    /**
      * Reads an InputStream into a string without blocking the current thread.
      * It has a default timeout of 3 seconds.
      *
      * @param input  InputStream to read.
      * @param filter Predicate that should return false for lines which should be excluded.
-     * @param limit the maximum number of lines to read (the last x lines are kept).
+     * @param limit  the maximum number of lines to read (the last x lines are kept).
      * @return the String that was read.
      * @throws IOException if the InputStream could not be read.
      */

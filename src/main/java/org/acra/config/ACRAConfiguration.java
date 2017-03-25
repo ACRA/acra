@@ -24,6 +24,7 @@ import android.support.annotation.StyleRes;
 
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
+import org.acra.attachment.AttachmentUriProvider;
 import org.acra.builder.ReportPrimer;
 import org.acra.collections.ImmutableList;
 import org.acra.dialog.BaseCrashReportDialog;
@@ -117,6 +118,9 @@ public final class ACRAConfiguration implements Serializable {
     private final Class<? extends RetryPolicy> retryPolicyClass;
     private final boolean stopServicesOnCrash;
 
+    private final ImmutableSet<String> attachmentUris;
+    private final Class<? extends AttachmentUriProvider> attachmentUriProvider;
+
     /**
      * @param builder ConfigurationBuilder with which to initialise this {@link ACRAConfiguration}.
      */
@@ -174,6 +178,8 @@ public final class ACRAConfiguration implements Serializable {
         certificateType = builder.certificateType();
         retryPolicyClass = builder.retryPolicyClass();
         stopServicesOnCrash = builder.stopServicesOnCrash();
+        attachmentUris = new ImmutableSet<String>(builder.attachmentUris());
+        attachmentUriProvider = builder.attachmentUriProvider();
     }
 
     /**
@@ -442,5 +448,13 @@ public final class ACRAConfiguration implements Serializable {
 
     public boolean stopServicesOnCrash(){
         return stopServicesOnCrash;
+    }
+
+    public ImmutableSet<String> attachmentUris() {
+        return attachmentUris;
+    }
+
+    public Class<? extends AttachmentUriProvider> attachmentUriProvider() {
+        return attachmentUriProvider;
     }
 }

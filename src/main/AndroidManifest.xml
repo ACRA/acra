@@ -51,5 +51,12 @@
             android:name="org.acra.sender.SenderService"
             android:exported="false"
             android:process=":acra" />
+
+        <provider
+            android:authorities="org.acra.provider"
+            android:name="org.acra.attachment.AcraContentProvider"
+            android:exported="false"
+            android:process=":acra"
+            android:grantUriPermissions="true"/>
     </application>
 </manifest>

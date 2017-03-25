@@ -25,7 +25,7 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
         final PackageManagerWrapper pm = new PackageManagerWrapper(context);
         if (!"".equals(config.mailTo())) {
             // Try to send by mail. If a mailTo address is provided, do not add other senders.
-            ACRA.log.w(LOG_TAG, context.getPackageName() + " reports will be sent by email (if accepted by user).");
+            ACRA.log.i(LOG_TAG, context.getPackageName() + " reports will be sent by email (if accepted by user).");
             return new EmailIntentSenderFactory().create(context, config);
         } else if (!pm.hasPermission(Manifest.permission.INTERNET)) {
             // NB If the PackageManager has died then this will erroneously log

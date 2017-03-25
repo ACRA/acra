@@ -20,25 +20,29 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
-import org.acra.http.HttpRequest;
+import org.acra.http.HttpUtils;
+import org.acra.http.MultipartHttpRequest;
 import org.acra.model.Element;
+import org.acra.util.InstanceCreator;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,31 +67,6 @@ import static org.acra.ACRA.LOG_TAG;
  * </pre>
  */
 public class HttpSender implements ReportSender {
-
-    /**
-     * Converts a Map of parameters into a URL encoded Sting.
-     *
-     * @param parameters Map of parameters to convert.
-     * @return URL encoded String representing the parameters.
-     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
-     */
-    @NonNull
-    private static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
-
-        final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
-            if (dataBfr.length() != 0) {
-                dataBfr.append('&');
-            }
-            final Object preliminaryValue = entry.getValue();
-            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), ACRAConstants.UTF8));
-            dataBfr.append('=');
-            dataBfr.append(URLEncoder.encode(value.toString(), ACRAConstants.UTF8));
-        }
-
-        return dataBfr.toString();
-    }
 
     /**
      * Available HTTP methods to send data. Only POST and PUT are currently
@@ -123,7 +102,7 @@ public class HttpSender implements ReportSender {
         FORM("application/x-www-form-urlencoded") {
             @Override
             String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return getParamsAsFormString(sender.convertToForm(report));
+                return HttpUtils.getParamsAsFormString(sender.convertToForm(report));
             }
         },
         /**
@@ -252,19 +231,23 @@ public class HttpSender implements ReportSender {
     public void send(@NonNull Context context, @NonNull CrashReportData report) throws ReportSenderException {
 
         try {
-            String baseUrl = mFormUri == null ? config.formUri() : mFormUri.toString();
+            final String baseUrl = mFormUri == null ? config.formUri() : mFormUri.toString();
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + baseUrl);
 
             final String login = mUsername != null ? mUsername : isNull(config.formUriBasicAuthLogin()) ? null : config.formUriBasicAuthLogin();
             final String password = mPassword != null ? mPassword : isNull(config.formUriBasicAuthPassword()) ? null : config.formUriBasicAuthPassword();
-            final HttpRequest request = createHttpRequest(config, context, mMethod, mType, login, password, config.connectionTimeout(), config.socketTimeout(), config.getHttpHeaders());
+
+            final InstanceCreator instanceCreator = new InstanceCreator();
+            final List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
 
             // Generate report body depending on requested type
             final String reportAsString = mType.convertReport(this, report);
 
             // Adjust URL depending on method
-            URL reportUrl = mMethod.createURL(baseUrl, report);
-            request.send(reportUrl, reportAsString);
+            final URL reportUrl = mMethod.createURL(baseUrl, report);
+
+            sendHttpRequests(config, context, mMethod, mType, login, password, config.connectionTimeout(),
+                    config.socketTimeout(), config.getHttpHeaders(), reportAsString, reportUrl, uris);
 
         } catch (@NonNull IOException e) {
             throw new ReportSenderException("Error while sending " + config.reportType()
@@ -273,9 +256,46 @@ public class HttpSender implements ReportSender {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected HttpRequest createHttpRequest(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
-                                            @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers){
-        return new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers);
+    protected void sendHttpRequests(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+                                    @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                    @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
+        switch (method) {
+            case POST:
+                if (attachments.isEmpty()) {
+                    sendWithoutAttachments(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
+                } else {
+                    postMultipart(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url, attachments);
+                }
+                break;
+            case PUT:
+                sendWithoutAttachments(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
+                for (Uri uri : attachments) {
+                    putAttachment(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers, url, uri);
+                }
+                break;
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void sendWithoutAttachments(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+                                          @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                          @NonNull String content, @NonNull URL url) throws IOException {
+        new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void postMultipart(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Type type,
+                                 @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                 @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
+        new MultipartHttpRequest(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, Pair.create(content, attachments));
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void putAttachment(@NonNull ACRAConfiguration configuration, @NonNull Context context,
+                                 @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
+                                 @NonNull URL url, @NonNull Uri attachment) throws IOException {
+        final URL attachmentUrl = new URL(url.toString() + "-" + HttpUtils.getFileNameFromUri(context, attachment));
+        new BinaryHttpRequest(configuration, context, Method.PUT, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
     }
 
     /**
@@ -310,8 +330,8 @@ public class HttpSender implements ReportSender {
 
         final Map<String, String> finalReport = new HashMap<String, String>(report.size());
         for (ReportField field : fields) {
-            Element element = report.get(field);
-            String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
+            final Element element = report.get(field);
+            final String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), value);
             } else {
@@ -324,4 +344,5 @@ public class HttpSender implements ReportSender {
     private boolean isNull(@Nullable String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
     }
+
 }
