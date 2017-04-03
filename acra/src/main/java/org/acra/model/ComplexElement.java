@@ -47,9 +47,9 @@ public class ComplexElement extends JSONObject implements Element {
 
     @NonNull
     private static String[] getNames(JSONObject object) throws JSONException {
-        JSONArray json = object.names();
+        final JSONArray json = object.names();
         if(json != null) {
-            String[] names = new String[json.length()];
+            final String[] names = new String[json.length()];
             for (int i = 0; i < json.length(); i++) {
                 names[i] = json.getString(i);
             }

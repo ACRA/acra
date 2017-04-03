@@ -148,8 +148,8 @@ public final class CrashReportDataFactory {
     }
 
     private List<Collector> getCollectorsOrdered() {
-        List<Collector> collectors = new ArrayList<Collector>();
-        PackageManagerWrapper pm = new PackageManagerWrapper(context);
+        final List<Collector> collectors = new ArrayList<Collector>();
+        final PackageManagerWrapper pm = new PackageManagerWrapper(context);
         collectors.add(new LogCatCollector(config, pm));
         collectors.add(new DropBoxCollector(context, config, pm));
         collectors.add(new StacktraceCollector());

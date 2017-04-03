@@ -74,7 +74,7 @@ class ReportConverter {
             InputStream in = null;
             try {
                 in = new BufferedInputStream(new FileInputStream(report), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-                CrashReportData data = legacyLoad(new InputStreamReader(in, "ISO8859-1")); //$NON-NLS-1$
+                final CrashReportData data = legacyLoad(new InputStreamReader(in, "ISO8859-1")); //$NON-NLS-1$
                 if (data.containsKey(ReportField.REPORT_ID) && data.containsKey(ReportField.USER_CRASH_DATE)) {
                     persister.store(data, report);
                     converted++;

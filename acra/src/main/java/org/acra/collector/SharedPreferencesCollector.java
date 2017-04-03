@@ -89,7 +89,7 @@ final class SharedPreferencesCollector extends Collector {
             if (prefEntries.isEmpty()) {
                 result.put(sharedPrefId, "empty");
             } else {
-                for (Iterator<String> iterator = prefEntries.keySet().iterator(); iterator.hasNext();){
+                for (final Iterator<String> iterator = prefEntries.keySet().iterator(); iterator.hasNext();){
                     if(filteredKey(iterator.next())){
                         iterator.remove();
                     }
@@ -122,7 +122,7 @@ final class SharedPreferencesCollector extends Collector {
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
         switch (reportField) {
             case USER_EMAIL:
-                String email = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, null);
+                final String email = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, null);
                 return email != null ? new StringElement(email) : ACRAConstants.NOT_AVAILABLE;
             case SHARED_PREFERENCES:
                 try {

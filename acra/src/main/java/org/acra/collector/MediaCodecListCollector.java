@@ -162,11 +162,11 @@ final class MediaCodecListCollector extends Collector {
         final ComplexElement result = new ComplexElement();
         for (int i = 0; i < infos.length; i++) {
             final MediaCodecInfo codecInfo = infos[i];
-            JSONObject codec = new JSONObject();
+            final JSONObject codec = new JSONObject();
             final String[] supportedTypes = codecInfo.getSupportedTypes();
             codec.put("name", codecInfo.getName())
                     .put("isEncoder", codecInfo.isEncoder());
-            JSONObject supportedTypesJson = new JSONObject();
+            final JSONObject supportedTypesJson = new JSONObject();
             for (String type : supportedTypes) {
                 supportedTypesJson.put(type, collectCapabilitiesForType(codecInfo, type));
             }
@@ -194,7 +194,7 @@ final class MediaCodecListCollector extends Collector {
         // Color Formats
         final int[] colorFormats = codecCapabilities.colorFormats;
         if (colorFormats.length > 0) {
-            JSONArray colorFormatsJson = new JSONArray();
+            final JSONArray colorFormatsJson = new JSONArray();
             for (int colorFormat : colorFormats) {
                 colorFormatsJson.put(mColorFormatValues.get(colorFormat));
             }
@@ -206,7 +206,7 @@ final class MediaCodecListCollector extends Collector {
         // Profile Levels
         final MediaCodecInfo.CodecProfileLevel[] codecProfileLevels = codecCapabilities.profileLevels;
         if (codecProfileLevels.length > 0) {
-            JSONArray profileLevels = new JSONArray();
+            final JSONArray profileLevels = new JSONArray();
             for (MediaCodecInfo.CodecProfileLevel codecProfileLevel : codecProfileLevels) {
                 final int profileValue = codecProfileLevel.profile;
                 final int levelValue = codecProfileLevel.level;

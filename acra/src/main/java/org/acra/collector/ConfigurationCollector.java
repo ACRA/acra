@@ -95,7 +95,7 @@ public final class ConfigurationCollector extends Collector {
     @NonNull
     private static Element configToElement(@NonNull Configuration conf) {
         final ComplexElement result = new ComplexElement();
-        Map<String, SparseArray<String>> valueArrays = getValueArrays();
+        final Map<String, SparseArray<String>> valueArrays = getValueArrays();
         for (final Field f : conf.getClass().getFields()) {
             try {
                 if (!Modifier.isStatic(f.getModifiers())) {
@@ -120,7 +120,7 @@ public final class ConfigurationCollector extends Collector {
     }
 
     private static Map<String, SparseArray<String>> getValueArrays() {
-        Map<String, SparseArray<String>> valueArrays = new HashMap<String, SparseArray<String>>();
+        final Map<String, SparseArray<String>> valueArrays = new HashMap<String, SparseArray<String>>();
         final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<String>();
         final SparseArray<String> keyboardValues = new SparseArray<String>();
         final SparseArray<String> keyboardHiddenValues = new SparseArray<String>();
