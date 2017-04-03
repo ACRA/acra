@@ -67,9 +67,7 @@ import java.lang.annotation.Target;
 public @interface ReportsCrashes {
 
     /**
-     * The Uri of your own server-side script that will receive reports. This is
-     * to use if you don't want to send reports to Google Docs but to your own,
-     * self-hosted script.
+     * The Uri of your own server-side script that will receive reports.
      *
      * @return URI of a custom server to which to post reports.
      */
@@ -307,8 +305,7 @@ public @interface ReportsCrashes {
     /**
      * <p>
      * Redefines the list of {@link ReportField}s collected and sent in your
-     * reports. If you modify this list, you have to create a new Google Drive
-     * Spreadsheet &amp; Form which will be based on these fields as column headers.
+     * reports.
      * </p>
      * <p>
      * The fields order is significant. You can also use this property to modify
@@ -596,6 +593,9 @@ public @interface ReportsCrashes {
      */
     @NonNull Method httpMethod() default Method.POST;
 
+    /**
+     * @return the report type used when posting reports
+     */
     @NonNull Type reportType() default Type.FORM;
 
     /**
@@ -662,7 +662,6 @@ public @interface ReportsCrashes {
     @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
 
     /**
-     *
      * @return if the report should be an attachment instead of plain text. Supported for email mode.
      */
     boolean reportAsFile() default false;

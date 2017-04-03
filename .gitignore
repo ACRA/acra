@@ -9,3 +9,4 @@ release.properties
 build/
 local.properties
 .gradle
+acratest/

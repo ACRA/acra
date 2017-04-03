@@ -58,6 +58,13 @@ import javax.tools.Diagnostic;
 
 import static org.acra.ModelUtils.*;
 
+/**
+ * Creates the BaseConfigurationBuilder class based on the annotation annotated with {@link Configuration}.
+ * Creates the ACRAConfiguration class based on the BaseConfigurationBuilder and the class annotated with {@link ConfigurationBuilder}
+ *
+ * @author F43nd1r
+ * @since 18.03.2017
+ */
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class AcraAnnotationProcessor extends AbstractProcessor {
@@ -122,6 +129,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(ACRA_CONFIGURATION)
                 .addSuperinterface(Serializable.class)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+        utils.addClassJavadoc(classBuilder, builder);
         final CodeBlock.Builder constructor = CodeBlock.builder();
         for (MethodDefinition method : methods) {
             final String name = method.getName();
@@ -176,6 +184,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(CONFIGURATION_BUILDER)
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addTypeVariable(returnType);
+        utils.addClassJavadoc(classBuilder, config);
         final CodeBlock.Builder constructor = CodeBlock.builder()
                 .addStatement("final $1T $2L = $3L.getClass().getAnnotation($1T.class)", config.asType(), VAR_ANNOTATION_CONFIG, PARAM_APP)
                 .beginControlFlow("if ($L != null)", VAR_ANNOTATION_CONFIG);
@@ -209,9 +218,10 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
         classBuilder.addField(FieldSpec.builder(boxedType, name, Modifier.PRIVATE)
                 .addAnnotations(annotations)
                 .build());
-        classBuilder.addMethod(MethodSpec.methodBuilder(PREFIX_SETTER + utils.capitalizeFirst(name))
+        classBuilder.addMethod(utils.addMethodJavadoc(MethodSpec.methodBuilder(PREFIX_SETTER + utils.capitalizeFirst(name)), method)
                 .returns(returnType)
                 .addParameter(ParameterSpec.builder(typeName, name).addAnnotations(annotations).build())
+                .varargs(type.getKind() == TypeKind.ARRAY)
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("this.$1L = $1L", name)
                 .addStatement("return ($T) this", returnType)
