@@ -50,7 +50,7 @@ class ModelUtils {
     private static final String IMMUTABLE_MAP = "org.acra.collections.ImmutableMap";
     private static final String IMMUTABLE_LIST = "org.acra.collections.ImmutableList";
     private static final String IMMUTABLE_SET = "org.acra.collections.ImmutableSet";
-    private static final String ANNOTATION_HIDE = "org.acra.annotation.Hide";
+    private static final String ANNOTATION_HIDE = "org.acra.annotation.NoPropagation";
 
     private final Types typeUtils;
     private final TypeMirror map;
