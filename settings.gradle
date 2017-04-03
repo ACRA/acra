@@ -1,1 +1,1 @@
-include ':acra', ':acratest', ':annotationprocessor'
+include ':acra', ':acratest', ':annotationprocessor', ':annotations'

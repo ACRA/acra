@@ -21,6 +21,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
+import org.acra.annotation.NoPropagation;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -38,19 +40,25 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import static org.acra.AcraAnnotationProcessor.CONFIGURATION_PACKAGE;
-import static org.acra.AcraAnnotationProcessor.PREFIX_SETTER;
-
 /**
  * @author F43nd1r
  * @since 18.03.2017
  */
 
 class ModelUtils {
+    static final String CONFIGURATION_PACKAGE = "org.acra.config";
+    static final String CONFIGURATION_BUILDER = "BaseConfigurationBuilder";
+    static final String ACRA_CONFIGURATION = "ACRAConfiguration";
+    static final String PREFIX_SETTER = "set";
+    static final String PARAM_APP = "app";
+    static final String PARAM_BUILDER = "builder";
+    static final String VAR_ANNOTATION_CONFIG = "annotationConfig";
+    static final ClassName APPLICATION = ClassName.bestGuess("android.app.Application");
+    static final ClassName ANNOTATION_NON_NULL = ClassName.bestGuess("android.support.annotation.NonNull");
     private static final String IMMUTABLE_MAP = "org.acra.collections.ImmutableMap";
     private static final String IMMUTABLE_LIST = "org.acra.collections.ImmutableList";
     private static final String IMMUTABLE_SET = "org.acra.collections.ImmutableSet";
-    private static final String ANNOTATION_HIDE = "org.acra.annotation.NoPropagation";
+    private static final ClassName ANNOTATION_NO_PROPAGATION = ClassName.get(NoPropagation.class);
 
     private final Types typeUtils;
     private final TypeMirror map;
@@ -59,7 +67,6 @@ class ModelUtils {
     private final TypeElement immutableSet;
     private final TypeElement immutableList;
     private final ProcessingEnvironment processingEnv;
-    private final ClassName hide;
 
     ModelUtils(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
@@ -70,7 +77,6 @@ class ModelUtils {
         immutableMap = elementUtils.getTypeElement(IMMUTABLE_MAP);
         immutableSet = elementUtils.getTypeElement(IMMUTABLE_SET);
         immutableList = elementUtils.getTypeElement(IMMUTABLE_LIST);
-        hide = ClassName.bestGuess(ANNOTATION_HIDE);
     }
 
     /**
@@ -156,7 +162,7 @@ class ModelUtils {
      * @return if the method is relevant
      */
     boolean shouldRetain(MethodDefinition method) {
-        return !method.getName().startsWith(PREFIX_SETTER) && !method.getAnnotations().stream().anyMatch(a -> a.type.equals(hide));
+        return !method.getName().startsWith(PREFIX_SETTER) && !method.getAnnotations().stream().anyMatch(a -> a.type.equals(ANNOTATION_NO_PROPAGATION));
     }
 
     /**

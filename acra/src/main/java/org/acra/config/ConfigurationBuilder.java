@@ -36,15 +36,13 @@ import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.*;
 
 /**
- * Builder responsible for programmatic construction of an {@link ACRAConfiguration}.
- *
- * {@link ACRAConfiguration} should be considered immutable and in the future will be.
+ * Builder responsible for programmatic construction of an immutable {@link ACRAConfiguration}.
  *
  * @since 4.8.1
  */
 @SuppressWarnings("unused")
 @org.acra.annotation.ConfigurationBuilder
-public final class ConfigurationBuilder extends BaseConfigurationBuilder{
+public final class ConfigurationBuilder extends BaseConfigurationBuilder<ConfigurationBuilder> {
 
     private final Map<String, String> httpHeaders;
     private final Map<ReportField, Boolean> reportContentChanges;
