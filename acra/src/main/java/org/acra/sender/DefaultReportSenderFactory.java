@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.config.ACRAConfiguration;
 import org.acra.util.PackageManagerWrapper;
 
@@ -38,7 +39,7 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
                             + Manifest.permission.INTERNET
                             + " if you want your crash reports to be sent. If you don't want to add this permission to your application you can also enable sending reports by email. If this is your will then provide your email address in @AcraConfig(mailTo=\"your.account@domain.com\"");
             return new NullSender();
-        } else if (config.formUri() != null && !"".equals(config.formUri())) {
+        } else if (!ACRAConstants.DEFAULT_STRING_VALUE.equals(config.formUri())) {
             // If formUri is set, instantiate a sender for a generic HTTP POST form with default mapping.
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, context.getPackageName() + " reports will be sent by Http.");
             return new HttpSenderFactory().create(context, config);

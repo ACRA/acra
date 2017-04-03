@@ -52,12 +52,12 @@ import static org.acra.ACRA.LOG_TAG;
  * directory. This report file is then sent:
  * </p>
  * <ul>
- * <li>immediately if {@link ReportsCrashes#mode} is set to
+ * <li>immediately if {@link ReportsCrashes#reportingInteractionMode()} is set to
  * {@link ReportingInteractionMode#SILENT} or
  * {@link ReportingInteractionMode#TOAST},</li>
  * <li>on application start if in the previous case the transmission could not
  * technically be made,</li>
- * <li>when the user accepts to send it if {@link ReportsCrashes#mode()} is set
+ * <li>when the user accepts to send it if {@link ReportsCrashes#reportingInteractionMode()} is set
  * to {@link ReportingInteractionMode#NOTIFICATION}.</li>
  * </ul>
  * <p>
