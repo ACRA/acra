@@ -62,7 +62,7 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
-    source += files('build/generated/source/aidl/release') + files('build/generated/source/buildConfig/release')
+    source += files('build/generated/source/aidl/release') + files('build/generated/source/buildConfig/release') + files('build/generated/source/apt/release')
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     failOnError false
 }
