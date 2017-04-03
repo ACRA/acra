@@ -12,17 +12,16 @@ import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Responsible for wrapping calls to PackageManager to ensure that they always complete without throwing RuntimeExceptions.
- * <p>
- *     Depending upon the state of the application it is possible that
+ * Depending upon the state of the application it is possible that
  *     <ul>
  *         <li>Context has no PackageManager.</li>
  *         <li>PackageManager returned by Context throws RuntimeException("Package manager has died")
- *              because it cannot contact the remote PackageManager service.
+ *             because it cannot contact the remote PackageManager service.
  *         </li>
  *     </ul>
- *     I suspect that PackageManager death is caused during app installation.
- *     But we need to make ACRA bullet proof, so it's better to handle the condition safely so that the error report itself doesn't fail.
- * </p>
+ * I suspect that PackageManager death is caused during app installation.
+ * But we need to make ACRA bullet proof, so it's better to handle the condition safely so that the error report itself doesn't fail.
+ *
  * @author William Ferguson
  * @since 4.3.0
  */
@@ -35,7 +34,7 @@ public final class PackageManagerWrapper {
     }
 
     /**
-     * @param permission    Manifest.permission to check whether it has been granted.
+     * @param permission Manifest.permission to check whether it has been granted.
      * @return true if the permission has been granted to the app, false if it hasn't been granted or the PackageManager could not be contacted.
      */
     public boolean hasPermission(@NonNull String permission) {
