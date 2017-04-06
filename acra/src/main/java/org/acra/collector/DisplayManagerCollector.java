@@ -148,7 +148,7 @@ final class DisplayManagerCollector extends Collector {
             final Point smallest = new Point();
             final Point largest = new Point();
             display.getCurrentSizeRange(smallest, largest);
-            JSONObject result = new JSONObject();
+            final JSONObject result = new JSONObject();
             result.put("smallest", new JSONArray(Arrays.asList(smallest.x, smallest.y)));
             result.put("largest", new JSONArray(Arrays.asList(largest.x, largest.y)));
             container.put("currentSizeRange", result);
@@ -179,7 +179,7 @@ final class DisplayManagerCollector extends Collector {
     private static void collectMetrics(@NonNull Display display, JSONObject container) throws JSONException {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
-        JSONObject result = new JSONObject();
+        final JSONObject result = new JSONObject();
         collectMetrics(metrics, result);
         container.put("metrics", result);
     }
@@ -188,7 +188,7 @@ final class DisplayManagerCollector extends Collector {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final DisplayMetrics metrics = new DisplayMetrics();
             display.getRealMetrics(metrics);
-            JSONObject result = new JSONObject();
+            final JSONObject result = new JSONObject();
             collectMetrics(metrics, result);
             container.put("realMetrics", result);
         }

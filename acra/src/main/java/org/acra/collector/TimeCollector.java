@@ -51,7 +51,7 @@ final class TimeCollector extends Collector {
     @NonNull
     @Override
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        Calendar time;
+        final Calendar time;
         switch (reportField) {
             case USER_APP_START_DATE:
                 time = appStartDate;

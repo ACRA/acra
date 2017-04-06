@@ -19,11 +19,14 @@ package org.acra;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import org.acra.annotation.NoPropagation;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +44,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
+ * Collection of constants and helper methods to generate ACRA classes
+ *
  * @author F43nd1r
  * @since 18.03.2017
  */
@@ -61,22 +66,25 @@ class ModelUtils {
     private static final ClassName ANNOTATION_NO_PROPAGATION = ClassName.get(NoPropagation.class);
 
     private final Types typeUtils;
+    private final Elements elementUtils;
     private final TypeMirror map;
     private final TypeMirror set;
     private final TypeElement immutableMap;
     private final TypeElement immutableSet;
     private final TypeElement immutableList;
     private final ProcessingEnvironment processingEnv;
+    private final DateFormat dateFormat;
 
     ModelUtils(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
-        this.typeUtils = processingEnv.getTypeUtils();
-        final Elements elementUtils = processingEnv.getElementUtils();
+        typeUtils = processingEnv.getTypeUtils();
+        elementUtils = processingEnv.getElementUtils();
         map = elementUtils.getTypeElement(Map.class.getName()).asType();
         set = elementUtils.getTypeElement(Set.class.getName()).asType();
         immutableMap = elementUtils.getTypeElement(IMMUTABLE_MAP);
         immutableSet = elementUtils.getTypeElement(IMMUTABLE_SET);
         immutableList = elementUtils.getTypeElement(IMMUTABLE_LIST);
+        dateFormat = DateFormat.getDateTimeInstance();
     }
 
     /**
@@ -118,6 +126,15 @@ class ModelUtils {
         JavaFile.builder(CONFIGURATION_PACKAGE, typeSpec)
                 .skipJavaLangImports(true)
                 .indent("    ")
+                .addFileComment("Copyright (c) " + Calendar.getInstance().get(Calendar.YEAR) + "\n\n" +
+                        "Licensed under the Apache License, Version 2.0 (the \"License\");\n" +
+                        "you may not use this file except in compliance with the License.\n\n" +
+                        "http://www.apache.org/licenses/LICENSE-2.0\n\n" +
+                        "Unless required by applicable law or agreed to in writing, software\n" +
+                        "distributed under the License is distributed on an \"AS IS\" BASIS,\n" +
+                        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
+                        "See the License for the specific language governing permissions and\n" +
+                        "limitations under the License.")
                 .build()
                 .writeTo(processingEnv.getFiler());
     }
@@ -169,7 +186,18 @@ class ModelUtils {
      * @param method a method
      * @return false if the method is deprecated
      */
-    boolean isNotDeprecated(ExecutableElement method){
+    boolean isNotDeprecated(ExecutableElement method) {
         return method.getAnnotation(Deprecated.class) == null;
+    }
+
+    void addClassJavadoc(TypeSpec.Builder builder, TypeElement base) {
+        builder.addJavadoc("Class generated based on {@link $L} ($L)\n", base.getQualifiedName(), dateFormat.format(Calendar.getInstance().getTime()));
+    }
+
+    MethodSpec.Builder addMethodJavadoc(MethodSpec.Builder builder, ExecutableElement base) {
+        final String baseComment = elementUtils.getDocComment(base);
+        if (baseComment == null) return builder;
+        final String name = base.getSimpleName().toString();
+        return builder.addJavadoc(baseComment.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + name + " $1@return this instance\n"));
     }
 }

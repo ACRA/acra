@@ -43,7 +43,7 @@ final class PackageManagerCollector extends Collector {
     @NonNull
     @Override
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        PackageInfo info = pm.getPackageInfo();
+        final PackageInfo info = pm.getPackageInfo();
         if (info != null) {
             switch (reportField) {
                 case APP_VERSION_NAME:

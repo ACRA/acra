@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Methods annotated with this will not be propagated into the configuration
+ * Methods annotated with this will not be propagated into the ACRAConfiguration class
  *
  * @author F43nd1r
  * @since 17.03.2017

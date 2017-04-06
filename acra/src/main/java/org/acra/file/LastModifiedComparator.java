@@ -11,8 +11,8 @@ import java.util.Comparator;
 final class LastModifiedComparator implements Comparator<File> {
     @Override
     public int compare(@NonNull File lhs, @NonNull File rhs) {
-        long l = lhs.lastModified();
-        long r = rhs.lastModified();
+        final long l = lhs.lastModified();
+        final long r = rhs.lastModified();
         return l < r ? -1 : (l == r ? 0 : 1);
     }
 }

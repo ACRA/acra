@@ -15,9 +15,6 @@
  */
 package org.acra.annotation;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
@@ -40,8 +37,7 @@ import org.acra.file.Directory;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
 import org.acra.sender.DefaultReportSenderFactory;
-import org.acra.sender.HttpSender.Method;
-import org.acra.sender.HttpSender.Type;
+import org.acra.sender.HttpSender;
 import org.acra.sender.ReportSenderFactory;
 
 import java.lang.annotation.Documented;
@@ -53,9 +49,7 @@ import java.lang.annotation.Target;
 
 /**
  * Provide configuration elements to the
- * {@link ACRA#init(android.app.Application)} method. The only mandatory
- * configuration item is the {@link #formUri()} parameter which is the Uri
- * to the server that will receive your reports.
+ * {@link ACRA#init(android.app.Application)} method.
  *
  * @author Kevin Gaudin
  */
@@ -67,9 +61,7 @@ import java.lang.annotation.Target;
 public @interface ReportsCrashes {
 
     /**
-     * The Uri of your own server-side script that will receive reports. This is
-     * to use if you don't want to send reports to Google Docs but to your own,
-     * self-hosted script.
+     * The Uri of your own server-side script that will receive reports.
      *
      * @return URI of a custom server to which to post reports.
      */
@@ -193,29 +185,29 @@ public @interface ReportsCrashes {
      * can make accessible to your users through a preferences screen:
      * <ul>
      * <li>
-     * {@link ACRA#PREF_DISABLE_ACRA} or {@link ACRA#PREF_ENABLE_ACRA}</li>
+     * {@link org.acra.ACRA#PREF_DISABLE_ACRA} or {@link org.acra.ACRA#PREF_ENABLE_ACRA}</li>
      * <li>
-     * {@link ACRA#PREF_ALWAYS_ACCEPT}</li>
+     * {@link org.acra.ACRA#PREF_ALWAYS_ACCEPT}</li>
      * <li>
-     * {@link ACRA#PREF_ENABLE_DEVICE_ID}</li>
+     * {@link org.acra.ACRA#PREF_ENABLE_DEVICE_ID}</li>
      * <li>
-     * {@link ACRA#PREF_ENABLE_SYSTEM_LOGS}</li>
+     * {@link org.acra.ACRA#PREF_ENABLE_SYSTEM_LOGS}</li>
      * </ul>
      * preference. Default is to use the application default
      * SharedPreferences, as retrieved with
-     * {@link PreferenceManager#getDefaultSharedPreferences(Context)}.
+     * {@link android.preference.PreferenceManager#getDefaultSharedPreferences(android.content.Context)}.
      */
     @NonNull String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * If using a custom {@link ReportsCrashes#sharedPreferencesName()}, pass
      * here the mode that you need for the SharedPreference file creation:
-     * {@link Context#MODE_PRIVATE}, {@link Context#MODE_WORLD_READABLE} or
-     * {@link Context#MODE_WORLD_WRITEABLE}. Default is
-     * {@link Context#MODE_PRIVATE}.
+     * {@link android.content.Context#MODE_PRIVATE}, {@link android.content.Context#MODE_WORLD_READABLE} or
+     * {@link android.content.Context#MODE_WORLD_WRITEABLE}. Default is
+     * {@link android.content.Context#MODE_PRIVATE}.
      *
      * @return Mode to use with the SharedPreference creation.
-     * @see Context#getSharedPreferences(String, int)
+     * @see android.content.Context#getSharedPreferences(String, int)
      */
     int sharedPreferencesMode() default ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
 
@@ -260,11 +252,9 @@ public @interface ReportsCrashes {
      * Arguments to be passed to the logcat command line. Default is { "-t",
      * "100", "-v", "time" } for:
      * </p>
-     * <p>
      * <pre>
      * logcat -t 100 -v time
      * </pre>
-     * <p>
      * <p>
      * Do not include -b arguments for buffer selection, include
      * {@link ReportField#EVENTSLOG} and {@link ReportField#RADIOLOG} in
@@ -272,7 +262,6 @@ public @interface ReportsCrashes {
      * logcat buffers reporting. They will use the same other arguments as those
      * provided here.
      * </p>
-     * <p>
      * <p>
      * See <a href=
      * "http://developer.android.com/intl/fr/guide/developing/tools/adb.html#logcatoptions"
@@ -307,8 +296,7 @@ public @interface ReportsCrashes {
     /**
      * <p>
      * Redefines the list of {@link ReportField}s collected and sent in your
-     * reports. If you modify this list, you have to create a new Google Drive
-     * Spreadsheet &amp; Form which will be based on these fields as column headers.
+     * reports.
      * </p>
      * <p>
      * The fields order is significant. You can also use this property to modify
@@ -471,7 +459,7 @@ public @interface ReportsCrashes {
     boolean alsoReportToAndroidFramework() default ACRAConstants.DEFAULT_REPORT_TO_ANDROID_FRAMEWORK;
 
     /**
-     * Add here your {@link SharedPreferences} identifier Strings if you use
+     * Add here your {@link android.content.SharedPreferences} identifier Strings if you use
      * others than your application's default. They will be added to the
      * {@link ReportField#SHARED_PREFERENCES} field.
      *
@@ -551,11 +539,11 @@ public @interface ReportsCrashes {
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
      * path/name of your application log file. If the string does not contain
      * any path separator, the file is assumed as being in
-     * {@link Context#getFilesDir()}.
+     * {@link android.content.Context#getFilesDir()}.
      *
      * @return a String containing the path/name of your application log file.
      * If the string does not contain any path separator, the file is
-     * assumed as being in {@link Context#getFilesDir()}.
+     * assumed as being in {@link android.content.Context#getFilesDir()}.
      */
     @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
 
@@ -589,14 +577,21 @@ public @interface ReportsCrashes {
 
     /**
      * <p>
-     * The {@link Method} to be used when posting with {@link #formUri()}.
+     * The {@link HttpSender.Method} to be used when posting with {@link #formUri()}.
      * </p>
      *
      * @return HTTP method used when posting reports.
      */
-    @NonNull Method httpMethod() default Method.POST;
+    @NonNull HttpSender.Method httpMethod() default HttpSender.Method.POST;
 
-    @NonNull Type reportType() default Type.FORM;
+    /**
+     * <p>
+     * The {@link HttpSender.Type} to be used when posting with {@link #formUri()}.
+     * </p>
+     *
+     * @return the report type used when posting reports
+     */
+    @NonNull HttpSender.Type reportType() default HttpSender.Type.FORM;
 
     /**
      * @return Class which creates a keystore that can contain trusted certificates
@@ -662,7 +657,6 @@ public @interface ReportsCrashes {
     @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
 
     /**
-     *
      * @return if the report should be an attachment instead of plain text. Supported for email mode.
      */
     boolean reportAsFile() default false;

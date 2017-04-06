@@ -43,7 +43,7 @@ final class ThreadCollector extends Collector {
     @NonNull
     @Override
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        Thread t = reportBuilder.getUncaughtExceptionThread();
+        final Thread t = reportBuilder.getUncaughtExceptionThread();
         final ComplexElement result = new ComplexElement();
         if (t != null) {
             try {

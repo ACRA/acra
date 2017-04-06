@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The class annotated with this will be used as basis for the configuration
+ * The class annotated with this will be used as basis for the ACRAConfiguration
  *
  * @author F43nd1r
  * @since 17.03.2017

@@ -109,12 +109,12 @@ final class ReflectionCollector extends Collector {
     @NonNull
     @Override
     Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        ComplexElement result = new ComplexElement();
+        final ComplexElement result = new ComplexElement();
         try {
             switch (reportField) {
                 case BUILD:
                     collectConstants(Build.class, result);
-                    JSONObject version = new JSONObject();
+                    final JSONObject version = new JSONObject();
                     collectConstants(Build.VERSION.class, version);
                     result.put("VERSION", version);
                     break;

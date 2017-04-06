@@ -43,21 +43,21 @@ public final class JsonUtils {
     }
 
     public static JSONObject toJson(CrashReportData data) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        final Map<String, Object> map = new HashMap<String, Object>();
         for (Map.Entry<ReportField, Element> entry : data.entrySet()) {
-            Element element = entry.getValue();
+            final Element element = entry.getValue();
             map.put(entry.getKey().name(), element.value());
         }
         return new JSONObject(map);
     }
 
     public static CrashReportData toCrashReportData(JSONObject json) {
-        CrashReportData data = new CrashReportData();
-        for (Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
-            String key = iterator.next();
+        final CrashReportData data = new CrashReportData();
+        for (final Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
+            final String key = iterator.next();
             try {
-                ReportField field = ReportField.valueOf(key);
-                Object value = json.get(key);
+                final ReportField field = ReportField.valueOf(key);
+                final Object value = json.get(key);
                 if (value instanceof JSONObject) {
                     data.put(field, new ComplexElement((JSONObject) value));
                 } else if (value instanceof Number) {
@@ -77,10 +77,10 @@ public final class JsonUtils {
     }
 
     public static List<String> flatten(JSONObject json) throws JSONException {
-        List<String> result = new ArrayList<String>();
-        for (Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
-            String key = iterator.next();
-            Object value = json.get(key);
+        final List<String> result = new ArrayList<String>();
+        for (final Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
+            final String key = iterator.next();
+            final Object value = json.get(key);
             if (value instanceof JSONObject) {
                 for (String s : flatten((JSONObject) value)) {
                     result.add(key + "." + s);
