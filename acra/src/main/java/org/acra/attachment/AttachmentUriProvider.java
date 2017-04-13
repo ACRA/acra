@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import org.acra.config.ACRAConfiguration;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author F43nd1r
@@ -16,5 +16,5 @@ import java.util.ArrayList;
 public interface AttachmentUriProvider {
 
     @NonNull
-    ArrayList<Uri> getAttachments(Context context, ACRAConfiguration configuration);
+    List<Uri> getAttachments(Context context, ACRAConfiguration configuration);
 }

@@ -8,6 +8,7 @@ import org.acra.ACRA;
 import org.acra.config.ACRAConfiguration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -19,7 +20,7 @@ import static org.acra.ACRA.LOG_TAG;
 public class DefaultAttachmentProvider implements AttachmentUriProvider {
     @NonNull
     @Override
-    public ArrayList<Uri> getAttachments(Context context, ACRAConfiguration configuration) {
+    public List<Uri> getAttachments(Context context, ACRAConfiguration configuration) {
         final ArrayList<Uri> result = new ArrayList<Uri>();
         for (String s : configuration.attachmentUris()){
             try {

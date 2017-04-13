@@ -23,18 +23,16 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
-import org.acra.util.JsonUtils;
 import org.acra.util.IOUtils;
+import org.acra.util.JsonUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 
 /**
  * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
@@ -74,13 +72,6 @@ public final class CrashReportPersister {
      * @throws java.io.IOException if the CrashReportData could not be written to the OutputStream.
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
-
-        final OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), ACRAConstants.UTF8);
-        try {
-            writer.write(crashData.toJSON().toString());
-            writer.flush();
-        } finally {
-            IOUtils.safeClose(writer);
-        }
+        IOUtils.writeStringToFile(file, crashData.toJSON().toString());
     }
 }
