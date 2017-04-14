@@ -17,7 +17,9 @@
 package org.acra.attachment;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -51,7 +53,8 @@ public class AcraContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        authority = getContext().getPackageName() + ".acra";
+        //noinspection ConstantConditions
+        authority = getAuthority(getContext());
         if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Registered content provider for authority " + authority);
         return true;
     }
@@ -82,7 +85,7 @@ public class AcraContentProvider extends ContentProvider {
 
     @Nullable
     private File getFileForUri(Uri uri) {
-        if(!"content".equals(uri.getScheme()) || !authority.equals(uri.getAuthority())){
+        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme()) || !authority.equals(uri.getAuthority())) {
             return null;
         }
         final List<String> segments = new ArrayList<String>(uri.getPathSegments());
@@ -90,6 +93,7 @@ public class AcraContentProvider extends ContentProvider {
         final String dir = segments.remove(0).toUpperCase();
         try {
             final Directory directory = Directory.valueOf(dir);
+            //noinspection ConstantConditions
             return directory.getFile(getContext(), TextUtils.join(File.separator, segments));
         } catch (IllegalArgumentException e) {
             return null;
@@ -131,5 +135,36 @@ public class AcraContentProvider extends ContentProvider {
             }
         }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+    }
+
+    private static String getAuthority(@NonNull Context context) {
+        return context.getPackageName() + ".acra";
+    }
+
+    /**
+     * Get an uri for this content provider for the given file
+     *
+     * @param context a context
+     * @param file    the file
+     * @return the uri
+     */
+    public static Uri getUriForFile(@NonNull Context context, @NonNull File file) {
+        return getUriForFile(context, Directory.ROOT, file.getPath());
+    }
+
+    /**
+     * Get an uri for this content provider for the given file
+     *
+     * @param context      a context
+     * @param directory    the directory, to with the path is relative
+     * @param relativePath the file path
+     * @return the uri
+     */
+    public static Uri getUriForFile(@NonNull Context context, @NonNull Directory directory, @NonNull String relativePath) {
+        return new Uri.Builder()
+                .scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(getAuthority(context))
+                .path(directory.name().toLowerCase() + (relativePath.charAt(0) == File.separatorChar ? "" : File.separator) + relativePath)
+                .build();
     }
 }

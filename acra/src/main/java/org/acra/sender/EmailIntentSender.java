@@ -30,6 +30,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
+import org.acra.attachment.AcraContentProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
@@ -266,7 +267,7 @@ public class EmailIntentSender implements ReportSender {
         final File cache = new File(context.getCacheDir(), name);
         try {
             IOUtils.writeStringToFile(cache, content);
-            return Uri.parse("content://" + context.getPackageName() + ".acra/root" + cache.getPath());
+            return AcraContentProvider.getUriForFile(context, cache);
         } catch (IOException ignored) {
         }
         return null;

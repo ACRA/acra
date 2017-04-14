@@ -84,7 +84,7 @@ public final class HttpUtils {
 
     public static String getFileNameFromUri(Context context, Uri uri) {
         String result = null;
-        if (uri.getScheme().equals("content")) {
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
             final Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
