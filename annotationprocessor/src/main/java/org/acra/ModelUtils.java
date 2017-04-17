@@ -22,6 +22,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import org.acra.annotation.Name;
 import org.acra.annotation.NoPropagation;
 
 import java.io.IOException;
@@ -141,10 +142,11 @@ class ModelUtils {
 
     /**
      * @param method a method
-     * @return annotationSpecs for all present annotations on the method
+     * @return annotationSpecs for all relevant annotations on the method
      */
     static List<AnnotationSpec> getAnnotations(ExecutableElement method) {
-        return method.getAnnotationMirrors().stream().map(AnnotationSpec::get).collect(Collectors.toList());
+        return method.getAnnotationMirrors().stream().map(AnnotationSpec::get)
+                .filter(annotationSpec -> !ClassName.get(Name.class).equals(annotationSpec.type)).collect(Collectors.toList());
     }
 
     /**
@@ -199,5 +201,13 @@ class ModelUtils {
         if (baseComment == null) return builder;
         final String name = base.getSimpleName().toString();
         return builder.addJavadoc(baseComment.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + name + " $1@return this instance\n"));
+    }
+
+    String getName(ExecutableElement method) {
+        final Name name = method.getAnnotation(Name.class);
+        if(name != null){
+            return name.value();
+        }
+        return method.getSimpleName().toString();
     }
 }

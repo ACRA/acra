@@ -210,7 +210,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
      * @return the generated getter
      */
     private MethodDefinition handleMethod(ExecutableElement method, TypeSpec.Builder classBuilder, CodeBlock.Builder constructor, TypeName returnType) {
-        final String name = method.getSimpleName().toString();
+        final String name = utils.getName(method);
         final TypeMirror type = method.getReturnType();
         final TypeName typeName = TypeName.get(type);
         final TypeName boxedType = TypeName.get(utils.getBoxedType(type));
@@ -240,7 +240,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
                 .addAnnotations(annotations)
                 .addCode(code.build())
                 .build());
-        constructor.addStatement("$1L = $2L.$1L()", name, VAR_ANNOTATION_CONFIG);
+        constructor.addStatement("$L = $L.$L()", name, VAR_ANNOTATION_CONFIG, method.getSimpleName().toString());
         return new MethodDefinition(name, type, annotations);
     }
 
