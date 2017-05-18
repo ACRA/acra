@@ -73,8 +73,8 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
             writer.append(content.first);
             for (Uri uri : content.second) {
                 writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
-                writer.append("Content-Disposition: attachment; filename=\"").append(HttpUtils.getFileNameFromUri(context, uri)).append('"').append(NEW_LINE).append(NEW_LINE);
-                writer.append(CONTENT_TYPE).append(HttpUtils.getMimeType(context, uri)).append(NEW_LINE);
+                writer.append("Content-Disposition: attachment; filename=\"").append(HttpUtils.getFileNameFromUri(context, uri)).append('"').append(NEW_LINE);
+                writer.append(CONTENT_TYPE).append(HttpUtils.getMimeType(context, uri)).append(NEW_LINE).append(NEW_LINE);
                 writer.flush();
                 outputStream.write(HttpUtils.uriToByteArray(context, uri));
             }
