@@ -34,14 +34,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Produces <a href="https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html">RFC 1341</a> compliant requests
+ *
  * @author F43nd1r
  * @since 11.03.2017
  */
 
 public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>>> {
 
-    private static final String BOUNDARY = "---ACRA_REPORT_DIVIDER---";
-    private static final char NEW_LINE = '\n';
+    private static final String BOUNDARY = "%&ACRA_REPORT_DIVIDER&%";
+    private static final String BOUNDARY_FIX = "--";
+    private static final String NEW_LINE = "\r\n";
     private static final String CONTENT_TYPE = "Content-Type: ";
     @NonNull
     private final Context context;
@@ -65,17 +68,17 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         final Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
         try {
-            writer.append(NEW_LINE).append(BOUNDARY).append(NEW_LINE);
-            writer.append(CONTENT_TYPE).append(type.getContentType()).append(NEW_LINE);
+            writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
+            writer.append(CONTENT_TYPE).append(type.getContentType()).append(NEW_LINE).append(NEW_LINE);
             writer.append(content.first);
             for (Uri uri : content.second) {
-                writer.append(NEW_LINE).append(BOUNDARY).append(NEW_LINE);
+                writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
                 writer.append("Content-Disposition: attachment; filename=\"").append(HttpUtils.getFileNameFromUri(context, uri)).append('"').append(NEW_LINE);
-                writer.append(CONTENT_TYPE).append(HttpUtils.getMimeType(context, uri)).append(NEW_LINE);
+                writer.append(CONTENT_TYPE).append(HttpUtils.getMimeType(context, uri)).append(NEW_LINE).append(NEW_LINE);
                 writer.flush();
                 outputStream.write(HttpUtils.uriToByteArray(context, uri));
             }
-            writer.append(NEW_LINE).append(BOUNDARY).append(NEW_LINE);
+            writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(BOUNDARY_FIX).append(NEW_LINE);
             writer.flush();
             return outputStream.toByteArray();
         } finally {
