@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -50,6 +51,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -66,7 +68,7 @@ import static org.acra.ModelUtils.*;
  * @since 18.03.2017
  */
 @AutoService(Processor.class)
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class AcraAnnotationProcessor extends AbstractProcessor {
 
     private Elements elementUtils;
@@ -89,8 +91,9 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
-            final Set<MethodDefinition> methodDefinitions = process(roundEnv, Configuration.class.getName(), ElementKind.ANNOTATION_TYPE, new HashSet<>(), this::createBuilderClass);
-            process(roundEnv, ConfigurationBuilder.class.getName(), ElementKind.CLASS, null, type -> createConfigClass(type, methodDefinitions));
+            final List<Set<MethodDefinition>> methodDefinitions = process(roundEnv, Configuration.class.getName(), ElementKind.ANNOTATION_TYPE, this::createBuilderClass);
+            if (methodDefinitions.size() > 0)
+                process(roundEnv, ConfigurationBuilder.class.getName(), ElementKind.CLASS, type -> handleConfigurationBuilder(type, methodDefinitions.get(0)));
         } catch (Exception e) {
             e.printStackTrace();
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Failed to generate acra classes");
@@ -98,22 +101,44 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
-    private <T> T process(RoundEnvironment roundEnv, String annotationName, ElementKind kind, T defaultValue, CheckedFunction<TypeElement, T> function) throws IOException {
+    private <T> List<T> process(RoundEnvironment roundEnv, String annotationName, ElementKind kind, CheckedFunction<TypeElement, T> function) throws IOException {
         final TypeElement annotation = elementUtils.getTypeElement(annotationName);
         final ArrayList<? extends Element> annotatedElements = new ArrayList<>(roundEnv.getElementsAnnotatedWith(annotation));
-        if (annotatedElements.size() > 1) {
-            for (Element e : annotatedElements) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("Only one %s can be annotated with %s", kind.name(), annotationName), e);
-            }
-        } else if (!annotatedElements.isEmpty()) {
-            final Element e = annotatedElements.get(0);
-            if (e.getKind() == kind) {
-                return function.apply((TypeElement) e);
-            } else {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s", annotationName, kind.name()), e);
+        final List<T> result = new ArrayList<>();
+        if (!annotatedElements.isEmpty()) {
+            for (final Element e : annotatedElements) {
+                if (e.getKind() == kind) {
+                    result.add(function.apply((TypeElement) e));
+                } else {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s", annotationName, kind.name()), e);
+                }
             }
         }
-        return defaultValue;
+        return result;
+    }
+
+    private Void handleConfigurationBuilder(TypeElement builder, Set<MethodDefinition> methodDefinitions) throws IOException {
+        createConfigClass(builder, methodDefinitions);
+        if(builder.getAnnotation(ConfigurationBuilder.class).createFactory()) {
+            createFactory(builder);
+        }
+        return null;
+    }
+
+    private void createFactory(TypeElement builder) throws IOException {
+        utils.write(TypeSpec.classBuilder(builder.getSimpleName().toString() + "Factory")
+                .addModifiers(Modifier.PUBLIC)
+                .addSuperinterface(PLUGIN_CONFIGURATION_BUILDER_FACTORY)
+                .addAnnotation(AnnotationSpec.builder(AutoService.class).addMember("value", "$T.class", PLUGIN_CONFIGURATION_BUILDER_FACTORY).build())
+                .addMethod(MethodSpec.methodBuilder("create")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addAnnotation(Override.class)
+                        .addAnnotation(ANNOTATION_NON_NULL)
+                        .addParameter(ParameterSpec.builder(APPLICATION, PARAM_APP).addAnnotation(ANNOTATION_NON_NULL).build())
+                        .addStatement("return new $T($L)", TypeName.get(builder.asType()), PARAM_APP)
+                        .returns(PLUGIN_CONFIGURATION_BUILDER)
+                        .build())
+                .build());
     }
 
     /**
@@ -121,14 +146,18 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
      *
      * @param builder           type of the builder which will be used to determine methods to generate
      * @param methodDefinitions additional methods to be included in the configuration (e.g. from the builder base class)
-     * @return null
      * @throws IOException if the class file can't be written
      */
-    private Void createConfigClass(TypeElement builder, Set<MethodDefinition> methodDefinitions) throws IOException {
+    private void createConfigClass(TypeElement builder, Set<MethodDefinition> methodDefinitions) throws IOException {
         final Set<MethodDefinition> methods = getRelevantMethods(builder, methodDefinitions);
-        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(ACRA_CONFIGURATION)
+        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(builder.getAnnotation(ConfigurationBuilder.class).configurationName())
                 .addSuperinterface(Serializable.class)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+        try {
+            Stream.of(builder.getAnnotation(ConfigurationBuilder.class).markerInterfaces()).forEach(classBuilder::addSuperinterface);
+        } catch (MirroredTypesException e) {
+            e.getTypeMirrors().forEach(mirror -> classBuilder.addSuperinterface(TypeName.get(mirror)));
+        }
         utils.addClassJavadoc(classBuilder, builder);
         final CodeBlock.Builder constructor = CodeBlock.builder();
         for (MethodDefinition method : methods) {
@@ -155,7 +184,6 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
                 .addCode(constructor.build())
                 .build());
         utils.write(classBuilder.build());
-        return null;
     }
 
     /**
@@ -180,8 +208,9 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
      * @throws IOException if the class file can't be written
      */
     private Set<MethodDefinition> createBuilderClass(TypeElement config) throws IOException {
-        final TypeVariableName returnType = TypeVariableName.get("T", ClassName.get(CONFIGURATION_PACKAGE, CONFIGURATION_BUILDER));
-        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(CONFIGURATION_BUILDER)
+        final String name = config.getAnnotation(Configuration.class).builderName();
+        final TypeVariableName returnType = TypeVariableName.get("T", ClassName.get(CONFIGURATION_PACKAGE, name));
+        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(name)
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addTypeVariable(returnType);
         utils.addClassJavadoc(classBuilder, config);

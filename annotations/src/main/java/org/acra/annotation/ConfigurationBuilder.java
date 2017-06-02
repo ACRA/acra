@@ -31,4 +31,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface ConfigurationBuilder {
+    String configurationName();
+    Class[] markerInterfaces() default {};
+    boolean createFactory() default true;
 }

@@ -16,26 +16,4 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ch.acra.acra">
-
-    <application>
-        <activity
-            android:name="org.acra.dialog.CrashReportDialog"
-            android:theme="@android:style/Theme.Dialog"
-            android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:process=":acra"/>
-
-        <service
-            android:name="org.acra.sender.SenderService"
-            android:exported="false"
-            android:process=":acra" />
-
-        <provider
-            android:authorities="${applicationId}.acra"
-            android:name="org.acra.attachment.AcraContentProvider"
-            android:exported="false"
-            android:process=":acra"
-            android:grantUriPermissions="true"/>
-    </application>
 </manifest>

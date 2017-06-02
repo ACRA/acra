@@ -1,1 +1,1 @@
-include ':acra', ':acratest', ':annotationprocessor', ':annotations'
+include ':acra', ':acratest', ':annotationprocessor', ':annotations', ':acra-http', ':acra-core', ':acra-mail', ':acra-dialog', ':acra-toast'

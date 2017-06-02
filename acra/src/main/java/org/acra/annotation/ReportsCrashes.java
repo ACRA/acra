@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration
+@Configuration(builderName = "BaseMixedConfigurationBuilder")
 public @interface ReportsCrashes {
 
     /**

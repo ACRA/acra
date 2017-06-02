@@ -61,6 +61,9 @@ class ModelUtils {
     static final String VAR_ANNOTATION_CONFIG = "annotationConfig";
     static final ClassName APPLICATION = ClassName.bestGuess("android.app.Application");
     static final ClassName ANNOTATION_NON_NULL = ClassName.bestGuess("android.support.annotation.NonNull");
+    static final ClassName PLUGIN_CONFIGURATION_BUILDER_FACTORY = ClassName.bestGuess("org.acra.config.PluginConfigurationBuilderFactory");
+    static final ClassName PLUGIN_CONFIGURATION_BUILDER = ClassName.bestGuess("org.acra.config.PluginConfigurationBuilder");
+    static final ClassName ACRA_CONFIGURATION_EXCEPTION = ClassName.bestGuess("org.acra.config.ACRAConfigurationException");
     private static final String IMMUTABLE_MAP = "org.acra.collections.ImmutableMap";
     private static final String IMMUTABLE_LIST = "org.acra.collections.ImmutableList";
     private static final String IMMUTABLE_SET = "org.acra.collections.ImmutableSet";

@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2017
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.acra.config;
+
+import java.lang.reflect.Modifier;
+
+/**
+ * @author F43nd1r
+ * @since 01.06.2017
+ */
+
+public final class ConfigUtils {
+    private ConfigUtils(){
+    }
+
+    public static <T extends PluginConfiguration> T getSenderConfiguration(ACRAConfiguration config, Class<T> c) {
+        T httpSenderConfiguration = null;
+        for (PluginConfiguration configuration : config.pluginConfigurations()) {
+            if (c.isAssignableFrom(configuration.getClass())) {
+                //noinspection unchecked
+                httpSenderConfiguration = (T) configuration;
+                break;
+            }
+        }
+        return httpSenderConfiguration;
+    }
+
+    static void checkValidity(Class<?>... classes) throws ACRAConfigurationException {
+        for (Class<?> clazz : classes) {
+            if (clazz.isInterface()) {
+                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName() + ".");
+            } else if (Modifier.isAbstract(clazz.getModifiers())) {
+                throw new ACRAConfigurationException("Class " + clazz.getName() + " cannot be abstract.");
+            }
+            try {
+                clazz.getConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new ACRAConfigurationException("Class " + clazz.getName() + " is missing a no-args Constructor.", e);
+            }
+        }
+    }
+}

@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion androidVersion
         versionName version
         consumerProguardFile proguardFile
@@ -28,6 +28,10 @@ android {
 dependencies {
     compile "com.android.support:support-v4:$supportVersion"
     compile "com.android.support:support-annotations:$supportVersion"
+    compile project(':acra-core')
+    compile project(':acra-http')
+    compile project(':acra-mail')
+    compile project(':acra-dialog')
     annotationProcessor project(':annotationprocessor')
     provided project(':annotations')
 }
