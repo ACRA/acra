@@ -16,6 +16,7 @@
 
 package org.acra.config;
 
+import android.app.Application;
 import android.support.annotation.NonNull;
 
 /**
@@ -23,7 +24,7 @@ import android.support.annotation.NonNull;
  * @since 01.06.2017
  */
 
-public interface PluginConfigurationBuilder {
+public interface ConfigurationBuilderFactory {
     @NonNull
-    PluginConfiguration build() throws ACRAConfigurationException;
+    ConfigurationBuilder create(@NonNull Application application);
 }

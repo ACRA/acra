@@ -34,15 +34,17 @@ class MethodDefinition {
     private final String name;
     private final TypeMirror type;
     private final List<AnnotationSpec> annotations;
+    private final boolean hasDefault;
 
     static MethodDefinition from(ExecutableElement method) {
-        return new MethodDefinition(method.getSimpleName().toString(), method.getReturnType(), ModelUtils.getAnnotations(method));
+        return new MethodDefinition(method.getSimpleName().toString(), method.getReturnType(), ModelUtils.getAnnotations(method), method.getDefaultValue() != null);
     }
 
-    MethodDefinition(String name, TypeMirror type, List<AnnotationSpec> annotations) {
+    MethodDefinition(String name, TypeMirror type, List<AnnotationSpec> annotations, boolean hasDefault) {
         this.name = name;
         this.type = type;
         this.annotations = annotations;
+        this.hasDefault = hasDefault;
     }
 
     String getName() {
@@ -55,6 +57,10 @@ class MethodDefinition {
 
     List<AnnotationSpec> getAnnotations() {
         return annotations;
+    }
+
+    public boolean hasDefault() {
+        return hasDefault;
     }
 
     @Override

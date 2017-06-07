@@ -29,6 +29,7 @@ import org.acra.util.PackageManagerWrapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +120,7 @@ public final class CrashReportDataFactory {
     public CrashReportData createCrashData(@NonNull ReportBuilder builder) {
         final CrashReportData crashReportData = new CrashReportData();
         try {
-            final Set<ReportField> crashReportFields = config.reportContent();
+            final Set<ReportField> crashReportFields = new HashSet<>(config.reportContent());
             final List<Collector> collectors = getCollectorsOrdered();
 
             //this will iterate over all collectors in descending order of priority

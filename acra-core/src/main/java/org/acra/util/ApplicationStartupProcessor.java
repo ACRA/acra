@@ -4,9 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
+
 import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
 import org.acra.config.ACRAConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportFileNameParser;
@@ -71,10 +70,6 @@ public final class ApplicationStartupProcessor {
 
         if (reportFiles.length == 0) {
             return; // There are no approved reports, so bail now.
-        }
-
-        if (config.reportingInteractionMode() == ReportingInteractionMode.TOAST && hasNonSilentApprovedReports(reportFiles)) {
-            ToastSender.sendToast(context, config.resToastText(), Toast.LENGTH_LONG);
         }
 
         // Send the approved reports.

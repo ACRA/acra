@@ -29,8 +29,8 @@ import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;
+import org.acra.config.Configuration;
 import org.acra.config.HttpSenderConfiguration;
-import org.acra.config.PluginConfiguration;
 import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
 import org.acra.http.HttpUtils;
@@ -217,7 +217,7 @@ public class HttpSender implements ReportSender {
 
     private static HttpSenderConfiguration getHttpSenderConfiguration(ACRAConfiguration config){
         HttpSenderConfiguration httpSenderConfiguration = null;
-        for (PluginConfiguration configuration : config.pluginConfigurations()){
+        for (Configuration configuration : config.pluginConfigurations()){
             if(configuration instanceof HttpSenderConfiguration){
                 httpSenderConfiguration = (HttpSenderConfiguration) configuration;
                 break;

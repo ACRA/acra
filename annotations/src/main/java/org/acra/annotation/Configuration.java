@@ -31,5 +31,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Configuration {
-    String builderName();
+    String configName();
+    Class builderSuperClass() default Object.class;
+    boolean createBuilderFactory() default true;
+    String packageName();
+    Class applicationClass();
+    Class nonNull();
+    Class configuration();
+    Class configurationBuilder();
+    Class configurationBuilderFactory();
+    Class configurationException();
+    Class configUtils();
+    Class mapWrapper();
+    Class listWrapper();
+    Class setWrapper();
 }

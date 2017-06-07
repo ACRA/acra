@@ -16,10 +16,14 @@
 
 package org.acra.config;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author F43nd1r
  * @since 01.06.2017
  */
 
-public interface PluginConfiguration {
+public interface ConfigurationBuilder {
+    @NonNull
+    Configuration build() throws ACRAConfigurationException;
 }

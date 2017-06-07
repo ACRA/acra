@@ -27,9 +27,9 @@ public final class ConfigUtils {
     private ConfigUtils(){
     }
 
-    public static <T extends PluginConfiguration> T getSenderConfiguration(ACRAConfiguration config, Class<T> c) {
+    public static <T extends Configuration> T getSenderConfiguration(ACRAConfiguration config, Class<T> c) {
         T httpSenderConfiguration = null;
-        for (PluginConfiguration configuration : config.pluginConfigurations()) {
+        for (Configuration configuration : config.pluginConfigurations()) {
             if (c.isAssignableFrom(configuration.getClass())) {
                 //noinspection unchecked
                 httpSenderConfiguration = (T) configuration;

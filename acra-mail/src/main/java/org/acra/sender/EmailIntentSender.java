@@ -31,6 +31,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.AcraContentProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
+import org.acra.collections.ImmutableList;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.ACRAConfiguration;

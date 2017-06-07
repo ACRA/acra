@@ -25,8 +25,8 @@ import android.support.annotation.Nullable;
 
 import org.acra.annotation.AcraCore;
 import org.acra.config.ACRAConfiguration;
+import org.acra.config.ACRAConfigurationBuilder;
 import org.acra.config.ACRAConfigurationException;
-import org.acra.config.CoreConfigurationBuilder;
 import org.acra.legacy.LegacyFileHandler;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
@@ -45,11 +45,11 @@ import java.io.IOException;
  * {@link Application} subclass.
  *
  * @author Kevin Gaudin
- *
  */
 @SuppressWarnings({"WeakerAccess","unused"})
 public final class ACRA {
-    private ACRA(){}
+    private ACRA() {
+    }
 
     public static /*non-final*/ boolean DEV_LOGGING = false; // Should be false for release.
 
@@ -58,7 +58,7 @@ public final class ACRA {
     @NonNull
     public static ACRALog log = new AndroidLogDelegate();
 
-    private static final String ACRA_PRIVATE_PROCESS_NAME= ":acra";
+    private static final String ACRA_PRIVATE_PROCESS_NAME = ":acra";
 
     /**
      * The key of the application default SharedPreference where you can put a
@@ -121,14 +121,14 @@ public final class ACRA {
     /**
      * <p>
      * Initialize ACRA for a given Application.
-     *
+     * <p>
      * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
-     *
+     * <p>
      * Uses the configuration as configured with the @ReportCrashes annotation.
      * Sends any unsent reports.
      * </p>
      *
-     * @param app   Your Application class.
+     * @param app Your Application class.
      * @throws IllegalStateException if it is called more than once.
      */
     public static void init(@NonNull Application app) {
@@ -137,15 +137,15 @@ public final class ACRA {
             log.e(LOG_TAG, "ACRA#init(Application) called but no ReportsCrashes annotation on Application " + app.getPackageName());
             return;
         }
-        init(app, new CoreConfigurationBuilder(app));
+        init(app, new ACRAConfigurationBuilder(app));
     }
 
     /**
      * <p>
      * Initialize ACRA for a given Application.
-     *
+     * <p>
      * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
-     *
+     * <p>
      * Uses the configuration as configured with the @ReportCrashes annotation.
      * Sends any unsent reports.
      * </p>
@@ -153,14 +153,14 @@ public final class ACRA {
      * @param app     Your Application class.
      * @param builder ConfigurationBuilder to manually set up ACRA configuration.
      */
-    public static void init(@NonNull Application app, @NonNull CoreConfigurationBuilder builder) {
+    public static void init(@NonNull Application app, @NonNull ACRAConfigurationBuilder builder) {
         init(app, builder, true);
     }
 
     /**
      * <p>
      * Initialize ACRA for a given Application.
-     *
+     * <p>
      * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)}  method.
      * </p>
      *
@@ -168,7 +168,7 @@ public final class ACRA {
      * @param builder                        ConfigurationBuilder to manually set up ACRA configuration.
      * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      */
-    public static void init(@NonNull Application app, @NonNull CoreConfigurationBuilder builder, boolean checkReportsOnApplicationStart) {
+    public static void init(@NonNull Application app, @NonNull ACRAConfigurationBuilder builder, boolean checkReportsOnApplicationStart) {
         try {
             init(app, builder.build(), checkReportsOnApplicationStart);
         } catch (ACRAConfigurationException e) {
@@ -179,14 +179,14 @@ public final class ACRA {
     /**
      * <p>
      * Initialize ACRA for a given Application.
-     *
+     * <p>
      * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
-     *
+     * <p>
      * Sends any unsent reports.
      * </p>
      *
-     * @param app       Your Application class.
-     * @param config    ACRAConfiguration to manually set up ACRA configuration.
+     * @param app    Your Application class.
+     * @param config ACRAConfiguration to manually set up ACRA configuration.
      * @throws IllegalStateException if it is called more than once.
      */
     public static void init(@NonNull Application app, @NonNull ACRAConfiguration config) {
@@ -200,20 +200,21 @@ public final class ACRA {
      * method.
      * </p>
      *
-     * @param app       Your Application class.
-     * @param config    ACRAConfiguration to manually set up ACRA configuration.
-     * @param checkReportsOnApplicationStart    Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
+     * @param app                            Your Application class.
+     * @param config                         ACRAConfiguration to manually set up ACRA configuration.
+     * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart){
+    public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart) {
 
         final boolean senderServiceProcess = isACRASenderServiceProcess();
         if (senderServiceProcess) {
-            if (ACRA.DEV_LOGGING) log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
+            if (ACRA.DEV_LOGGING)
+                log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
         }
 
         final boolean supportedAndroidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
-        if (!supportedAndroidVersion){
+        if (!supportedAndroidVersion) {
             // NB We keep initialising so that everything is configured. But ACRA is never enabled below.
             log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
         }
@@ -246,7 +247,7 @@ public final class ACRA {
         // Check for approved reports and send them (if enabled).
         // NB don't check if senderServiceProcess as it will gather these reports itself.
         if (checkReportsOnApplicationStart && !senderServiceProcess) {
-            final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(mApplication,  config);
+            final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(mApplication, config);
             if (config.deleteOldUnsentReportsOnApplicationStart()) {
                 startupProcessor.deleteUnsentReportsFromOldAppVersion();
             }
@@ -288,7 +289,7 @@ public final class ACRA {
 
     /**
      * @return true if the current process is the process running the SenderService.
-     *          NB this assumes that your SenderService is configured to used the default ':acra' process.
+     * NB this assumes that your SenderService is configured to used the default ':acra' process.
      */
     public static boolean isACRASenderServiceProcess() {
         final String processName = getCurrentProcessName();
@@ -319,15 +320,13 @@ public final class ACRA {
     }
 
 
-
     /**
      * Check if the application default shared preferences contains true for the
      * key "acra.disable", do not activate ACRA. Also checks the alternative
      * opposite setting "acra.enable" if "acra.disable" is not found.
      *
-     * @param prefs
-     *            SharedPreferences to check to see whether ACRA should be
-     *            disabled.
+     * @param prefs SharedPreferences to check to see whether ACRA should be
+     *              disabled.
      * @return true if prefs indicate that ACRA should be disabled.
      */
     private static boolean shouldDisableACRA(@NonNull SharedPreferences prefs) {
@@ -345,7 +344,7 @@ public final class ACRA {
      * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
      * @deprecated since 4.8.0 use {@link SharedPreferencesFactory} instead.
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     @NonNull
     public static SharedPreferences getACRASharedPreferences() {
         if (configProxy == null) {

@@ -16,25 +16,10 @@
 
 package org.acra.config;
 
-import android.app.Application;
-import android.support.annotation.NonNull;
-
-import org.acra.annotation.ConfigurationBuilder;
-import org.acra.annotation.NoPropagation;
-
 /**
  * @author F43nd1r
  * @since 01.06.2017
  */
-@ConfigurationBuilder(configurationName = "MailSenderConfiguration", markerInterfaces = PluginConfiguration.class)
-public class EmailConfigurationBuilder extends BaseEmailConfigurationBuilder<EmailConfigurationBuilder> implements PluginConfigurationBuilder {
-    public EmailConfigurationBuilder(@NonNull Application app) {
-        super(app);
-    }
 
-    @NoPropagation
-    @Override
-    public PluginConfiguration build() {
-        return new MailSenderConfiguration(this);
-    }
+public interface Configuration {
 }

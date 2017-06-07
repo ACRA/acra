@@ -16,9 +16,18 @@
 
 package org.acra.annotation;
 
+import android.app.Application;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import org.acra.ReportingInteractionMode;
+import org.acra.collections.ImmutableList;
+import org.acra.collections.ImmutableMap;
+import org.acra.collections.ImmutableSet;
+import org.acra.config.ACRAConfigurationException;
+import org.acra.config.ConfigUtils;
+import org.acra.config.ConfigurationBuilder;
+import org.acra.config.ConfigurationBuilderFactory;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -35,7 +44,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(builderName = "BaseToastConfigurationBuilder")
+@Configuration(configName = "ToastConfiguration",
+        packageName = "org.acra.config",
+        applicationClass = Application.class,
+        nonNull = NonNull.class,
+        configuration = org.acra.config.Configuration.class,
+        configurationBuilder = ConfigurationBuilder.class,
+        configurationBuilderFactory = ConfigurationBuilderFactory.class,
+        configurationException = ACRAConfigurationException.class,
+        configUtils = ConfigUtils.class,
+        mapWrapper = ImmutableMap.class,
+        listWrapper = ImmutableList.class,
+        setWrapper = ImmutableSet.class)
 public @interface AcraToast {
 
     /**

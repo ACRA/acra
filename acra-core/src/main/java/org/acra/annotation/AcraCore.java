@@ -16,6 +16,7 @@
 
 package org.acra.annotation;
 
+import android.app.Application;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
@@ -25,6 +26,14 @@ import org.acra.attachment.AttachmentUriProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
+import org.acra.collections.ImmutableList;
+import org.acra.collections.ImmutableMap;
+import org.acra.collections.ImmutableSet;
+import org.acra.config.ACRAConfigurationException;
+import org.acra.config.BaseACRAConfigurationBuilder;
+import org.acra.config.ConfigUtils;
+import org.acra.config.ConfigurationBuilder;
+import org.acra.config.ConfigurationBuilderFactory;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.file.Directory;
@@ -46,7 +55,20 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(builderName = "BaseCoreConfigurationBuilder")
+@Configuration(configName = "ACRAConfiguration",
+        builderSuperClass = BaseACRAConfigurationBuilder.class,
+        createBuilderFactory = false,
+        packageName = "org.acra.config",
+        applicationClass = Application.class,
+        nonNull = NonNull.class,
+        configuration = org.acra.config.Configuration.class,
+        configurationBuilder = ConfigurationBuilder.class,
+        configurationBuilderFactory = ConfigurationBuilderFactory.class,
+        configurationException = ACRAConfigurationException.class,
+        configUtils = ConfigUtils.class,
+        mapWrapper = ImmutableMap.class,
+        listWrapper = ImmutableList.class,
+        setWrapper = ImmutableSet.class)
 public @interface AcraCore {
 
     /**
@@ -127,7 +149,7 @@ public @interface AcraCore {
      * <p>
      * Do not include -b arguments for buffer selection, include
      * {@link ReportField#EVENTSLOG} and {@link ReportField#RADIOLOG} in
-     * {@link #customReportContent()} to activate alternative
+     * {@link #reportContent()} to activate alternative
      * logcat buffers reporting. They will use the same other arguments as those
      * provided here.
      * </p>
@@ -222,7 +244,7 @@ public @interface AcraCore {
      * @return ReportField Array listing the fields to be included in the
      * report.
      */
-    @NonNull ReportField[] customReportContent() default {};
+    @NonNull ReportField[] reportContent() default {};
 
     /**
      * Controls whether unapproved reports are deleted on application start or not.
@@ -331,7 +353,7 @@ public @interface AcraCore {
      * @return List of the {@link org.acra.sender.ReportSenderFactory} with which to construct the
      * {@link org.acra.sender.ReportSender}s that will send the crash reports.
      */
-    @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
+    @NonEmpty @Instantiatable @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
@@ -365,13 +387,13 @@ public @interface AcraCore {
     /**
      * @return Class that is ued to provide any extra details for a crash.
      */
-    @NonNull Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
+    @Instantiatable @NonNull Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
 
     /**
      * @return a Class that decides if a report should be resent (usually if one or more senders failed).
      * @since 4.9.1
      */
-    @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
+    @Instantiatable @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
 
     /**
      * @return true if all services running in a process should be stopped before it is killed.
@@ -408,5 +430,5 @@ public @interface AcraCore {
      * @return a class that decides which uris should be attached to reports
      * @since 4.9.3
      */
-    @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
+    @Instantiatable @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
 }

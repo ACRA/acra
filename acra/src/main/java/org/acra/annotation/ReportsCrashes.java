@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(builderName = "BaseMixedConfigurationBuilder")
+@Configuration(configName = "MixedConfiguration")
 public @interface ReportsCrashes {
 
     /**
@@ -92,7 +92,6 @@ public @interface ReportsCrashes {
      *
      * @return the interaction mode that you want ACRA to implement.
      */
-    @Name("reportingInteractionMode")
     @NonNull ReportingInteractionMode mode() default ReportingInteractionMode.SILENT;
 
     /**

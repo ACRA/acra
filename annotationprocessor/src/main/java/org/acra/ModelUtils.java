@@ -20,29 +20,40 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import org.acra.annotation.Name;
+import org.acra.annotation.AnyNonDefault;
+import org.acra.annotation.Configuration;
+import org.acra.annotation.Instantiatable;
 import org.acra.annotation.NoPropagation;
+import org.acra.annotation.NonEmpty;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 /**
  * Collection of constants and helper methods to generate ACRA classes
@@ -52,25 +63,20 @@ import javax.lang.model.util.Types;
  */
 
 class ModelUtils {
-    static final String CONFIGURATION_PACKAGE = "org.acra.config";
-    static final String CONFIGURATION_BUILDER = "BaseConfigurationBuilder";
-    static final String ACRA_CONFIGURATION = "ACRAConfiguration";
+    final String configurationPackage;
     static final String PREFIX_SETTER = "set";
-    static final String PARAM_APP = "app";
-    static final String PARAM_BUILDER = "builder";
-    static final String VAR_ANNOTATION_CONFIG = "annotationConfig";
-    static final ClassName APPLICATION = ClassName.bestGuess("android.app.Application");
-    static final ClassName ANNOTATION_NON_NULL = ClassName.bestGuess("android.support.annotation.NonNull");
-    static final ClassName PLUGIN_CONFIGURATION_BUILDER_FACTORY = ClassName.bestGuess("org.acra.config.PluginConfigurationBuilderFactory");
-    static final ClassName PLUGIN_CONFIGURATION_BUILDER = ClassName.bestGuess("org.acra.config.PluginConfigurationBuilder");
-    static final ClassName ACRA_CONFIGURATION_EXCEPTION = ClassName.bestGuess("org.acra.config.ACRAConfigurationException");
-    private static final String IMMUTABLE_MAP = "org.acra.collections.ImmutableMap";
-    private static final String IMMUTABLE_LIST = "org.acra.collections.ImmutableList";
-    private static final String IMMUTABLE_SET = "org.acra.collections.ImmutableSet";
+    static final String PARAM_0 = "arg0";
+    static final String VAR_0 = "var0";
+    final Type application;
+    final ClassName nonNull;
+    final Type configurationBuilderFactory;
+    final Type configurationBuilder;
+    final TypeName configuration;
+    final TypeName acraConfigurationException;
     private static final ClassName ANNOTATION_NO_PROPAGATION = ClassName.get(NoPropagation.class);
 
-    private final Types typeUtils;
-    private final Elements elementUtils;
+    final Types typeUtils;
+    final Elements elementUtils;
     private final TypeMirror map;
     private final TypeMirror set;
     private final TypeElement immutableMap;
@@ -79,16 +85,31 @@ class ModelUtils {
     private final ProcessingEnvironment processingEnv;
     private final DateFormat dateFormat;
 
-    ModelUtils(ProcessingEnvironment processingEnv) {
+    ModelUtils(ProcessingEnvironment processingEnv, Configuration settings) {
         this.processingEnv = processingEnv;
         typeUtils = processingEnv.getTypeUtils();
         elementUtils = processingEnv.getElementUtils();
         map = elementUtils.getTypeElement(Map.class.getName()).asType();
         set = elementUtils.getTypeElement(Set.class.getName()).asType();
-        immutableMap = elementUtils.getTypeElement(IMMUTABLE_MAP);
-        immutableSet = elementUtils.getTypeElement(IMMUTABLE_SET);
-        immutableList = elementUtils.getTypeElement(IMMUTABLE_LIST);
+        immutableMap = (TypeElement) typeUtils.asElement(getTypeMirror(settings::mapWrapper));
+        immutableSet = (TypeElement) typeUtils.asElement(getTypeMirror(settings::setWrapper));
+        immutableList = (TypeElement) typeUtils.asElement(getTypeMirror(settings::listWrapper));
         dateFormat = DateFormat.getDateTimeInstance();
+        application = getType(getTypeMirror(settings::applicationClass));
+        nonNull = (ClassName) TypeName.get(getTypeMirror(settings::nonNull));
+        configurationBuilderFactory = getType(getTypeMirror(settings::configurationBuilderFactory));
+        configurationBuilder = getType(getTypeMirror(settings::configurationBuilder));
+        configuration = TypeName.get(getTypeMirror(settings::configuration));
+        acraConfigurationException = TypeName.get(getTypeMirror(settings::configurationException));
+        configurationPackage = settings.packageName();
+    }
+
+    TypeMirror getTypeMirror(Supplier<Class> supplier) {
+        try {
+            return elementUtils.getTypeElement(supplier.get().getName()).asType();
+        } catch (MirroredTypeException e) {
+            return e.getTypeMirror();
+        }
     }
 
     /**
@@ -127,7 +148,7 @@ class ModelUtils {
      * @throws IOException if writing fails
      */
     void write(TypeSpec typeSpec) throws IOException {
-        JavaFile.builder(CONFIGURATION_PACKAGE, typeSpec)
+        JavaFile.builder(configurationPackage, typeSpec)
                 .skipJavaLangImports(true)
                 .indent("    ")
                 .addFileComment("Copyright (c) " + Calendar.getInstance().get(Calendar.YEAR) + "\n\n" +
@@ -143,13 +164,16 @@ class ModelUtils {
                 .writeTo(processingEnv.getFiler());
     }
 
+    private static final List<TypeName> excludeAnnotationsFromBuilder = Arrays.asList(ClassName.get(NonEmpty.class),
+            ClassName.get(AnyNonDefault.class), ClassName.get(Instantiatable.class));
+
     /**
      * @param method a method
      * @return annotationSpecs for all relevant annotations on the method
      */
     static List<AnnotationSpec> getAnnotations(ExecutableElement method) {
         return method.getAnnotationMirrors().stream().map(AnnotationSpec::get)
-                .filter(annotationSpec -> !ClassName.get(Name.class).equals(annotationSpec.type)).collect(Collectors.toList());
+                .filter(annotationSpec -> !excludeAnnotationsFromBuilder.contains(annotationSpec.type)).collect(Collectors.toList());
     }
 
     /**
@@ -206,11 +230,39 @@ class ModelUtils {
         return builder.addJavadoc(baseComment.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + name + " $1@return this instance\n"));
     }
 
-    String getName(ExecutableElement method) {
-        final Name name = method.getAnnotation(Name.class);
-        if(name != null){
-            return name.value();
+    ExecutableElement getOnlyMethod(TypeElement typeElement) {
+        List<ExecutableElement> elements = typeElement.getEnclosedElements().stream().filter(element -> element.getKind() == ElementKind.METHOD)
+                .map(ExecutableElement.class::cast).collect(Collectors.toList());
+        if (elements.size() == 1) {
+            return elements.get(0);
+        } else {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Needs exactly one method", typeElement);
+            throw new IllegalArgumentException();
         }
-        return method.getSimpleName().toString();
+    }
+
+    void error(Element element, String annotationField, String message) {
+        AnnotationMirror mirror = element.getAnnotationMirrors().stream()
+                .filter(m -> ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName().toString().equals(Configuration.class.getName()))
+                .findAny().orElseThrow(IllegalArgumentException::new);
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element, mirror, mirror.getElementValues().entrySet().stream()
+                .filter(entry -> entry.getKey().getSimpleName().toString().equals(annotationField)).findAny().map(Map.Entry::getValue).orElse(null));
+        throw new IllegalArgumentException();
+    }
+
+    Type getType(TypeMirror mirror) {
+        return new Type((TypeElement) typeUtils.asElement(mirror));
+    }
+
+    boolean isConstructor(Element element) {
+        return element.getKind() == ElementKind.CONSTRUCTOR;
+    }
+
+    List<ExecutableElement> getConstructors(Element element) {
+        return element.getEnclosedElements().stream().filter(e -> e.getKind() == ElementKind.CONSTRUCTOR).map(ExecutableElement.class::cast).collect(Collectors.toList());
+    }
+
+    List<ExecutableElement> getMethods(Element element) {
+        return element.getEnclosedElements().stream().filter(e -> e.getKind() == ElementKind.METHOD).map(ExecutableElement.class::cast).collect(Collectors.toList());
     }
 }

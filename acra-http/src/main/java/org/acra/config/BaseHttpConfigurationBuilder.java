@@ -16,10 +16,7 @@
 
 package org.acra.config;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
-
-import org.acra.annotation.NoPropagation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,20 +25,12 @@ import java.util.Map;
  * @author F43nd1r
  * @since 01.06.2017
  */
-@org.acra.annotation.ConfigurationBuilder(configurationName = "HttpSenderConfiguration", markerInterfaces = PluginConfiguration.class)
-public class HttpConfigurationBuilder extends BaseHttpConfigurationBuilder<HttpConfigurationBuilder> implements PluginConfigurationBuilder {
+public class BaseHttpConfigurationBuilder {
 
     private final Map<String, String> httpHeaders;
 
-    public HttpConfigurationBuilder(@NonNull Application app) {
-        super(app);
+    public BaseHttpConfigurationBuilder() {
         httpHeaders = new HashMap<>();
-    }
-
-    @NoPropagation
-    @Override
-    public HttpSenderConfiguration build() {
-        return new HttpSenderConfiguration(this);
     }
 
     /**
@@ -52,7 +41,7 @@ public class HttpConfigurationBuilder extends BaseHttpConfigurationBuilder<HttpC
      * @return this instance
      */
     @NonNull
-    public HttpConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
+    public BaseHttpConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
         this.httpHeaders.clear();
         this.httpHeaders.putAll(headers);
         return this;
