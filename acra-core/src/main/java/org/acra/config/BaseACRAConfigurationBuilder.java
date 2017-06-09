@@ -15,7 +15,6 @@
  */
 package org.acra.config;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
@@ -42,7 +41,7 @@ public abstract class BaseACRAConfigurationBuilder<T extends BaseACRAConfigurati
     private final List<ConfigurationBuilder> configurationBuilders;
     private List<Configuration> configurations;
 
-    BaseACRAConfigurationBuilder(@NonNull Application app) {
+    BaseACRAConfigurationBuilder(@NonNull Class app) {
         reportContentChanges = new EnumMap<>(ReportField.class);
         configurationBuilders = new ArrayList<>();
         for (ConfigurationBuilderFactory factory : ServiceLoader.load(ConfigurationBuilderFactory.class)) {
@@ -99,11 +98,11 @@ public abstract class BaseACRAConfigurationBuilder<T extends BaseACRAConfigurati
     }
 
     @NoPropagation
-    public <T extends ConfigurationBuilder> T getSenderConfigurationBuilder(Class<T> c) {
+    public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(Class<R> c) {
         for (ConfigurationBuilder builder : configurationBuilders) {
             if (c.isAssignableFrom(builder.getClass())) {
                 //noinspection unchecked
-                return (T) builder;
+                return (R) builder;
             }
         }
         return null;

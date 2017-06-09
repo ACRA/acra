@@ -16,16 +16,12 @@
 
 package org.acra.config;
 
-import java.lang.reflect.Modifier;
-
 /**
  * @author F43nd1r
  * @since 01.06.2017
  */
 
 public final class ConfigUtils {
-    private ConfigUtils(){
-    }
 
     public static <T extends Configuration> T getSenderConfiguration(ACRAConfiguration config, Class<T> c) {
         T httpSenderConfiguration = null;
@@ -39,18 +35,4 @@ public final class ConfigUtils {
         return httpSenderConfiguration;
     }
 
-    static void checkValidity(Class<?>... classes) throws ACRAConfigurationException {
-        for (Class<?> clazz : classes) {
-            if (clazz.isInterface()) {
-                throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName() + ".");
-            } else if (Modifier.isAbstract(clazz.getModifiers())) {
-                throw new ACRAConfigurationException("Class " + clazz.getName() + " cannot be abstract.");
-            }
-            try {
-                clazz.getConstructor();
-            } catch (NoSuchMethodException e) {
-                throw new ACRAConfigurationException("Class " + clazz.getName() + " is missing a no-args Constructor.", e);
-            }
-        }
-    }
 }

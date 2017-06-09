@@ -16,7 +16,6 @@
 
 package org.acra.config;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
 
 /**
@@ -26,5 +25,5 @@ import android.support.annotation.NonNull;
 
 public interface ConfigurationBuilderFactory {
     @NonNull
-    ConfigurationBuilder create(@NonNull Application application);
+    ConfigurationBuilder create(@NonNull Class annotatedObject);
 }

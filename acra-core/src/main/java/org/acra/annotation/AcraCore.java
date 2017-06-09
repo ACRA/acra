@@ -16,24 +16,15 @@
 
 package org.acra.annotation;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.ReportingInteractionMode;
 import org.acra.attachment.AttachmentUriProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
-import org.acra.collections.ImmutableList;
-import org.acra.collections.ImmutableMap;
-import org.acra.collections.ImmutableSet;
-import org.acra.config.ACRAConfigurationException;
 import org.acra.config.BaseACRAConfigurationBuilder;
-import org.acra.config.ConfigUtils;
-import org.acra.config.ConfigurationBuilder;
-import org.acra.config.ConfigurationBuilderFactory;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.file.Directory;
@@ -58,17 +49,7 @@ import java.lang.annotation.Target;
 @Configuration(configName = "ACRAConfiguration",
         builderSuperClass = BaseACRAConfigurationBuilder.class,
         createBuilderFactory = false,
-        packageName = "org.acra.config",
-        applicationClass = Application.class,
-        nonNull = NonNull.class,
-        configuration = org.acra.config.Configuration.class,
-        configurationBuilder = ConfigurationBuilder.class,
-        configurationBuilderFactory = ConfigurationBuilderFactory.class,
-        configurationException = ACRAConfigurationException.class,
-        configUtils = ConfigUtils.class,
-        mapWrapper = ImmutableMap.class,
-        listWrapper = ImmutableList.class,
-        setWrapper = ImmutableSet.class)
+        packageName = "org.acra.config")
 public @interface AcraCore {
 
     /**
@@ -281,7 +262,7 @@ public @interface AcraCore {
 
     /**
      * Set this to true if you prefer displaying the native force close dialog after the ACRA is done.
-     * Recommended: Keep this set to false if using {@link ReportingInteractionMode#DIALOG} for notification.
+     * Recommended: Keep this set to false if using  ReportingInteractionMode#DIALOG for notification.
      *
      * @return true if the native force close dialog should be displayed.
      */

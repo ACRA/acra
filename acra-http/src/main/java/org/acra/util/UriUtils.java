@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.acra.http;
+
+package org.acra.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -21,25 +22,22 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-import android.webkit.MimeTypeMap;
 
 import org.acra.ACRAConstants;
+import org.acra.attachment.AcraContentProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 
 /**
  * @author F43nd1r
  * @since 11.03.2017
  */
 
-public final class HttpUtils {
-    private HttpUtils() {
+public final class UriUtils {
+    private UriUtils() {
     }
 
     @NonNull
@@ -55,31 +53,6 @@ public final class HttpUtils {
             outputStream.write(buffer, 0, length);
         }
         return outputStream.toByteArray();
-    }
-
-    /**
-     * Converts a Map of parameters into a URL encoded Sting.
-     *
-     * @param parameters Map of parameters to convert.
-     * @return URL encoded String representing the parameters.
-     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
-     */
-    @NonNull
-    public static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
-
-        final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
-            if (dataBfr.length() != 0) {
-                dataBfr.append('&');
-            }
-            final Object preliminaryValue = entry.getValue();
-            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), ACRAConstants.UTF8));
-            dataBfr.append('=');
-            dataBfr.append(URLEncoder.encode(value.toString(), ACRAConstants.UTF8));
-        }
-
-        return dataBfr.toString();
     }
 
     public static String getFileNameFromUri(Context context, Uri uri) {
@@ -111,20 +84,7 @@ public final class HttpUtils {
             final ContentResolver contentResolver = context.getContentResolver();
             return contentResolver.getType(uri);
         }
-        return guessMimeType(uri);
+        return AcraContentProvider.guessMimeType(uri);
     }
 
-    public static String guessMimeType(Uri uri){
-        String type = null;
-        final String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
-                .toString());
-        if (fileExtension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                    fileExtension.toLowerCase());
-        }
-        if (type == null) {
-            type = "application/octet-stream";
-        }
-        return type;
-    }
 }

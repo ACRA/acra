@@ -24,6 +24,7 @@ import org.acra.annotation.Instantiatable;
 import org.acra.annotation.NoPropagation;
 import org.acra.annotation.NonEmpty;
 import org.acra.annotation.PreBuild;
+import org.acra.annotation.Transform;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -50,7 +51,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Stream.of(AnyNonDefault.class, Configuration.class, Instantiatable.class, NonEmpty.class, NoPropagation.class, PreBuild.class)
+        return Stream.of(AnyNonDefault.class, Configuration.class, Instantiatable.class, NonEmpty.class, NoPropagation.class, PreBuild.class, Transform.class)
                 .map(Class::getName).collect(Collectors.toSet());
     }
 
@@ -60,10 +61,8 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
             final ArrayList<? extends Element> annotatedElements = new ArrayList<>(roundEnv.getElementsAnnotatedWith(Configuration.class));
             if (!annotatedElements.isEmpty()) {
                 for (final Element e : annotatedElements) {
-                    Configuration configuration = e.getAnnotation(Configuration.class);
-                    ModelUtils utils = new ModelUtils(processingEnv, configuration);
                     if (e.getKind() == ElementKind.ANNOTATION_TYPE) {
-                        new ClassCreator((TypeElement) e, configuration, utils).createClasses();
+                        new ClassCreator((TypeElement) e, e.getAnnotation(Configuration.class), new ModelUtils(processingEnv)).createClasses();
                     } else {
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s",
                                 Configuration.class.getName(), ElementKind.ANNOTATION_TYPE.name()), e);

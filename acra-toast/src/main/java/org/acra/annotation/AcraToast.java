@@ -16,18 +16,7 @@
 
 package org.acra.annotation;
 
-import android.app.Application;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-
-import org.acra.ReportingInteractionMode;
-import org.acra.collections.ImmutableList;
-import org.acra.collections.ImmutableMap;
-import org.acra.collections.ImmutableSet;
-import org.acra.config.ACRAConfigurationException;
-import org.acra.config.ConfigUtils;
-import org.acra.config.ConfigurationBuilder;
-import org.acra.config.ConfigurationBuilderFactory;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -45,24 +34,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Inherited
 @Configuration(configName = "ToastConfiguration",
-        packageName = "org.acra.config",
-        applicationClass = Application.class,
-        nonNull = NonNull.class,
-        configuration = org.acra.config.Configuration.class,
-        configurationBuilder = ConfigurationBuilder.class,
-        configurationBuilderFactory = ConfigurationBuilderFactory.class,
-        configurationException = ACRAConfigurationException.class,
-        configUtils = ConfigUtils.class,
-        mapWrapper = ImmutableMap.class,
-        listWrapper = ImmutableList.class,
-        setWrapper = ImmutableSet.class)
+        packageName = "org.acra.config")
 public @interface AcraToast {
 
     /**
      * Resource id for the Toast text triggered when the application crashes if
-     * the {@link ReportingInteractionMode#TOAST} mode is used. Can also be used
-     * in {@link ReportingInteractionMode#NOTIFICATION} and
-     * {@link ReportingInteractionMode#DIALOG} modes to display a Toast message
+     * the ReportingInteractionMode#TOAST mode is used. Can also be used
+     * in ReportingInteractionMode#NOTIFICATION and
+     * ReportingInteractionMode#DIALOG modes to display a Toast message
      * while the report is being created, before the dialog/notification
      * appears. This allows the user to know what is happening just before the
      * application is terminated.

@@ -20,6 +20,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -28,6 +29,11 @@ import org.acra.annotation.Configuration;
 import org.acra.annotation.Instantiatable;
 import org.acra.annotation.NoPropagation;
 import org.acra.annotation.NonEmpty;
+import org.acra.collections.ImmutableList;
+import org.acra.collections.ImmutableMap;
+import org.acra.collections.ImmutableSet;
+import org.acra.config.ConfigurationBuilder;
+import org.acra.config.ConfigurationBuilderFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -45,12 +51,14 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -63,45 +71,31 @@ import javax.tools.Diagnostic;
  */
 
 class ModelUtils {
-    final String configurationPackage;
     static final String PREFIX_SETTER = "set";
     static final String PARAM_0 = "arg0";
     static final String VAR_0 = "var0";
-    final Type application;
-    final ClassName nonNull;
+    private static final ClassName IMMUTABLE_MAP = ClassName.get(ImmutableMap.class);
+    private static final ClassName IMMUTABLE_SET = ClassName.get(ImmutableSet.class);
+    private static final ClassName IMMUTABLE_LIST = ClassName.get(ImmutableList.class);
+    private static final ClassName ANNOTATION_NO_PROPAGATION = ClassName.get(NoPropagation.class);
+    private static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance();
     final Type configurationBuilderFactory;
     final Type configurationBuilder;
-    final TypeName configuration;
-    final TypeName acraConfigurationException;
-    private static final ClassName ANNOTATION_NO_PROPAGATION = ClassName.get(NoPropagation.class);
 
-    final Types typeUtils;
-    final Elements elementUtils;
+    private final Types typeUtils;
+    private final Elements elementUtils;
     private final TypeMirror map;
     private final TypeMirror set;
-    private final TypeElement immutableMap;
-    private final TypeElement immutableSet;
-    private final TypeElement immutableList;
     private final ProcessingEnvironment processingEnv;
-    private final DateFormat dateFormat;
 
-    ModelUtils(ProcessingEnvironment processingEnv, Configuration settings) {
+    ModelUtils(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
         typeUtils = processingEnv.getTypeUtils();
         elementUtils = processingEnv.getElementUtils();
         map = elementUtils.getTypeElement(Map.class.getName()).asType();
         set = elementUtils.getTypeElement(Set.class.getName()).asType();
-        immutableMap = (TypeElement) typeUtils.asElement(getTypeMirror(settings::mapWrapper));
-        immutableSet = (TypeElement) typeUtils.asElement(getTypeMirror(settings::setWrapper));
-        immutableList = (TypeElement) typeUtils.asElement(getTypeMirror(settings::listWrapper));
-        dateFormat = DateFormat.getDateTimeInstance();
-        application = getType(getTypeMirror(settings::applicationClass));
-        nonNull = (ClassName) TypeName.get(getTypeMirror(settings::nonNull));
-        configurationBuilderFactory = getType(getTypeMirror(settings::configurationBuilderFactory));
-        configurationBuilder = getType(getTypeMirror(settings::configurationBuilder));
-        configuration = TypeName.get(getTypeMirror(settings::configuration));
-        acraConfigurationException = TypeName.get(getTypeMirror(settings::configurationException));
-        configurationPackage = settings.packageName();
+        configurationBuilderFactory = getType(ConfigurationBuilderFactory.class);
+        configurationBuilder = getType(ConfigurationBuilder.class);
     }
 
     TypeMirror getTypeMirror(Supplier<Class> supplier) {
@@ -118,15 +112,15 @@ class ModelUtils {
      * @param type the type
      * @return the immutable counterpart (might be type, if type is already immutable or no immutable type was found)
      */
-    TypeMirror getImmutableType(TypeMirror type) {
+    TypeName getImmutableType(TypeMirror type) {
         if (typeUtils.isAssignable(typeUtils.erasure(type), map)) {
-            return getWithParams(immutableMap, type);
+            return getWithParams(IMMUTABLE_MAP, type);
         } else if (typeUtils.isAssignable(typeUtils.erasure(type), set)) {
-            return getWithParams(immutableSet, type);
+            return getWithParams(IMMUTABLE_SET, type);
         } else if (type.getKind() == TypeKind.ARRAY) {
-            return typeUtils.getDeclaredType(immutableList, ((ArrayType) type).getComponentType());
+            return ParameterizedTypeName.get(IMMUTABLE_LIST, TypeName.get(((ArrayType) type).getComponentType()));
         }
-        return type;
+        return TypeName.get(type);
     }
 
     /**
@@ -136,9 +130,8 @@ class ModelUtils {
      * @param parameterType parameterType
      * @return the parametrized type
      */
-    private TypeMirror getWithParams(TypeElement baseType, TypeMirror parameterType) {
-        final List<? extends TypeMirror> parameters = ((DeclaredType) parameterType).getTypeArguments();
-        return typeUtils.getDeclaredType(baseType, parameters.toArray(new TypeMirror[parameters.size()]));
+    private TypeName getWithParams(ClassName baseType, TypeMirror parameterType) {
+        return ParameterizedTypeName.get(baseType, ((DeclaredType) parameterType).getTypeArguments().stream().map(TypeName::get).toArray(TypeName[]::new));
     }
 
     /**
@@ -147,8 +140,8 @@ class ModelUtils {
      * @param typeSpec the class
      * @throws IOException if writing fails
      */
-    void write(TypeSpec typeSpec) throws IOException {
-        JavaFile.builder(configurationPackage, typeSpec)
+    void write(String packageName, TypeSpec typeSpec) throws IOException {
+        JavaFile.builder(packageName, typeSpec)
                 .skipJavaLangImports(true)
                 .indent("    ")
                 .addFileComment("Copyright (c) " + Calendar.getInstance().get(Calendar.YEAR) + "\n\n" +
@@ -211,16 +204,8 @@ class ModelUtils {
         return !method.getName().startsWith(PREFIX_SETTER) && !method.getAnnotations().stream().anyMatch(a -> a.type.equals(ANNOTATION_NO_PROPAGATION));
     }
 
-    /**
-     * @param method a method
-     * @return false if the method is deprecated
-     */
-    boolean isNotDeprecated(ExecutableElement method) {
-        return method.getAnnotation(Deprecated.class) == null;
-    }
-
     void addClassJavadoc(TypeSpec.Builder builder, TypeElement base) {
-        builder.addJavadoc("Class generated based on {@link $L} ($L)\n", base.getQualifiedName(), dateFormat.format(Calendar.getInstance().getTime()));
+        builder.addJavadoc("Class generated based on {@link $L} ($L)\n", base.getQualifiedName(), DATE_FORMAT.format(Calendar.getInstance().getTime()));
     }
 
     MethodSpec.Builder addMethodJavadoc(MethodSpec.Builder builder, ExecutableElement base) {
@@ -231,7 +216,7 @@ class ModelUtils {
     }
 
     ExecutableElement getOnlyMethod(TypeElement typeElement) {
-        List<ExecutableElement> elements = typeElement.getEnclosedElements().stream().filter(element -> element.getKind() == ElementKind.METHOD)
+        final List<ExecutableElement> elements = typeElement.getEnclosedElements().stream().filter(element -> element.getKind() == ElementKind.METHOD)
                 .map(ExecutableElement.class::cast).collect(Collectors.toList());
         if (elements.size() == 1) {
             return elements.get(0);
@@ -242,7 +227,7 @@ class ModelUtils {
     }
 
     void error(Element element, String annotationField, String message) {
-        AnnotationMirror mirror = element.getAnnotationMirrors().stream()
+        final AnnotationMirror mirror = element.getAnnotationMirrors().stream()
                 .filter(m -> ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName().toString().equals(Configuration.class.getName()))
                 .findAny().orElseThrow(IllegalArgumentException::new);
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element, mirror, mirror.getElementValues().entrySet().stream()
@@ -254,15 +239,23 @@ class ModelUtils {
         return new Type((TypeElement) typeUtils.asElement(mirror));
     }
 
-    boolean isConstructor(Element element) {
-        return element.getKind() == ElementKind.CONSTRUCTOR;
+    private Type getType(Class c) {
+        return new Type(elementUtils.getTypeElement(c.getName()));
     }
 
     List<ExecutableElement> getConstructors(Element element) {
-        return element.getEnclosedElements().stream().filter(e -> e.getKind() == ElementKind.CONSTRUCTOR).map(ExecutableElement.class::cast).collect(Collectors.toList());
+        return ElementFilter.constructorsIn(element.getEnclosedElements());
     }
 
     List<ExecutableElement> getMethods(Element element) {
-        return element.getEnclosedElements().stream().filter(e -> e.getKind() == ElementKind.METHOD).map(ExecutableElement.class::cast).collect(Collectors.toList());
+        return ElementFilter.methodsIn(element.getEnclosedElements());
+    }
+
+    boolean hasClassParameter(ExecutableElement method) {
+        return method.getParameters().stream().map(VariableElement::asType).map(typeUtils::asElement).map(Element::toString).anyMatch(Class.class.getName()::equals);
+    }
+
+    public TypeMirror erasure(TypeMirror t) {
+        return typeUtils.erasure(t);
     }
 }

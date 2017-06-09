@@ -16,20 +16,12 @@
 
 package org.acra.annotation;
 
-import android.app.Application;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 
 import org.acra.ACRAConstants;
-import org.acra.collections.ImmutableList;
-import org.acra.collections.ImmutableMap;
-import org.acra.collections.ImmutableSet;
-import org.acra.config.ACRAConfigurationException;
-import org.acra.config.ConfigUtils;
-import org.acra.config.ConfigurationBuilder;
-import org.acra.config.ConfigurationBuilderFactory;
 import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 
@@ -48,18 +40,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(configName = "DialogConfiguration",
-        packageName = "org.acra.config",
-        applicationClass = Application.class,
-        nonNull = NonNull.class,
-        configuration = org.acra.config.Configuration.class,
-        configurationBuilder = ConfigurationBuilder.class,
-        configurationBuilderFactory = ConfigurationBuilderFactory.class,
-        configurationException = ACRAConfigurationException.class,
-        configUtils = ConfigUtils.class,
-        mapWrapper = ImmutableMap.class,
-        listWrapper = ImmutableList.class,
-        setWrapper = ImmutableSet.class)
+@Configuration(configName = "DialogConfiguration", packageName = "org.acra.config")
 public @interface AcraDialog {
 
     /**

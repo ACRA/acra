@@ -33,15 +33,17 @@ import org.acra.config.Configuration;
 import org.acra.config.HttpSenderConfiguration;
 import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
-import org.acra.http.HttpUtils;
+import org.acra.util.UriUtils;
 import org.acra.http.MultipartHttpRequest;
 import org.acra.model.Element;
 import org.acra.util.InstanceCreator;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,31 @@ import static org.acra.ACRA.LOG_TAG;
  * </pre>
  */
 public class HttpSender implements ReportSender {
+
+    /**
+     * Converts a Map of parameters into a URL encoded Sting.
+     *
+     * @param parameters Map of parameters to convert.
+     * @return URL encoded String representing the parameters.
+     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
+     */
+    @NonNull
+    private static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
+
+        final StringBuilder dataBfr = new StringBuilder();
+        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
+            if (dataBfr.length() != 0) {
+                dataBfr.append('&');
+            }
+            final Object preliminaryValue = entry.getValue();
+            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
+            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), ACRAConstants.UTF8));
+            dataBfr.append('=');
+            dataBfr.append(URLEncoder.encode(value.toString(), ACRAConstants.UTF8));
+        }
+
+        return dataBfr.toString();
+    }
 
     /**
      * Available HTTP methods to send data. Only POST and PUT are currently
@@ -103,7 +130,7 @@ public class HttpSender implements ReportSender {
         FORM("application/x-www-form-urlencoded") {
             @Override
             String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return HttpUtils.getParamsAsFormString(sender.convertToForm(report));
+                return getParamsAsFormString(sender.convertToForm(report));
             }
         },
         /**
@@ -307,7 +334,7 @@ public class HttpSender implements ReportSender {
     protected void putAttachment(@NonNull ACRAConfiguration configuration, @NonNull Context context,
                                  @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                  @NonNull URL url, @NonNull Uri attachment) throws IOException {
-        final URL attachmentUrl = new URL(url.toString() + "-" + HttpUtils.getFileNameFromUri(context, attachment));
+        final URL attachmentUrl = new URL(url.toString() + "-" + UriUtils.getFileNameFromUri(context, attachment));
         new BinaryHttpRequest(configuration, context, Method.PUT, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
     }
 

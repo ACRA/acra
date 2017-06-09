@@ -29,10 +29,10 @@ import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import org.acra.ACRA;
 import org.acra.file.Directory;
-import org.acra.http.HttpUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,6 +49,7 @@ import java.util.Map;
 public class AcraContentProvider extends ContentProvider {
     private static final String[] COLUMNS = {
             OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
+    public static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
     private String authority;
 
     @Override
@@ -103,7 +104,7 @@ public class AcraContentProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return HttpUtils.guessMimeType(uri);
+        return guessMimeType(uri);
     }
 
     @Nullable
@@ -166,5 +167,25 @@ public class AcraContentProvider extends ContentProvider {
                 .authority(getAuthority(context))
                 .path(directory.name().toLowerCase() + (relativePath.charAt(0) == File.separatorChar ? "" : File.separator) + relativePath)
                 .build();
+    }
+
+
+    /**
+     * Tries to guess the mime type from uri extension
+     * @param uri the uri
+     * @return the mime type of the uri, with fallback {@link #MIME_TYPE_OCTET_STREAM}
+     */
+    public static String guessMimeType(Uri uri){
+        String type = null;
+        final String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                .toString());
+        if (fileExtension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    fileExtension.toLowerCase());
+        }
+        if (type == null) {
+            type = MIME_TYPE_OCTET_STREAM;
+        }
+        return type;
     }
 }

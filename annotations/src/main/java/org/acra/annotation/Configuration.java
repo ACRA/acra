@@ -35,14 +35,4 @@ public @interface Configuration {
     Class builderSuperClass() default Object.class;
     boolean createBuilderFactory() default true;
     String packageName();
-    Class applicationClass();
-    Class nonNull();
-    Class configuration();
-    Class configurationBuilder();
-    Class configurationBuilderFactory();
-    Class configurationException();
-    Class configUtils();
-    Class mapWrapper();
-    Class listWrapper();
-    Class setWrapper();
 }

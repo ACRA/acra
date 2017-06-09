@@ -23,8 +23,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
@@ -59,25 +62,6 @@ public class ReportExecutor {
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.reportPrimer = reportPrimer;
         this.processFinisher = processFinisher;
-    }
-
-    /**
-     * Helps manage
-     */
-    private static class TimeHelper {
-
-        private Long initialTimeMillis;
-
-        public void setInitialTimeMillis(long initialTimeMillis) {
-            this.initialTimeMillis = initialTimeMillis;
-        }
-
-        /**
-         * @return 0 if the initial time has yet to be set otherwise returns the difference between now and the initial time.
-         */
-        public long getElapsedTime() {
-            return (initialTimeMillis == null) ? 0 : System.currentTimeMillis() - initialTimeMillis;
-        }
     }
 
     public void handReportToDefaultExceptionHandler(@Nullable Thread t, @NonNull Throwable e) {
@@ -129,33 +113,32 @@ public class ReportExecutor {
             startSendingReports(reportInteractions.size() > 1);
             endApplicationIfNecessary(reportBuilder);
         } else {
-            final CountDownLatch latch = new CountDownLatch(reportInteractions.size());
-            final AtomicBoolean sendReports = new AtomicBoolean(true);
+            final ExecutorService executorService = Executors.newCachedThreadPool();
+            final List<Future<Boolean>> futures = new ArrayList<>();
             for (final ReportInteraction reportInteraction : reportInteractions) {
-                new Thread(new Runnable() {
+                futures.add(executorService.submit(new Callable<Boolean>() {
                     @Override
-                    public void run() {
-                        if (!reportInteraction.performInteraction(context, config, reportBuilder, reportFile)) {
-                            sendReports.set(false);
-                        }
-                        latch.countDown();
+                    public Boolean call() {
+                        return !reportInteraction.performInteraction(context, config, reportBuilder, reportFile);
                     }
-                }).start();
+                }));
             }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+            boolean sendReports = true;
+            for (Future<Boolean> future : futures){
+                while (!future.isDone()) {
                     try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        sendReports &= future.get();
+                    } catch (InterruptedException ignored) {
+                    } catch (ExecutionException e) {
+                        //ReportInteraction crashed, so ignore it
+                        break;
                     }
-                    if (sendReports.get()) {
-                        startSendingReports(false);
-                    }
-                    endApplicationIfNecessary(reportBuilder);
                 }
-            }).start();
+            }
+            if (sendReports) {
+                startSendingReports(false);
+            }
+            endApplicationIfNecessary(reportBuilder);
         }
     }
 

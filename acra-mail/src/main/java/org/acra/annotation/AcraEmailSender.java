@@ -43,17 +43,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(configName = "MailSenderConfiguration", packageName = "org.acra.config",
-        applicationClass = Application.class,
-        nonNull = NonNull.class,
-        configuration = org.acra.config.Configuration.class,
-        configurationBuilder = ConfigurationBuilder.class,
-        configurationBuilderFactory = ConfigurationBuilderFactory.class,
-        configurationException = ACRAConfigurationException.class,
-        configUtils = ConfigUtils.class,
-        mapWrapper = ImmutableMap.class,
-        listWrapper = ImmutableList.class,
-        setWrapper = ImmutableSet.class)
+@Configuration(configName = "MailSenderConfiguration", packageName = "org.acra.config")
 public @interface AcraEmailSender {
 
     /**
