@@ -277,8 +277,8 @@ class ModelUtils {
         final MethodSpec.Builder builder =  MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addModifiers(method.getModifiers())
                 .returns(returnType)
-                .addParameters(method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toSet()))
-                .addTypeVariables(method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toSet()))
+                .addParameters(method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toList()))
+                .addTypeVariables(method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toList()))
                 .addStatement("$L$L.$L(" + Collections.nCopies(method.getParameters().size(), "$L").stream().collect(Collectors.joining(", ")) + ")",
                         concat(Stream.of(returnType.equals(TypeName.VOID) ? "" : "return ", to, method.getSimpleName().toString()),
                                 method.getParameters().stream().map(VariableElement::getSimpleName).map(Name::toString)).toArray());

@@ -81,7 +81,14 @@ public class ClassCreator {
         final Type superClass = utils.getType(utils.getTypeMirror(configuration::builderSuperClass));
         final MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class)), PARAM_0).addAnnotation(NonNull.class).build());
+                .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class)), PARAM_0).addAnnotation(NonNull.class).build())
+                .addJavadoc("@param $L class annotated with {@link $T}\n", PARAM_0, baseAnnotation.getName());
+        classBuilder.addMethod(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ParameterSpec.builder(TypeName.OBJECT, PARAM_0).addAnnotation(NonNull.class).build())
+                .addStatement("this($L.getClass())", PARAM_0)
+                .addJavadoc("@param $L object annotated with {@link $T}\n", PARAM_0, baseAnnotation.getName())
+                .build());
         final MethodSpec.Builder build = MethodSpec.overriding(utils.getOnlyMethod(utils.configurationBuilder.getElement()))
                 .returns(config);
         final Set<MethodDefinition> methods = new HashSet<>();
@@ -103,11 +110,6 @@ public class ClassCreator {
                 .beginControlFlow("if ($L != null)", VAR_0);
         methods.addAll(handleMethods(utils.getMethods(baseAnnotation.getElement()), transformerDefinitions, classBuilder, constructor, build));
         classBuilder.addMethod(constructor.endControlFlow().build());
-        classBuilder.addMethod(MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterSpec.builder(TypeName.OBJECT, PARAM_0).addAnnotation(NonNull.class).build())
-                .addStatement("this($L.getClass())", PARAM_0)
-                .build());
         classBuilder.addMethod(build.addStatement("return new $T(this)", config).build());
         utils.write(classBuilder.build());
         return methods;
