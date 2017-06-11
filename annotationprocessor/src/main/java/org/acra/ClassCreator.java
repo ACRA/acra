@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -80,14 +79,6 @@ public class ClassCreator {
                 .addSuperinterface(utils.configurationBuilder.getName());
         utils.addClassJavadoc(classBuilder, baseAnnotation.getElement());
         final Type superClass = utils.getType(utils.getTypeMirror(configuration::builderSuperClass));
-        final List<? extends TypeParameterElement> typeParameters = superClass.getElement().getTypeParameters();
-        if (typeParameters.size() == 0) {
-            classBuilder.superclass(superClass.getName());
-        } else if (typeParameters.size() == 1) {
-            classBuilder.superclass(ParameterizedTypeName.get(((ParameterizedTypeName) superClass.getName()).rawType, builder));
-        } else {
-            utils.error(baseAnnotation.getElement(), "builderSuperClass", "builderSuperClass may not have more than one type parameter");
-        }
         final MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class)), PARAM_0).addAnnotation(NonNull.class).build());
@@ -96,16 +87,17 @@ public class ClassCreator {
         final Set<MethodDefinition> methods = new HashSet<>();
         final List<TransformerDefinition> transformerDefinitions = new ArrayList<>();
         if (!superClass.getName().equals(TypeName.OBJECT)) {
+            classBuilder.addField(FieldSpec.builder(superClass.getName(), ModelUtils.FIELD_0, Modifier.PRIVATE, Modifier.FINAL).build());
             final List<ExecutableElement> constructors = utils.getConstructors(superClass.getElement());
             if (constructors.stream().anyMatch(c -> c.getParameters().size() == 0)) {
-                constructor.addStatement("super()");
+                constructor.addStatement("$L = new $T()", FIELD_0, superClass.getName());
             } else if (constructors.stream().anyMatch(c -> c.getParameters().size() == 1 && utils.hasClassParameter(c))) {
-                constructor.addStatement("super($L)", PARAM_0);
+                constructor.addStatement("$L = new $T($L)", FIELD_0, superClass.getName(), PARAM_0);
             } else {
                 utils.error(baseAnnotation.getElement(), "builderSuperClass", "Classes used as base builder must have a constructor which takes no arguments, " +
                         "or exactly one argument of type Class");
             }
-            methods.addAll(handleSuperClassMethods(superClass, build, transformerDefinitions));
+            methods.addAll(handleSuperClassMethods(superClass, classBuilder, build, transformerDefinitions));
         }
         constructor.addStatement("final $1T $2L = $3L.getAnnotation($1T.class)", baseAnnotation.getName(), VAR_0, PARAM_0)
                 .beginControlFlow("if ($L != null)", VAR_0);
@@ -121,15 +113,26 @@ public class ClassCreator {
         return methods;
     }
 
-    private List<MethodDefinition> handleSuperClassMethods(Type type, MethodSpec.Builder build, List<TransformerDefinition> definitionsOut) {
+    private List<MethodDefinition> handleSuperClassMethods(Type type, TypeSpec.Builder classBuilder, MethodSpec.Builder build, List<TransformerDefinition> definitionsOut) {
         final List<MethodDefinition> result = new ArrayList<>();
         for (ExecutableElement method : utils.getMethods(type.getElement())) {
+            final MethodDefinition methodDefinition = MethodDefinition.from(method);
             if (method.getAnnotation(PreBuild.class) != null) {
-                build.addStatement("$L()", method.getSimpleName().toString());
+                build.addStatement("$L.$L()", FIELD_0, method.getSimpleName().toString());
             } else if (method.getAnnotation(Transform.class) != null) {
                 definitionsOut.add(TransformerDefinition.from(method));
-            } else if (utils.shouldRetain(MethodDefinition.from(method))) {
-                result.add(MethodDefinition.from(method));
+            } else if (utils.isSetter(methodDefinition)) {
+                classBuilder.addMethod(utils.delegate(method, FIELD_0)
+                        .returns(builder)
+                        .addStatement("return this")
+                        .addAnnotation(NonNull.class)
+                        .addJavadoc("@return this instance\n")
+                        .build());
+            } else {
+                classBuilder.addMethod(utils.delegate(method, FIELD_0).build());
+                if (utils.propagate(methodDefinition)) {
+                    result.add(methodDefinition);
+                }
             }
         }
         return result;
@@ -206,8 +209,9 @@ public class ClassCreator {
             result += "$" + params.size() + "L";
         }
         if (transformer != null) {
+            params.add(FIELD_0);
             params.add(transformer.getName());
-            result = "$" + params.size() + "L(" + result + ")";
+            result = "$" + (params.size() - 1) + "L.$" + params.size() + "L(" + result + ")";
         }
         result = "return " + result;
         return CodeBlock.builder().addStatement(result, params.toArray()).build();

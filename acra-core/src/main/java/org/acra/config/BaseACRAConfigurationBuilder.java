@@ -32,19 +32,21 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.DEFAULT_REPORT_FIELDS;
 
-public abstract class BaseACRAConfigurationBuilder<T extends BaseACRAConfigurationBuilder> {
+public final class BaseACRAConfigurationBuilder {
 
     private final Map<ReportField, Boolean> reportContentChanges;
     private final List<ConfigurationBuilder> configurationBuilders;
     private List<Configuration> configurations;
 
-    BaseACRAConfigurationBuilder(@NonNull Class app) {
+    BaseACRAConfigurationBuilder(@NonNull Class<?> app) {
         reportContentChanges = new EnumMap<>(ReportField.class);
         configurationBuilders = new ArrayList<>();
         for (ConfigurationBuilderFactory factory : ServiceLoader.load(ConfigurationBuilderFactory.class)) {
+            if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Discovered and loaded plugin of type " + factory.getClass().getSimpleName().replace("BuilderFactory", ""));
             configurationBuilders.add(factory.create(app));
         }
     }
@@ -84,12 +86,9 @@ public abstract class BaseACRAConfigurationBuilder<T extends BaseACRAConfigurati
      *
      * @param field  the field to set
      * @param enable if this field should be reported
-     * @return this instance
      */
-    @NonNull
-    public T setReportField(@NonNull ReportField field, boolean enable) {
+    public void setReportField(@NonNull ReportField field, boolean enable) {
         this.reportContentChanges.put(field, enable);
-        return (T) this;
     }
 
     @NonNull

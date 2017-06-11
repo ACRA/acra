@@ -25,5 +25,5 @@ import android.support.annotation.NonNull;
 
 public interface ConfigurationBuilderFactory {
     @NonNull
-    ConfigurationBuilder create(@NonNull Class annotatedObject);
+    ConfigurationBuilder create(@NonNull Class<?> annotatedObject);
 }

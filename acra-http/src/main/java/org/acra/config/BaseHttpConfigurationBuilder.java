@@ -29,22 +29,19 @@ public class BaseHttpConfigurationBuilder {
 
     private final Map<String, String> httpHeaders;
 
-    public BaseHttpConfigurationBuilder() {
+    BaseHttpConfigurationBuilder() {
         httpHeaders = new HashMap<>();
     }
 
     /**
-     * Set custom HTTP headers to be sent by the provided
+     * Set custom HTTP headers to be sent by the provided {@link org.acra.sender.HttpSender}
      * This should be used also by third party senders.
      *
      * @param headers A map associating HTTP header names to their values.
-     * @return this instance
      */
-    @NonNull
-    public BaseHttpConfigurationBuilder setHttpHeaders(@NonNull Map<String, String> headers) {
+    public void setHttpHeaders(@NonNull Map<String, String> headers) {
         this.httpHeaders.clear();
         this.httpHeaders.putAll(headers);
-        return this;
     }
 
     @NonNull

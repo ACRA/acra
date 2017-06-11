@@ -20,9 +20,11 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import org.acra.annotation.AnyNonDefault;
 import org.acra.annotation.Configuration;
@@ -39,17 +41,20 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -63,6 +68,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
+import static java.util.stream.Stream.concat;
+
 /**
  * Collection of constants and helper methods to generate ACRA classes
  *
@@ -74,6 +81,7 @@ class ModelUtils {
     static final String PREFIX_SETTER = "set";
     static final String PARAM_0 = "arg0";
     static final String VAR_0 = "var0";
+    static final String FIELD_0 = "field0";
     private static final ClassName IMMUTABLE_MAP = ClassName.get(ImmutableMap.class);
     private static final ClassName IMMUTABLE_SET = ClassName.get(ImmutableSet.class);
     private static final ClassName IMMUTABLE_LIST = ClassName.get(ImmutableList.class);
@@ -200,8 +208,12 @@ class ModelUtils {
      * @param method the method to check
      * @return if the method is relevant
      */
-    boolean shouldRetain(MethodDefinition method) {
-        return !method.getName().startsWith(PREFIX_SETTER) && !method.getAnnotations().stream().anyMatch(a -> a.type.equals(ANNOTATION_NO_PROPAGATION));
+    boolean propagate(MethodDefinition method) {
+        return !method.getAnnotations().stream().anyMatch(a -> a.type.equals(ANNOTATION_NO_PROPAGATION));
+    }
+
+    boolean isSetter(MethodDefinition method) {
+        return method.getName().startsWith(PREFIX_SETTER);
     }
 
     void addClassJavadoc(TypeSpec.Builder builder, TypeElement base) {
@@ -255,7 +267,24 @@ class ModelUtils {
         return method.getParameters().stream().map(VariableElement::asType).map(typeUtils::asElement).map(Element::toString).anyMatch(Class.class.getName()::equals);
     }
 
-    public TypeMirror erasure(TypeMirror t) {
+    TypeMirror erasure(TypeMirror t) {
         return typeUtils.erasure(t);
+    }
+
+    MethodSpec.Builder delegate(ExecutableElement method, String to) {
+        final TypeName returnType = TypeName.get(method.getReturnType());
+        final MethodSpec.Builder builder =  MethodSpec.methodBuilder(method.getSimpleName().toString())
+                .addModifiers(method.getModifiers())
+                .returns(returnType)
+                .addParameters(method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toSet()))
+                .addTypeVariables(method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toSet()))
+                .addStatement("$L$L.$L(" + Collections.nCopies(method.getParameters().size(), "$L").stream().collect(Collectors.joining(", ")) + ")",
+                        concat(Stream.of(returnType.equals(TypeName.VOID) ? "" : "return ", to, method.getSimpleName().toString()),
+                                method.getParameters().stream().map(VariableElement::getSimpleName).map(Name::toString)).toArray());
+        final String javadoc = elementUtils.getDocComment(method);
+        if(javadoc != null) {
+            builder.addJavadoc(javadoc.replaceAll("(\n|^) ", "$1"));
+        }
+        return builder;
     }
 }
