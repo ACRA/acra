@@ -36,13 +36,13 @@ import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.DEFAULT_REPORT_FIELDS;
 
-public final class BaseACRAConfigurationBuilder {
+public final class BaseCoreConfigurationBuilder {
 
     private final Map<ReportField, Boolean> reportContentChanges;
     private final List<ConfigurationBuilder> configurationBuilders;
     private List<Configuration> configurations;
 
-    BaseACRAConfigurationBuilder(@NonNull Class<?> app) {
+    BaseCoreConfigurationBuilder(@NonNull Class<?> app) {
         reportContentChanges = new EnumMap<>(ReportField.class);
         configurationBuilders = new ArrayList<>();
         for (ConfigurationBuilderFactory factory : ServiceLoader.load(ConfigurationBuilderFactory.class)) {

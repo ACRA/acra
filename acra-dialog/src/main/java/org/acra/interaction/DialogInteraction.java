@@ -26,7 +26,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
 import org.acra.config.DialogConfiguration;
 import org.acra.prefs.SharedPreferencesFactory;
@@ -42,7 +42,7 @@ import static org.acra.ACRA.LOG_TAG;
 @AutoService(ReportInteraction.class)
 public class DialogInteraction implements ReportInteraction {
     @Override
-    public boolean performInteraction(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
+    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
         final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
         if(prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)){
             return true;
@@ -64,7 +64,7 @@ public class DialogInteraction implements ReportInteraction {
      * @param reportBuilder     ReportBuilder containing the details of the crash.
      */
     @NonNull
-    private Intent createCrashReportDialogIntent(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
+    private Intent createCrashReportDialogIntent(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).reportDialogClass());
         dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);

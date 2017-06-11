@@ -31,8 +31,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Configuration {
-    String configName();
     Class builderSuperClass() default Object.class;
     boolean createBuilderFactory() default true;
-    String packageName();
 }

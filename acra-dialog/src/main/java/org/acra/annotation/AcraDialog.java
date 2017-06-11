@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(configName = "DialogConfiguration", packageName = "org.acra.config")
+@Configuration
 public @interface AcraDialog {
 
     /**

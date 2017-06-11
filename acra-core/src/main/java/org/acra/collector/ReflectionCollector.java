@@ -25,7 +25,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.ComplexElement;
 import org.acra.model.Element;
 import org.json.JSONArray;
@@ -49,9 +49,9 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class ReflectionCollector extends Collector {
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
-    ReflectionCollector(Context context, ACRAConfiguration config) {
+    ReflectionCollector(Context context, CoreConfiguration config) {
         super(ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.ENVIRONMENT);
         this.context = context;
         this.config = config;

@@ -24,7 +24,7 @@ import org.acra.attachment.AttachmentUriProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportPrimer;
-import org.acra.config.BaseACRAConfigurationBuilder;
+import org.acra.config.BaseCoreConfigurationBuilder;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.file.Directory;
@@ -46,10 +46,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(configName = "ACRAConfiguration",
-        builderSuperClass = BaseACRAConfigurationBuilder.class,
-        createBuilderFactory = false,
-        packageName = "org.acra.config")
+@Configuration(builderSuperClass = BaseCoreConfigurationBuilder.class, createBuilderFactory = false)
 public @interface AcraCore {
 
     /**

@@ -11,7 +11,7 @@ import com.google.auto.service.AutoService;
 
 import org.acra.ACRAConstants;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
 import org.acra.config.ToastConfiguration;
 import org.acra.util.ToastSender;
@@ -25,7 +25,7 @@ import java.io.File;
 @AutoService(ReportInteraction.class)
 public class ToastInteraction implements ReportInteraction {
     @Override
-    public boolean performInteraction(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
+    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
         Looper.prepare();
         ToastSender.sendToast(context, ConfigUtils.getSenderConfiguration(config, ToastConfiguration.class).resToastText(), Toast.LENGTH_LONG);
         final Looper looper = Looper.myLooper();

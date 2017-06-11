@@ -16,17 +16,9 @@
 
 package org.acra.annotation;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
 
 import org.acra.ReportField;
-import org.acra.collections.ImmutableList;
-import org.acra.collections.ImmutableMap;
-import org.acra.collections.ImmutableSet;
-import org.acra.config.ACRAConfigurationException;
-import org.acra.config.ConfigUtils;
-import org.acra.config.ConfigurationBuilder;
-import org.acra.config.ConfigurationBuilderFactory;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -43,8 +35,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(configName = "MailSenderConfiguration", packageName = "org.acra.config")
-public @interface AcraEmailSender {
+@Configuration
+public @interface AcraMailSender {
 
     /**
      * <p>

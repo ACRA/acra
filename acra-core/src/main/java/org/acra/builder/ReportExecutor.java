@@ -11,7 +11,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteraction;
@@ -41,7 +41,7 @@ import static org.acra.ReportField.USER_CRASH_DATE;
 public class ReportExecutor {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;
 
     // A reference to the system's previous default UncaughtExceptionHandler
@@ -53,7 +53,7 @@ public class ReportExecutor {
 
     private boolean enabled = false;
 
-    public ReportExecutor(@NonNull Context context, @NonNull ACRAConfiguration config,
+    public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config,
                           @NonNull CrashReportDataFactory crashReportDataFactory, @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler,
                           @NonNull ReportPrimer reportPrimer, @NonNull ProcessFinisher processFinisher) {
         this.context = context;

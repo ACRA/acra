@@ -24,8 +24,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.annotation.AcraCore;
-import org.acra.config.ACRAConfiguration;
-import org.acra.config.ACRAConfigurationBuilder;
+import org.acra.config.CoreConfiguration;
+import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.legacy.LegacyFileHandler;
 import org.acra.log.ACRALog;
@@ -108,7 +108,7 @@ public final class ACRA {
 
     private static Application mApplication;
     @Nullable
-    private static ACRAConfiguration configProxy;
+    private static CoreConfiguration configProxy;
 
     // Accessible via ACRA#getErrorReporter().
     @Nullable
@@ -137,7 +137,7 @@ public final class ACRA {
             log.e(LOG_TAG, "ACRA#init(Application) called but no ReportsCrashes annotation on Application " + app.getPackageName());
             return;
         }
-        init(app, new ACRAConfigurationBuilder(app));
+        init(app, new CoreConfigurationBuilder(app));
     }
 
     /**
@@ -153,7 +153,7 @@ public final class ACRA {
      * @param app     Your Application class.
      * @param builder ConfigurationBuilder to manually set up ACRA configuration.
      */
-    public static void init(@NonNull Application app, @NonNull ACRAConfigurationBuilder builder) {
+    public static void init(@NonNull Application app, @NonNull CoreConfigurationBuilder builder) {
         init(app, builder, true);
     }
 
@@ -168,7 +168,7 @@ public final class ACRA {
      * @param builder                        ConfigurationBuilder to manually set up ACRA configuration.
      * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      */
-    public static void init(@NonNull Application app, @NonNull ACRAConfigurationBuilder builder, boolean checkReportsOnApplicationStart) {
+    public static void init(@NonNull Application app, @NonNull CoreConfigurationBuilder builder, boolean checkReportsOnApplicationStart) {
         try {
             init(app, builder.build(), checkReportsOnApplicationStart);
         } catch (ACRAConfigurationException e) {
@@ -186,10 +186,10 @@ public final class ACRA {
      * </p>
      *
      * @param app    Your Application class.
-     * @param config ACRAConfiguration to manually set up ACRA configuration.
+     * @param config CoreConfiguration to manually set up ACRA configuration.
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(@NonNull Application app, @NonNull ACRAConfiguration config) {
+    public static void init(@NonNull Application app, @NonNull CoreConfiguration config) {
         init(app, config, true);
     }
 
@@ -201,11 +201,11 @@ public final class ACRA {
      * </p>
      *
      * @param app                            Your Application class.
-     * @param config                         ACRAConfiguration to manually set up ACRA configuration.
+     * @param config                         CoreConfiguration to manually set up ACRA configuration.
      * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      * @throws IllegalStateException if it is called more than once.
      */
-    public static void init(@NonNull Application app, @NonNull ACRAConfiguration config, boolean checkReportsOnApplicationStart) {
+    public static void init(@NonNull Application app, @NonNull CoreConfiguration config, boolean checkReportsOnApplicationStart) {
 
         final boolean senderServiceProcess = isACRASenderServiceProcess();
         if (senderServiceProcess) {
@@ -227,7 +227,7 @@ public final class ACRA {
 
         //noinspection ConstantConditions
         if (config == null) {
-            log.e(LOG_TAG, "ACRA#init called but no ACRAConfiguration provided");
+            log.e(LOG_TAG, "ACRA#init called but no CoreConfiguration provided");
             return;
         }
         configProxy = config;
@@ -357,10 +357,10 @@ public final class ACRA {
      * Provides the current ACRA configuration.
      *
      * @return Current ACRA {@link AcraCore} configuration instance.
-     * @deprecated since 4.8.0 {@link ACRAConfiguration} should be passed into classes instead of retrieved statically.
+     * @deprecated since 4.8.0 {@link CoreConfiguration} should be passed into classes instead of retrieved statically.
      */
     @NonNull
-    public static ACRAConfiguration getConfig() {
+    public static CoreConfiguration getConfig() {
         if (configProxy == null) {
             throw new IllegalStateException("Cannot call ACRA.getConfig() before ACRA.init().");
         }

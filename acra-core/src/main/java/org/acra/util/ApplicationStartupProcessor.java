@@ -6,7 +6,7 @@ import android.content.pm.PackageInfo;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
@@ -22,9 +22,9 @@ import java.io.File;
 public final class ApplicationStartupProcessor {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
-    public ApplicationStartupProcessor(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    public ApplicationStartupProcessor(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
     }

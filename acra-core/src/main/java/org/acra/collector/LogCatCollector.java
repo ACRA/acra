@@ -26,7 +26,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.Element;
 import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
@@ -48,10 +48,10 @@ import static org.acra.ACRA.LOG_TAG;
  */
 final class LogCatCollector extends Collector {
 
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final PackageManagerWrapper pm;
 
-    LogCatCollector(ACRAConfiguration config, PackageManagerWrapper pm) {
+    LogCatCollector(CoreConfiguration config, PackageManagerWrapper pm) {
         super(ReportField.LOGCAT, ReportField.EVENTSLOG, ReportField.RADIOLOG);
         this.config = config;
         this.pm = pm;

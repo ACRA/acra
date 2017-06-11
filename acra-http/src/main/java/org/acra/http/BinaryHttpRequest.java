@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 import org.acra.util.UriUtils;
 
@@ -21,7 +21,7 @@ public class BinaryHttpRequest extends BaseHttpRequest<Uri> {
     @NonNull
     private final Context context;
 
-    public BinaryHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method,
+    public BinaryHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method,
                              @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
         super(config, context, method, login, password, connectionTimeOut, socketTimeOut, headers);
         this.context = context;

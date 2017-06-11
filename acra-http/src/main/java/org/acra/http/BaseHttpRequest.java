@@ -23,7 +23,7 @@ import android.util.Base64;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.BuildConfig;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.util.IOUtils;
@@ -50,7 +50,7 @@ import static org.acra.ACRA.LOG_TAG;
 public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
     @NonNull
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     @NonNull
     private final Context context;
     @NonNull
@@ -61,7 +61,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
     private final int socketTimeOut;
     private final Map<String, String> headers;
 
-    public BaseHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull Method method,
+    public BaseHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull Method method,
                            @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
         this.config = config;
         this.context = context;

@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 /**
  * Responsible for creating a SharedPreferences instance which stores ACRA settings.
@@ -19,9 +19,9 @@ import org.acra.config.ACRAConfiguration;
 public class SharedPreferencesFactory {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
-    public SharedPreferencesFactory(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    public SharedPreferencesFactory(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
     }

@@ -28,7 +28,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.ComplexElement;
 import org.acra.model.Element;
 import org.json.JSONException;
@@ -48,9 +48,9 @@ final class SettingsCollector extends Collector {
     private static final String ERROR = "Error: ";
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
-    SettingsCollector(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    SettingsCollector(@NonNull Context context, @NonNull CoreConfiguration config) {
         super(ReportField.SETTINGS_SYSTEM, ReportField.SETTINGS_SECURE, ReportField.SETTINGS_GLOBAL);
         this.context = context;
         this.config = config;

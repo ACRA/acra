@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -15,9 +15,9 @@ import static org.acra.ACRA.LOG_TAG;
 public class SenderServiceStarter {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
-    public SenderServiceStarter(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    public SenderServiceStarter(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
     }

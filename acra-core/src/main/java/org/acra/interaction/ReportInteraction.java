@@ -20,7 +20,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 import java.io.File;
 
@@ -39,5 +39,5 @@ public interface ReportInteraction {
      * @param reportFile the file with the report content
      * @return if reports should be sent instantly
      */
-    boolean performInteraction(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile);
+    boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile);
 }

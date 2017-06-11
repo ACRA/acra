@@ -28,7 +28,7 @@ import org.acra.ReportField;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.Configuration;
 import org.acra.config.HttpSenderConfiguration;
 import org.acra.http.BinaryHttpRequest;
@@ -156,7 +156,7 @@ public class HttpSender implements ReportSender {
         abstract String convertReport(HttpSender sender, CrashReportData report) throws IOException;
     }
 
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final HttpSenderConfiguration httpConfig;
     @Nullable
     private final Uri mFormUri;
@@ -183,7 +183,7 @@ public class HttpSender implements ReportSender {
      *               {@link Type#FORM} is a simple Key/Value pairs list as defined
      *               by the application/x-www-form-urlencoded mime type.
      */
-    public HttpSender(@NonNull ACRAConfiguration config, @Nullable Method method, @Nullable Type type) {
+    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable Type type) {
         this(config, method, type, null);
     }
 
@@ -206,7 +206,7 @@ public class HttpSender implements ReportSender {
      *                parameters will be named with the result of
      *                mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(@NonNull ACRAConfiguration config, @Nullable Method method, @Nullable Type type, @Nullable Map<ReportField, String> mapping) {
+    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable Type type, @Nullable Map<ReportField, String> mapping) {
         this(config, method, type, null, mapping);
     }
 
@@ -231,7 +231,7 @@ public class HttpSender implements ReportSender {
      *                parameters will be named with the result of
      *                mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(@NonNull ACRAConfiguration config, @Nullable Method method, @Nullable Type type, @Nullable String formUri, @Nullable Map<ReportField, String> mapping) {
+    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable Type type, @Nullable String formUri, @Nullable Map<ReportField, String> mapping) {
         this.config = config;
         this.httpConfig = getHttpSenderConfiguration(config);
         mMethod = (method == null) ? httpConfig.httpMethod() : method;
@@ -242,7 +242,7 @@ public class HttpSender implements ReportSender {
         mPassword = null;
     }
 
-    private static HttpSenderConfiguration getHttpSenderConfiguration(ACRAConfiguration config){
+    private static HttpSenderConfiguration getHttpSenderConfiguration(CoreConfiguration config){
         HttpSenderConfiguration httpSenderConfiguration = null;
         for (Configuration configuration : config.pluginConfigurations()){
             if(configuration instanceof HttpSenderConfiguration){
@@ -296,7 +296,7 @@ public class HttpSender implements ReportSender {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void sendHttpRequests(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+    protected void sendHttpRequests(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
                                     @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                     @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
         switch (method) {
@@ -317,21 +317,21 @@ public class HttpSender implements ReportSender {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void sendWithoutAttachments(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+    protected void sendWithoutAttachments(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
                                           @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                           @NonNull String content, @NonNull URL url) throws IOException {
         new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content);
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void postMultipart(@NonNull ACRAConfiguration configuration, @NonNull Context context, @NonNull Type type,
+    protected void postMultipart(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Type type,
                                  @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                  @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
         new MultipartHttpRequest(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, Pair.create(content, attachments));
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void putAttachment(@NonNull ACRAConfiguration configuration, @NonNull Context context,
+    protected void putAttachment(@NonNull CoreConfiguration configuration, @NonNull Context context,
                                  @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                  @NonNull URL url, @NonNull Uri attachment) throws IOException {
         final URL attachmentUrl = new URL(url.toString() + "-" + UriUtils.getFileNameFromUri(context, attachment));

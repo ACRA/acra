@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRAConstants;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
 import org.acra.config.ConfigUtils;
 import org.acra.sender.HttpSender;
@@ -47,7 +47,7 @@ public final class KeyStoreHelper {
      * @return the keystore, or null if none provided / failure
      */
     @Nullable
-    public static KeyStore getKeyStore(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    public static KeyStore getKeyStore(@NonNull Context context, @NonNull CoreConfiguration config) {
         HttpSenderConfiguration senderConfiguration = ConfigUtils.getSenderConfiguration(config, HttpSenderConfiguration.class);
         final InstanceCreator instanceCreator = new InstanceCreator();
         KeyStore keyStore = instanceCreator.create(senderConfiguration.keyStoreFactoryClass(), new NoKeyStoreFactory()).create(context);

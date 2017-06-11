@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 
 import com.google.auto.service.AutoService;
 
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 /**
  * Constructs an {@link EmailIntentSender}.
@@ -31,7 +31,7 @@ public final class EmailIntentSenderFactory implements ReportSenderFactory {
 
     @NonNull
     @Override
-    public ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
         return new EmailIntentSender(config);
     }
 }

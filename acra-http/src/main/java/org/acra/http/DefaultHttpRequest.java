@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRAConstants;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DefaultHttpRequest extends BaseHttpRequest<String> {
     @NonNull
     private final HttpSender.Type type;
 
-    public DefaultHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method, @NonNull HttpSender.Type type,
+    public DefaultHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method, @NonNull HttpSender.Type type,
                               @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
         super(config, context, method, login, password, connectionTimeOut, socketTimeOut, headers);
         this.type = type;

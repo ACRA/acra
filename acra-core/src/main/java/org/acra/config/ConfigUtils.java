@@ -23,7 +23,7 @@ package org.acra.config;
 
 public final class ConfigUtils {
 
-    public static <T extends Configuration> T getSenderConfiguration(ACRAConfiguration config, Class<T> c) {
+    public static <T extends Configuration> T getSenderConfiguration(CoreConfiguration config, Class<T> c) {
         T httpSenderConfiguration = null;
         for (Configuration configuration : config.pluginConfigurations()) {
             if (c.isAssignableFrom(configuration.getClass())) {

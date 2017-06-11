@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.Element;
 import org.acra.util.PackageManagerWrapper;
 
@@ -49,13 +49,13 @@ import static org.acra.ACRA.LOG_TAG;
 public final class CrashReportDataFactory {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final SharedPreferences prefs;
     private final Map<String, String> customParameters = new LinkedHashMap<String, String>();
     private final Calendar appStartDate;
     private final Element initialConfiguration;
 
-    public CrashReportDataFactory(@NonNull Context context, @NonNull ACRAConfiguration config,
+    public CrashReportDataFactory(@NonNull Context context, @NonNull CoreConfiguration config,
                                   @NonNull SharedPreferences prefs, @NonNull Calendar appStartDate,
                                   @NonNull Element initialConfiguration) {
         this.context = context;

@@ -21,7 +21,7 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.file.CrashReportPersister;
@@ -45,7 +45,7 @@ import static org.acra.ACRA.LOG_TAG;
 final class ReportDistributor {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final List<ReportSender> reportSenders;
 
     /**
@@ -55,7 +55,7 @@ final class ReportDistributor {
      * @param config                Configuration to use while sending.
      * @param reportSenders         List of ReportSender to use to send the crash reports.
      */
-    ReportDistributor(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull List<ReportSender> reportSenders) {
+    ReportDistributor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull List<ReportSender> reportSenders) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;

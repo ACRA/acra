@@ -20,7 +20,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
 
     @NonNull
     @Override
-    public ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config) {
+    public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
         final List<ReportSenderFactory> factoryList = new ArrayList<>();
         for (ReportSenderFactory factory : ServiceLoader.load(ReportSenderFactory.class)) {
             factoryList.add(factory);

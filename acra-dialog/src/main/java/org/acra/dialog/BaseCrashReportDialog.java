@@ -24,7 +24,7 @@ import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
 import org.acra.config.DialogConfiguration;
 import org.acra.file.BulkReportDeleter;
@@ -61,7 +61,7 @@ import static org.acra.ReportField.USER_EMAIL;
 public abstract class BaseCrashReportDialog extends FragmentActivity {
 
     private File reportFile;
-    private ACRAConfiguration config;
+    private CoreConfiguration config;
     private Throwable exception;
 
     /**
@@ -91,8 +91,8 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
             cancelReports();
             finish();
-        } else if ((sConfig instanceof ACRAConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
-            config = (ACRAConfiguration) sConfig;
+        } else if ((sConfig instanceof CoreConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
+            config = (CoreConfiguration) sConfig;
             reportFile = (File) sReportFile;
             exception = (Throwable) sException;
             init(savedInstanceState);
@@ -162,7 +162,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         }
     }
 
-    protected final ACRAConfiguration getConfig() {
+    protected final CoreConfiguration getConfig() {
         return config;
     }
 

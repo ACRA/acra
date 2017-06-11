@@ -26,7 +26,7 @@ import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.sender.SenderService;
 
 import java.util.List;
@@ -42,10 +42,10 @@ import static org.acra.ACRA.LOG_TAG;
 
 public final class ProcessFinisher {
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final LastActivityManager lastActivityManager;
 
-    public ProcessFinisher(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull LastActivityManager lastActivityManager) {
+    public ProcessFinisher(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull LastActivityManager lastActivityManager) {
         this.context = context;
         this.config = config;
         this.lastActivityManager = lastActivityManager;

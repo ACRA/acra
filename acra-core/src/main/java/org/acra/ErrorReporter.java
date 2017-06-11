@@ -27,7 +27,7 @@ import org.acra.builder.ReportExecutor;
 import org.acra.builder.ReportPrimer;
 import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.Element;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.InstanceCreator;
@@ -69,7 +69,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     private final Application context;
     @NonNull
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
     @NonNull
     private final CrashReportDataFactory crashReportDataFactory;
@@ -86,7 +86,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(@NonNull Application context, @NonNull ACRAConfiguration config, @NonNull SharedPreferences prefs,
+    ErrorReporter(@NonNull Application context, @NonNull CoreConfiguration config, @NonNull SharedPreferences prefs,
                   boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.context = context;
@@ -261,7 +261,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *
      * There is no need to call this method as ACRA will by default check for errors on report start.
      *
-     * Whether ACRA checks for reports on app start is controlled by {@link ACRA#init(Application, ACRAConfiguration, boolean)},
+     * Whether ACRA checks for reports on app start is controlled by {@link ACRA#init(Application, CoreConfiguration, boolean)},
      * but the default is that it will.
      *
      * @deprecated since 4.8.0 No replacement.

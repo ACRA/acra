@@ -57,12 +57,12 @@ public class ClassCreator {
     public ClassCreator(TypeElement baseAnnotation, Configuration configuration, ModelUtils utils) {
         this.baseAnnotation = new Type(baseAnnotation);
         this.configuration = configuration;
-        configName = configuration.configName();
+        configName = baseAnnotation.getSimpleName().toString().replace("Acra", "") + "Configuration";
         this.utils = utils;
         builderName = configName + "Builder";
         factoryName = builderName + "Factory";
-        config = ClassName.get(configuration.packageName(), configName);
-        builder = ClassName.get(configuration.packageName(), builderName);
+        config = ClassName.get(PACKAGE, configName);
+        builder = ClassName.get(PACKAGE, builderName);
 
     }
 
@@ -109,7 +109,7 @@ public class ClassCreator {
                 .addStatement("this($L.getClass())", PARAM_0)
                 .build());
         classBuilder.addMethod(build.addStatement("return new $T(this)", config).build());
-        utils.write(configuration.packageName(), classBuilder.build());
+        utils.write(classBuilder.build());
         return methods;
     }
 
@@ -245,11 +245,11 @@ public class ClassCreator {
                 .addParameter(ParameterSpec.builder(builder, PARAM_0).addAnnotation(NonNull.class).build())
                 .addCode(constructor.build())
                 .build());
-        utils.write(configuration.packageName(), classBuilder.build());
+        utils.write(classBuilder.build());
     }
 
     private void createFactoryClass() throws IOException {
-        utils.write(configuration.packageName(), TypeSpec.classBuilder(factoryName)
+        utils.write(TypeSpec.classBuilder(factoryName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(utils.configurationBuilderFactory.getName())
                 .addAnnotation(AnnotationSpec.builder(AutoService.class).addMember("value", "$T.class", utils.configurationBuilderFactory.getName()).build())

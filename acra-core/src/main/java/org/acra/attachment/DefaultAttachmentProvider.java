@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import static org.acra.ACRA.LOG_TAG;
 public class DefaultAttachmentProvider implements AttachmentUriProvider {
     @NonNull
     @Override
-    public List<Uri> getAttachments(Context context, ACRAConfiguration configuration) {
+    public List<Uri> getAttachments(Context context, CoreConfiguration configuration) {
         final ArrayList<Uri> result = new ArrayList<Uri>();
         for (String s : configuration.attachmentUris()){
             try {

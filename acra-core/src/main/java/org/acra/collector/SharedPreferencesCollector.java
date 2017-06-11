@@ -24,7 +24,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.ComplexElement;
 import org.acra.model.Element;
 import org.acra.model.StringElement;
@@ -45,10 +45,10 @@ import static org.acra.ACRA.LOG_TAG;
 final class SharedPreferencesCollector extends Collector {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final SharedPreferences prefs;
 
-    SharedPreferencesCollector(@NonNull Context context, @NonNull ACRAConfiguration config, SharedPreferences prefs) {
+    SharedPreferencesCollector(@NonNull Context context, @NonNull CoreConfiguration config, SharedPreferences prefs) {
         super(ReportField.USER_EMAIL, ReportField.SHARED_PREFERENCES);
         this.context = context;
         this.config = config;

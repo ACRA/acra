@@ -33,8 +33,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(configName = "ToastConfiguration",
-        packageName = "org.acra.config")
+@Configuration
 public @interface AcraToast {
 
     /**

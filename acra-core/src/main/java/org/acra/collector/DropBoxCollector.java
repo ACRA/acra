@@ -25,7 +25,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.model.ComplexElement;
 import org.acra.model.Element;
 import org.acra.util.PackageManagerWrapper;
@@ -52,10 +52,10 @@ import static org.acra.ACRA.LOG_TAG;
 final class DropBoxCollector extends Collector {
 
     private final Context context;
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
     private final PackageManagerWrapper pm;
 
-    DropBoxCollector(Context context, ACRAConfiguration config, PackageManagerWrapper pm){
+    DropBoxCollector(Context context, CoreConfiguration config, PackageManagerWrapper pm){
         super(ReportField.DROPBOX);
         this.context = context;
         this.config = config;

@@ -23,7 +23,7 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.acra.ACRAConstants;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 import org.acra.util.UriUtils;
 
@@ -52,7 +52,7 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     @NonNull
     private final HttpSender.Type type;
 
-    public MultipartHttpRequest(@NonNull ACRAConfiguration config, @NonNull Context context, @NonNull HttpSender.Type type, @Nullable String login, @Nullable String password,
+    public MultipartHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Type type, @Nullable String login, @Nullable String password,
                                 int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
         super(config, context, HttpSender.Method.POST, login, password, connectionTimeOut, socketTimeOut, headers);
         this.context = context;

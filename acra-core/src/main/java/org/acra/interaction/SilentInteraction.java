@@ -22,7 +22,7 @@ import android.support.annotation.NonNull;
 import com.google.auto.service.AutoService;
 
 import org.acra.builder.ReportBuilder;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ import java.io.File;
 public class SilentInteraction implements ReportInteraction {
 
     @Override
-    public boolean performInteraction(@NonNull Context context, @NonNull ACRAConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
+    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
         return true;
     }
 }

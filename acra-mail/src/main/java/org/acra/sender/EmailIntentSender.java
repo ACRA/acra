@@ -33,7 +33,7 @@ import org.acra.attachment.AcraContentProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
 import org.acra.config.MailSenderConfiguration;
 import org.acra.model.Element;
@@ -58,9 +58,9 @@ import static org.acra.ACRA.LOG_TAG;
 @SuppressWarnings("WeakerAccess")
 public class EmailIntentSender implements ReportSender {
 
-    private final ACRAConfiguration config;
+    private final CoreConfiguration config;
 
-    public EmailIntentSender(@NonNull ACRAConfiguration config) {
+    public EmailIntentSender(@NonNull CoreConfiguration config) {
         this.config = config;
     }
 

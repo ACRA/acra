@@ -2,7 +2,7 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 
 /**
  * Factory for creating and configuring a {@link ReportSender} instance.
@@ -21,5 +21,5 @@ public interface ReportSenderFactory {
      * @return Fully configured instance of the relevant ReportSender.
      */
     @NonNull
-    ReportSender create(@NonNull Context context, @NonNull ACRAConfiguration config);
+    ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config);
 }

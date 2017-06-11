@@ -82,6 +82,7 @@ class ModelUtils {
     static final String PARAM_0 = "arg0";
     static final String VAR_0 = "var0";
     static final String FIELD_0 = "field0";
+    static final String PACKAGE = "org.acra.config";
     private static final ClassName IMMUTABLE_MAP = ClassName.get(ImmutableMap.class);
     private static final ClassName IMMUTABLE_SET = ClassName.get(ImmutableSet.class);
     private static final ClassName IMMUTABLE_LIST = ClassName.get(ImmutableList.class);
@@ -148,8 +149,8 @@ class ModelUtils {
      * @param typeSpec the class
      * @throws IOException if writing fails
      */
-    void write(String packageName, TypeSpec typeSpec) throws IOException {
-        JavaFile.builder(packageName, typeSpec)
+    void write(TypeSpec typeSpec) throws IOException {
+        JavaFile.builder(PACKAGE, typeSpec)
                 .skipJavaLangImports(true)
                 .indent("    ")
                 .addFileComment("Copyright (c) " + Calendar.getInstance().get(Calendar.YEAR) + "\n\n" +
@@ -202,7 +203,7 @@ class ModelUtils {
     }
 
     /**
-     * Determines if a method is relevant for ACRAConfiguration generation
+     * Determines if a method is relevant for CoreConfiguration generation
      * A method is not relevant, if it starts with "set", or is annotated with @Hide
      *
      * @param method the method to check

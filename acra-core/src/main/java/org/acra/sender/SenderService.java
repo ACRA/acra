@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.config.ACRAConfiguration;
+import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.util.InstanceCreator;
@@ -57,7 +57,7 @@ public class SenderService extends IntentService {
         final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
         final boolean approveReportsFirst = intent.getBooleanExtra(EXTRA_APPROVE_REPORTS_FIRST, false);
 
-        final ACRAConfiguration config = (ACRAConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
+        final CoreConfiguration config = (CoreConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
 
         final Collection<Class<? extends ReportSenderFactory>> senderFactoryClasses = config.reportSenderFactoryClasses();
 
@@ -98,7 +98,7 @@ public class SenderService extends IntentService {
     }
 
     @NonNull
-    private List<ReportSender> getSenderInstances(@NonNull ACRAConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
+    private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
         final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
         final InstanceCreator instanceCreator = new InstanceCreator();
         for (ReportSenderFactory factory : instanceCreator.create(factoryClasses)) {
