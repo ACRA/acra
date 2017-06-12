@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(builderSuperClass = BaseHttpConfigurationBuilder.class)
+@Configuration(baseBuilderClass = BaseHttpConfigurationBuilder.class)
 public @interface AcraHttpSender {
     /**
      * The Uri of your own server-side script that will receive reports.

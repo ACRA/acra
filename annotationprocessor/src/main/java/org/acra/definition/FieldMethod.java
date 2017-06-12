@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package org.acra.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.acra.definition;
 
 /**
- * The annotation annotated with this will be used as basis for the BaseConfigurationBuilder
- *
  * @author F43nd1r
- * @since 17.03.2017
+ * @since 12.06.2017
  */
 
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface Configuration {
-    Class baseBuilderClass() default Object.class;
-    boolean createBuilderFactory() default true;
+public abstract class FieldMethod implements Method {
+    private final Field field;
+
+    public FieldMethod(Field field) {
+        this.field = field;
+    }
+
+    public Field getField() {
+        return field;
+    }
 }

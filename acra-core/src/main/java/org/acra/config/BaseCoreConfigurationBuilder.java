@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
-import org.acra.annotation.NoPropagation;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
 
@@ -96,7 +95,6 @@ public final class BaseCoreConfigurationBuilder {
         return configurations;
     }
 
-    @NoPropagation
     public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(Class<R> c) {
         for (ConfigurationBuilder builder : configurationBuilders) {
             if (c.isAssignableFrom(builder.getClass())) {

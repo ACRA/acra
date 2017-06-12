@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-package org.acra.annotation;
+package org.acra.definition;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+
+import org.acra.ModelUtils;
+
+import java.util.List;
 
 /**
- * Methods annotated with this will not be propagated into the CoreConfiguration class
- *
  * @author F43nd1r
- * @since 17.03.2017
+ * @since 12.06.2017
  */
 
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.METHOD)
-public @interface NoPropagation {
+public interface Method {
+    boolean shouldPropagate();
+
+    void writeTo(TypeSpec.Builder builder, ModelUtils utils);
+
+    String getName();
+
+    List<AnnotationSpec> getAnnotations();
+
+    TypeName getReturnType();
 }

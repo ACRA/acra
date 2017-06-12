@@ -21,7 +21,6 @@ import com.google.auto.service.AutoService;
 import org.acra.annotation.AnyNonDefault;
 import org.acra.annotation.Configuration;
 import org.acra.annotation.Instantiatable;
-import org.acra.annotation.NoPropagation;
 import org.acra.annotation.NonEmpty;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
@@ -51,7 +50,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Stream.of(AnyNonDefault.class, Configuration.class, Instantiatable.class, NonEmpty.class, NoPropagation.class, PreBuild.class, Transform.class)
+        return Stream.of(AnyNonDefault.class, Configuration.class, Instantiatable.class, NonEmpty.class, PreBuild.class, Transform.class)
                 .map(Class::getName).collect(Collectors.toSet());
     }
 
@@ -62,7 +61,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
             if (!annotatedElements.isEmpty()) {
                 for (final Element e : annotatedElements) {
                     if (e.getKind() == ElementKind.ANNOTATION_TYPE) {
-                        new ClassCreator((TypeElement) e, e.getAnnotation(Configuration.class), new ModelUtils(processingEnv)).createClasses();
+                        new org.acra.creator.ClassCreator((TypeElement) e, e.getAnnotation(Configuration.class), new ModelUtils(processingEnv)).createClasses();
                     } else {
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s",
                                 Configuration.class.getName(), ElementKind.ANNOTATION_TYPE.name()), e);

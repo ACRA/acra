@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package org.acra.annotation;
+package org.acra.definition;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.acra.ModelUtils;
+
+import java.util.List;
+
+import javafx.util.Pair;
 
 /**
- * The annotation annotated with this will be used as basis for the BaseConfigurationBuilder
- *
  * @author F43nd1r
- * @since 17.03.2017
+ * @since 12.06.2017
  */
 
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface Configuration {
-    Class baseBuilderClass() default Object.class;
-    boolean createBuilderFactory() default true;
+public interface Transformable extends Method {
+    Pair<String, List<Object>> getStatementWithParams(ModelUtils utils);
 }

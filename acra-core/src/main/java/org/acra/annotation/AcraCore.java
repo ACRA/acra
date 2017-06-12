@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Configuration(builderSuperClass = BaseCoreConfigurationBuilder.class, createBuilderFactory = false)
+@Configuration(baseBuilderClass = BaseCoreConfigurationBuilder.class, createBuilderFactory = false)
 public @interface AcraCore {
 
     /**

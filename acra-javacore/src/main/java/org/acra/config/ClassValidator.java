@@ -23,7 +23,9 @@ import java.lang.reflect.Modifier;
  * @since 07.06.2017
  */
 
-public class ClassValidator {
+public final class ClassValidator {
+    private ClassValidator() {
+    }
 
     public static void check(Class<?>... classes) throws ACRAConfigurationException {
         for (Class<?> clazz : classes) {
