@@ -97,7 +97,7 @@ artifacts {
 }
 
 signing {
-    required { signing.keyId != "" }
+    required { signing.hasProperty('keyId') }
     sign configurations.archives
 }
 
