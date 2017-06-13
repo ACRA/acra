@@ -199,7 +199,7 @@ class ModelUtils {
     MethodSpec.Builder addMethodJavadoc(MethodSpec.Builder builder, ExecutableElement base) {
         final String baseComment = elementUtils.getDocComment(base);
         if (baseComment == null) return builder;
-        final String name = base.getSimpleName().toString();
+        final String name = getName(base);
         return builder.addJavadoc(baseComment.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + name + " $1@return this instance\n"));
     }
 
