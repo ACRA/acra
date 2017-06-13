@@ -54,10 +54,10 @@ dependencies {
 
 release {
     failOnUnversionedFiles = false
-    failOnCommitNeeded = false
+    failOnCommitNeeded = true
     tagTemplate = '$name-$version'
     git {
-        requireBranch = ""
+        requireBranch = "master"
     }
 }
 
