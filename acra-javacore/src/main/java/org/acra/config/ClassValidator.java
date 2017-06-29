@@ -33,6 +33,8 @@ public final class ClassValidator {
                 throw new ACRAConfigurationException("Expected class, but found interface " + clazz.getName() + ".");
             } else if (Modifier.isAbstract(clazz.getModifiers())) {
                 throw new ACRAConfigurationException("Class " + clazz.getName() + " cannot be abstract.");
+            } else if (clazz.getEnclosingClass() != null && !Modifier.isStatic(clazz.getModifiers())) {
+                throw new ACRAConfigurationException("Class " + clazz.getName() + " has to be static.");
             }
             try {
                 clazz.getConstructor();
