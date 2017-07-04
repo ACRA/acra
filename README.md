@@ -26,8 +26,10 @@ The user is notified of an error only once, and you might enhance the perceived 
 
 Please do not hesitate to open defects/enhancements requests in [the issue tracker](http://github.com/ACRA/acra/issues).
 
-Latest version ACRA v4.9.2 - 7-JAN-2017
+Latest version ACRA v4.10.0 - 13-JUN-2017
 ===========================================
+
+**Note: Temporarily moved upload to `com.faendir:acra:4.10.0`, as all team members with repository access are absent**
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
