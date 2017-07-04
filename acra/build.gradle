@@ -54,10 +54,10 @@ dependencies {
 
 release {
     failOnUnversionedFiles = false
-    failOnCommitNeeded = false
+    failOnCommitNeeded = true
     tagTemplate = '$name-$version'
     git {
-        requireBranch = ""
+        requireBranch = "master"
     }
 }
 
@@ -97,7 +97,7 @@ artifacts {
 }
 
 signing {
-    required { signing.keyId != "" }
+    required { signing.hasProperty('keyId') }
     sign configurations.archives
 }
 

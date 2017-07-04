@@ -5,10 +5,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0"
         classpath 'net.researchgate:gradle-release:2.5.0'
 
         // NOTE: Do not place your application dependencies here; they belong
