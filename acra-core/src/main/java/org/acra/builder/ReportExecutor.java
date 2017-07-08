@@ -104,6 +104,12 @@ public class ReportExecutor {
 
         final File reportFile = getReportFileName(crashReportData);
         saveCrashReportFile(reportFile, crashReportData);
+
+        if (reportBuilder.isEndApplication()) {
+            // Finish the last activity early to prevent restarts on android 7+
+            processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
+        }
+
         final List<ReportInteraction> reportInteractions = new ArrayList<>();
         for (ReportInteraction interaction : ServiceLoader.load(ReportInteraction.class)) {
             reportInteractions.add(interaction);
@@ -111,7 +117,6 @@ public class ReportExecutor {
         if (reportBuilder.isSendSilently()) {
             //if size == 1 we only have the silent interaction and can send all reports
             startSendingReports(reportInteractions.size() > 1);
-            endApplicationIfNecessary(reportBuilder);
         } else {
             final ExecutorService executorService = Executors.newCachedThreadPool();
             final List<Future<Boolean>> futures = new ArrayList<>();
@@ -138,16 +143,12 @@ public class ReportExecutor {
             if (sendReports) {
                 startSendingReports(false);
             }
-            endApplicationIfNecessary(reportBuilder);
         }
-    }
-
-    private void endApplicationIfNecessary(@NonNull ReportBuilder reportBuilder) {
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Interactions + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
         if (reportBuilder.isEndApplication()) {
             if (Debug.isDebuggerConnected()) {
-                //Killing a process with a debugger attached would kill the whole application, so don't do that.
+                //Killing a process with a debugger attached would kill the whole application including our service, so we can't do that.
                 final String warning = "Warning: Acra may behave differently with a debugger attached";
                 new Thread(new Runnable() {
                     @Override
@@ -158,8 +159,6 @@ public class ReportExecutor {
                     }
                 }).start();
                 ACRA.log.w(LOG_TAG, warning);
-                //do as much cleanup as we can without killing the process
-                processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
             } else {
                 endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
             }
@@ -178,7 +177,7 @@ public class ReportExecutor {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Handing Exception on to default ExceptionHandler");
             defaultExceptionHandler.uncaughtException(uncaughtExceptionThread, th);
         } else {
-            processFinisher.endApplication(uncaughtExceptionThread);
+            processFinisher.endApplication();
         }
     }
 

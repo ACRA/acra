@@ -51,8 +51,7 @@ public final class ProcessFinisher {
         this.lastActivityManager = lastActivityManager;
     }
 
-    public void endApplication(@Nullable Thread uncaughtExceptionThread) {
-        finishLastActivity(uncaughtExceptionThread);
+    public void endApplication() {
         stopServices();
         killProcessAndExit();
     }
@@ -63,19 +62,23 @@ public final class ProcessFinisher {
         // it. Activity#finish (and maybe it's parent too).
         final Activity lastActivity = lastActivityManager.getLastActivity();
         if (lastActivity != null) {
-            if (ACRA.DEV_LOGGING)
-                ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
-            lastActivity.runOnUiThread(new Runnable() {
+            final boolean isMainThread = uncaughtExceptionThread == lastActivity.getMainLooper().getThread();
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
+            final Runnable finisher = new Runnable() {
                 @Override
                 public void run() {
                     lastActivity.finish();
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
                 }
-            });
+            };
+            if (isMainThread) {
+                finisher.run();
+            } else {
+                lastActivity.runOnUiThread(finisher);
+            }
 
             // A crashed activity won't continue its lifecycle. So we only wait if something else crashed
-            if (uncaughtExceptionThread != lastActivity.getMainLooper().getThread()) {
+            if (!isMainThread) {
                 lastActivityManager.waitForActivityStop(100);
             }
             lastActivityManager.clearLastActivity();
@@ -94,8 +97,7 @@ public final class ProcessFinisher {
                         intent.setComponent(serviceInfo.service);
                         context.stopService(intent);
                     } catch (SecurityException e) {
-                        if (ACRA.DEV_LOGGING)
-                            ACRA.log.d(ACRA.LOG_TAG, "Unable to stop Service " + serviceInfo.service.getClassName() + ". Permission denied");
+                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Unable to stop Service " + serviceInfo.service.getClassName() + ". Permission denied");
                     }
                 }
             }
@@ -103,7 +105,7 @@ public final class ProcessFinisher {
     }
 
     private void killProcessAndExit() {
-        android.os.Process.killProcess(android.os.Process.myPid());
+        Process.killProcess(Process.myPid());
         System.exit(10);
     }
 }
