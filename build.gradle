@@ -1,3 +1,6 @@
+import com.android.build.gradle.LibraryPlugin
+import com.jfrog.bintray.gradle.BintrayPlugin
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -6,25 +9,184 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
         classpath 'net.researchgate:gradle-release:2.5.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 apply plugin: 'com.jfrog.artifactory'
-apply plugin: 'io.codearte.nexus-staging'
 
 allprojects {
     repositories {
         jcenter()
-        maven {
-            url 'https://maven.google.com/'
+        maven { url 'https://maven.google.com/' }
+    }
+}
+
+ext.createPom = { pom ->
+    pom.withXml {
+        asNode().children().last() + {
+            name pomName
+            description pomDescription
+            url pomUrl
+
+            scm {
+                connection 'scm:git:https://github.com/F43nd1r/acra.git'
+                developerConnection 'scm:git:git@github.com:F43nd1r/acra.git'
+                url pomVcsUrl
+            }
+
+            licenses {
+                license {
+                    name pomLicenseName
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'kevin.gaudin'
+                    name 'Kevin Gaudin'
+                }
+                developer {
+                    id 'william.ferguson'
+                    name 'William Ferguson'
+                }
+                developer {
+                    id 'f43nd1r'
+                    name 'Lukas Morawietz'
+                }
+            }
+        }
+    }
+}
+
+subprojects {
+    plugins.withType(LibraryPlugin) {
+        android {
+            compileSdkVersion Integer.parseInt(androidVersion)
+            buildToolsVersion androidBuildToolsVersion
+
+            defaultConfig {
+                minSdkVersion androidMinVersion
+                targetSdkVersion androidVersion
+                versionName version
+            }
+            buildTypes {
+                release {
+                    minifyEnabled false
+                }
+            }
         }
 
+        task sourcesJar(type: Jar) {
+            from android.sourceSets.main.java.srcDirs
+            classifier = 'sources'
+        }
+
+        task javadoc(type: Javadoc) {
+            source = android.sourceSets.main.java.srcDirs
+            source += files('build/generated/source/aidl/release') + files('build/generated/source/buildConfig/release') + files('build/generated/source/apt/release')
+        }
+
+        afterEvaluate {
+            javadoc.classpath += files(android.getBootClasspath().join(File.pathSeparator))
+            javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files })
+            javadoc.dependsOn generateReleaseSources
+        }
+
+        task javadocJar(type: Jar, dependsOn: javadoc) {
+            from javadoc
+            classifier = 'javadoc'
+        }
+
+    }
+    plugins.withType(JavaPlugin) {
+        task sourcesJar(type: Jar) {
+            from sourceSets.main.allSource
+            classifier = 'sources'
+        }
+
+        task javadocJar(type: Jar, dependsOn: javadoc) {
+            classifier = 'javadoc'
+            from javadoc.destinationDir
+        }
+    }
+    plugins.withType(MavenPublishPlugin) {
+        publishing {
+            publications {
+                maven(MavenPublication) {
+                    groupId group
+                    version version
+                    artifact sourcesJar
+                    artifact javadocJar
+                    createPom(pom)
+                    if(tasks.findByName('bundleRelease')) {
+                        artifact bundleRelease
+                        pom.withXml {
+                            def dependenciesNode = asNode().appendNode('dependencies')
+
+                            // List all compile dependencies and write to POM
+                            configurations.compile.getAllDependencies().each { dep ->
+                                if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
+                                    return // ignore invalid dependencies
+
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', dep.group)
+                                dependencyNode.appendNode('artifactId', dep.name)
+                                dependencyNode.appendNode('version', dep.version)
+
+                                if (!dep.transitive) {
+                                    // If this dependency is transitive, we should force exclude all its dependencies them from the POM
+                                    def exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                                    exclusionNode.appendNode('groupId', '*')
+                                    exclusionNode.appendNode('artifactId', '*')
+                                } else if (!dep.properties.excludeRules.empty) {
+                                    // Otherwise add specified exclude rules
+                                    def exclusionsNode = dependencyNode.appendNode('exclusions')
+                                    dep.properties.excludeRules.each { rule ->
+                                        def exclusionNode = exclusionsNode.appendNode('exclusion')
+                                        exclusionNode.appendNode('groupId', rule.group ?: '*')
+                                        exclusionNode.appendNode('artifactId', rule.module ?: '*')
+                                    }
+                                }
+                            }
+                        }
+                    }else{
+                        from components.java
+                    }
+                }
+            }
+        }
+    }
+    plugins.withType(BintrayPlugin) {
+        bintray {
+            user = artifactoryUser
+            key = artifactoryApiKey
+            publications = ['maven']
+            publish = true
+            pkg {
+                repo = 'maven'
+                name = pomName
+                desc = pomDescription
+                websiteUrl = pomUrl
+                vcsUrl = pomVcsUrl
+                licenses = [pomLicenseName]
+                publicDownloadNumbers = true
+                version {
+                    name = project.version
+                    /*mavenCentralSync {
+                        sync = true
+                        user = ossrhUser
+                        password = ossrhPassword
+                    }*/
+                }
+            }
+        }
     }
 }
 
