@@ -18,8 +18,6 @@ package org.acra.annotation;
 
 import android.support.annotation.NonNull;
 
-import org.acra.ReportField;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -41,26 +39,7 @@ public @interface AcraMailSender {
     /**
      * <p>
      * Add your crash reports mailbox here if you want to send reports via
-     * email. This allows to get rid of the INTERNET permission. Reports content
-     * can be customized with {@link AcraCore#customReportContent()} . Default fields
-     * are:
-     * </p>
-     * <ul>
-     * <li>
-     * {@link ReportField#USER_COMMENT}</li>
-     * <li>
-     * {@link ReportField#ANDROID_VERSION}</li>
-     * <li>
-     * {@link ReportField#APP_VERSION_NAME}</li>
-     * <li>
-     * {@link ReportField#BRAND}</li>
-     * <li>
-     * {@link ReportField#PHONE_MODEL}</li>
-     * <li>
-     * {@link ReportField#CUSTOM_DATA}</li>
-     * <li>
-     * {@link ReportField#STACK_TRACE}</li>
-     * </ul>
+     * email.
      *
      * @return email address to which to send reports.
      */

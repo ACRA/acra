@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Primes a {@link ReportBuilder} with any extra data to record for the current crash report.
  *
- * ReportPrimer is configured declaratively via {@link org.acra.annotation.ReportsCrashes#reportPrimerClass()}.
+ * ReportPrimer is configured declaratively via {@link org.acra.annotation.AcraCore#reportPrimerClass()}.
  * The ReportPrimer class MUST have a no arg constructor and is created when ACRA is initialised.
  *
  * Created by William on 9 Jan 2016.

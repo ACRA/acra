@@ -22,12 +22,6 @@ import org.acra.collector.CrashReportData;
 
 /**
  * A simple interface for defining various crash report senders.
- *
- * You can reuse {@link HttpSender} to send reports to your custom server-side report
- * collection script even if you expect (or prefer) specific names for each
- * report field as {@link HttpSender#send(Context, CrashReportData)}
- * can take a {@code Map<ReportField, String>} as an input to convert each field name to
- * your preferred POST parameter name.
  * 
  * @author Kevin Gaudin
  */

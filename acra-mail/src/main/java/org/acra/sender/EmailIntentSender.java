@@ -31,10 +31,9 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.AcraContentProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
-import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.MailSenderConfiguration;
 import org.acra.model.Element;
 import org.acra.util.IOUtils;
@@ -52,8 +51,8 @@ import static org.acra.ACRA.LOG_TAG;
  * Send reports through an email intent.
  * <p>
  * The user will be asked to chose his preferred email client if no default is set. Included report fields can be defined using
- * {@link org.acra.annotation.AcraCore#customReportContent()}. Crash receiving mailbox has to be
- * defined with {@link org.acra.annotation.AcraCore#mailTo()}.
+ * {@link org.acra.annotation.AcraCore#reportContent()}. Crash receiving mailbox has to be
+ * defined with {@link org.acra.annotation.AcraMailSender#mailTo()}.
  */
 @SuppressWarnings("WeakerAccess")
 public class EmailIntentSender implements ReportSender {
@@ -217,10 +216,7 @@ public class EmailIntentSender implements ReportSender {
      */
     @NonNull
     protected String buildBody(@NonNull CrashReportData errorContent) {
-        Set<ReportField> fields = config.reportContent();
-        if (fields.isEmpty()) {
-            fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_MAIL_REPORT_FIELDS);
-        }
+        final Set<ReportField> fields = config.reportContent();
 
         final StringBuilder builder = new StringBuilder();
         for (ReportField field : fields) {

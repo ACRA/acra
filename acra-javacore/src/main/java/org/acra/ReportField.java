@@ -31,44 +31,30 @@ public enum ReportField {
     /**
      * Application version code. This is the incremental integer version code
      * used to differentiate versions on the android market.
-     * 
-     * @see android.content.pm.PackageInfo#versionCode
      */
     APP_VERSION_CODE,
     /**
      * Application version name.
-     * 
-     * @see android.content.pm.PackageInfo#versionName
      */
     APP_VERSION_NAME,
     /**
      * Application package name.
-     * 
-     * @see android.content.Context#getPackageName()
      */
     PACKAGE_NAME,
     /**
      * Base path of the application's private file folder.
-     * 
-     * @see android.content.Context#getFilesDir()
      */
     FILE_PATH,
     /**
      * Device model name.
-     * 
-     * @see android.os.Build#MODEL
      */
     PHONE_MODEL,
     /**
      * Device android version name.
-     * 
-     * @see android.os.Build.VERSION#RELEASE
      */
     ANDROID_VERSION,
     /**
      * Android Build details.
-     * 
-     * @see android.os.Build
      */
     BUILD {
         @Override
@@ -78,14 +64,10 @@ public enum ReportField {
     },
     /**
      * Device brand (manufacturer or carrier).
-     * 
-     * @see android.os.Build#BRAND
      */
     BRAND,
     /**
      * Device overall product code.
-     * 
-     * @see android.os.Build#PRODUCT
      */
     PRODUCT,
     /**
@@ -127,9 +109,8 @@ public enum ReportField {
      */
     STACK_TRACE_HASH,
     /**
-     * {@link Configuration} fields state on the application start.
-     * 
-     * @see Configuration
+     * android.content.res.Configuration fields state on the application start.
+     *
      */
     INITIAL_CONFIGURATION {
         @Override
@@ -138,9 +119,7 @@ public enum ReportField {
         }
     },
     /**
-     * {@link Configuration} fields state on the application crash.
-     * 
-     * @see Configuration
+     * android.content.res.Configuration fields state on the application crash.
      */
     CRASH_CONFIGURATION {
         @Override
@@ -150,8 +129,6 @@ public enum ReportField {
     },
     /**
      * Device display specifications.
-     * 
-     * @see android.view.WindowManager#getDefaultDisplay()
      */
     DISPLAY {
         @Override
@@ -160,8 +137,7 @@ public enum ReportField {
         }
     },
     /**
-     * Comment added by the user in the CrashReportDialog displayed in
-     * {@link ReportingInteractionMode#NOTIFICATION} mode.
+     * Comment added by the user in the CrashReportDialog.
      */
     USER_COMMENT,
     /**
@@ -207,8 +183,7 @@ public enum ReportField {
      */
     INSTALLATION_ID,
     /**
-     * User email address. Can be provided by the user in the
-     * {@link ACRA#PREF_USER_EMAIL_ADDRESS} SharedPreference.
+     * User email address. Can be provided by the user in SharedPreferences.
      */
     USER_EMAIL,
     /**
@@ -266,10 +241,7 @@ public enum ReportField {
         }
     },
     /**
-     * Content of your own application log file. To be configured with
-     * {@link org.acra.annotation.AcraCore#applicationLogFile()} to define the path/name of
-     * the log file and {@link org.acra.annotation.AcraCore#applicationLogFileLines()} to set
-     * the number of lines you want to be retrieved.
+     * Content of your own application log file.
      */
     APPLICATION_LOG,
     /**

@@ -22,8 +22,6 @@ import android.support.annotation.StringRes;
 import org.acra.model.Element;
 import org.acra.model.StringElement;
 
-import static org.acra.ReportField.*;
-
 /**
  * Responsible for collating those constants shared among the ACRA components.
  * 
@@ -138,19 +136,9 @@ public final class ACRAConstants {
     public static final int DEFAULT_APPLICATION_LOGFILE_LINES = DEFAULT_LOGCAT_LINES;
 
     /**
-     * Default list of {@link ReportField}s to be sent in email reports. You can
-     * set your own list with
-     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
-     * 
-     * @see org.acra.annotation.ReportsCrashes#mailTo()
-     */
-    public static final ReportField[] DEFAULT_MAIL_REPORT_FIELDS = { ReportField.USER_COMMENT, ReportField.ANDROID_VERSION, ReportField.APP_VERSION_NAME,
-            ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE };
-
-    /**
      * Default list of {@link ReportField}s to be sent in reports. You can set
      * your own list with
-     * {@link org.acra.annotation.ReportsCrashes#customReportContent()}.
+     * {@link org.acra.annotation.AcraCore#reportContent()}.
      */
     public static final ReportField[] DEFAULT_REPORT_FIELDS = { ReportField.REPORT_ID, ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
             ReportField.PACKAGE_NAME, ReportField.FILE_PATH, ReportField.PHONE_MODEL, ReportField.BRAND, ReportField.PRODUCT, ReportField.ANDROID_VERSION, ReportField.BUILD, ReportField.TOTAL_MEM_SIZE,
