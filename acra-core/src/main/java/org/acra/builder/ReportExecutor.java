@@ -97,7 +97,7 @@ public class ReportExecutor {
         }
 
         // Prime this crash report with any extra data.
-        reportPrimer.primeReport(context, reportBuilder);
+        reportPrimer.primeReport(context, config, reportBuilder);
         final CrashReportData crashReportData = crashReportDataFactory.createCrashData(reportBuilder);
 
         // Always write the report file

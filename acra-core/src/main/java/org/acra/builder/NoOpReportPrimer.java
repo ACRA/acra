@@ -2,6 +2,8 @@ package org.acra.builder;
 
 import android.content.Context;
 
+import org.acra.config.CoreConfiguration;
+
 /**
  * Does not perform any priming for the current report.
  *
@@ -10,7 +12,7 @@ import android.content.Context;
 public final class NoOpReportPrimer implements ReportPrimer {
 
     @Override
-    public void primeReport(Context context, ReportBuilder builder) {
+    public void primeReport(Context context, CoreConfiguration configuration, ReportBuilder builder) {
         // Nothing to do.
     }
 }
