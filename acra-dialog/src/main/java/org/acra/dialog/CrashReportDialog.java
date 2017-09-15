@@ -49,7 +49,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         scrollable.setOrientation(LinearLayout.VERTICAL);
         sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), getConfig());
         dialogConfiguration = ConfigUtils.getSenderConfiguration(getConfig(), DialogConfiguration.class);
-        final int themeResourceId = dialogConfiguration.resDialogTheme();
+        final int themeResourceId = dialogConfiguration.resTheme();
         if(themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
 
         buildAndShowDialog(savedInstanceState);
@@ -62,17 +62,17 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     protected void buildAndShowDialog(@Nullable Bundle savedInstanceState) {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final int titleResourceId = dialogConfiguration.resDialogTitle();
+        final int titleResourceId = dialogConfiguration.resTitle();
         if (titleResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setTitle(titleResourceId);
         }
-        final int iconResourceId = dialogConfiguration.resDialogIcon();
+        final int iconResourceId = dialogConfiguration.resIcon();
         if (iconResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState))
-                .setPositiveButton(getText(dialogConfiguration.resDialogPositiveButtonText()), this)
-                .setNegativeButton(getText(dialogConfiguration.resDialogNegativeButtonText()), this);
+                .setPositiveButton(getText(dialogConfiguration.resPositiveButtonText()), this)
+                .setNegativeButton(getText(dialogConfiguration.resNegativeButtonText()), this);
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
@@ -128,14 +128,14 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     }
 
     /**
-     * Creates a main view containing text of resDialogText, or nothing if not found
+     * Creates a main view containing text of resText, or nothing if not found
      *
      * @return the main view
      */
     @NonNull
     protected View getMainView() {
         final TextView text = new TextView(this);
-        final int dialogTextId = dialogConfiguration.resDialogText();
+        final int dialogTextId = dialogConfiguration.resText();
         if (dialogTextId != ACRAConstants.DEFAULT_RES_VALUE) {
             text.setText(getText(dialogTextId));
         }
@@ -143,13 +143,13 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     }
 
     /**
-     * creates a comment label view with resDialogCommentPrompt as text
+     * creates a comment label view with resCommentPrompt as text
      *
      * @return the label or null if there is no resource
      */
     @Nullable
     protected View getCommentLabel() {
-        final int commentPromptId = dialogConfiguration.resDialogCommentPrompt();
+        final int commentPromptId = dialogConfiguration.resCommentPrompt();
         if (commentPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
             final TextView labelView = new TextView(this);
             labelView.setText(getText(commentPromptId));
@@ -175,13 +175,13 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     }
 
     /**
-     * creates a email label view with resDialogEmailPrompt as text
+     * creates a email label view with resEmailPrompt as text
      *
      * @return the label or null if there is no resource
      */
     @Nullable
     protected View getEmailLabel() {
-        final int emailPromptId = dialogConfiguration.resDialogEmailPrompt();
+        final int emailPromptId = dialogConfiguration.resEmailPrompt();
         if (emailPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
             final TextView labelView = new TextView(this);
             labelView.setText(getText(emailPromptId));

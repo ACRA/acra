@@ -139,9 +139,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
             crashData.putString(USER_COMMENT, comment == null ? "" : comment);
             crashData.putString(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, reportFile);
-        } catch (IOException e) {
-            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             ACRA.log.w(LOG_TAG, "User comment not added: ", e);
         }
 
@@ -150,7 +148,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         starter.startService(false, true);
 
         // Optional Toast to thank the user
-        final int toastId = ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).resDialogOkToast();
+        final int toastId = ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).resOkToast();
         if (toastId != 0) {
             ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
         }

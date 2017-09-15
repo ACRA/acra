@@ -53,50 +53,50 @@ public @interface AcraDialog {
      * @return Resource id for the label of positive button in the crash dialog.
      * If not provided, defaults to 'OK'.
      */
-    @StringRes int resDialogPositiveButtonText() default android.R.string.ok;
+    @StringRes int resPositiveButtonText() default android.R.string.ok;
 
     /**
      * @return Resource id for the label of negative button in the crash dialog.
      * If not provided, defaults to 'cancel'.
      */
-    @StringRes int resDialogNegativeButtonText() default android.R.string.cancel;
+    @StringRes int resNegativeButtonText() default android.R.string.cancel;
 
     /**
      * @return Resource id for the user comment input label in the crash dialog.
      * If not provided, disables the input field.
      */
-    @StringRes int resDialogCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the user email address input label in the crash
      * dialog. If not provided, disables the input field.
      */
-    @StringRes int resDialogEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resEmailPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the icon in the crash dialog. Default value is
      * the system alert icon.
      */
-    @DrawableRes int resDialogIcon() default android.R.drawable.ic_dialog_alert;
+    @DrawableRes int resIcon() default android.R.drawable.ic_dialog_alert;
 
     /**
      * @return Resource id for the Toast text triggered when the user accepts to
      * send a report in the crash dialog.
      */
-    @StringRes int resDialogOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the text in the crash dialog.
      */
-    @AnyNonDefault @StringRes int resDialogText() default ACRAConstants.DEFAULT_RES_VALUE;
+    @AnyNonDefault @StringRes int resText() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the title in the crash dialog.
      */
-    @StringRes int resDialogTitle() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resTitle() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return resource id for the crash dialog theme
      */
-    @StyleRes int resDialogTheme() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StyleRes int resTheme() default ACRAConstants.DEFAULT_RES_VALUE;
 }
