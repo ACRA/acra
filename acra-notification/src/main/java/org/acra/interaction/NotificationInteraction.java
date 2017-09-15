@@ -16,7 +16,6 @@
 
 package org.acra.interaction;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -59,17 +58,23 @@ public class NotificationInteraction implements ReportInteraction {
         final NotificationConfiguration notificationConfig = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class);
         final NotificationManager notificationManager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(new NotificationChannel(CHANNEL, context.getString(notificationConfig.resChannelName()), NotificationManager.IMPORTANCE_DEFAULT));
+            final NotificationChannel channel = new NotificationChannel(CHANNEL, context.getString(notificationConfig.resChannelName()), notificationConfig.resChannelImportance());
+            if(notificationConfig.resChannelDescription() != ACRAConstants.DEFAULT_RES_VALUE){
+                channel.setDescription(context.getString(notificationConfig.resChannelDescription()));
+            }
+            notificationManager.createNotificationChannel(channel);
         }
-        final Notification notification = new NotificationCompat.Builder(context, CHANNEL)
+        final NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL)
                 .addAction(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), getSendIntent(context, config))
                 .addAction(notificationConfig.resDeleteButtonIcon(), context.getString(notificationConfig.resDeleteButtonText()), getDeleteIntent(context))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(context.getString(notificationConfig.resTitle()))
                 .setContentText(context.getString(notificationConfig.resText()))
-                .setSmallIcon(android.R.drawable.stat_sys_warning)
-                .build();
-        notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification);
+                .setSmallIcon(notificationConfig.resIcon());
+        if(notificationConfig.resTickerText() != ACRAConstants.DEFAULT_RES_VALUE){
+            notification.setTicker(context.getString(notificationConfig.resTickerText()));
+        }
+        notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification.build());
         return false;
     }
 
