@@ -115,8 +115,8 @@ public class ReportExecutor {
             reportInteractions.add(interaction);
         }
         if (reportBuilder.isSendSilently()) {
-            //if size == 1 we only have the silent interaction and can send all reports
-            startSendingReports(reportInteractions.size() > 1);
+            //if size == 0 we have no interaction and can send all reports
+            startSendingReports(reportInteractions.size() != 0);
         } else {
             final ExecutorService executorService = Executors.newCachedThreadPool();
             final List<Future<Boolean>> futures = new ArrayList<>();
