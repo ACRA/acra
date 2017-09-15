@@ -16,6 +16,7 @@
 
 package org.acra.annotation;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
@@ -78,7 +79,7 @@ public @interface AcraCore {
      * @return Mode to use with the SharedPreference creation.
      * @see android.content.Context#getSharedPreferences(String, int)
      */
-    int sharedPreferencesMode() default ACRAConstants.DEFAULT_SHARED_PREFERENCES_MODE;
+    int sharedPreferencesMode() default Context.MODE_PRIVATE;
 
     /**
      * If enabled, DropBox events collection will include system tags:
@@ -102,7 +103,7 @@ public @interface AcraCore {
      *
      * @return True if system tags are to be included as part of DropBox events.
      */
-    boolean includeDropBoxSystemTags() default ACRAConstants.DEFAULT_INCLUDE_DROPBOX_SYSTEM_TAGS;
+    boolean includeDropBoxSystemTags() default false;
 
     /**
      * @return Array of tags that you want to be fetched when collecting DropBox
@@ -114,7 +115,7 @@ public @interface AcraCore {
      * @return Number of minutes to look back when collecting events from
      * DropBoxManager.
      */
-    int dropboxCollectionMinutes() default ACRAConstants.DEFAULT_DROPBOX_COLLECTION_MINUTES;
+    int dropboxCollectionMinutes() default 5;
 
     /**
      * <p>
@@ -140,7 +141,7 @@ public @interface AcraCore {
      * @return Array of arguments to supply if retrieving the log as part of the
      * report.
      */
-    @NonNull String[] logcatArguments() default {"-t", "" + ACRAConstants.DEFAULT_LOGCAT_LINES, "-v", "time"};
+    @NonNull String[] logcatArguments() default {"-t", "" + ACRAConstants.DEFAULT_LOG_LINES, "-v", "time"};
 
     /**
      * <p>
@@ -245,7 +246,7 @@ public @interface AcraCore {
      *
      * @return true if ACRA should delete unapproved reports on application start.
      */
-    boolean deleteUnapprovedReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_UNAPPROVED_REPORTS_ON_APPLICATION_START;
+    boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
     /**
      * This property can be used to determine whether old (out of date) reports
@@ -255,7 +256,7 @@ public @interface AcraCore {
      * application has been updated since the last time the application
      * was started.
      */
-    boolean deleteOldUnsentReportsOnApplicationStart() default ACRAConstants.DEFAULT_DELETE_OLD_UNSENT_REPORTS_ON_APPLICATION_START;
+    boolean deleteOldUnsentReportsOnApplicationStart() default true;
 
     /**
      * Set this to true if you prefer displaying the native force close dialog after the ACRA is done.
@@ -263,7 +264,7 @@ public @interface AcraCore {
      *
      * @return true if the native force close dialog should be displayed.
      */
-    boolean alsoReportToAndroidFramework() default ACRAConstants.DEFAULT_REPORT_TO_ANDROID_FRAMEWORK;
+    boolean alsoReportToAndroidFramework() default false;
 
     /**
      * Add here your {@link android.content.SharedPreferences} identifier Strings if you use
@@ -280,7 +281,7 @@ public @interface AcraCore {
      *
      * @return true if you want to filter logcat with your process id.
      */
-    boolean logcatFilterByPid() default ACRAConstants.DEFAULT_LOGCAT_FILTER_BY_PID;
+    boolean logcatFilterByPid() default false;
 
     /**
      * Set this to true if you want to read logcat lines in a non blocking way for your
@@ -288,7 +289,7 @@ public @interface AcraCore {
      *
      * @return true if you want that reading of logcat lines to not block current thread.
      */
-    boolean nonBlockingReadForLogcat() default ACRAConstants.DEFAULT_NON_BLOCKING_READ_FOR_LOGCAT;
+    boolean nonBlockingReadForLogcat() default false;
 
     /**
      * Set this to false if you want to disable sending reports in development
@@ -297,7 +298,7 @@ public @interface AcraCore {
      *
      * @return false if reports should not be sent.
      */
-    boolean sendReportsInDevMode() default ACRAConstants.DEFAULT_SEND_REPORTS_IN_DEV_MODE;
+    boolean sendReportsInDevMode() default true;
 
     /**
      * Provide here regex patterns to be evaluated on each SharedPreference key
@@ -343,7 +344,7 @@ public @interface AcraCore {
      * If the string does not contain any path separator, the file is
      * assumed as being in {@link android.content.Context#getFilesDir()}.
      */
-    @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE;
+    @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
@@ -352,7 +353,7 @@ public @interface AcraCore {
      *
      * @return number of lines to collect.
      */
-    int applicationLogFileLines() default ACRAConstants.DEFAULT_APPLICATION_LOGFILE_LINES;
+    int applicationLogFileLines() default ACRAConstants.DEFAULT_LOG_LINES;
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the root

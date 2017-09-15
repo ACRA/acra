@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
 import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
@@ -41,6 +40,25 @@ import static org.acra.ACRA.LOG_TAG;
  */
 @AutoService(ReportInteraction.class)
 public class DialogInteraction implements ReportInteraction {
+    /**
+     * Used in the intent starting CrashReportDialog to provide the name of the
+     * latest generated report file in order to be able to associate the user
+     * comment.
+     */
+    public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
+    /**
+     * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
+     *
+     * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
+     */
+    public static final String EXTRA_REPORT_EXCEPTION = "REPORT_EXCEPTION";
+    /**
+     * Used in the intent starting CrashReportDialog to provide the AcraConfig to use when gathering the crash info.
+     *
+     * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
+     */
+    public static final String EXTRA_REPORT_CONFIG = "REPORT_CONFIG";
+
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
         final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
@@ -67,9 +85,9 @@ public class DialogInteraction implements ReportInteraction {
     private Intent createCrashReportDialogIntent(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
         final Intent dialogIntent = new Intent(context, ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).reportDialogClass());
-        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_FILE, reportFile);
-        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION, reportBuilder.getException());
-        dialogIntent.putExtra(ACRAConstants.EXTRA_REPORT_CONFIG, config);
+        dialogIntent.putExtra(EXTRA_REPORT_FILE, reportFile);
+        dialogIntent.putExtra(EXTRA_REPORT_EXCEPTION, reportBuilder.getException());
+        dialogIntent.putExtra(EXTRA_REPORT_CONFIG, config);
         return dialogIntent;
     }
 }

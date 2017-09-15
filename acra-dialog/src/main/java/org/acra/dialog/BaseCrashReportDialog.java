@@ -22,13 +22,13 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
 import org.acra.config.DialogConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
+import org.acra.interaction.DialogInteraction;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ToastSender;
 import org.json.JSONException;
@@ -51,9 +51,9 @@ import static org.acra.ReportField.USER_EMAIL;
  *
  * This Activity will be instantiated with 3 arguments:
  * <ol>
- * <li>{@link ACRAConstants#EXTRA_REPORT_FILE}</li>
- * <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
- * <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
+ * <li>{@link DialogInteraction#EXTRA_REPORT_FILE}</li>
+ * <li>{@link DialogInteraction#EXTRA_REPORT_EXCEPTION}</li>
+ * <li>{@link DialogInteraction#EXTRA_REPORT_CONFIG}</li>
  * </ol>
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -81,9 +81,9 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
             ACRA.log.d(LOG_TAG, "CrashReportDialog extras=" + getIntent().getExtras());
         }
 
-        final Serializable sConfig = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
-        final Serializable sReportFile = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
-        final Serializable sException = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
+        final Serializable sConfig = getIntent().getSerializableExtra(DialogInteraction.EXTRA_REPORT_CONFIG);
+        final Serializable sReportFile = getIntent().getSerializableExtra(DialogInteraction.EXTRA_REPORT_FILE);
+        final Serializable sException = getIntent().getSerializableExtra(DialogInteraction.EXTRA_REPORT_EXCEPTION);
 
         if ((sConfig instanceof CoreConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
             config = (CoreConfiguration) sConfig;

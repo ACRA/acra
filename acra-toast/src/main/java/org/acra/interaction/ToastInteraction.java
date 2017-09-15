@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.google.auto.service.AutoService;
 
-import org.acra.ACRAConstants;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
@@ -24,6 +23,11 @@ import java.io.File;
  */
 @AutoService(ReportInteraction.class)
 public class ToastInteraction implements ReportInteraction {
+    /**
+     * Number of milliseconds to wait after displaying a toast.
+     */
+    private static final int TOAST_WAIT_DURATION = 2000;
+
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
         Looper.prepare();
@@ -39,7 +43,7 @@ public class ToastInteraction implements ReportInteraction {
                         looper.quit();
                     }
                 }
-            }, ACRAConstants.TOAST_WAIT_DURATION);
+            }, TOAST_WAIT_DURATION);
             Looper.loop();
         }
         return true;

@@ -82,17 +82,17 @@ public @interface AcraHttpSender {
     @NonNull HttpSender.Type reportType();
 
     /**
-     * @return Value in milliseconds for timeout attempting to connect to a network (default 5000ms).
+     * @return Value in milliseconds for timeout attempting to connect to a network.
      */
-    int connectionTimeout() default ACRAConstants.DEFAULT_CONNECTION_TIMEOUT;
+    int connectionTimeout() default 5000;
 
     /**
      * If the request is retried due to timeout, the socketTimeout will double
      * before retrying the request.
      *
-     * @return Value in milliseconds for timeout receiving a response to a network request (default 8000ms).
+     * @return Value in milliseconds for timeout receiving a response to a network request.
      */
-    int socketTimeout() default ACRAConstants.DEFAULT_SOCKET_TIMEOUT;
+    int socketTimeout() default 20000;
 
     /**
      * @return Class which creates a keystore that can contain trusted certificates

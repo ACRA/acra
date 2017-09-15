@@ -53,13 +53,13 @@ public @interface AcraDialog {
      * @return Resource id for the label of positive button in the crash dialog.
      * If not provided, defaults to 'OK'.
      */
-    @StringRes int resDialogPositiveButtonText() default ACRAConstants.DEFAULT_DIALOG_POSITIVE_BUTTON_TEXT;
+    @StringRes int resDialogPositiveButtonText() default android.R.string.ok;
 
     /**
      * @return Resource id for the label of negative button in the crash dialog.
      * If not provided, defaults to 'cancel'.
      */
-    @StringRes int resDialogNegativeButtonText() default ACRAConstants.DEFAULT_DIALOG_NEGATIVE_BUTTON_TEXT;
+    @StringRes int resDialogNegativeButtonText() default android.R.string.cancel;
 
     /**
      * @return Resource id for the user comment input label in the crash dialog.
@@ -77,7 +77,7 @@ public @interface AcraDialog {
      * @return Resource id for the icon in the crash dialog. Default value is
      * the system alert icon.
      */
-    @DrawableRes int resDialogIcon() default ACRAConstants.DEFAULT_DIALOG_ICON;
+    @DrawableRes int resDialogIcon() default android.R.drawable.ic_dialog_alert;
 
     /**
      * @return Resource id for the Toast text triggered when the user accepts to

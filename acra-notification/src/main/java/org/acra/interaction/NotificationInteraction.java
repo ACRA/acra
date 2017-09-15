@@ -47,6 +47,9 @@ import java.io.File;
 
 @AutoService(ReportInteraction.class)
 public class NotificationInteraction implements ReportInteraction {
+    private static final int NOTIFICATION_ID = 666;
+    private static final int ACTION_SEND = 667;
+    private static final int ACTION_DISCARD = 668;
     private static final String CHANNEL = "ACRA";
 
     @Override
@@ -66,7 +69,7 @@ public class NotificationInteraction implements ReportInteraction {
         }
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL)
                 .addAction(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), getSendIntent(context, config))
-                .addAction(notificationConfig.resDeleteButtonIcon(), context.getString(notificationConfig.resDeleteButtonText()), getDeleteIntent(context))
+                .addAction(notificationConfig.resDeleteButtonIcon(), context.getString(notificationConfig.resDeleteButtonText()), getDiscardIntent(context))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(context.getString(notificationConfig.resTitle()))
                 .setContentText(context.getString(notificationConfig.resText()))
@@ -74,7 +77,7 @@ public class NotificationInteraction implements ReportInteraction {
         if(notificationConfig.resTickerText() != ACRAConstants.DEFAULT_RES_VALUE){
             notification.setTicker(context.getString(notificationConfig.resTickerText()));
         }
-        notificationManager.notify(ACRAConstants.NOTIF_CRASH_ID, notification.build());
+        notificationManager.notify(NOTIFICATION_ID, notification.build());
         return false;
     }
 
@@ -83,11 +86,11 @@ public class NotificationInteraction implements ReportInteraction {
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, false);
         intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, true);
         intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
-        return PendingIntent.getService(context, 999, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, ACTION_SEND, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private PendingIntent getDeleteIntent(@NonNull Context context) {
+    private PendingIntent getDiscardIntent(@NonNull Context context) {
         final Intent intent = new Intent(context, DeleteBroadcastReceiver.class);
-        return PendingIntent.getBroadcast(context, 998, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, ACTION_DISCARD, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
