@@ -52,16 +52,18 @@ public class FieldSetter extends FieldMethod {
 
     @Override
     public void writeTo(TypeSpec.Builder builder, ModelUtils utils) {
-        builder.addMethod(MethodSpec.methodBuilder(getName())
+        final MethodSpec.Builder method = MethodSpec.methodBuilder(getName())
                 .returns(builderName)
                 .addParameter(ParameterSpec.builder(getField().getType().getName(), getField().getName()).addAnnotations(getAnnotations()).build())
                 .varargs(getField().getType().getMirror().getKind() == TypeKind.ARRAY)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(NonNull.class)
                 .addStatement("this.$1L = $1L", getField().getName())
-                .addStatement("return this")
-                .addJavadoc(getField().getJavadoc().replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + getField().getName() + " $1@return this instance\n"))
-                .build());
+                .addStatement("return this");
+        if (getField().getJavadoc() != null) {
+            method.addJavadoc(getField().getJavadoc().replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + getField().getName() + " $1@return this instance\n"));
+        }
+        builder.addMethod(method.build());
     }
 
     @Override
