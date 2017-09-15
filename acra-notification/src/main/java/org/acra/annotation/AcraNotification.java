@@ -94,4 +94,10 @@ public @interface AcraNotification {
      * @return notification channel importance. Default is {@link android.app.NotificationManager#IMPORTANCE_DEFAULT}
      */
     int resChannelImportance() default 3;
+
+    /**
+     * @return Resource id for the user comment input label in the notification action.
+     * If not provided or on pre-nougat devices, does not ask for comment.
+     */
+    @StringRes int resCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 }

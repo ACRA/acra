@@ -213,7 +213,7 @@ public final class ACRA {
                 log.d(LOG_TAG, "Not initialising ACRA to listen for uncaught Exceptions as this is the SendWorker process and we only send reports, we don't capture them to avoid infinite loops");
         }
 
-        final boolean supportedAndroidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+        final boolean supportedAndroidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
         if (!supportedAndroidVersion) {
             // NB We keep initialising so that everything is configured. But ACRA is never enabled below.
             log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");

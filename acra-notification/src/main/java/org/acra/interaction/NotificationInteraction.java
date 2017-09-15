@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 
 import com.google.auto.service.AutoService;
 
@@ -35,7 +36,7 @@ import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.NotificationConfiguration;
 import org.acra.prefs.SharedPreferencesFactory;
-import org.acra.receiver.DeleteBroadcastReceiver;
+import org.acra.receiver.NotificationBroadcastReceiver;
 import org.acra.sender.SenderService;
 
 import java.io.File;
@@ -47,7 +48,11 @@ import java.io.File;
 
 @AutoService(ReportInteraction.class)
 public class NotificationInteraction implements ReportInteraction {
-    private static final int NOTIFICATION_ID = 666;
+    public static final String INTENT_ACTION_SEND = "org.acra.intent.send";
+    public static final String INTENT_ACTION_DISCARD = "org.acra.intent.discard";
+    public static final String KEY_COMMENT = "comment";
+    public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
+    public static final int NOTIFICATION_ID = 666;
     private static final int ACTION_SEND = 667;
     private static final int ACTION_DISCARD = 668;
     private static final String CHANNEL = "ACRA";
@@ -67,9 +72,13 @@ public class NotificationInteraction implements ReportInteraction {
             }
             notificationManager.createNotificationChannel(channel);
         }
+        final NotificationCompat.Action.Builder send = new NotificationCompat.Action.Builder(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), getSendIntent(context, config, reportFile));
+        if(notificationConfig.resCommentPrompt() != ACRAConstants.DEFAULT_RES_VALUE){
+            send.addRemoteInput(new RemoteInput.Builder(KEY_COMMENT).setLabel(context.getString(notificationConfig.resCommentPrompt())).build());
+        }
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL)
-                .addAction(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), getSendIntent(context, config))
-                .addAction(notificationConfig.resDeleteButtonIcon(), context.getString(notificationConfig.resDeleteButtonText()), getDiscardIntent(context))
+                .addAction(send.build())
+                .addAction(notificationConfig.resDiscardButtonIcon(), context.getString(notificationConfig.resDiscardButtonText()), getDiscardIntent(context))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(context.getString(notificationConfig.resTitle()))
                 .setContentText(context.getString(notificationConfig.resText()))
@@ -81,16 +90,17 @@ public class NotificationInteraction implements ReportInteraction {
         return false;
     }
 
-    private PendingIntent getSendIntent(@NonNull Context context, @NonNull CoreConfiguration config) {
-        final Intent intent = new Intent(context, SenderService.class);
-        intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, false);
-        intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, true);
+    private PendingIntent getSendIntent(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
+        final Intent intent = new Intent(context, NotificationBroadcastReceiver.class);
+        intent.setAction(INTENT_ACTION_SEND);
         intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
-        return PendingIntent.getService(context, ACTION_SEND, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.putExtra(EXTRA_REPORT_FILE, reportFile);
+        return PendingIntent.getBroadcast(context, ACTION_SEND, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private PendingIntent getDiscardIntent(@NonNull Context context) {
-        final Intent intent = new Intent(context, DeleteBroadcastReceiver.class);
+        final Intent intent = new Intent(context, NotificationBroadcastReceiver.class);
+        intent.setAction(INTENT_ACTION_DISCARD);
         return PendingIntent.getBroadcast(context, ACTION_DISCARD, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

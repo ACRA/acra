@@ -14,5 +14,13 @@
   ~ limitations under the License.
   -->
 
-<manifest package="org.acra.notification">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.acra.notification">
+
+    <application>
+        <receiver
+            android:name="org.acra.receiver.NotificationBroadcastReceiver"
+            android:exported="false"
+            android:process=":acra"/>
+    </application>
 </manifest>
