@@ -48,5 +48,5 @@ public @interface AcraToast {
      * @return Resource id for the Toast text triggered when the application
      * crashes.
      */
-    @StringRes int resToastText();
+    @StringRes int resText();
 }
