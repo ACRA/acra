@@ -69,11 +69,6 @@ public final class ACRAConstants {
      * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
      */
     public static final String EXTRA_REPORT_CONFIG = "REPORT_CONFIG";
-
-    /**
-     * Set this extra to true to force the deletion of reports by the CrashReportDialog.
-     */
-    public static final String EXTRA_FORCE_CANCEL = "FORCE_CANCEL";
     /**
      * This is the identifier (value = 666) use for the status bar notification issued when crashes occur.
      */

@@ -49,12 +49,11 @@ import static org.acra.ReportField.USER_EMAIL;
  * The methods sendCrash(comment, userEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
  *
- * This Activity will be instantiated with 3 (or 4) arguments:
+ * This Activity will be instantiated with 3 arguments:
  * <ol>
  * <li>{@link ACRAConstants#EXTRA_REPORT_FILE}</li>
  * <li>{@link ACRAConstants#EXTRA_REPORT_EXCEPTION}</li>
  * <li>{@link ACRAConstants#EXTRA_REPORT_CONFIG}</li>
- * <li>{@link ACRAConstants#EXTRA_FORCE_CANCEL} (optional)</li>
  * </ol>
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -85,13 +84,8 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         final Serializable sConfig = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_CONFIG);
         final Serializable sReportFile = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_FILE);
         final Serializable sException = getIntent().getSerializableExtra(ACRAConstants.EXTRA_REPORT_EXCEPTION);
-        final boolean forceCancel = getIntent().getBooleanExtra(ACRAConstants.EXTRA_FORCE_CANCEL, false);
 
-        if (forceCancel) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Forced reports deletion.");
-            cancelReports();
-            finish();
-        } else if ((sConfig instanceof CoreConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
+        if ((sConfig instanceof CoreConfiguration) && (sReportFile instanceof File) && ((sException instanceof Throwable) || sException == null)) {
             config = (CoreConfiguration) sConfig;
             reportFile = (File) sReportFile;
             exception = (Throwable) sException;
