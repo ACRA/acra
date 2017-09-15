@@ -10,7 +10,6 @@ import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
-import org.acra.prefs.PrefUtils;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.sender.SenderServiceStarter;
 
@@ -42,9 +41,7 @@ public final class ApplicationStartupProcessor {
             reportDeleter.deleteReports(true, 0);
             reportDeleter.deleteReports(false, 0);
 
-            final SharedPreferences.Editor prefsEditor = prefs.edit();
-            prefsEditor.putInt(ACRA.PREF_LAST_VERSION_NR, appVersion);
-            PrefUtils.save(prefsEditor);
+            prefs.edit().putInt(ACRA.PREF_LAST_VERSION_NR, appVersion).apply();
         }
     }
 

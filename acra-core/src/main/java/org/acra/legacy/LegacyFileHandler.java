@@ -19,8 +19,6 @@ package org.acra.legacy;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.acra.prefs.PrefUtils;
-
 /**
  * @author F43nd1r
  * @since 12.10.2016
@@ -44,15 +42,13 @@ public class LegacyFileHandler {
             new ReportMigrator(context).migrate();
 
             // Mark as converted.
-            final SharedPreferences.Editor editor = prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, true);
-            PrefUtils.save(editor);
+            prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, true).apply();
         }
         if(!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_JSON, false)){
             new ReportConverter(context).convert();
 
             // Mark as converted.
-            final SharedPreferences.Editor editor = prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_JSON, true);
-            PrefUtils.save(editor);
+            prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_JSON, true).apply();
         }
     }
 }
