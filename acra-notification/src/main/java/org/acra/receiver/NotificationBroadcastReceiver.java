@@ -51,23 +51,29 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
         notificationManager.cancel(NotificationInteraction.NOTIFICATION_ID);
         switch (intent.getAction()) {
             case NotificationInteraction.INTENT_ACTION_SEND:
-                final Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-                final File reportFile = (File) intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE);
-                if (reportFile != null && remoteInput != null) {
-                    final CharSequence comment = remoteInput.getCharSequence(NotificationInteraction.KEY_COMMENT);
-                    if (comment != null && !"".equals(comment.toString())) {
-                        final CrashReportPersister persister = new CrashReportPersister();
-                        try {
-                            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
-                            final CrashReportData crashData = persister.load(reportFile);
-                            crashData.putString(USER_COMMENT, comment.toString());
-                            persister.store(crashData, reportFile);
-                        } catch (IOException | JSONException e) {
-                            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+                final Object reportFileObject = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE);
+                final Object configObject = intent.getSerializableExtra(SenderService.EXTRA_ACRA_CONFIG);
+                if(configObject instanceof CoreConfiguration && reportFileObject instanceof File) {
+                    final CoreConfiguration config = (CoreConfiguration) configObject;
+                    final File reportFile = (File) reportFileObject;
+                    //Grab user comment from notification intent
+                    final Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+                    if (remoteInput != null) {
+                        final CharSequence comment = remoteInput.getCharSequence(NotificationInteraction.KEY_COMMENT);
+                        if (comment != null && !"".equals(comment.toString())) {
+                            final CrashReportPersister persister = new CrashReportPersister();
+                            try {
+                                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+                                final CrashReportData crashData = persister.load(reportFile);
+                                crashData.putString(USER_COMMENT, comment.toString());
+                                persister.store(crashData, reportFile);
+                            } catch (IOException | JSONException e) {
+                                ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+                            }
                         }
                     }
+                    new SenderServiceStarter(context, config).startService(false, true);
                 }
-                new SenderServiceStarter(context, (CoreConfiguration) intent.getSerializableExtra(SenderService.EXTRA_ACRA_CONFIG)).startService(false, true);
                 break;
             case NotificationInteraction.INTENT_ACTION_DISCARD:
                 if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Discarding reports");

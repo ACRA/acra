@@ -65,26 +65,35 @@ public class NotificationInteraction implements ReportInteraction {
         }
         final NotificationConfiguration notificationConfig = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class);
         final NotificationManager notificationManager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
+        //We have to create a channel on Oreo+, because notifications without one aren't allowed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(CHANNEL, context.getString(notificationConfig.resChannelName()), notificationConfig.resChannelImportance());
-            if(notificationConfig.resChannelDescription() != ACRAConstants.DEFAULT_RES_VALUE){
+            if (notificationConfig.resChannelDescription() != ACRAConstants.DEFAULT_RES_VALUE) {
                 channel.setDescription(context.getString(notificationConfig.resChannelDescription()));
             }
             notificationManager.createNotificationChannel(channel);
         }
-        final NotificationCompat.Action.Builder send = new NotificationCompat.Action.Builder(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), getSendIntent(context, config, reportFile));
-        if(notificationConfig.resCommentPrompt() != ACRAConstants.DEFAULT_RES_VALUE){
-            send.addRemoteInput(new RemoteInput.Builder(KEY_COMMENT).setLabel(context.getString(notificationConfig.resCommentPrompt())).build());
-        }
+        //configure base notification
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL)
-                .addAction(send.build())
-                .addAction(notificationConfig.resDiscardButtonIcon(), context.getString(notificationConfig.resDiscardButtonText()), getDiscardIntent(context))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(context.getString(notificationConfig.resTitle()))
                 .setContentText(context.getString(notificationConfig.resText()))
                 .setSmallIcon(notificationConfig.resIcon());
-        if(notificationConfig.resTickerText() != ACRAConstants.DEFAULT_RES_VALUE){
+        //add ticker if set
+        if (notificationConfig.resTickerText() != ACRAConstants.DEFAULT_RES_VALUE) {
             notification.setTicker(context.getString(notificationConfig.resTickerText()));
+        }
+        final PendingIntent sendIntent = getSendIntent(context, config, reportFile);
+        final PendingIntent discardIntent = getDiscardIntent(context);
+        final NotificationCompat.Action.Builder send = new NotificationCompat.Action.Builder(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), sendIntent);
+        if (notificationConfig.resCommentPrompt() != ACRAConstants.DEFAULT_RES_VALUE) {
+            send.addRemoteInput(new RemoteInput.Builder(KEY_COMMENT).setLabel(context.getString(notificationConfig.resCommentPrompt())).build());
+        }
+        //add actions. On old devices we have no notification buttons, so we have to set the intents to the only possible interactions: click and swipe
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            notification.addAction(send.build()).addAction(notificationConfig.resDiscardButtonIcon(), context.getString(notificationConfig.resDiscardButtonText()), discardIntent);
+        } else {
+            notification.setContentIntent(sendIntent).setDeleteIntent(discardIntent);
         }
         notificationManager.notify(NOTIFICATION_ID, notification.build());
         return false;
