@@ -124,7 +124,7 @@ public class ReportExecutor {
                 futures.add(executorService.submit(new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
-                        return !reportInteraction.performInteraction(context, config, reportBuilder, reportFile);
+                        return reportInteraction.performInteraction(context, config, reportBuilder, reportFile);
                     }
                 }));
             }
