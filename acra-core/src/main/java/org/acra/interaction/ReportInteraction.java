@@ -17,6 +17,7 @@
 package org.acra.interaction;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import org.acra.builder.ReportBuilder;
@@ -28,7 +29,7 @@ import java.io.File;
  * @author F43nd1r
  * @since 02.06.2017
  */
-
+@Keep
 public interface ReportInteraction {
 
     /**

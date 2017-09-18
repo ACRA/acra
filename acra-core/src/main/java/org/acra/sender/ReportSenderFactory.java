@@ -1,6 +1,7 @@
 package org.acra.sender;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 
@@ -13,6 +14,7 @@ import org.acra.config.CoreConfiguration;
  *
  * Created by William on 4-JAN-2016.
  */
+@Keep
 public interface ReportSenderFactory {
 
     /**

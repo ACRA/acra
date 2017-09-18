@@ -16,13 +16,14 @@
 
 package org.acra.config;
 
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 /**
  * @author F43nd1r
  * @since 01.06.2017
  */
-
+@Keep
 public interface ConfigurationBuilderFactory {
     @NonNull
     ConfigurationBuilder create(@NonNull Class<?> annotatedObject);

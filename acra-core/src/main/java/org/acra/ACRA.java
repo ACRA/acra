@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -47,6 +48,7 @@ import java.io.IOException;
  * @author Kevin Gaudin
  */
 @SuppressWarnings({"WeakerAccess","unused"})
+@Keep
 public final class ACRA {
     private ACRA() {
     }
@@ -132,11 +134,6 @@ public final class ACRA {
      * @throws IllegalStateException if it is called more than once.
      */
     public static void init(@NonNull Application app) {
-        final AcraCore reportsCrashes = app.getClass().getAnnotation(AcraCore.class);
-        if (reportsCrashes == null) {
-            log.e(LOG_TAG, "ACRA#init(Application) called but no ReportsCrashes annotation on Application " + app.getPackageName());
-            return;
-        }
         init(app, new CoreConfigurationBuilder(app));
     }
 
