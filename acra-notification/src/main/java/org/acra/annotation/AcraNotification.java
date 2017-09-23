@@ -91,13 +91,31 @@ public @interface AcraNotification {
     @StringRes int resChannelDescription() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
-     * @return notification channel importance. Default is {@link android.app.NotificationManager#IMPORTANCE_DEFAULT}
+     * @return notification channel importance. Default is {@link android.app.NotificationManager#IMPORTANCE_HIGH}
      */
-    int resChannelImportance() default 3;
+    int resChannelImportance() default 4;
+
+    /**
+     * @return Resource id for the send with comment button text in the status bar notification.
+     * No effect on pre-nougat devices.
+     */
+    @StringRes int resSendWithCommentButtonText() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return Resource id for the send with comment button icon in the status bar notification.
+     * No effect on pre-nougat devices.
+     */
+    @DrawableRes int resSendWithCommentButtonIcon() default android.R.drawable.ic_menu_send;
 
     /**
      * @return Resource id for the user comment input label in the notification action.
-     * If not provided or on pre-nougat devices, does not ask for comment.
+     * No effect on pre-nougat devices.
      */
     @StringRes int resCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return Resource id for the Toast text triggered when the user accepts to
+     * send a report in the crash dialog.
+     */
+    @StringRes int resOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
 }

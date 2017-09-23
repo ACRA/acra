@@ -26,6 +26,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
+import android.widget.RemoteViews;
 
 import com.google.auto.service.AutoService;
 
@@ -35,6 +36,7 @@ import org.acra.builder.ReportBuilder;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.NotificationConfiguration;
+import org.acra.notification.R;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.receiver.NotificationBroadcastReceiver;
 import org.acra.sender.SenderService;
@@ -78,23 +80,37 @@ public class NotificationInteraction implements ReportInteraction {
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(context.getString(notificationConfig.resTitle()))
                 .setContentText(context.getString(notificationConfig.resText()))
-                .setSmallIcon(notificationConfig.resIcon());
+                .setSmallIcon(notificationConfig.resIcon())
+                .setDefaults(0)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
         //add ticker if set
         if (notificationConfig.resTickerText() != ACRAConstants.DEFAULT_RES_VALUE) {
             notification.setTicker(context.getString(notificationConfig.resTickerText()));
         }
         final PendingIntent sendIntent = getSendIntent(context, config, reportFile);
         final PendingIntent discardIntent = getDiscardIntent(context);
-        final NotificationCompat.Action.Builder send = new NotificationCompat.Action.Builder(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), sendIntent);
-        if (notificationConfig.resCommentPrompt() != ACRAConstants.DEFAULT_RES_VALUE) {
-            send.addRemoteInput(new RemoteInput.Builder(KEY_COMMENT).setLabel(context.getString(notificationConfig.resCommentPrompt())).build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationConfig.resSendWithCommentButtonText() != ACRAConstants.DEFAULT_RES_VALUE) {
+            final RemoteInput.Builder remoteInput = new RemoteInput.Builder(KEY_COMMENT);
+            if (notificationConfig.resCommentPrompt() != ACRAConstants.DEFAULT_RES_VALUE) {
+                remoteInput.setLabel(context.getString(notificationConfig.resCommentPrompt()));
+            }
+            notification.addAction(new NotificationCompat.Action.Builder(notificationConfig.resSendWithCommentButtonIcon(),
+                    context.getString(notificationConfig.resSendWithCommentButtonText()), sendIntent)
+                    .addRemoteInput(remoteInput.build()).build());
         }
-        //add actions. On old devices we have no notification buttons, so we have to set the intents to the only possible interactions: click and swipe
+        //add actions. On old devices we have no notification buttons, so we have to set the intent to the only possible interaction: click
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            notification.addAction(send.build()).addAction(notificationConfig.resDiscardButtonIcon(), context.getString(notificationConfig.resDiscardButtonText()), discardIntent);
+            final RemoteViews bigView = getBigView(context, notificationConfig);
+            notification.addAction(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), sendIntent)
+                    .addAction(notificationConfig.resDiscardButtonIcon(), context.getString(notificationConfig.resDiscardButtonText()), discardIntent)
+                    .setCustomContentView(getSmallView(context, notificationConfig, sendIntent, discardIntent))
+                    .setCustomBigContentView(bigView)
+                    .setCustomHeadsUpContentView(bigView)
+                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle());
         } else {
-            notification.setContentIntent(sendIntent).setDeleteIntent(discardIntent);
+            notification.setContentIntent(sendIntent);
         }
+        notification.setDeleteIntent(discardIntent);
         notificationManager.notify(NOTIFICATION_ID, notification.build());
         return false;
     }
@@ -111,5 +127,23 @@ public class NotificationInteraction implements ReportInteraction {
         final Intent intent = new Intent(context, NotificationBroadcastReceiver.class);
         intent.setAction(INTENT_ACTION_DISCARD);
         return PendingIntent.getBroadcast(context, ACTION_DISCARD, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private RemoteViews getSmallView(@NonNull Context context, @NonNull NotificationConfiguration notificationConfig, @NonNull PendingIntent sendIntent, @NonNull PendingIntent discardIntent) {
+        final RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.notification_small);
+        view.setTextViewText(R.id.text, context.getString(notificationConfig.resText()));
+        view.setTextViewText(R.id.title, context.getString(notificationConfig.resTitle()));
+        view.setImageViewResource(R.id.button_send, notificationConfig.resSendButtonIcon());
+        view.setImageViewResource(R.id.button_discard, notificationConfig.resDiscardButtonIcon());
+        view.setOnClickPendingIntent(R.id.button_send, sendIntent);
+        view.setOnClickPendingIntent(R.id.button_discard, discardIntent);
+        return view;
+    }
+
+    private RemoteViews getBigView(@NonNull Context context, @NonNull NotificationConfiguration notificationConfig) {
+        final RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.notification_big);
+        view.setTextViewText(R.id.text, context.getString(notificationConfig.resText()));
+        view.setTextViewText(R.id.title, context.getString(notificationConfig.resTitle()));
+        return view;
     }
 }
