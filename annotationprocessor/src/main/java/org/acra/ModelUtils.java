@@ -101,7 +101,8 @@ public class ModelUtils {
     }
 
     public Type getType(TypeMirror mirror) {
-        return new Type(mirror.getKind() == TypeKind.TYPEVAR ? null : MoreTypes.asTypeElement(typeUtils, mirror), mirror, TypeName.get(mirror));
+        return new Type(mirror.getKind() == TypeKind.TYPEVAR || mirror.getKind().isPrimitive() || mirror.getKind() == TypeKind.ARRAY  || mirror.getKind() == TypeKind.VOID
+                ? null : MoreTypes.asTypeElement(typeUtils, mirror), mirror, TypeName.get(mirror));
     }
 
     public Type getType(Class c) {

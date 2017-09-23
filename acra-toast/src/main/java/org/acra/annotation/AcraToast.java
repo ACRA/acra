@@ -16,7 +16,9 @@
 
 package org.acra.annotation;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.StringRes;
+import android.widget.Toast;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -37,16 +39,17 @@ import java.lang.annotation.Target;
 public @interface AcraToast {
 
     /**
-     * Resource id for the Toast text triggered when the application crashes if
-     * the ReportingInteractionMode#TOAST mode is used. Can also be used
-     * in ReportingInteractionMode#NOTIFICATION and
-     * ReportingInteractionMode#DIALOG modes to display a Toast message
-     * while the report is being created, before the dialog/notification
-     * appears. This allows the user to know what is happening just before the
-     * application is terminated.
+     * Resource id for the Toast text triggered when the application crashes
      *
      * @return Resource id for the Toast text triggered when the application
      * crashes.
      */
     @StringRes int resText();
+
+    /**
+     * One of {@link Toast#LENGTH_LONG} and {@link Toast#LENGTH_SHORT}
+     *
+     * @return toast length
+     */
+    @IntRange(from = 0, to = 1) int length() default Toast.LENGTH_LONG;
 }
