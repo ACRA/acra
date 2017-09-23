@@ -95,6 +95,11 @@ public @interface AcraHttpSender {
     int socketTimeout() default 20000;
 
     /**
+     * @return if timed out reports should be dropped
+     */
+    boolean dropReportsOnTimeout() default false;
+
+    /**
      * @return Class which creates a keystore that can contain trusted certificates
      */
     @NonNull Class<? extends KeyStoreFactory> keyStoreFactoryClass() default NoKeyStoreFactory.class;

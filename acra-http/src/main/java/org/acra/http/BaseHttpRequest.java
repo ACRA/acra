@@ -19,11 +19,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.util.Log;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.BuildConfig;
+import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
+import org.acra.config.HttpSenderConfiguration;
 import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.util.IOUtils;
@@ -32,6 +35,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -94,14 +98,22 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         }
         configureTimeouts(urlConnection, connectionTimeOut, socketTimeOut);
         configureHeaders(urlConnection, login, password, headers, content);
-        if(ACRA.DEV_LOGGING){
+        if (ACRA.DEV_LOGGING) {
             ACRA.log.d(LOG_TAG, "Sending request to " + url);
             ACRA.log.d(LOG_TAG, "Http " + method.name() + " content : ");
             ACRA.log.d(LOG_TAG, content.toString());
         }
-        writeContent(urlConnection, method, content);
-        handleResponse(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
-        urlConnection.disconnect();
+        try {
+            writeContent(urlConnection, method, content);
+            handleResponse(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
+            urlConnection.disconnect();
+        } catch (SocketTimeoutException e) {
+            if (ConfigUtils.getSenderConfiguration(config, HttpSenderConfiguration.class).dropReportsOnTimeout()) {
+                Log.w(ACRA.LOG_TAG, "Dropped report due to timeout");
+            } else {
+                throw e;
+            }
+        }
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -126,7 +138,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void configureTimeouts(@NonNull HttpURLConnection connection, int connectionTimeOut, int socketTimeOut){
+    protected void configureTimeouts(@NonNull HttpURLConnection connection, int connectionTimeOut, int socketTimeOut) {
         connection.setConnectTimeout(connectionTimeOut);
         connection.setReadTimeout(socketTimeOut);
     }
@@ -157,7 +169,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
     protected abstract String getContentType(@NonNull Context context, @NonNull T t);
 
     @SuppressWarnings("WeakerAccess")
-    protected void writeContent(@NonNull HttpURLConnection connection, @NonNull Method method, @NonNull T content) throws IOException{
+    protected void writeContent(@NonNull HttpURLConnection connection, @NonNull Method method, @NonNull T content) throws IOException {
         final byte[] contentAsBytes = asBytes(content);
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         connection.setRequestMethod(method.name());
@@ -182,7 +194,8 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
     @SuppressWarnings("WeakerAccess")
     protected void handleResponse(int responseCode, String responseMessage) throws IOException {
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + responseMessage);
+        if (ACRA.DEV_LOGGING)
+            ACRA.log.d(LOG_TAG, "Request response : " + responseCode + " : " + responseMessage);
         if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
             // All is good
             ACRA.log.i(LOG_TAG, "Request received by server");
