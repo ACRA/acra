@@ -197,29 +197,21 @@ public final class ReportExecutor {
 
         if (shouldDisplayToast) {
             // A toast is being displayed, we have to wait for its end before doing anything else.
-            new Thread() {
-
-                @Override
-                public void run() {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
-                                + " millis from " + sentToastTimeMillis.initialTimeMillis
-                                + " currentMillis=" + System.currentTimeMillis());
-                    final long sleep = ACRAConstants.TOAST_WAIT_DURATION - sentToastTimeMillis.getElapsedTime();
-                    try {
-                        // Wait a bit to let the user read the toast
-                        if (sleep > 0L) Thread.sleep(sleep);
-                    } catch (InterruptedException e1) {
-                        if (ACRA.DEV_LOGGING)
-                            ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
-                    }
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
-                    dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
-                }
-            }.start();
-        } else {
-            dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
+            if (ACRA.DEV_LOGGING)
+                ACRA.log.d(LOG_TAG, "Waiting for " + ACRAConstants.TOAST_WAIT_DURATION
+                        + " millis from " + sentToastTimeMillis.initialTimeMillis
+                        + " currentMillis=" + System.currentTimeMillis());
+            final long sleep = ACRAConstants.TOAST_WAIT_DURATION - sentToastTimeMillis.getElapsedTime();
+            try {
+                // Wait a bit to let the user read the toast
+                if (sleep > 0L) Thread.sleep(sleep);
+            } catch (InterruptedException e1) {
+                if (ACRA.DEV_LOGGING)
+                    ACRA.log.d(LOG_TAG, "Interrupted while waiting for Toast to end.", e1);
+            }
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished waiting for Toast");
         }
+        dialogAndEnd(reportBuilder, reportFile, showDirectDialog);
     }
 
     private void dialogAndEnd(@NonNull ReportBuilder reportBuilder, @NonNull File reportFile, boolean shouldShowDialog) {
@@ -236,7 +228,7 @@ public final class ReportExecutor {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Toast + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
         if (reportBuilder.isEndApplication()) {
-            if(Debug.isDebuggerConnected()){
+            if (Debug.isDebuggerConnected()) {
                 //Killing a process with a debugger attached would kill the whole application, so don't do that.
                 final String warning = "Warning: Acra may behave differently with a debugger attached";
                 new Thread() {
@@ -250,7 +242,7 @@ public final class ReportExecutor {
                 ACRA.log.w(LOG_TAG, warning);
                 //do as much cleanup as we can without killing the process
                 processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
-            }else {
+            } else {
                 endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
             }
         }
@@ -292,7 +284,7 @@ public final class ReportExecutor {
      * The action triggered when the notification is selected is to start the
      * {@link CrashReportDialog} Activity.
      *
-     * @param reportFile    Report file to send.
+     * @param reportFile Report file to send.
      */
     private void createNotification(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
 
@@ -350,16 +342,14 @@ public final class ReportExecutor {
      * When a report can't be sent, it is saved here in a file in the root of
      * the application private directory.
      *
-     * @param file
-     *            In a few rare cases, we write the report again with additional
-     *            data (user comment for example). In such cases, you can
-     *            provide the already existing file name here to overwrite the
-     *            report file. If null, a new file report will be generated
-     * @param crashData
-     *            Can be used to save an alternative (or previously generated)
-     *            report data. Used to store again a report with the addition of
-     *            user comment. If null, the default current crash data are
-     *            used.
+     * @param file      In a few rare cases, we write the report again with additional
+     *                  data (user comment for example). In such cases, you can
+     *                  provide the already existing file name here to overwrite the
+     *                  report file. If null, a new file report will be generated
+     * @param crashData Can be used to save an alternative (or previously generated)
+     *                  report data. Used to store again a report with the addition of
+     *                  user comment. If null, the default current crash data are
+     *                  used.
      */
     private void saveCrashReportFile(@NonNull File file, @NonNull CrashReportData crashData) {
         try {
@@ -375,8 +365,8 @@ public final class ReportExecutor {
     /**
      * Creates an Intent that can be used to create and show a CrashReportDialog.
      *
-     * @param reportFile        Error report file to display in the crash report dialog.
-     * @param reportBuilder     ReportBuilder containing the details of the crash.
+     * @param reportFile    Error report file to display in the crash report dialog.
+     * @param reportBuilder ReportBuilder containing the details of the crash.
      */
     @NonNull
     private Intent createCrashReportDialogIntent(@NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
