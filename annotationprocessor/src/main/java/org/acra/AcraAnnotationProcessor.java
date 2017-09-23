@@ -24,6 +24,7 @@ import org.acra.annotation.Instantiatable;
 import org.acra.annotation.NonEmpty;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
+import org.acra.creator.ClassCreator;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
             if (!annotatedElements.isEmpty()) {
                 for (final Element e : annotatedElements) {
                     if (e.getKind() == ElementKind.ANNOTATION_TYPE) {
-                        new org.acra.creator.ClassCreator((TypeElement) e, e.getAnnotation(Configuration.class), new ModelUtils(processingEnv)).createClasses();
+                        new ClassCreator((TypeElement) e, e.getAnnotation(Configuration.class), new ModelUtils(processingEnv)).createClasses();
                     } else {
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s",
                                 Configuration.class.getName(), ElementKind.ANNOTATION_TYPE.name()), e);

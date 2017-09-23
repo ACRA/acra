@@ -19,7 +19,8 @@ apply plugin: 'java'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.google.auto.service:auto-service:$autoServiceVersion"
-    compile 'com.squareup:javapoet:1.7.0'
+    compile 'com.squareup:javapoet:1.9.0'
+    compile 'org.apache.commons:commons-lang3:3.6'
     compile project(':annotations')
     compile project(':acra-javacore')
 }

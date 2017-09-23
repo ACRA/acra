@@ -22,12 +22,11 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.acra.ModelUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
 import javax.lang.model.element.ExecutableElement;
-
-import javafx.util.Pair;
 
 /**
  * @author F43nd1r
@@ -38,13 +37,13 @@ public class Transformer implements Method {
     private final String name;
     private final String delegate;
     private final Type returnType;
-    private final org.acra.definition.Transformable transformable;
+    private final Transformable transformable;
 
-    public static Transformer from(ExecutableElement method, String field, org.acra.definition.Transformable transformable, ModelUtils utils) {
+    public static Transformer from(ExecutableElement method, String field, Transformable transformable, ModelUtils utils) {
         return new Transformer(method.getSimpleName().toString(), field, utils.getType(method.getReturnType()), transformable);
     }
 
-    private Transformer(String name, String delegate, Type returnType, org.acra.definition.Transformable transformable) {
+    private Transformer(String name, String delegate, Type returnType, Transformable transformable) {
         this.name = name;
         this.delegate = delegate;
         this.returnType = returnType;

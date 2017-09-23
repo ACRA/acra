@@ -111,7 +111,7 @@ public class ClassCreator {
     }
 
     private void createFactoryClass() throws IOException {
-        Type configurationBuilderFactory = utils.getType(ConfigurationBuilderFactory.class);
+        final Type configurationBuilderFactory = utils.getType(ConfigurationBuilderFactory.class);
         utils.write(TypeSpec.classBuilder(factoryName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(configurationBuilderFactory.getName())

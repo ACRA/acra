@@ -53,8 +53,7 @@ public class DelegateMethod implements Method {
 
     public static DelegateMethod from(ExecutableElement method, String field, ClassName builderName, ModelUtils utils) {
         return new DelegateMethod(method.getSimpleName().toString(), field, utils.getType(method.getReturnType()), utils.getAnnotations(method),
-                method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toList()),
-                method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toList()), method.getModifiers(), utils.getJavadoc(method), builderName);
+                utils.getParameters(method), utils.getTypeParameters(method), method.getModifiers(), utils.getJavadoc(method), builderName);
     }
 
     private DelegateMethod(String name, String delegate, Type returnType, List<AnnotationSpec> annotations, List<ParameterSpec> parameters,

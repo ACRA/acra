@@ -17,10 +17,9 @@
 package org.acra.definition;
 
 import org.acra.ModelUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
-
-import javafx.util.Pair;
 
 /**
  * @author F43nd1r

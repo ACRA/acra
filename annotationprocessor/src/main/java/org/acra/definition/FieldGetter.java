@@ -22,13 +22,12 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.acra.ModelUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.type.TypeKind;
-
-import javafx.util.Pair;
 
 /**
  * @author F43nd1r
@@ -85,6 +84,6 @@ public class FieldGetter extends FieldMethod implements org.acra.definition.Tran
             params.add(defaultValue);
             result += "$" + params.size() + "L";
         }
-        return new Pair<>(result, params);
+        return Pair.of(result, params);
     }
 }

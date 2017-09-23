@@ -78,8 +78,9 @@ public class Field {
     }
 
     public void addTo(TypeSpec.Builder builder) {
+        annotations.removeIf(a -> a.type.equals(TypeName.get(NonNull.class)));
         builder.addField(FieldSpec.builder(type.getName().box(), name, Modifier.PRIVATE)
-                .addAnnotations(annotations.stream().filter(a -> !a.type.equals(TypeName.get(NonNull.class))).collect(Collectors.toList()))
+                .addAnnotations(annotations)
                 .build());
     }
 

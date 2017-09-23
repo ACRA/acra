@@ -16,13 +16,16 @@
 
 package org.acra;
 
+import com.google.auto.common.MoreTypes;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import org.acra.annotation.AnyNonDefault;
 import org.acra.annotation.Configuration;
@@ -46,7 +49,6 @@ import java.util.stream.Collectors;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -99,7 +101,7 @@ public class ModelUtils {
     }
 
     public Type getType(TypeMirror mirror) {
-        return new Type(mirror.getKind() == TypeKind.TYPEVAR ? null : (TypeElement) typeUtils.asElement(mirror), mirror, TypeName.get(mirror));
+        return new Type(mirror.getKind() == TypeKind.TYPEVAR ? null : MoreTypes.asTypeElement(typeUtils, mirror), mirror, TypeName.get(mirror));
     }
 
     public Type getType(Class c) {
@@ -179,8 +181,7 @@ public class ModelUtils {
     }
 
     public ExecutableElement getOnlyMethod(TypeElement typeElement) {
-        final List<ExecutableElement> elements = typeElement.getEnclosedElements().stream().filter(element -> element.getKind() == ElementKind.METHOD)
-                .map(ExecutableElement.class::cast).collect(Collectors.toList());
+        final List<ExecutableElement> elements = getMethods(typeElement);
         if (elements.size() == 1) {
             return elements.get(0);
         } else {
@@ -191,7 +192,7 @@ public class ModelUtils {
 
     public void error(Element element, String annotationField, String message) {
         final AnnotationMirror mirror = element.getAnnotationMirrors().stream()
-                .filter(m -> ((TypeElement) m.getAnnotationType().asElement()).getQualifiedName().toString().equals(Configuration.class.getName()))
+                .filter(m -> MoreTypes.isTypeOf(Configuration.class, m.getAnnotationType()))
                 .findAny().orElseThrow(IllegalArgumentException::new);
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element, mirror, mirror.getElementValues().entrySet().stream()
                 .filter(entry -> entry.getKey().getSimpleName().toString().equals(annotationField)).findAny().map(Map.Entry::getValue).orElse(null));
@@ -216,5 +217,13 @@ public class ModelUtils {
 
     public String getJavadoc(Element element) {
         return elementUtils.getDocComment(element);
+    }
+
+    public List<ParameterSpec> getParameters(ExecutableElement method){
+        return method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toList());
+    }
+
+    public List<TypeVariableName> getTypeParameters(ExecutableElement method){
+        return method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toList());
     }
 }
