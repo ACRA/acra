@@ -118,4 +118,9 @@ public @interface AcraNotification {
      * send a report in the crash dialog.
      */
     @StringRes int resOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return if a normal click on the notification should send the report
+     */
+    boolean sendOnClick() default false;
 }

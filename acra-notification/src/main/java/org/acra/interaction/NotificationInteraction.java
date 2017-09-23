@@ -65,8 +65,12 @@ public class NotificationInteraction implements ReportInteraction {
         if (prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
             return true;
         }
-        final NotificationConfiguration notificationConfig = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class);
         final NotificationManager notificationManager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
+        //can't post notifications
+        if (notificationManager == null) {
+            return true;
+        }
+        final NotificationConfiguration notificationConfig = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class);
         //We have to create a channel on Oreo+, because notifications without one aren't allowed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(CHANNEL, context.getString(notificationConfig.resChannelName()), notificationConfig.resChannelImportance());
@@ -98,7 +102,6 @@ public class NotificationInteraction implements ReportInteraction {
                     context.getString(notificationConfig.resSendWithCommentButtonText()), sendIntent)
                     .addRemoteInput(remoteInput.build()).build());
         }
-        //add actions. On old devices we have no notification buttons, so we have to set the intent to the only possible interaction: click
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final RemoteViews bigView = getBigView(context, notificationConfig);
             notification.addAction(notificationConfig.resSendButtonIcon(), context.getString(notificationConfig.resSendButtonText()), sendIntent)
@@ -107,7 +110,9 @@ public class NotificationInteraction implements ReportInteraction {
                     .setCustomBigContentView(bigView)
                     .setCustomHeadsUpContentView(bigView)
                     .setStyle(new NotificationCompat.DecoratedCustomViewStyle());
-        } else {
+        }
+        //On old devices we have no notification buttons, so we have to set the intent to the only possible interaction: click
+        if (notificationConfig.sendOnClick() || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             notification.setContentIntent(sendIntent);
         }
         notification.setDeleteIntent(discardIntent);
