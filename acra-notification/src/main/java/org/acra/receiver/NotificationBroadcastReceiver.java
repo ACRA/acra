@@ -34,6 +34,7 @@ import org.acra.file.CrashReportPersister;
 import org.acra.interaction.NotificationInteraction;
 import org.acra.sender.SenderService;
 import org.acra.sender.SenderServiceStarter;
+import org.acra.util.SystemServices;
 import org.acra.util.ToastSender;
 import org.json.JSONException;
 
@@ -51,44 +52,51 @@ import static org.acra.ReportField.USER_COMMENT;
 public class NotificationBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        final NotificationManager notificationManager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
-        notificationManager.cancel(NotificationInteraction.NOTIFICATION_ID);
-        switch (intent.getAction()) {
-            case NotificationInteraction.INTENT_ACTION_SEND:
-                final Object reportFileObject = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE);
-                final Object configObject = intent.getSerializableExtra(SenderService.EXTRA_ACRA_CONFIG);
-                if(configObject instanceof CoreConfiguration && reportFileObject instanceof File) {
-                    final CoreConfiguration config = (CoreConfiguration) configObject;
-                    final File reportFile = (File) reportFileObject;
-                    //Grab user comment from notification intent
-                    final Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-                    if (remoteInput != null) {
-                        final CharSequence comment = remoteInput.getCharSequence(NotificationInteraction.KEY_COMMENT);
-                        if (comment != null && !"".equals(comment.toString())) {
-                            final CrashReportPersister persister = new CrashReportPersister();
-                            try {
-                                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
-                                final CrashReportData crashData = persister.load(reportFile);
-                                crashData.putString(USER_COMMENT, comment.toString());
-                                persister.store(crashData, reportFile);
-                            } catch (IOException | JSONException e) {
-                                ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+        try {
+            final NotificationManager notificationManager = SystemServices.getNotificationManager(context);
+            notificationManager.cancel(NotificationInteraction.NOTIFICATION_ID);
+            if (intent.getAction() != null) {
+                switch (intent.getAction()) {
+                    case NotificationInteraction.INTENT_ACTION_SEND:
+                        final Object reportFileObject = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE);
+                        final Object configObject = intent.getSerializableExtra(SenderService.EXTRA_ACRA_CONFIG);
+                        if (configObject instanceof CoreConfiguration && reportFileObject instanceof File) {
+                            final CoreConfiguration config = (CoreConfiguration) configObject;
+                            final File reportFile = (File) reportFileObject;
+                            //Grab user comment from notification intent
+                            final Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+                            if (remoteInput != null) {
+                                final CharSequence comment = remoteInput.getCharSequence(NotificationInteraction.KEY_COMMENT);
+                                if (comment != null && !"".equals(comment.toString())) {
+                                    final CrashReportPersister persister = new CrashReportPersister();
+                                    try {
+                                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+                                        final CrashReportData crashData = persister.load(reportFile);
+                                        crashData.put(USER_COMMENT, comment.toString());
+                                        persister.store(crashData, reportFile);
+                                    } catch (IOException | JSONException e) {
+                                        ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+                                    }
+                                }
+                            }
+                            new SenderServiceStarter(context, config).startService(false, true);
+
+                            // Optional Toast to thank the user
+                            final int toastId = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class).resOkToast();
+                            if (toastId != 0) {
+                                ToastSender.sendToast(context, toastId, Toast.LENGTH_LONG);
                             }
                         }
-                    }
-                    new SenderServiceStarter(context, config).startService(false, true);
-
-                    // Optional Toast to thank the user
-                    final int toastId = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class).resOkToast();
-                    if (toastId != 0) {
-                        ToastSender.sendToast(context, toastId, Toast.LENGTH_LONG);
-                    }
+                        break;
+                    case NotificationInteraction.INTENT_ACTION_DISCARD:
+                        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Discarding reports");
+                        new BulkReportDeleter(context).deleteReports(false, 0);
+                        break;
                 }
-                break;
-            case NotificationInteraction.INTENT_ACTION_DISCARD:
-                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Discarding reports");
-                new BulkReportDeleter(context).deleteReports(false, 0);
-                break;
+            }
+
+        } catch (Throwable t) {
+            ACRA.log.e(LOG_TAG, "Failed to handle notification action", t);
         }
     }
 }

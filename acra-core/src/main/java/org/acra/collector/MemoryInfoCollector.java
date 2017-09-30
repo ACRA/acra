@@ -15,25 +15,23 @@
  */
 package org.acra.collector;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.Element;
-import org.acra.model.NumberElement;
-import org.acra.model.StringElement;
+import org.acra.config.CoreConfiguration;
 import org.acra.util.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -42,26 +40,25 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class MemoryInfoCollector extends Collector {
+final class MemoryInfoCollector extends AbstractReportFieldCollector {
     MemoryInfoCollector() {
         super(ReportField.DUMPSYS_MEMINFO, ReportField.TOTAL_MEM_SIZE, ReportField.AVAILABLE_MEM_SIZE);
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder) && !(reportBuilder.getException() instanceof OutOfMemoryError);
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return super.shouldCollect(context, config, collect, reportBuilder) && !(reportBuilder.getException() instanceof OutOfMemoryError);
     }
 
-    @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
         switch (reportField) {
             case DUMPSYS_MEMINFO:
-                return collectMemInfo();
+                target.put(ReportField.DUMPSYS_MEMINFO, collectMemInfo());
             case TOTAL_MEM_SIZE:
-                return new NumberElement(getTotalInternalMemorySize());
+                target.put(ReportField.TOTAL_MEM_SIZE, getTotalInternalMemorySize());
             case AVAILABLE_MEM_SIZE:
-                return new NumberElement(getAvailableInternalMemorySize());
+                target.put(ReportField.AVAILABLE_MEM_SIZE, getAvailableInternalMemorySize());
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
@@ -74,9 +71,8 @@ final class MemoryInfoCollector extends Collector {
      *
      * @return The execution result.
      */
-    @NonNull
-    private static Element collectMemInfo() {
-
+    @Nullable
+    private String collectMemInfo() {
         try {
             final List<String> commandLine = new ArrayList<String>();
             commandLine.add("dumpsys");
@@ -84,10 +80,10 @@ final class MemoryInfoCollector extends Collector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            return new StringElement(IOUtils.streamToString(process.getInputStream()));
+            return IOUtils.streamToString(process.getInputStream());
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "MemoryInfoCollector.meminfo could not retrieve data", e);
-            return ACRAConstants.NOT_AVAILABLE;
+            return null;
         }
     }
 
@@ -97,7 +93,7 @@ final class MemoryInfoCollector extends Collector {
      *
      * @return Number of bytes available.
      */
-    private static long getAvailableInternalMemorySize() {
+    private long getAvailableInternalMemorySize() {
         final File path = Environment.getDataDirectory();
         final StatFs stat = new StatFs(path.getPath());
         final long blockSize;
@@ -120,7 +116,7 @@ final class MemoryInfoCollector extends Collector {
      *
      * @return Total number of bytes.
      */
-    private static long getTotalInternalMemorySize() {
+    private long getTotalInternalMemorySize() {
         final File path = Environment.getDataDirectory();
         final StatFs stat = new StatFs(path.getPath());
         final long blockSize;

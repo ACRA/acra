@@ -21,13 +21,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,24 +32,28 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.acra.ACRA.LOG_TAG;
-
 /**
  * Collects the content (key/value pairs) of SharedPreferences, from the
  * application default preferences or any other preferences asked by the
  * application developer.
  */
-final class SharedPreferencesCollector extends Collector {
+final class SharedPreferencesCollector extends AbstractReportFieldCollector {
 
-    private final Context context;
-    private final CoreConfiguration config;
-    private final SharedPreferences prefs;
-
-    SharedPreferencesCollector(@NonNull Context context, @NonNull CoreConfiguration config, SharedPreferences prefs) {
+    SharedPreferencesCollector() {
         super(ReportField.USER_EMAIL, ReportField.SHARED_PREFERENCES);
-        this.context = context;
-        this.config = config;
-        this.prefs = prefs;
+    }
+
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
+        switch (reportField) {
+            case USER_EMAIL:
+                target.put(ReportField.USER_EMAIL, new SharedPreferencesFactory(context, config).create().getString(ACRA.PREF_USER_EMAIL_ADDRESS, null));
+            case SHARED_PREFERENCES:
+                target.put(ReportField.SHARED_PREFERENCES, collect(context, config));
+            default:
+                //will not happen if used correctly
+                throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -65,8 +66,8 @@ final class SharedPreferencesCollector extends Collector {
      * @return the collected key/value pairs.
      */
     @NonNull
-    private Element collect() throws JSONException {
-        final ComplexElement result = new ComplexElement();
+    private JSONObject collect(@NonNull Context context, @NonNull CoreConfiguration config) throws JSONException {
+        final JSONObject result = new JSONObject();
 
         // Include the default SharedPreferences
         final Map<String, SharedPreferences> sharedPrefs = new TreeMap<String, SharedPreferences>();
@@ -89,7 +90,7 @@ final class SharedPreferencesCollector extends Collector {
                 result.put(sharedPrefId, "empty");
             } else {
                 for (final Iterator<String> iterator = prefEntries.keySet().iterator(); iterator.hasNext();){
-                    if(filteredKey(iterator.next())){
+                    if(filteredKey(config, iterator.next())){
                         iterator.remove();
                     }
                 }
@@ -107,32 +108,12 @@ final class SharedPreferencesCollector extends Collector {
      * @param key the name of the preference to be checked
      * @return true if the key has to be excluded from reports.
      */
-    private boolean filteredKey(@NonNull String key) {
+    private boolean filteredKey(@NonNull CoreConfiguration config, @NonNull String key) {
         for (String regex : config.excludeMatchingSharedPreferencesKeys()) {
             if (key.matches(regex)) {
                 return true;
             }
         }
         return false;
-    }
-
-    @NonNull
-    @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        switch (reportField) {
-            case USER_EMAIL:
-                final String email = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, null);
-                return email != null ? new StringElement(email) : ACRAConstants.NOT_AVAILABLE;
-            case SHARED_PREFERENCES:
-                try {
-                    return collect();
-                } catch (JSONException e) {
-                    ACRA.log.w(LOG_TAG, "Could not collect shared preferences", e);
-                    return ACRAConstants.NOT_AVAILABLE;
-                }
-            default:
-                //will not happen if used correctly
-                throw new IllegalArgumentException();
-        }
     }
 }

@@ -103,6 +103,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
+    @SuppressWarnings("EmptyMethod")
     protected void preInit(@Nullable Bundle savedInstanceState) {
     }
 
@@ -136,8 +137,8 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         try {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
             final CrashReportData crashData = persister.load(reportFile);
-            crashData.putString(USER_COMMENT, comment == null ? "" : comment);
-            crashData.putString(USER_EMAIL, userEmail == null ? "" : userEmail);
+            crashData.put(USER_COMMENT, comment == null ? "" : comment);
+            crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
             persister.store(crashData, reportFile);
         } catch (IOException | JSONException e) {
             ACRA.log.w(LOG_TAG, "User comment not added: ", e);

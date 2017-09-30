@@ -16,18 +16,14 @@
 
 package org.acra.collector;
 
-import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.Directory;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -44,44 +40,34 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class LogFileCollector extends Collector {
-    private final Context context;
-    private final CoreConfiguration config;
+final class LogFileCollector extends AbstractReportFieldCollector {
 
-    LogFileCollector(Context context, CoreConfiguration config) {
+    LogFileCollector() {
         super(ReportField.APPLICATION_LOG);
-        this.context = context;
-        this.config = config;
     }
 
-    /**
-     * Reads the last lines of a custom log file. The file name is assumed as
-     * located in the {@link Application#getFilesDir()} directory if it does not
-     * contain any path separator.
-     *
-     * @return An Element containing all of the requested lines.
-     */
     @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        try {
-            return new StringElement(IOUtils.streamToString(
-                    getStream(config.applicationLogFileDir(), config.applicationLogFile()),
-                    config.applicationLogFileLines()));
-        } catch (IOException e) {
-            return ACRAConstants.NOT_AVAILABLE;
-        }
+    public Order getOrder() {
+        return Order.LATE;
+    }
+
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws IOException {
+        target.put(ReportField.APPLICATION_LOG, IOUtils.streamToString(
+                getStream(context, config.applicationLogFileDir(), config.applicationLogFile()),
+                config.applicationLogFileLines()));
     }
 
     /**
      * get the application log file location and open it
      *
      * @param directory the base directory for the file path
-     * @param fileName the name of the file
+     * @param fileName  the name of the file
      * @return a stream to the file or an empty stream if the file was not found
      */
     @NonNull
-    private InputStream getStream(@NonNull Directory directory, @NonNull String fileName) {
+    private InputStream getStream(@NonNull Context context, @NonNull Directory directory, @NonNull String fileName) {
         final File file = directory.getFile(context, fileName);
         if (!file.exists()) {
             if (ACRA.DEV_LOGGING)

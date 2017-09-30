@@ -19,23 +19,16 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
-import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.BooleanElement;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
+import org.acra.config.CoreConfiguration;
 import org.acra.util.Installation;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.Set;
 import java.util.UUID;
-
-import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Collects various simple values
@@ -43,7 +36,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.9.1
  */
-final class SimpleValuesCollector extends Collector {
+final class SimpleValuesCollector extends AbstractReportFieldCollector {
     private final Context context;
 
     SimpleValuesCollector(Context context) {
@@ -54,71 +47,60 @@ final class SimpleValuesCollector extends Collector {
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return collect == ReportField.IS_SILENT || collect == ReportField.REPORT_ID || super.shouldCollect(crashReportFields, collect, reportBuilder);
-    }
-
-    @NonNull
-    @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         switch (reportField) {
             case IS_SILENT:
-                return new BooleanElement(reportBuilder.isSendSilently());
+                target.put(ReportField.IS_SILENT, reportBuilder.isSendSilently());
             case REPORT_ID:
-                return new StringElement(UUID.randomUUID().toString());
+                target.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
             case INSTALLATION_ID:
-                return new StringElement(Installation.id(context));
+                target.put(ReportField.INSTALLATION_ID, Installation.id(context));
             case PACKAGE_NAME:
-                return new StringElement(context.getPackageName());
+                target.put(ReportField.PACKAGE_NAME, context.getPackageName());
             case PHONE_MODEL:
-                return new StringElement(Build.MODEL);
+                target.put(ReportField.PHONE_MODEL, Build.MODEL);
             case ANDROID_VERSION:
-                return new StringElement(Build.VERSION.RELEASE);
+                target.put(ReportField.ANDROID_VERSION, Build.VERSION.RELEASE);
             case BRAND:
-                return new StringElement(Build.BRAND);
+                target.put(ReportField.BRAND, Build.BRAND);
             case PRODUCT:
-                return new StringElement(Build.PRODUCT);
+                target.put(ReportField.PRODUCT, Build.PRODUCT);
             case FILE_PATH:
-                return new StringElement(getApplicationFilePath());
+                target.put(ReportField.FILE_PATH, getApplicationFilePath());
             case USER_IP:
-                return new StringElement(getLocalIpAddress());
+                target.put(ReportField.USER_IP, getLocalIpAddress());
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
     }
 
-    @NonNull
-    private String getApplicationFilePath() {
-        final File filesDir = context.getFilesDir();
-        if (filesDir != null) {
-            return filesDir.getAbsolutePath();
-        }
-
-        ACRA.log.w(LOG_TAG, "Couldn't retrieve ApplicationFilePath for : " + context.getPackageName());
-        return "Couldn't retrieve ApplicationFilePath";
+    @Override
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return collect == ReportField.IS_SILENT || collect == ReportField.REPORT_ID || super.shouldCollect(context, config, collect, reportBuilder);
     }
 
     @NonNull
-    private static String getLocalIpAddress() {
+    private String getApplicationFilePath() {
+        return context.getFilesDir().getAbsolutePath();
+    }
+
+    @NonNull
+    private static String getLocalIpAddress() throws SocketException {
         final StringBuilder result = new StringBuilder();
         boolean first = true;
-        try {
-            for (final Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                final NetworkInterface intf = en.nextElement();
-                for (final Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    final InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        if (!first) {
-                            result.append('\n');
-                        }
-                        result.append(inetAddress.getHostAddress());
-                        first = false;
+        for (final Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+            final NetworkInterface intf = en.nextElement();
+            for (final Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                final InetAddress inetAddress = enumIpAddr.nextElement();
+                if (!inetAddress.isLoopbackAddress()) {
+                    if (!first) {
+                        result.append('\n');
                     }
+                    result.append(inetAddress.getHostAddress());
+                    first = false;
                 }
             }
-        } catch (SocketException ex) {
-            ACRA.log.w(LOG_TAG, ex.toString());
         }
         return result.toString();
     }

@@ -15,19 +15,18 @@
  */
 package org.acra.collector;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
+import org.acra.config.CoreConfiguration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Set;
 
 /**
  * Collects the holy stacktrace
@@ -35,29 +34,33 @@ import java.util.Set;
  * @author F43nd1r
  * @since 4.9.1
  */
-final class StacktraceCollector extends Collector {
+final class StacktraceCollector extends AbstractReportFieldCollector {
     StacktraceCollector() {
         super(ReportField.STACK_TRACE, ReportField.STACK_TRACE_HASH);
     }
 
-    @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return collect == ReportField.STACK_TRACE || super.shouldCollect(crashReportFields, collect, reportBuilder);
-    }
-
     @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    public Order getOrder() {
+        return Order.FIRST;
+    }
+
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         switch (reportField) {
             case STACK_TRACE:
-                return new StringElement(
-                        getStackTrace(reportBuilder.getMessage(), reportBuilder.getException()));
+                target.put(ReportField.STACK_TRACE, getStackTrace(reportBuilder.getMessage(), reportBuilder.getException()));
             case STACK_TRACE_HASH:
-                return new StringElement(getStackTraceHash(reportBuilder.getException()));
+                target.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(reportBuilder.getException()));
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return collect == ReportField.STACK_TRACE || super.shouldCollect(context, config, collect, reportBuilder);
     }
 
     @NonNull

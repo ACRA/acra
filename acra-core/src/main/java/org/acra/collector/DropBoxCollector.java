@@ -22,13 +22,13 @@ import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
 import org.acra.util.PackageManagerWrapper;
+import org.acra.util.SystemServices;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +36,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -49,18 +48,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class DropBoxCollector extends Collector {
-
-    private final Context context;
-    private final CoreConfiguration config;
-    private final PackageManagerWrapper pm;
-
-    DropBoxCollector(Context context, CoreConfiguration config, PackageManagerWrapper pm){
-        super(ReportField.DROPBOX);
-        this.context = context;
-        this.config = config;
-        this.pm = pm;
-    }
+final class DropBoxCollector extends AbstractReportFieldCollector {
 
     private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
@@ -69,37 +57,36 @@ final class DropBoxCollector extends Collector {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used for backwards compatibility)
 
-    /**
-     * Read latest messages contained in the DropBox for system related tags and
-     * optional developer-set tags.
-     *
-     * @return An Element listing messages retrieved.
-     */
+    DropBoxCollector() {
+        super(ReportField.DROPBOX);
+    }
+
     @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        try {
-            final DropBoxManager dropbox = (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
+    public Order getOrder() {
+        return Order.FIRST;
+    }
 
-            final Calendar calendar = Calendar.getInstance();
-            calendar.roll(Calendar.MINUTE, -config.dropboxCollectionMinutes());
-            final long time = calendar.getTimeInMillis();
-            dateFormat.format(calendar.getTime());
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+        final DropBoxManager dropbox = SystemServices.getDropBoxManager(context);
 
-            final List<String> tags = new ArrayList<String>();
-            if (config.includeDropBoxSystemTags()) {
-                tags.addAll(Arrays.asList(SYSTEM_TAGS));
-            }
-            final List<String> additionalTags = config.additionalDropBoxTags();
-            if (!additionalTags.isEmpty()) {
-                tags.addAll(additionalTags);
-            }
+        final Calendar calendar = Calendar.getInstance();
+        calendar.roll(Calendar.MINUTE, -config.dropboxCollectionMinutes());
+        final long time = calendar.getTimeInMillis();
+        dateFormat.format(calendar.getTime());
 
-            if (tags.isEmpty()) {
-                return ACRAConstants.NOT_AVAILABLE;
-            }
+        final List<String> tags = new ArrayList<String>();
+        if (config.includeDropBoxSystemTags()) {
+            tags.addAll(Arrays.asList(SYSTEM_TAGS));
+        }
+        final List<String> additionalTags = config.additionalDropBoxTags();
+        if (!additionalTags.isEmpty()) {
+            tags.addAll(additionalTags);
+        }
 
-            final ComplexElement dropboxContent = new ComplexElement();
+        if (!tags.isEmpty()) {
+            final JSONObject dropboxContent = new JSONObject();
             for (String tag : tags) {
                 final StringBuilder builder = new StringBuilder();
                 DropBoxManager.Entry entry = dropbox.getNextEntry(tag, time);
@@ -120,19 +107,19 @@ final class DropBoxCollector extends Collector {
                     entry.close();
                     entry = dropbox.getNextEntry(tag, msec);
                 }
-                dropboxContent.put(tag, builder.toString());
+                try {
+                    dropboxContent.put(tag, builder.toString());
+                } catch (JSONException e) {
+                    ACRA.log.w(LOG_TAG, "Failed to collect data for tag " + tag, e);
+                }
             }
-            return dropboxContent;
-
-        } catch (Exception e) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "DropBoxManager not available.");
+            target.put(ReportField.DROPBOX, dropboxContent);
         }
-
-        return ACRAConstants.NOT_AVAILABLE;
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder) && (pm.hasPermission(Manifest.permission.READ_LOGS) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return super.shouldCollect(context, config, collect, reportBuilder) &&
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN || new PackageManagerWrapper(context).hasPermission(Manifest.permission.READ_LOGS));
     }
 }

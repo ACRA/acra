@@ -29,8 +29,7 @@ import android.view.Surface;
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
+import org.acra.config.CoreConfiguration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,20 +42,15 @@ import java.util.Arrays;
  *
  * @author (original author unknown) & F43nd1r
  */
-final class DisplayManagerCollector extends Collector {
-    private final Context context;
-    private final SparseArray<String> flagNames = new SparseArray<String>();
+final class DisplayManagerCollector extends AbstractReportFieldCollector {
 
-    DisplayManagerCollector(Context context) {
+    DisplayManagerCollector() {
         super(ReportField.DISPLAY);
-        this.context = context;
     }
 
-
-    @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final ComplexElement result = new ComplexElement();
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+        final JSONObject result = new JSONObject();
         for (Display display : DisplayManagerCompat.getInstance(context).getDisplays()) {
             try {
                 result.put(String.valueOf(display.getDisplayId()), collectDisplayData(display));
@@ -64,8 +58,7 @@ final class DisplayManagerCollector extends Collector {
                 ACRA.log.w(ACRA.LOG_TAG, "Failed to collect data for display " + display.getDisplayId(), e);
             }
         }
-
-        return result;
+        target.put(ReportField.DISPLAY, result);
     }
 
     @NonNull
@@ -93,18 +86,18 @@ final class DisplayManagerCollector extends Collector {
         return result;
     }
 
-    private static void collectIsValid(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectIsValid(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             container.put("isValid", display.isValid());
         }
     }
 
-    private static void collectRotation(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectRotation(@NonNull Display display, JSONObject container) throws JSONException {
         container.put("rotation", rotationToString(display.getRotation()));
     }
 
     @NonNull
-    private static String rotationToString(int rotation) {
+    private String rotationToString(int rotation) {
         switch (rotation) {
             case Surface.ROTATION_0:
                 return "ROTATION_0";
@@ -119,7 +112,7 @@ final class DisplayManagerCollector extends Collector {
         }
     }
 
-    private static void collectRectSize(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectRectSize(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             final Rect size = new Rect();
             display.getRectSize(size);
@@ -127,7 +120,7 @@ final class DisplayManagerCollector extends Collector {
         }
     }
 
-    private static void collectSize(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectSize(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             final Point size = new Point();
             display.getSize(size);
@@ -135,7 +128,7 @@ final class DisplayManagerCollector extends Collector {
         }
     }
 
-    private static void collectRealSize(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectRealSize(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final Point size = new Point();
             display.getRealSize(size);
@@ -143,7 +136,7 @@ final class DisplayManagerCollector extends Collector {
         }
     }
 
-    private static void collectCurrentSizeRange(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
+    private void collectCurrentSizeRange(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final Point smallest = new Point();
             final Point largest = new Point();
@@ -157,6 +150,7 @@ final class DisplayManagerCollector extends Collector {
 
     private void collectFlags(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            final SparseArray<String> flagNames = new SparseArray<>();
             final int flags = display.getFlags();
             for (Field field : display.getClass().getFields()) {
                 if (field.getName().startsWith("FLAG_")) {
@@ -166,17 +160,17 @@ final class DisplayManagerCollector extends Collector {
                     }
                 }
             }
-            container.put("flags", activeFlags(flags));
+            container.put("flags", activeFlags(flagNames, flags));
         }
     }
 
-    private static void collectName(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectName(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             container.put("name", display.getName());
         }
     }
 
-    private static void collectMetrics(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectMetrics(@NonNull Display display, JSONObject container) throws JSONException {
         final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         final JSONObject result = new JSONObject();
@@ -184,7 +178,7 @@ final class DisplayManagerCollector extends Collector {
         container.put("metrics", result);
     }
 
-    private static void collectRealMetrics(@NonNull Display display, JSONObject container) throws JSONException {
+    private void collectRealMetrics(@NonNull Display display, JSONObject container) throws JSONException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             final DisplayMetrics metrics = new DisplayMetrics();
             display.getRealMetrics(metrics);
@@ -194,7 +188,7 @@ final class DisplayManagerCollector extends Collector {
         }
     }
 
-    private static void collectMetrics(@NonNull DisplayMetrics metrics, JSONObject container) throws JSONException {
+    private void collectMetrics(@NonNull DisplayMetrics metrics, JSONObject container) throws JSONException {
         container.put("density", metrics.density)
                 .put("densityDpi", metrics.densityDpi)
                 .put("scaledDensity", "x" + metrics.scaledDensity)
@@ -214,7 +208,7 @@ final class DisplayManagerCollector extends Collector {
      * separated by '+'.
      */
     @NonNull
-    private String activeFlags(int bitfield) {
+    private String activeFlags(SparseArray<String> flagNames, int bitfield) {
         final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value
@@ -230,5 +224,4 @@ final class DisplayManagerCollector extends Collector {
         }
         return result.toString();
     }
-
 }

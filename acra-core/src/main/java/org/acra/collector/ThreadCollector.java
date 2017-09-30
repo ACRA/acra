@@ -16,49 +16,44 @@
 
 package org.acra.collector;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
-import org.json.JSONException;
+import org.acra.config.CoreConfiguration;
+import org.json.JSONObject;
 
 /**
  * Collects some data identifying a Thread
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class ThreadCollector extends Collector {
+final class ThreadCollector extends AbstractReportFieldCollector {
     ThreadCollector() {
         super(ReportField.THREAD_DETAILS);
     }
 
-    /**
-     * collects some data identifying the crashed thread
-     *
-     * @return the information including the id, name and priority of the thread.
-     */
     @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    public Order getOrder() {
+        return Order.LATE;
+    }
+
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         final Thread t = reportBuilder.getUncaughtExceptionThread();
-        final ComplexElement result = new ComplexElement();
         if (t != null) {
-            try {
-                result.put("id", t.getId());
-                result.put("name", t.getName());
-                result.put("priority", t.getPriority());
-                if (t.getThreadGroup() != null) {
-                    result.put("groupName", t.getThreadGroup().getName());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            final JSONObject result = new JSONObject();
+            result.put("id", t.getId());
+            result.put("name", t.getName());
+            result.put("priority", t.getPriority());
+            if (t.getThreadGroup() != null) {
+                result.put("groupName", t.getThreadGroup().getName());
             }
+            target.put(ReportField.THREAD_DETAILS, result);
         } else {
-            return ACRAConstants.NOT_AVAILABLE;
+            target.put(ReportField.THREAD_DETAILS, (String) null);
         }
-        return result;
     }
 }

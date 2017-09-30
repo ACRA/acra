@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
 import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.util.IOUtils;
-import org.acra.util.JsonUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +55,7 @@ public final class CrashReportPersister {
 
         final InputStream in = new BufferedInputStream(new FileInputStream(file), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
         try {
-            return JsonUtils.toCrashReportData(new JSONObject(IOUtils.streamToString(in)));
+            return new CrashReportData(IOUtils.streamToString(in));
         }finally {
             IOUtils.safeClose(in);
         }
@@ -72,6 +71,6 @@ public final class CrashReportPersister {
      * @throws java.io.IOException if the CrashReportData could not be written to the OutputStream.
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException {
-        IOUtils.writeStringToFile(file, crashData.toJSON().toString());
+        IOUtils.writeStringToFile(file, crashData.toJSON());
     }
 }

@@ -21,13 +21,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,8 +33,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import static org.acra.ACRA.LOG_TAG;
-
 /**
  * Collector retrieving key/value pairs from static fields and getters.
  * Reflection API usage allows to retrieve data without having to
@@ -47,14 +41,34 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin
  */
-final class ReflectionCollector extends Collector {
-    private final Context context;
-    private final CoreConfiguration config;
+final class ReflectionCollector extends AbstractReportFieldCollector {
 
-    ReflectionCollector(Context context, CoreConfiguration config) {
+    ReflectionCollector() {
         super(ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.ENVIRONMENT);
-        this.context = context;
-        this.config = config;
+    }
+
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target)
+            throws JSONException, ClassNotFoundException {
+        final JSONObject result = new JSONObject();
+        switch (reportField) {
+            case BUILD:
+                collectConstants(Build.class, result);
+                final JSONObject version = new JSONObject();
+                collectConstants(Build.VERSION.class, version);
+                result.put("VERSION", version);
+                break;
+            case BUILD_CONFIG:
+                collectConstants(getBuildConfigClass(context, config), result);
+                break;
+            case ENVIRONMENT:
+                collectStaticGettersResults(Environment.class, result);
+                break;
+            default:
+                //will not happen if used correctly
+                throw new IllegalArgumentException();
+        }
+        target.put(reportField, result);
     }
 
     /**
@@ -87,7 +101,7 @@ final class ReflectionCollector extends Collector {
      *
      * @param someClass the class to be inspected.
      */
-    private static void collectStaticGettersResults(@NonNull Class<?> someClass, JSONObject container) throws JSONException {
+    private void collectStaticGettersResults(@NonNull Class<?> someClass, JSONObject container) throws JSONException {
         final Method[] methods = someClass.getMethods();
         for (final Method method : methods) {
             if (method.getParameterTypes().length == 0
@@ -106,46 +120,14 @@ final class ReflectionCollector extends Collector {
         }
     }
 
-    @NonNull
-    @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final ComplexElement result = new ComplexElement();
-        try {
-            switch (reportField) {
-                case BUILD:
-                    collectConstants(Build.class, result);
-                    final JSONObject version = new JSONObject();
-                    collectConstants(Build.VERSION.class, version);
-                    result.put("VERSION", version);
-                    break;
-                case BUILD_CONFIG:
-                    try {
-                        collectConstants(getBuildConfigClass(), result);
-                    } catch (ClassNotFoundException e) {
-                        //already logged in getBuildConfigClass
-                    }
-                    break;
-                case ENVIRONMENT:
-                    collectStaticGettersResults(Environment.class, result);
-                    break;
-                default:
-                    //will not happen if used correctly
-                    throw new IllegalArgumentException();
-            }
-        } catch (JSONException e) {
-            ACRA.log.w("Couldn't collect constants", e);
-            return ACRAConstants.NOT_AVAILABLE;
-        }
-        return result;
-    }
-
     /**
      * get the configured BuildConfigClass or guess it if not configured
+     *
      * @return the BuildConfigClass
      * @throws ClassNotFoundException if the class cannot be found
      */
     @NonNull
-    private Class<?> getBuildConfigClass() throws ClassNotFoundException {
+    private Class<?> getBuildConfigClass(@NonNull Context context, @NonNull CoreConfiguration config) throws ClassNotFoundException {
         final Class configuredBuildConfig = config.buildConfigClass();
         if (!configuredBuildConfig.equals(Object.class)) {
             // If set via annotations or programmatically then it will have a real value,
@@ -154,11 +136,6 @@ final class ReflectionCollector extends Collector {
         }
 
         final String className = context.getPackageName() + ".BuildConfig";
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            ACRA.log.e(LOG_TAG, "Not adding buildConfig to log. Class Not found : " + className + ". Please configure 'buildConfigClass' in your ACRA config");
-            throw e;
-        }
+        return Class.forName(className);
     }
 }

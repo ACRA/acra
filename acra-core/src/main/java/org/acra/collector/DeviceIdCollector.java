@@ -18,22 +18,16 @@ package org.acra.collector;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.telephony.TelephonyManager;
+import android.support.annotation.RequiresPermission;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
+import org.acra.config.CoreConfiguration;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.PackageManagerWrapper;
-
-import java.util.Set;
-
-import static org.acra.ACRA.LOG_TAG;
+import org.acra.util.SystemServices;
 
 /**
  * Collects the device ID
@@ -41,45 +35,22 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 4.9.1
  */
-final class DeviceIdCollector extends Collector {
-    private final Context context;
-    private final PackageManagerWrapper pm;
-    private final SharedPreferences prefs;
+final class DeviceIdCollector extends AbstractReportFieldCollector {
 
-    DeviceIdCollector(Context context, PackageManagerWrapper pm, SharedPreferences prefs) {
+    DeviceIdCollector() {
         super(ReportField.DEVICE_ID);
-        this.context = context;
-        this.pm = pm;
-        this.prefs = prefs;
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder) && prefs.getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
-                && pm.hasPermission(Manifest.permission.READ_PHONE_STATE);
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return super.shouldCollect(context, config, collect, reportBuilder) && new SharedPreferencesFactory(context, config).create().getBoolean(ACRA.PREF_ENABLE_DEVICE_ID, true)
+                && new PackageManagerWrapper(context).hasPermission(Manifest.permission.READ_PHONE_STATE);
     }
 
-    @NonNull
-    @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final String result = getDeviceId();
-        return result != null ? new StringElement(result) : ACRAConstants.NOT_AVAILABLE;
-    }
-
-    /**
-     * Returns the DeviceId according to the TelephonyManager.
-     *
-     * @return Returns the DeviceId according to the TelephonyManager or null if there is no TelephonyManager.
-     */
     @SuppressLint("HardwareIds")
-    @Nullable
-    private String getDeviceId() {
-        try {
-            final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            return tm.getDeviceId();
-        } catch (RuntimeException e) {
-            ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceId for : " + context.getPackageName(), e);
-            return null;
-        }
+    @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+        target.put(ReportField.DEVICE_ID, SystemServices.getTelephonyManager(context).getDeviceId());
     }
 }

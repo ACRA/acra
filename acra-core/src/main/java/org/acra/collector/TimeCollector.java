@@ -15,19 +15,18 @@
  */
 package org.acra.collector;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
+import org.acra.config.CoreConfiguration;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * collects time information
@@ -35,22 +34,15 @@ import java.util.Set;
  * @author F43nd1r
  * @since 4.9.1
  */
-final class TimeCollector extends Collector {
-    private final Calendar appStartDate;
+final class TimeCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
+    private Calendar appStartDate;
 
-    TimeCollector(Calendar appStartDate) {
+    TimeCollector() {
         super(ReportField.USER_APP_START_DATE, ReportField.USER_CRASH_DATE);
-        this.appStartDate = appStartDate;
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return true;
-    }
-
-    @NonNull
-    @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         final Calendar time;
         switch (reportField) {
             case USER_APP_START_DATE:
@@ -63,11 +55,23 @@ final class TimeCollector extends Collector {
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
         }
-        return new StringElement(getTimeString(time));
+        target.put(reportField, getTimeString(time));
+    }
+
+    @Override
+    public void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config) {
+        if (config.reportContent().contains(ReportField.USER_APP_START_DATE)) {
+            appStartDate = new GregorianCalendar();
+        }
+    }
+
+    @Override
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return true;
     }
 
     @NonNull
-    private static String getTimeString(@NonNull Calendar time) {
+    private String getTimeString(@NonNull Calendar time) {
         final SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
         return format.format(time.getTimeInMillis());
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016
+ * Copyright (c) 2017
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.acra.model;
+package org.acra.collector;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import org.acra.config.CoreConfiguration;
 
 /**
- * @author F43nd1r
- * @since 12.10.2016
+ * Created by Lukas on 29.09.2017.
  */
-public interface Element {
-    /**
-     * @return this elements json value.
-     * This must be one of the valid json types: bull, boolean, number, String, JSONObject or JSONArray
-     */
-    Object value();
 
-    String[] flatten();
+@SuppressWarnings("WeakerAccess")
+public interface ApplicationStartupCollector extends Collector {
+    void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config);
 }

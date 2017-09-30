@@ -17,6 +17,7 @@
 package org.acra.collector;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
@@ -24,19 +25,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
-import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
+import org.acra.config.CoreConfiguration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Set;
 
 /**
  * Collects data about available codecs on the device through the MediaCodecList
@@ -44,7 +41,7 @@ import java.util.Set;
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class MediaCodecListCollector extends Collector {
+final class MediaCodecListCollector extends AbstractReportFieldCollector {
 
     private enum CodecType {
         AVC, H263, MPEG4, AAC
@@ -70,21 +67,20 @@ final class MediaCodecListCollector extends Collector {
         super(ReportField.MEDIA_CODEC_LIST);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        try {
-            return collectMediaCodecList();
-        } catch (JSONException e) {
-            ACRA.log.w("Could not collect media codecs", e);
-            return ACRAConstants.NOT_AVAILABLE;
-        }
+    public Order getOrder() {
+        return Order.LATE;
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws JSONException {
+        target.put(ReportField.MEDIA_CODEC_LIST, collectMediaCodecList());
+    }
+
+    @Override
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return super.shouldCollect(context, config, collect, reportBuilder) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
 
     /**
@@ -144,7 +140,7 @@ final class MediaCodecListCollector extends Collector {
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @NonNull
-    private Element collectMediaCodecList() throws JSONException {
+    private JSONObject collectMediaCodecList() throws JSONException {
         prepare();
         final MediaCodecInfo[] infos;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -159,7 +155,7 @@ final class MediaCodecListCollector extends Collector {
             infos = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
         }
 
-        final ComplexElement result = new ComplexElement();
+        final JSONObject result = new JSONObject();
         for (int i = 0; i < infos.length; i++) {
             final MediaCodecInfo codecInfo = infos[i];
             final JSONObject codec = new JSONObject();

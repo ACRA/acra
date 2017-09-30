@@ -21,9 +21,9 @@ public class BinaryHttpRequest extends BaseHttpRequest<Uri> {
     @NonNull
     private final Context context;
 
-    public BinaryHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method,
+    public BinaryHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context,
                              @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
-        super(config, context, method, login, password, connectionTimeOut, socketTimeOut, headers);
+        super(config, context, HttpSender.Method.PUT, login, password, connectionTimeOut, socketTimeOut, headers);
         this.context = context;
     }
 

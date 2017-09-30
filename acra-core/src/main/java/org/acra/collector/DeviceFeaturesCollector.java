@@ -20,39 +20,26 @@ import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
-import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
-
-import static org.acra.ACRA.LOG_TAG;
+import org.acra.config.CoreConfiguration;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Features declared as available on the device.
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class DeviceFeaturesCollector extends Collector {
-    private final Context context;
+final class DeviceFeaturesCollector extends AbstractReportFieldCollector {
 
-    DeviceFeaturesCollector(Context context) {
+    DeviceFeaturesCollector() {
         super(ReportField.DEVICE_FEATURES);
-        this.context = context;
     }
 
-    /**
-     * collects device features
-     *
-     * @param reportField   the ReportField to collect
-     * @param reportBuilder the current reportBuilder
-     * @return Element of all device feature names
-     */
-    @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final ComplexElement result = new ComplexElement();
-        try {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws JSONException {
+            final JSONObject result = new JSONObject();
             final PackageManager pm = context.getPackageManager();
             final FeatureInfo[] features = pm.getSystemAvailableFeatures();
             for (final FeatureInfo feature : features) {
@@ -63,10 +50,6 @@ final class DeviceFeaturesCollector extends Collector {
                     result.put("glEsVersion", feature.getGlEsVersion());
                 }
             }
-        } catch (Throwable e) {
-            ACRA.log.w(LOG_TAG, "Couldn't retrieve DeviceFeatures for " + context.getPackageName(), e);
-        }
-
-        return result;
+            target.put(ReportField.DEVICE_FEATURES, result);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016
+ * Copyright (c) 2017
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package org.acra.model;
+package org.acra.collector;
 
 /**
- * @author F43nd1r
- * @since 13.10.2016
+ * Created by Lukas on 29.09.2017.
  */
 
-public class BooleanElement implements Element {
-    private final boolean content;
-
-    public BooleanElement(boolean content) {
-        this.content = content;
+@SuppressWarnings("WeakerAccess")
+public class CollectorException extends Exception {
+    public CollectorException() {
     }
 
-    @Override
-    public Object value() {
-        return content;
+    public CollectorException(String message) {
+        super(message);
     }
 
-    @Override
-    public String[] flatten() {
-        return new String[]{toString()};
+    public CollectorException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public String toString() {
-        return String.valueOf(content);
+    public CollectorException(Throwable cause) {
+        super(cause);
     }
 }

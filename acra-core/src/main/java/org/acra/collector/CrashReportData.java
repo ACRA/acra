@@ -17,16 +17,21 @@
 package org.acra.collector;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.model.BooleanElement;
-import org.acra.model.Element;
-import org.acra.model.NumberElement;
-import org.acra.model.StringElement;
-import org.acra.util.JsonUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,42 +41,184 @@ import java.util.Properties;
  * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
  * amounts of android time in the generation of a date comment when storing to file.
  */
-public final class CrashReportData extends EnumMap<ReportField, Element> {
+public final class CrashReportData {
+    private final JSONObject content;
 
-    private static final long serialVersionUID = 5002578634500874842L;
-
-    /**
-     * Constructs a new {@code Properties} object.
-     */
     public CrashReportData() {
-        super(ReportField.class);
+        content = new JSONObject();
+    }
+
+    public CrashReportData(String json) throws JSONException {
+        content = new JSONObject(json);
+    }
+
+    public void put(@NonNull String key, boolean value) {
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + String.valueOf(value));
+        }
+    }
+
+    public void put(@NonNull String key, double value) {
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + String.valueOf(value));
+        }
+    }
+
+    public void put(@NonNull String key, int value) {
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + String.valueOf(value));
+        }
+    }
+
+    public void put(@NonNull String key, long value) {
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + String.valueOf(value));
+        }
+    }
+
+    public void put(@NonNull String key, @Nullable String value) {
+        if (value == null) {
+            putNA(key);
+            return;
+        }
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + value);
+        }
+    }
+
+    public void put(@NonNull String key, @Nullable JSONObject value) {
+        if (value == null) {
+            putNA(key);
+            return;
+        }
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + String.valueOf(value));
+        }
+    }
+
+    public void put(@NonNull String key, @Nullable JSONArray value) {
+        if (value == null) {
+            putNA(key);
+            return;
+        }
+        try {
+            content.put(key, value);
+        } catch (JSONException e) {
+            ACRA.log.w(ACRA.LOG_TAG, "Failed to put value into CrashReportData: " + String.valueOf(value));
+        }
+    }
+
+    public void put(@NonNull ReportField key, boolean value) {
+        put(key.toString(), value);
+    }
+
+    public void put(@NonNull ReportField key, double value) {
+        put(key.toString(), value);
+    }
+
+    public void put(@NonNull ReportField key, int value) {
+        put(key.toString(), value);
+    }
+
+    public void put(@NonNull ReportField key, long value) {
+        put(key.toString(), value);
+    }
+
+    public void put(@NonNull ReportField key, @Nullable String value) {
+        put(key.toString(), value);
+    }
+
+    public void put(@NonNull ReportField key, @Nullable JSONObject value) {
+        put(key.toString(), value);
+    }
+
+    public void put(@NonNull ReportField key, @Nullable JSONArray value) {
+        put(key.toString(), value);
+    }
+
+    private void putNA(@NonNull String key) {
+        try {
+            content.put(key, ACRAConstants.NOT_AVAILABLE);
+        } catch (JSONException ignored) {
+        }
     }
 
     /**
-     * Returns the property with the specified name.
+     * Returns the property with the specified key.
      *
-     * @param key the name of the property to find.
-     * @return the named property value, or {@code null} if it can't be found.
+     * @param key the key of the property to find.
+     * @return the keyd property value, or {@code null} if it can't be found.
      */
-    public String getProperty(@NonNull ReportField key) {
-        return super.get(key).toString();
+    public String getString(@NonNull ReportField key) {
+        return content.optString(key.toString());
     }
 
-    public void putString(@NonNull ReportField key, String value) {
-        put(key, new StringElement(value));
+    public Object get(@NonNull String key) {
+        return content.opt(key);
     }
 
-    public void putNumber(@NonNull ReportField key, Number value) {
-        put(key, new NumberElement(value));
+    public boolean containsKey(@NonNull String key) {
+        return content.has(key);
     }
 
-    public void putBoolean(@NonNull ReportField key, boolean value) {
-        put(key, new BooleanElement(value));
+    public boolean containsKey(@NonNull ReportField key) {
+        return containsKey(key.toString());
     }
 
     @NonNull
-    public JSONObject toJSON() {
-        return JsonUtils.toJson(this);
+    public String toJSON() {
+        return content.toString();
     }
+
+    public Map<String, String> toStringMap(String joiner) {
+        final Map<String, String> map = new HashMap<>(content.length());
+        for (final Iterator<String> iterator = content.keys(); iterator.hasNext(); ) {
+            final String key = iterator.next();
+            map.put(key, valueToString(joiner, get(key)));
+        }
+        return map;
+    }
+
+    private String valueToString(String joiner, Object value) {
+        if (value instanceof JSONObject) {
+            return TextUtils.join(joiner, flatten((JSONObject) value));
+        } else {
+            return String.valueOf(value);
+        }
+    }
+
+    private List<String> flatten(JSONObject json)  {
+        final List<String> result = new ArrayList<>();
+        for (final Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
+            final String key = iterator.next();
+            Object value;
+            try {
+                value = json.get(key);
+            } catch (JSONException e) {
+                value = null;
+            }
+            if (value instanceof JSONObject) {
+                for (String s : flatten((JSONObject) value)) {
+                    result.add(key + "." + s);
+                }
+            } else {
+                result.add(key + "=" + value);
+            }
+        }
+        return result;
+    }
+
 
 }

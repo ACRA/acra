@@ -16,6 +16,7 @@
 package org.acra.collector;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,12 +24,9 @@ import android.support.annotation.Nullable;
 import com.android.internal.util.Predicate;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
-import org.acra.model.Element;
-import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
 
@@ -36,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -46,15 +43,16 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class LogCatCollector extends Collector {
+final class LogCatCollector extends AbstractReportFieldCollector {
 
-    private final CoreConfiguration config;
-    private final PackageManagerWrapper pm;
-
-    LogCatCollector(CoreConfiguration config, PackageManagerWrapper pm) {
+    LogCatCollector() {
         super(ReportField.LOGCAT, ReportField.EVENTSLOG, ReportField.RADIOLOG);
-        this.config = config;
-        this.pm = pm;
+    }
+
+    @NonNull
+    @Override
+    public Order getOrder() {
+        return Order.FIRST;
     }
 
     /**
@@ -69,7 +67,7 @@ final class LogCatCollector extends Collector {
      * report generation time and a bigger footprint on the device data
      * plan consumption.
      */
-    private Element collectLogCat(@Nullable String bufferName) {
+    private String collectLogCat(@NonNull CoreConfiguration config, @Nullable String bufferName) throws IOException {
         final int myPid = android.os.Process.myPid();
         final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
@@ -90,40 +88,30 @@ final class LogCatCollector extends Collector {
             tailCount = -1;
         }
 
-        Element logcat;
         commandLine.addAll(logcatArgumentsList);
+        final Process process = new ProcessBuilder().command(commandLine).redirectErrorStream(true).start();
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
         try {
-            final Process process =  new ProcessBuilder().command(commandLine).redirectErrorStream(true).start();
-
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
-
-            logcat = new StringElement(streamToString(process.getInputStream(), new Predicate<String>() {
+            return streamToString(config, process.getInputStream(), new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
                     return myPidStr == null || s.contains(myPidStr);
                 }
-            }, tailCount));
+            }, tailCount);
+        } finally {
             process.destroy();
-
-        } catch (IOException e) {
-            ACRA.log.e(LOG_TAG, "LogCatCollector.collectLogCat could not retrieve data.", e);
-            logcat = ACRAConstants.NOT_AVAILABLE;
         }
-
-        return logcat;
     }
 
     @Override
-    boolean shouldCollect(Set<ReportField> crashReportFields, ReportField collect, ReportBuilder reportBuilder) {
-        return super.shouldCollect(crashReportFields, collect, reportBuilder)
-                && (pm.hasPermission(Manifest.permission.READ_LOGS)
-                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+    boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
+        return super.shouldCollect(context, config, collect, reportBuilder) &&
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN || new PackageManagerWrapper(context).hasPermission(Manifest.permission.READ_LOGS));
     }
 
-    @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws IOException {
         String bufferName = null;
         switch (reportField) {
             case LOGCAT:
@@ -136,7 +124,7 @@ final class LogCatCollector extends Collector {
                 bufferName = "radio";
                 break;
         }
-        return collectLogCat(bufferName);
+        target.put(reportField, collectLogCat(config, bufferName));
     }
 
     /**
@@ -150,7 +138,7 @@ final class LogCatCollector extends Collector {
      * @throws IOException if the stream cannot be read.
      */
     @NonNull
-    private String streamToString(@NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+    private String streamToString(@NonNull CoreConfiguration config, @NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
         if (config.nonBlockingReadForLogcat()) {
             return IOUtils.streamToStringNonBlockingRead(input, filter, limit);
         } else {

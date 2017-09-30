@@ -18,15 +18,17 @@ package org.acra.collector;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
+import org.acra.config.CoreConfiguration;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -45,7 +47,8 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin and F43nd1r
  */
-public final class ConfigurationCollector extends Collector {
+@AutoService(Collector.class)
+public final class ConfigurationCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
 
     private static final String SUFFIX_MASK = "_MASK";
     private static final String FIELD_SCREENLAYOUT = "screenLayout";
@@ -62,25 +65,30 @@ public final class ConfigurationCollector extends Collector {
     private static final String PREFIX_KEYBOARD = "KEYBOARD_";
     private static final String PREFIX_HARDKEYBOARDHIDDEN = "HARDKEYBOARDHIDDEN_";
 
-    private final Context context;
-    private final Element initialConfiguration;
+    private JSONObject initialConfiguration;
 
-    public ConfigurationCollector(@NonNull Context context, @NonNull Element initialConfiguration) {
+    public ConfigurationCollector() {
         super(ReportField.INITIAL_CONFIGURATION, ReportField.CRASH_CONFIGURATION);
-        this.context = context;
-        this.initialConfiguration = initialConfiguration;
     }
 
     @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config,
+                 @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
         switch (reportField) {
             case INITIAL_CONFIGURATION:
-                return initialConfiguration;
+                target.put(ReportField.INITIAL_CONFIGURATION, initialConfiguration);
             case CRASH_CONFIGURATION:
-                return collectConfiguration(context);
+                target.put(ReportField.CRASH_CONFIGURATION, collectConfiguration(context));
             default:
                 throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config) {
+        if(config.reportContent().contains(ReportField.INITIAL_CONFIGURATION)) {
+            initialConfiguration = collectConfiguration(context);
         }
     }
 
@@ -93,8 +101,8 @@ public final class ConfigurationCollector extends Collector {
      * with values replaced by constant names.
      */
     @NonNull
-    private static Element configToElement(@NonNull Configuration conf) {
-        final ComplexElement result = new ComplexElement();
+    private JSONObject configToJson(@NonNull Configuration conf) {
+        final JSONObject result = new JSONObject();
         final Map<String, SparseArray<String>> valueArrays = getValueArrays();
         for (final Field f : conf.getClass().getFields()) {
             try {
@@ -119,7 +127,7 @@ public final class ConfigurationCollector extends Collector {
         return result;
     }
 
-    private static Map<String, SparseArray<String>> getValueArrays() {
+    private Map<String, SparseArray<String>> getValueArrays() {
         final Map<String, SparseArray<String>> valueArrays = new HashMap<String, SparseArray<String>>();
         final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<String>();
         final SparseArray<String> keyboardValues = new SparseArray<String>();
@@ -187,7 +195,7 @@ public final class ConfigurationCollector extends Collector {
      * constant name.
      * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private static Object getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
+    private Object getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
             return f.getInt(conf);
@@ -223,7 +231,7 @@ public final class ConfigurationCollector extends Collector {
      * separated by '+'.
      */
     @NonNull
-    private static String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
+    private String activeFlags(@NonNull SparseArray<String> valueNames, int bitfield) {
         final StringBuilder result = new StringBuilder();
 
         // Look for masks, apply it an retrieve the masked value
@@ -248,13 +256,13 @@ public final class ConfigurationCollector extends Collector {
      * @param context Context for the application being reported.
      * @return A String representation of the current configuration for the application.
      */
-    @NonNull
-    public static Element collectConfiguration(@NonNull Context context) {
+    @Nullable
+    private JSONObject collectConfiguration(@NonNull Context context) {
         try {
-            return configToElement(context.getResources().getConfiguration());
+            return configToJson(context.getResources().getConfiguration());
         } catch (RuntimeException e) {
             ACRA.log.w(LOG_TAG, "Couldn't retrieve CrashConfiguration for : " + context.getPackageName(), e);
-            return ACRAConstants.NOT_AVAILABLE;
+            return null;
         }
     }
 }

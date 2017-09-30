@@ -15,16 +15,13 @@
  */
 package org.acra.collector;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.acra.config.CoreConfiguration;
+import org.json.JSONObject;
 
 /**
  * Collects custom data supplied by the user
@@ -32,32 +29,14 @@ import java.util.Map;
  * @author F43nd1r
  * @since 4.9.1
  */
-final class CustomDataCollector extends Collector {
-    private final Map<String, String> customParameters;
+final class CustomDataCollector extends AbstractReportFieldCollector {
 
-    CustomDataCollector(Map<String, String> customParameters){
+    CustomDataCollector(){
         super(ReportField.CUSTOM_DATA);
-        this.customParameters = customParameters;
     }
-    @NonNull
+
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        return createCustomInfoElement(reportBuilder.getCustomData());
-    }
-
-
-    /**
-     * Generates the Element which is posted in the single custom data field
-     *
-     * @return An Element with  key-value-pairs for the supplied custom data.
-     */
-    @NonNull
-    private Element createCustomInfoElement(@Nullable Map<String, String> reportCustomData) {
-        Map<String, String> params = customParameters;
-        if (reportCustomData != null) {
-            params = new HashMap<String, String>(params);
-            params.putAll(reportCustomData);
-        }
-        return new ComplexElement(params);
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+        target.put(ReportField.CUSTOM_DATA, new JSONObject(reportBuilder.getCustomData()));
     }
 }

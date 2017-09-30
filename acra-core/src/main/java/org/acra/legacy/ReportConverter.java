@@ -22,16 +22,12 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
+import org.acra.collector.CrashReportData;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
-import org.acra.model.BooleanElement;
-import org.acra.model.ComplexElement;
-import org.acra.collector.CrashReportData;
-import org.acra.model.Element;
-import org.acra.model.NumberElement;
-import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -233,24 +229,7 @@ class ReportConverter {
                                     keyLength = offset;
                                 }
                                 final String temp = new String(buf, 0, offset);
-                                final String elementString = temp.substring(keyLength);
-                                Element element;
-                                try {
-                                    element = new ComplexElement(elementString);
-                                } catch (JSONException e1) {
-                                    try {
-                                        element = new NumberElement(Double.valueOf(elementString));
-                                    } catch (NumberFormatException e2) {
-                                        if (elementString.equals("true")) {
-                                            element = new BooleanElement(true);
-                                        } else if (elementString.equals("false")) {
-                                            element = new BooleanElement(false);
-                                        } else {
-                                            element = new StringElement(elementString);
-                                        }
-                                    }
-                                }
-                                crashData.put(Enum.valueOf(ReportField.class, temp.substring(0, keyLength)), element);
+                                putKeyValue(crashData, temp.substring(0, keyLength), temp.substring(keyLength));
                             }
                             keyLength = -1;
                             offset = 0;
@@ -303,28 +282,11 @@ class ReportConverter {
             }
             if (keyLength >= 0) {
                 final String temp = new String(buf, 0, offset);
-                final ReportField key = Enum.valueOf(ReportField.class, temp.substring(0, keyLength));
                 String value = temp.substring(keyLength);
                 if (mode == SLASH) {
                     value += "\u0000";
                 }
-                Element element;
-                try {
-                    element = new ComplexElement(value);
-                } catch (JSONException e1) {
-                    try {
-                        element = new NumberElement(Double.valueOf(value));
-                    } catch (NumberFormatException e2) {
-                        if (value.equals("true")) {
-                            element = new BooleanElement(true);
-                        } else if (value.equals("false")) {
-                            element = new BooleanElement(false);
-                        } else {
-                            element = new StringElement(value);
-                        }
-                    }
-                }
-                crashData.put(key, element);
+                putKeyValue(crashData, temp.substring(0, keyLength), value);
             }
 
             IOUtils.safeClose(reader);
@@ -332,6 +294,28 @@ class ReportConverter {
             return crashData;
         } finally {
             IOUtils.safeClose(br);
+        }
+    }
+
+    private void putKeyValue(CrashReportData crashData, String key, String value){
+        try {
+            crashData.put(key, new JSONObject(value));
+        } catch (JSONException e1) {
+            try {
+                crashData.put(key, Double.valueOf(value));
+            } catch (NumberFormatException e2) {
+                switch (value) {
+                    case "true":
+                        crashData.put(key, true);
+                        break;
+                    case "false":
+                        crashData.put(key, false);
+                        break;
+                    default:
+                        crashData.put(key, value);
+                        break;
+                }
+            }
         }
     }
 }

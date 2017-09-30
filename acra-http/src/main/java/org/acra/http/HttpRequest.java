@@ -24,6 +24,7 @@ import java.net.URL;
  * @author F43nd1r
  * @since 03.03.2017
  */
+@SuppressWarnings("WeakerAccess")
 public interface HttpRequest<T> {
     void send(@NonNull URL url, @NonNull T content) throws IOException;
 }

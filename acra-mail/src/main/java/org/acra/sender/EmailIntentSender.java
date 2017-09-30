@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -35,7 +34,6 @@ import org.acra.collector.CrashReportData;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.MailSenderConfiguration;
-import org.acra.model.Element;
 import org.acra.util.IOUtils;
 import org.acra.util.InstanceCreator;
 
@@ -43,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -219,13 +218,12 @@ public class EmailIntentSender implements ReportSender {
         final Set<ReportField> fields = config.reportContent();
 
         final StringBuilder builder = new StringBuilder();
+        final Map<String, String> content = errorContent.toStringMap("\n\t");
         for (ReportField field : fields) {
-            builder.append(field.toString()).append('=');
-            final Element value = errorContent.get(field);
-            if (value != null) {
-                builder.append(TextUtils.join("\n\t", value.flatten()));
-            }
-            builder.append('\n');
+            builder.append(field.toString()).append('=').append(content.remove(field.toString())).append('\n');
+        }
+        for (Map.Entry<String, String> entry : content.entrySet()){
+            builder.append(entry.getKey()).append('=').append(entry.getValue()).append('\n');
         }
         return builder.toString();
     }
@@ -242,7 +240,7 @@ public class EmailIntentSender implements ReportSender {
         final InstanceCreator instanceCreator = new InstanceCreator();
         attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config));
         if (ConfigUtils.getSenderConfiguration(config, MailSenderConfiguration.class).reportAsFile()) {
-            final Uri report = createAttachmentFromString(context, "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION, errorContent.toJSON().toString());
+            final Uri report = createAttachmentFromString(context, "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION, errorContent.toJSON());
             if (report != null) {
                 attachments.add(report);
                 return true;

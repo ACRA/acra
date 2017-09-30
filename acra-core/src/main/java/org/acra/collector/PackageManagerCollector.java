@@ -15,15 +15,13 @@
  */
 package org.acra.collector;
 
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.support.annotation.NonNull;
 
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
-import org.acra.model.Element;
-import org.acra.model.NumberElement;
-import org.acra.model.StringElement;
+import org.acra.config.CoreConfiguration;
 import org.acra.util.PackageManagerWrapper;
 
 /**
@@ -32,26 +30,24 @@ import org.acra.util.PackageManagerWrapper;
  * @author F43nd1r
  * @since 4.9.1
  */
-final class PackageManagerCollector extends Collector {
-    private final PackageManagerWrapper pm;
+final class PackageManagerCollector extends AbstractReportFieldCollector {
 
-    PackageManagerCollector(PackageManagerWrapper pm) {
+    PackageManagerCollector() {
         super(ReportField.APP_VERSION_NAME, ReportField.APP_VERSION_CODE);
-        this.pm = pm;
     }
 
-    @NonNull
     @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        final PackageInfo info = pm.getPackageInfo();
-        if (info != null) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws CollectorException {
+        final PackageInfo info = new PackageManagerWrapper(context).getPackageInfo();
+        if (info == null) {
+            throw new CollectorException("Failed to get package info");
+        } else {
             switch (reportField) {
                 case APP_VERSION_NAME:
-                    return new StringElement(info.versionName);
+                    target.put(ReportField.APP_VERSION_NAME, info.versionName);
                 case APP_VERSION_CODE:
-                    return new NumberElement(info.versionCode);
+                    target.put(ReportField.APP_VERSION_CODE, info.versionCode);
             }
         }
-        return ACRAConstants.NOT_AVAILABLE;
     }
 }

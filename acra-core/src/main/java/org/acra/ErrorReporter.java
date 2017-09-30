@@ -25,17 +25,15 @@ import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportBuilder;
 import org.acra.builder.ReportExecutor;
 import org.acra.builder.ReportPrimer;
-import org.acra.collector.ConfigurationCollector;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
-import org.acra.model.Element;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -72,19 +70,19 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     private final CoreConfiguration config;
 
     @NonNull
-    private final CrashReportDataFactory crashReportDataFactory;
-    @NonNull
     private final ReportExecutor reportExecutor;
+
+    private final Map<String, String> customData = new HashMap<String, String>();
 
 
     /**
      * Can only be constructed from within this class.
      *
-     * @param context   Context for the application in which ACRA is running.
-     * @param config    AcraConfig to use when reporting and sending errors.
-     * @param prefs     SharedPreferences used by ACRA.
-     * @param enabled   Whether this ErrorReporter should capture Exceptions and forward their reports.
-     * @param listenForUncaughtExceptions   Whether to listen for uncaught Exceptions.
+     * @param context                     Context for the application in which ACRA is running.
+     * @param config                      AcraConfig to use when reporting and sending errors.
+     * @param prefs                       SharedPreferences used by ACRA.
+     * @param enabled                     Whether this ErrorReporter should capture Exceptions and forward their reports.
+     * @param listenForUncaughtExceptions Whether to listen for uncaught Exceptions.
      */
     ErrorReporter(@NonNull Application context, @NonNull CoreConfiguration config, @NonNull SharedPreferences prefs,
                   boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
@@ -93,20 +91,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         this.config = config;
         this.supportedAndroidVersion = supportedAndroidVersion;
 
-        // Store the initial Configuration state.
-        // This is expensive to gather, so only do so if we plan to report it.
-        final Element initialConfiguration;
-        if (config.reportContent().contains(ReportField.INITIAL_CONFIGURATION)) {
-            initialConfiguration = ConfigurationCollector.collectConfiguration(this.context);
-        } else {
-            initialConfiguration = ACRAConstants.NOT_AVAILABLE;
-        }
-
-        // Sets the application start date.
-        // This will be included in the reports, will be helpful compared to user_crash date.
-        final Calendar appStartDate = new GregorianCalendar();
-
-        crashReportDataFactory = new CrashReportDataFactory(this.context, config, prefs, appStartDate, initialConfiguration);
+        final CrashReportDataFactory crashReportDataFactory = new CrashReportDataFactory(context, config);
+        crashReportDataFactory.collectStartUp();
 
         final Thread.UncaughtExceptionHandler defaultExceptionHandler;
         if (listenForUncaughtExceptions) {
@@ -126,18 +112,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Deprecated. Use {@link #putCustomData(String, String)}.
-     *
-     * @param key   A key for your custom data.
-     * @param value The value associated to your key.
-     */
-    @Deprecated
-    @SuppressWarnings("unused")
-    public void addCustomData(@NonNull String key, String value) {
-        putCustomData(key, value);
-    }
-
-    /**
      * <p>
      * Use this method to provide the ErrorReporter with data of your running
      * application. You should call this at several key places in your code the
@@ -154,20 +128,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @SuppressWarnings("unused")
     public String putCustomData(@NonNull String key, String value) {
-        return crashReportDataFactory.putCustomData(key, value);
+        return customData.put(key, value);
     }
 
     /**
      * Removes a key/value pair from your reports custom data field.
      *
-     * @param key   The key of the data to be removed.
+     * @param key The key of the data to be removed.
      * @return The value for this key before removal.
      * @see #putCustomData(String, String)
      * @see #getCustomData(String)
      */
     @SuppressWarnings("unused")
     public String removeCustomData(@NonNull String key) {
-        return crashReportDataFactory.removeCustomData(key);
+        return customData.remove(key);
     }
 
     /**
@@ -175,21 +149,20 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      */
     @SuppressWarnings("unused")
     public void clearCustomData() {
-        crashReportDataFactory.clearCustomData();
+        customData.clear();
     }
 
     /**
      * Gets the current value for a key in your reports custom data field.
      *
-     * @param key
-     *            The key of the data to be retrieved.
+     * @param key The key of the data to be retrieved.
      * @return The value for this key.
      * @see #putCustomData(String, String)
      * @see #removeCustomData(String)
      */
     @SuppressWarnings("unused")
     public String getCustomData(@NonNull String key) {
-        return crashReportDataFactory.getCustomData(key);
+        return customData.get(key);
     }
 
     /*
@@ -214,14 +187,15 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
             // Generate and send crash report
             new ReportBuilder()
-                .uncaughtExceptionThread(t)
-                .exception(e)
-                .endApplication()
-                .build(reportExecutor);
+                    .uncaughtExceptionThread(t)
+                    .exception(e)
+                    .customData(customData)
+                    .endApplication()
+                    .build(reportExecutor);
 
         } catch (Throwable fatality) {
             // ACRA failed. Prevent any recursive call to ACRA.uncaughtException(), let the native reporter do its job.
-            ACRA.log.e(LOG_TAG, "ACRA failed to capture the error - handing off to native error reporter" , fatality);
+            ACRA.log.e(LOG_TAG, "ACRA failed to capture the error - handing off to native error reporter", fatality);
             reportExecutor.handReportToDefaultExceptionHandler(t, e);
         }
     }
@@ -236,6 +210,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     public void handleSilentException(@Nullable Throwable e) {
         new ReportBuilder()
                 .exception(e)
+                .customData(customData)
                 .sendSilently()
                 .build(reportExecutor);
     }
@@ -243,9 +218,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     /**
      * Enable or disable this ErrorReporter. By default it is enabled.
      *
-     * @param enabled
-     *            Whether this ErrorReporter should capture Exceptions and
-     *            forward them as crash reports.
+     * @param enabled Whether this ErrorReporter should capture Exceptions and
+     *                forward them as crash reports.
      */
     public void setEnabled(boolean enabled) {
         if (supportedAndroidVersion) {
@@ -258,17 +232,17 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * This method looks for pending reports and does the action required depending on the interaction mode set.
-     *
+     * <p>
      * There is no need to call this method as ACRA will by default check for errors on report start.
-     *
+     * <p>
      * Whether ACRA checks for reports on app start is controlled by {@link ACRA#init(Application, CoreConfiguration, boolean)},
      * but the default is that it will.
      *
      * @deprecated since 4.8.0 No replacement.
      */
-    @SuppressWarnings( " unused" )
+    @SuppressWarnings(" unused")
     public void checkReportsOnApplicationStart() {
-        final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(context,  config);
+        final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(context, config);
         if (config.deleteOldUnsentReportsOnApplicationStart()) {
             startupProcessor.deleteUnsentReportsFromOldAppVersion();
         }
@@ -284,17 +258,16 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * Send a report for a {@link Throwable} with the reporting interaction mode
      * configured by the developer.
      *
-     * @param e
-     *            The {@link Throwable} to be reported. If null the report will
-     *            contain a new Exception("Report requested by developer").
-     * @param endApplication
-     *            Set this to true if you want the application to be ended after
-     *            sending the report.
+     * @param e              The {@link Throwable} to be reported. If null the report will
+     *                       contain a new Exception("Report requested by developer").
+     * @param endApplication Set this to true if you want the application to be ended after
+     *                       sending the report.
      */
     @SuppressWarnings("unused")
     public void handleException(@Nullable Throwable e, boolean endApplication) {
         final ReportBuilder builder = new ReportBuilder();
-        builder.exception(e);
+        builder.exception(e)
+                .customData(customData);
         if (endApplication) {
             builder.endApplication();
         }
@@ -306,9 +279,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * configured by the developer, the application is then killed and restarted
      * by the system.
      *
-     * @param e
-     *            The {@link Throwable} to be reported. If null the report will
-     *            contain a new Exception("Report requested by developer").
+     * @param e The {@link Throwable} to be reported. If null the report will
+     *          contain a new Exception("Report requested by developer").
      */
     @SuppressWarnings("unused")
     public void handleException(@Nullable Throwable e) {

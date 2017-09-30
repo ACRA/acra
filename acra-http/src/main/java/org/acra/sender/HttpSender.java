@@ -19,14 +19,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.collections.ImmutableSet;
 import org.acra.collector.CrashReportData;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.Configuration;
@@ -35,16 +33,14 @@ import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
 import org.acra.util.UriUtils;
 import org.acra.http.MultipartHttpRequest;
-import org.acra.model.Element;
 import org.acra.util.InstanceCreator;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,7 +106,7 @@ public class HttpSender implements ReportSender {
         PUT {
             @Override
             URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException {
-                return new URL(baseUrl + '/' + report.getProperty(ReportField.REPORT_ID));
+                return new URL(baseUrl + '/' + report.getString(ReportField.REPORT_ID));
             }
         };
 
@@ -139,7 +135,7 @@ public class HttpSender implements ReportSender {
         JSON("application/json") {
             @Override
             String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return sender.convertToJson(report).toString();
+                return sender.convertToJson(report);
             }
         };
         private final String contentType;
@@ -335,7 +331,7 @@ public class HttpSender implements ReportSender {
                                  @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                  @NonNull URL url, @NonNull Uri attachment) throws IOException {
         final URL attachmentUrl = new URL(url.toString() + "-" + UriUtils.getFileNameFromUri(context, attachment));
-        new BinaryHttpRequest(configuration, context, Method.PUT, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
+        new BinaryHttpRequest(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
     }
 
     /**
@@ -345,7 +341,7 @@ public class HttpSender implements ReportSender {
      * @return a json representation of the report
      */
     @SuppressWarnings("WeakerAccess")
-    protected JSONObject convertToJson(CrashReportData report) {
+    protected String convertToJson(CrashReportData report) {
         return report.toJSON();
     }
 
@@ -357,27 +353,24 @@ public class HttpSender implements ReportSender {
      */
     @SuppressWarnings("WeakerAccess")
     protected Map<String, String> convertToForm(CrashReportData report) {
-        return remap(report);
+        return remap(report.toStringMap("\n"));
     }
 
     @NonNull
-    private Map<String, String> remap(@NonNull Map<ReportField, Element> report) {
+    private Map<String, String> remap(@NonNull Map<String, String> report) {
 
-        Set<ReportField> fields = config.reportContent();
-        if (fields.isEmpty()) {
-            fields = new ImmutableSet<ReportField>(ACRAConstants.DEFAULT_REPORT_FIELDS);
-        }
+        final Set<ReportField> fields = config.reportContent();
 
-        final Map<String, String> finalReport = new HashMap<String, String>(report.size());
+        final Map<String, String> finalReport = new LinkedHashMap<>(report.size());
         for (ReportField field : fields) {
-            final Element element = report.get(field);
-            final String value = element != null ? TextUtils.join("\n", element.flatten()) : null;
+            final String value = report.remove(field.toString());
             if (mMapping == null || mMapping.get(field) == null) {
                 finalReport.put(field.toString(), value);
             } else {
                 finalReport.put(mMapping.get(field), value);
             }
         }
+        finalReport.putAll(report);
         return finalReport;
     }
 

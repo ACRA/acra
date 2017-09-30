@@ -25,13 +25,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
-import org.acra.model.ComplexElement;
-import org.acra.model.Element;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 
@@ -43,17 +41,27 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
-final class SettingsCollector extends Collector {
+final class SettingsCollector extends AbstractReportFieldCollector {
 
     private static final String ERROR = "Error: ";
 
-    private final Context context;
-    private final CoreConfiguration config;
-
-    SettingsCollector(@NonNull Context context, @NonNull CoreConfiguration config) {
+    SettingsCollector() {
         super(ReportField.SETTINGS_SYSTEM, ReportField.SETTINGS_SECURE, ReportField.SETTINGS_GLOBAL);
-        this.context = context;
-        this.config = config;
+    }
+
+    @Override
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws JSONException {
+        switch (reportField) {
+            case SETTINGS_SYSTEM:
+                target.put(ReportField.SETTINGS_SYSTEM, collectSystemSettings(context));
+            case SETTINGS_SECURE:
+                target.put(ReportField.SETTINGS_SECURE, collectSecureSettings(context, config));
+            case SETTINGS_GLOBAL:
+                target.put(ReportField.SETTINGS_GLOBAL, collectGlobalSettings(context, config));
+            default:
+                //will not happen if used correctly
+                throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -64,8 +72,8 @@ final class SettingsCollector extends Collector {
      * @return collected key-value pairs.
      */
     @NonNull
-    private Element collectSystemSettings() throws JSONException {
-        final ComplexElement result = new ComplexElement();
+    private JSONObject collectSystemSettings(@NonNull Context context) throws JSONException {
+        final JSONObject result = new JSONObject();
         final Field[] keys = System.class.getFields();
         for (final Field key : keys) {
             // Avoid retrieving deprecated fields... it is useless, has an
@@ -95,11 +103,11 @@ final class SettingsCollector extends Collector {
      * @return collected key-value pairs.
      */
     @NonNull
-    private Element collectSecureSettings() throws JSONException {
-        final ComplexElement result = new ComplexElement();
+    private JSONObject collectSecureSettings(@NonNull Context context, @NonNull CoreConfiguration config) throws JSONException {
+        final JSONObject result = new JSONObject();
         final Field[] keys = Secure.class.getFields();
         for (final Field key : keys) {
-            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
+            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(config, key)) {
                 try {
                     final Object value = Secure.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
@@ -122,16 +130,16 @@ final class SettingsCollector extends Collector {
      *
      * @return collected key-value pairs.
      */
-    @NonNull
-    private Element collectGlobalSettings() throws JSONException {
+    @Nullable
+    private JSONObject collectGlobalSettings(@NonNull Context context, @NonNull CoreConfiguration config) throws JSONException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return ACRAConstants.NOT_AVAILABLE;
+            return null;
         }
 
-        final ComplexElement result = new ComplexElement();
+        final JSONObject result = new JSONObject();
         final Field[] keys = Global.class.getFields();
         for (final Field key : keys) {
-            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(key)) {
+            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(config, key)) {
                 try {
                     final Object value = Global.getString(context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
@@ -149,7 +157,7 @@ final class SettingsCollector extends Collector {
         return result;
     }
 
-    private boolean isAuthorized(@Nullable Field key) {
+    private boolean isAuthorized(@NonNull CoreConfiguration config, @Nullable Field key) {
         if (key == null || key.getName().startsWith("WIFI_AP")) {
             return false;
         }
@@ -159,26 +167,5 @@ final class SettingsCollector extends Collector {
             }
         }
         return true;
-    }
-
-    @NonNull
-    @Override
-    Element collect(ReportField reportField, ReportBuilder reportBuilder) {
-        try {
-        switch (reportField) {
-            case SETTINGS_SYSTEM:
-                    return collectSystemSettings();
-            case SETTINGS_SECURE:
-                return collectSecureSettings();
-            case SETTINGS_GLOBAL:
-                return collectGlobalSettings();
-            default:
-                //will not happen if used correctly
-                throw new IllegalArgumentException();
-        }
-        } catch (JSONException e) {
-            ACRA.log.w("Could not collect Settings", e);
-            return ACRAConstants.NOT_AVAILABLE;
-        }
     }
 }

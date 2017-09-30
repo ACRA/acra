@@ -51,6 +51,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r
  * @since 03.03.2017
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
     @NonNull

@@ -21,14 +21,14 @@ package org.acra.definition;
  * @since 12.06.2017
  */
 
-public abstract class FieldMethod implements Method {
+abstract class FieldMethod implements Method {
     private final Field field;
 
-    public FieldMethod(Field field) {
+    FieldMethod(Field field) {
         this.field = field;
     }
 
-    public Field getField() {
+    Field getField() {
         return field;
     }
 }
