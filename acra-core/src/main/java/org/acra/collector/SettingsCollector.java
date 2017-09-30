@@ -16,6 +16,7 @@
 
 package org.acra.collector;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Build;
 import android.provider.Settings.Global;
@@ -23,9 +24,7 @@ import android.provider.Settings.Secure;
 import android.provider.Settings.System;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -34,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -53,16 +53,16 @@ final class SettingsCollector extends AbstractReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws JSONException {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         switch (reportField) {
             case SETTINGS_SYSTEM:
-                target.put(ReportField.SETTINGS_SYSTEM, collectSystemSettings(context));
+                target.put(ReportField.SETTINGS_SYSTEM, collectSettings(context, config, System.class));
                 break;
             case SETTINGS_SECURE:
-                target.put(ReportField.SETTINGS_SECURE, collectSecureSettings(context, config));
+                target.put(ReportField.SETTINGS_SECURE, collectSettings(context, config, Secure.class));
                 break;
             case SETTINGS_GLOBAL:
-                target.put(ReportField.SETTINGS_GLOBAL, collectGlobalSettings(context, config));
+                target.put(ReportField.SETTINGS_GLOBAL, Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? collectSettings(context, config, Global.class) : null);
                 break;
             default:
                 //will not happen if used correctly
@@ -70,92 +70,18 @@ final class SettingsCollector extends AbstractReportFieldCollector {
         }
     }
 
-    /**
-     * Collect data from {@link System}. This
-     * collector uses reflection to be sure to always get the most accurate data
-     * whatever Android API level it runs on.
-     *
-     * @return collected key-value pairs.
-     */
-    @NonNull
-    private JSONObject collectSystemSettings(@NonNull Context context) throws JSONException {
+    private JSONObject collectSettings(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<?> settings) throws JSONException, NoSuchMethodException {
         final JSONObject result = new JSONObject();
-        final Field[] keys = System.class.getFields();
-        for (final Field key : keys) {
-            // Avoid retrieving deprecated fields... it is useless, has an
-            // impact on prefs, and the system writes many warnings in the
-            // logcat.
-            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class) {
-                try {
-                    final Object value = System.getString(context.getContentResolver(), (String) key.get(null));
-                    if (value != null) {
-                        result.put(key.getName(), value);
-                    }
-                } catch (@NonNull IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, ERROR, e);
-                } catch (@NonNull IllegalAccessException e) {
-                    ACRA.log.w(LOG_TAG, ERROR, e);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Collect data from {@link Secure}. This
-     * collector uses reflection to be sure to always get the most accurate data
-     * whatever Android API level it runs on.
-     *
-     * @return collected key-value pairs.
-     */
-    @NonNull
-    private JSONObject collectSecureSettings(@NonNull Context context, @NonNull CoreConfiguration config) throws JSONException {
-        final JSONObject result = new JSONObject();
-        final Field[] keys = Secure.class.getFields();
+        final Field[] keys = settings.getFields();
+        final Method getString = settings.getMethod("getString", ContentResolver.class, String.class);
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(config, key)) {
                 try {
-                    final Object value = Secure.getString(context.getContentResolver(), (String) key.get(null));
+                    final Object value = getString.invoke(null, context.getContentResolver(), (String) key.get(null));
                     if (value != null) {
                         result.put(key.getName(), value);
                     }
-                } catch (@NonNull IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, ERROR, e);
-                } catch (@NonNull IllegalAccessException e) {
-                    ACRA.log.w(LOG_TAG, ERROR, e);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Collect data from {@link Global}. This
-     * collector uses reflection to be sure to always get the most accurate data
-     * whatever Android API level it runs on.
-     *
-     * @return collected key-value pairs.
-     */
-    @Nullable
-    private JSONObject collectGlobalSettings(@NonNull Context context, @NonNull CoreConfiguration config) throws JSONException {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return null;
-        }
-
-        final JSONObject result = new JSONObject();
-        final Field[] keys = Global.class.getFields();
-        for (final Field key : keys) {
-            if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(config, key)) {
-                try {
-                    final Object value = Global.getString(context.getContentResolver(), (String) key.get(null));
-                    if (value != null) {
-                        result.put(key.getName(), value);
-                    }
-                } catch (@NonNull IllegalArgumentException e) {
-                    ACRA.log.w(LOG_TAG, ERROR, e);
-                } catch (@NonNull SecurityException e) {
-                    ACRA.log.w(LOG_TAG, ERROR, e);
-                } catch (@NonNull IllegalAccessException e) {
+                } catch (@NonNull Exception e) {
                     ACRA.log.w(LOG_TAG, ERROR, e);
                 }
             }

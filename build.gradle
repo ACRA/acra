@@ -8,7 +8,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
         classpath 'net.researchgate:gradle-release:2.5.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
@@ -82,6 +82,9 @@ subprojects {
                 release {
                     minifyEnabled false
                 }
+            }
+            lintOptions {
+                abortOnError false
             }
         }
 
@@ -189,6 +192,7 @@ subprojects {
                 }
             }
         }
+        bintrayUpload.dependsOn(build)
     }
 }
 

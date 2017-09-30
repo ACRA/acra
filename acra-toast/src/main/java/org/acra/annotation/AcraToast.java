@@ -47,7 +47,7 @@ public @interface AcraToast {
     @StringRes int resText();
 
     /**
-     * One of {@link Toast#LENGTH_LONG} and {@link Toast#LENGTH_SHORT}
+     * One of {@link android.widget.Toast#LENGTH_LONG} and {@link android.widget.Toast#LENGTH_SHORT}
      *
      * @return toast length
      */
