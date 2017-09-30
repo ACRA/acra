@@ -21,6 +21,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
@@ -41,6 +43,7 @@ import java.util.Arrays;
  *
  * @author Kevin Gaudin
  */
+@AutoService(Collector.class)
 final class ReflectionCollector extends AbstractReportFieldCollector {
 
     ReflectionCollector() {

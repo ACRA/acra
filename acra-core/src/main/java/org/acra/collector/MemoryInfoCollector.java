@@ -22,6 +22,8 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -40,6 +42,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class MemoryInfoCollector extends AbstractReportFieldCollector {
     MemoryInfoCollector() {
         super(ReportField.DUMPSYS_MEMINFO, ReportField.TOTAL_MEM_SIZE, ReportField.AVAILABLE_MEM_SIZE);
@@ -74,7 +77,7 @@ final class MemoryInfoCollector extends AbstractReportFieldCollector {
     @Nullable
     private String collectMemInfo() {
         try {
-            final List<String> commandLine = new ArrayList<String>();
+            final List<String> commandLine = new ArrayList<>();
             commandLine.add("dumpsys");
             commandLine.add("meminfo");
             commandLine.add(Integer.toString(android.os.Process.myPid()));

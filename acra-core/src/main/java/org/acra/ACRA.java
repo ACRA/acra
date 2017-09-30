@@ -239,7 +239,7 @@ public final class ACRA {
             // Indicate that ACRA is or is not listening for crashes.
             log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
         }
-        errorReporterSingleton = new ErrorReporter(mApplication, configProxy, prefs, enableAcra, supportedAndroidVersion, !senderServiceProcess);
+        errorReporterSingleton = new ErrorReporter(mApplication, configProxy, enableAcra, supportedAndroidVersion, !senderServiceProcess);
 
         // Check for approved reports and send them (if enabled).
         // NB don't check if senderServiceProcess as it will gather these reports itself.

@@ -18,6 +18,8 @@ package org.acra.collector;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -34,6 +36,7 @@ import java.util.Locale;
  * @author F43nd1r
  * @since 4.9.1
  */
+@AutoService(Collector.class)
 final class TimeCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
     private Calendar appStartDate;
 

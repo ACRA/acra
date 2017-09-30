@@ -101,7 +101,7 @@ final class ReportDistributor {
      */
     private void sendCrashReport(@NonNull CrashReportData errorContent) throws ReportSenderException {
         if (!isDebuggable() || config.sendReportsInDevMode()) {
-            final List<RetryPolicy.FailedSender> failedSenders = new LinkedList<RetryPolicy.FailedSender>();
+            final List<RetryPolicy.FailedSender> failedSenders = new LinkedList<>();
             for (ReportSender sender : reportSenders) {
                 try {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());

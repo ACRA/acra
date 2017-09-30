@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.android.internal.util.Predicate;
+import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -43,6 +44,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class LogCatCollector extends AbstractReportFieldCollector {
 
     LogCatCollector() {
@@ -71,7 +73,7 @@ final class LogCatCollector extends AbstractReportFieldCollector {
         final int myPid = android.os.Process.myPid();
         final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
-        final List<String> commandLine = new ArrayList<String>();
+        final List<String> commandLine = new ArrayList<>();
         commandLine.add("logcat");
         if (bufferName != null) {
             commandLine.add("-b");

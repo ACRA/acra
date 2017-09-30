@@ -26,6 +26,8 @@ import android.util.SparseArray;
 import android.view.Display;
 import android.view.Surface;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -42,6 +44,7 @@ import java.util.Arrays;
  *
  * @author (original author unknown) & F43nd1r
  */
+@AutoService(Collector.class)
 final class DisplayManagerCollector extends AbstractReportFieldCollector {
 
     DisplayManagerCollector() {

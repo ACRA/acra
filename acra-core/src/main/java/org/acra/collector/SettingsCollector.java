@@ -24,6 +24,8 @@ import android.provider.Settings.System;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -41,6 +43,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class SettingsCollector extends AbstractReportFieldCollector {
 
     private static final String ERROR = "Error: ";

@@ -117,6 +117,7 @@ public class ClassCreator {
                 .addSuperinterface(configurationBuilderFactory.getName())
                 .addAnnotation(AnnotationSpec.builder(AutoService.class).addMember("value", "$T.class", configurationBuilderFactory.getName()).build())
                 .addMethod(MethodSpec.overriding(utils.getOnlyMethod(configurationBuilderFactory.getElement()))
+                        .addAnnotation(NonNull.class)
                         .addStatement("return new $T($L)", builder, PARAM_0)
                         .build())
                 .build());

@@ -99,7 +99,7 @@ public class SenderService extends IntentService {
 
     @NonNull
     private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
-        final List<ReportSender> reportSenders = new ArrayList<ReportSender>();
+        final List<ReportSender> reportSenders = new ArrayList<>();
         final InstanceCreator instanceCreator = new InstanceCreator();
         for (ReportSenderFactory factory : instanceCreator.create(factoryClasses)) {
             reportSenders.add(factory.create(this.getApplication(), config));

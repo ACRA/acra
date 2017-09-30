@@ -21,6 +21,8 @@ import android.os.Build;
 import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -48,6 +50,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class DropBoxCollector extends AbstractReportFieldCollector {
 
     private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
@@ -68,7 +71,7 @@ final class DropBoxCollector extends AbstractReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception{
         final DropBoxManager dropbox = SystemServices.getDropBoxManager(context);
 
         final Calendar calendar = Calendar.getInstance();
@@ -76,7 +79,7 @@ final class DropBoxCollector extends AbstractReportFieldCollector {
         final long time = calendar.getTimeInMillis();
         dateFormat.format(calendar.getTime());
 
-        final List<String> tags = new ArrayList<String>();
+        final List<String> tags = new ArrayList<>();
         if (config.includeDropBoxSystemTags()) {
             tags.addAll(Arrays.asList(SYSTEM_TAGS));
         }

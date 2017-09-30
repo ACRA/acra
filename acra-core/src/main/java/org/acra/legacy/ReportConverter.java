@@ -62,7 +62,7 @@ class ReportConverter {
         ACRA.log.i(LOG_TAG, "Converting unsent ACRA reports to json");
         final ReportLocator locator = new ReportLocator(context);
         final CrashReportPersister persister = new CrashReportPersister();
-        final List<File> reportFiles = new ArrayList<File>();
+        final List<File> reportFiles = new ArrayList<>();
         reportFiles.addAll(Arrays.asList(locator.getUnapprovedReports()));
         reportFiles.addAll(Arrays.asList(locator.getApprovedReports()));
         int converted = 0;

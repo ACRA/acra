@@ -35,12 +35,13 @@ public final class ImmutableList<E> implements List<E>, Serializable {
 
     private final List<E> mList;
 
+    @SafeVarargs
     public ImmutableList(E... elements) {
         this(Arrays.asList(elements));
     }
 
     public ImmutableList(Collection<E> collection) {
-        this.mList = new ArrayList<E>(collection);
+        this.mList = new ArrayList<>(collection);
     }
 
     @Override
@@ -96,7 +97,7 @@ public final class ImmutableList<E> implements List<E>, Serializable {
     @NonNull
     @Override
     public Iterator<E> iterator() {
-        return new UnmodifiableIteratorWrapper<E>(mList.iterator());
+        return new UnmodifiableIteratorWrapper<>(mList.iterator());
     }
 
     @Override
@@ -106,13 +107,13 @@ public final class ImmutableList<E> implements List<E>, Serializable {
 
     @Override
     public ListIterator<E> listIterator() {
-        return new UnmodifiableListIteratorWrapper<E>(mList.listIterator());
+        return new UnmodifiableListIteratorWrapper<>(mList.listIterator());
     }
 
     @NonNull
     @Override
     public ListIterator<E> listIterator(int location) {
-        return new UnmodifiableListIteratorWrapper<E>(mList.listIterator(location));
+        return new UnmodifiableListIteratorWrapper<>(mList.listIterator(location));
     }
 
     @Override

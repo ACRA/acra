@@ -21,6 +21,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresPermission;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -35,6 +37,7 @@ import org.acra.util.SystemServices;
  * @author F43nd1r
  * @since 4.9.1
  */
+@AutoService(Collector.class)
 final class DeviceIdCollector extends AbstractReportFieldCollector {
 
     DeviceIdCollector() {
@@ -50,7 +53,7 @@ final class DeviceIdCollector extends AbstractReportFieldCollector {
     @SuppressLint("HardwareIds")
     @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         target.put(ReportField.DEVICE_ID, SystemServices.getTelephonyManager(context).getDeviceId());
     }
 }

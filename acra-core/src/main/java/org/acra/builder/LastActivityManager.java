@@ -21,7 +21,7 @@ import static org.acra.ACRA.LOG_TAG;
 public final class LastActivityManager {
 
     @NonNull
-    private WeakReference<Activity> lastActivityCreated = new WeakReference<Activity>(null);
+    private WeakReference<Activity> lastActivityCreated = new WeakReference<>(null);
 
     public LastActivityManager(@NonNull Application application) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -31,7 +31,7 @@ public final class LastActivityManager {
                 @Override
                 public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
-                    lastActivityCreated = new WeakReference<Activity>(activity);
+                    lastActivityCreated = new WeakReference<>(activity);
                 }
 
                 @Override

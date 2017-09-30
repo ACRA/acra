@@ -22,7 +22,8 @@ import android.support.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 
 /**
- * Created by Lukas on 29.09.2017.
+ * @author F43nd1r
+ * @since 29.09.2017
  */
 
 @SuppressWarnings("WeakerAccess")

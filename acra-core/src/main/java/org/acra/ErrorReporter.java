@@ -16,7 +16,6 @@
 package org.acra;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -72,7 +71,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     @NonNull
     private final ReportExecutor reportExecutor;
 
-    private final Map<String, String> customData = new HashMap<String, String>();
+    private final Map<String, String> customData = new HashMap<>();
 
 
     /**
@@ -80,11 +79,10 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      *
      * @param context                     Context for the application in which ACRA is running.
      * @param config                      AcraConfig to use when reporting and sending errors.
-     * @param prefs                       SharedPreferences used by ACRA.
      * @param enabled                     Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param listenForUncaughtExceptions Whether to listen for uncaught Exceptions.
      */
-    ErrorReporter(@NonNull Application context, @NonNull CoreConfiguration config, @NonNull SharedPreferences prefs,
+    ErrorReporter(@NonNull Application context, @NonNull CoreConfiguration config,
                   boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
 
         this.context = context;

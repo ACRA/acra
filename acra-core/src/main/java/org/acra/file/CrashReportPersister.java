@@ -25,7 +25,6 @@ import org.acra.ACRAConstants;
 import org.acra.collector.CrashReportData;
 import org.acra.util.IOUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;

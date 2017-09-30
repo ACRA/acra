@@ -68,7 +68,7 @@ public class EmailIntentSender implements ReportSender {
 
         final String subject = buildSubject(context);
         final String body = buildBody(errorContent);
-        final ArrayList<Uri> attachments = new ArrayList<Uri>();
+        final ArrayList<Uri> attachments = new ArrayList<>();
         final boolean contentAttached = fillAttachmentList(context, errorContent, attachments);
 
         //we have to resolve with sendto, because send is supported by non-email apps
@@ -166,7 +166,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     private List<Intent> buildInitialIntents(@NonNull PackageManager pm, @NonNull Intent resolveIntent, @NonNull Intent emailIntent) {
         final List<ResolveInfo> resolveInfoList = pm.queryIntentActivities(resolveIntent, PackageManager.MATCH_DEFAULT_ONLY);
-        final List<Intent> initialIntents = new ArrayList<Intent>();
+        final List<Intent> initialIntents = new ArrayList<>();
         for (ResolveInfo info : resolveInfoList) {
             final Intent packageSpecificIntent = new Intent(emailIntent);
             packageSpecificIntent.setPackage(info.activityInfo.packageName);

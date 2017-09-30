@@ -20,6 +20,8 @@ import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
@@ -31,6 +33,7 @@ import org.json.JSONObject;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class DeviceFeaturesCollector extends AbstractReportFieldCollector {
 
     DeviceFeaturesCollector() {

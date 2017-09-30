@@ -71,7 +71,7 @@ public class AcraContentProvider extends ContentProvider {
         if (projection == null) {
             projection = COLUMNS;
         }
-        final Map<String, Object> columnValueMap = new LinkedHashMap<String, Object>();
+        final Map<String, Object> columnValueMap = new LinkedHashMap<>();
         for (String column : projection) {
             if (column.equals(OpenableColumns.DISPLAY_NAME)) {
                 columnValueMap.put(OpenableColumns.DISPLAY_NAME, file.getName());
@@ -89,7 +89,7 @@ public class AcraContentProvider extends ContentProvider {
         if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme()) || !authority.equals(uri.getAuthority())) {
             return null;
         }
-        final List<String> segments = new ArrayList<String>(uri.getPathSegments());
+        final List<String> segments = new ArrayList<>(uri.getPathSegments());
         if (segments.size() < 2) return null;
         final String dir = segments.remove(0).toUpperCase();
         try {

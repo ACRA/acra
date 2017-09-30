@@ -87,19 +87,23 @@ public final class ProcessFinisher {
 
     private void stopServices() {
         if (config.stopServicesOnCrash()) {
-            final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            final List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
-            final int pid = Process.myPid();
-            for (ActivityManager.RunningServiceInfo serviceInfo : runningServices) {
-                if (serviceInfo.pid == pid && !SenderService.class.getName().equals(serviceInfo.service.getClassName())) {
-                    try {
-                        final Intent intent = new Intent();
-                        intent.setComponent(serviceInfo.service);
-                        context.stopService(intent);
-                    } catch (SecurityException e) {
-                        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Unable to stop Service " + serviceInfo.service.getClassName() + ". Permission denied");
+            try {
+                final ActivityManager activityManager = SystemServices.getActivityManager(context);
+                final List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
+                final int pid = Process.myPid();
+                for (ActivityManager.RunningServiceInfo serviceInfo : runningServices) {
+                    if (serviceInfo.pid == pid && !SenderService.class.getName().equals(serviceInfo.service.getClassName())) {
+                        try {
+                            final Intent intent = new Intent();
+                            intent.setComponent(serviceInfo.service);
+                            context.stopService(intent);
+                        } catch (SecurityException e) {
+                            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Unable to stop Service " + serviceInfo.service.getClassName() + ". Permission denied");
+                        }
                     }
                 }
+            } catch (SystemServices.ServiceNotReachedException e) {
+                ACRA.log.e(LOG_TAG, "Unable to stop services", e);
             }
         }
     }

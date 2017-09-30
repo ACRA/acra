@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 final class NonBlockingBufferedReader {
 
-    private final BlockingQueue<String> lines = new LinkedBlockingQueue<String>();
+    private final BlockingQueue<String> lines = new LinkedBlockingQueue<>();
     private Thread backgroundReaderThread = null;
     private volatile IOException exception = null;
 

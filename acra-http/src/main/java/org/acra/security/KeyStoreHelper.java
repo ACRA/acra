@@ -20,10 +20,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.ACRAConstants;
+import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
-import org.acra.config.ConfigUtils;
-import org.acra.sender.HttpSender;
 import org.acra.util.InstanceCreator;
 
 import java.security.KeyStore;

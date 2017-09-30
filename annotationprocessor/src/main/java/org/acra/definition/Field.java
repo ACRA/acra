@@ -26,7 +26,6 @@ import com.squareup.javapoet.TypeSpec;
 import org.acra.ModelUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;

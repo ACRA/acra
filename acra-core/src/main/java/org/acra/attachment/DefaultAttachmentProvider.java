@@ -21,7 +21,7 @@ public class DefaultAttachmentProvider implements AttachmentUriProvider {
     @NonNull
     @Override
     public List<Uri> getAttachments(Context context, CoreConfiguration configuration) {
-        final ArrayList<Uri> result = new ArrayList<Uri>();
+        final ArrayList<Uri> result = new ArrayList<>();
         for (String s : configuration.attachmentUris()){
             try {
                 result.add(Uri.parse(s));

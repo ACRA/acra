@@ -34,7 +34,7 @@ public final class ImmutableMap<K, V> implements Map<K, V>, Serializable {
     private final Map<K, V> mMap;
 
     public ImmutableMap(Map<K, V> map) {
-        this.mMap = new HashMap<K, V>(map);
+        this.mMap = new HashMap<>(map);
     }
 
     @Override
@@ -56,9 +56,9 @@ public final class ImmutableMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Set<Entry<K, V>> entrySet() {
         final Set<Entry<K, V>> original = mMap.entrySet();
-        final ImmutableSet.Builder<Entry<K, V>> builder = new ImmutableSet.Builder<Entry<K, V>>();
+        final ImmutableSet.Builder<Entry<K, V>> builder = new ImmutableSet.Builder<>();
         for (Entry<K, V> entry : original) {
-            builder.add(new ImmutableEntryWrapper<K, V>(entry));
+            builder.add(new ImmutableEntryWrapper<>(entry));
         }
         return builder.build();
     }
@@ -76,7 +76,7 @@ public final class ImmutableMap<K, V> implements Map<K, V>, Serializable {
     @NonNull
     @Override
     public Set<K> keySet() {
-        return new ImmutableSet<K>(mMap.keySet());
+        return new ImmutableSet<>(mMap.keySet());
     }
 
     @Override
@@ -102,7 +102,7 @@ public final class ImmutableMap<K, V> implements Map<K, V>, Serializable {
     @NonNull
     @Override
     public Collection<V> values() {
-        return new ImmutableList<V>(mMap.values());
+        return new ImmutableList<>(mMap.values());
     }
 
     public static class ImmutableEntryWrapper<K, V> implements Map.Entry<K, V> {

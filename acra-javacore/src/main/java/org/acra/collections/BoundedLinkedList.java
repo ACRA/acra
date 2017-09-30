@@ -71,7 +71,7 @@ public final class BoundedLinkedList<E> extends LinkedList<E> {
     public boolean addAll(@NonNull Collection<? extends E> collection) {
         final int size = collection.size();
         if (size > maxSize) {
-            final LinkedList<? extends E> list = new LinkedList<E>(collection);
+            final LinkedList<? extends E> list = new LinkedList<>(collection);
             for (int i = 0; i < size - maxSize; i++) {
                 list.removeFirst();
             }

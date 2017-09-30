@@ -20,6 +20,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -37,6 +39,7 @@ import java.util.TreeMap;
  * application default preferences or any other preferences asked by the
  * application developer.
  */
+@AutoService(Collector.class)
 final class SharedPreferencesCollector extends AbstractReportFieldCollector {
 
     SharedPreferencesCollector() {
@@ -70,7 +73,7 @@ final class SharedPreferencesCollector extends AbstractReportFieldCollector {
         final JSONObject result = new JSONObject();
 
         // Include the default SharedPreferences
-        final Map<String, SharedPreferences> sharedPrefs = new TreeMap<String, SharedPreferences>();
+        final Map<String, SharedPreferences> sharedPrefs = new TreeMap<>();
         sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
 
         // Add in any additional SharedPreferences

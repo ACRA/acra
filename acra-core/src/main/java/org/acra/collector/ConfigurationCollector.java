@@ -71,7 +71,6 @@ public final class ConfigurationCollector extends AbstractReportFieldCollector i
         super(ReportField.INITIAL_CONFIGURATION, ReportField.CRASH_CONFIGURATION);
     }
 
-    @NonNull
     @Override
     void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config,
                  @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
@@ -128,16 +127,16 @@ public final class ConfigurationCollector extends AbstractReportFieldCollector i
     }
 
     private Map<String, SparseArray<String>> getValueArrays() {
-        final Map<String, SparseArray<String>> valueArrays = new HashMap<String, SparseArray<String>>();
-        final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<String>();
-        final SparseArray<String> keyboardValues = new SparseArray<String>();
-        final SparseArray<String> keyboardHiddenValues = new SparseArray<String>();
-        final SparseArray<String> navigationValues = new SparseArray<String>();
-        final SparseArray<String> navigationHiddenValues = new SparseArray<String>();
-        final SparseArray<String> orientationValues = new SparseArray<String>();
-        final SparseArray<String> screenLayoutValues = new SparseArray<String>();
-        final SparseArray<String> touchScreenValues = new SparseArray<String>();
-        final SparseArray<String> uiModeValues = new SparseArray<String>();
+        final Map<String, SparseArray<String>> valueArrays = new HashMap<>();
+        final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<>();
+        final SparseArray<String> keyboardValues = new SparseArray<>();
+        final SparseArray<String> keyboardHiddenValues = new SparseArray<>();
+        final SparseArray<String> navigationValues = new SparseArray<>();
+        final SparseArray<String> navigationHiddenValues = new SparseArray<>();
+        final SparseArray<String> orientationValues = new SparseArray<>();
+        final SparseArray<String> screenLayoutValues = new SparseArray<>();
+        final SparseArray<String> touchScreenValues = new SparseArray<>();
+        final SparseArray<String> uiModeValues = new SparseArray<>();
 
         for (final Field f : Configuration.class.getFields()) {
             if (Modifier.isStatic(f.getModifiers()) && Modifier.isFinal(f.getModifiers())) {
@@ -197,25 +196,27 @@ public final class ConfigurationCollector extends AbstractReportFieldCollector i
      */
     private Object getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
-        if (fieldName.equals(FIELD_MCC) || fieldName.equals(FIELD_MNC)) {
-            return f.getInt(conf);
-        } else if (fieldName.equals(FIELD_UIMODE)) {
-            return activeFlags(valueArrays.get(PREFIX_UI_MODE), f.getInt(conf));
-        } else if (fieldName.equals(FIELD_SCREENLAYOUT)) {
-            return activeFlags(valueArrays.get(PREFIX_SCREENLAYOUT), f.getInt(conf));
-        } else {
-            final SparseArray<String> values = valueArrays.get(fieldName.toUpperCase() + '_');
-            if (values == null) {
-                // Unknown field, return the raw int as String
+        switch (fieldName) {
+            case FIELD_MCC:
+            case FIELD_MNC:
                 return f.getInt(conf);
-            }
+            case FIELD_UIMODE:
+                return activeFlags(valueArrays.get(PREFIX_UI_MODE), f.getInt(conf));
+            case FIELD_SCREENLAYOUT:
+                return activeFlags(valueArrays.get(PREFIX_SCREENLAYOUT), f.getInt(conf));
+            default:
+                final SparseArray<String> values = valueArrays.get(fieldName.toUpperCase() + '_');
+                if (values == null) {
+                    // Unknown field, return the raw int as String
+                    return f.getInt(conf);
+                }
 
-            final String value = values.get(f.getInt(conf));
-            if (value == null) {
-                // Unknown value, return the raw int as String
-                return f.getInt(conf);
-            }
-            return value;
+                final String value = values.get(f.getInt(conf));
+                if (value == null) {
+                    // Unknown value, return the raw int as String
+                    return f.getInt(conf);
+                }
+                return value;
         }
     }
 

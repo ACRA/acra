@@ -19,6 +19,8 @@ package org.acra.collector;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -40,6 +42,7 @@ import static org.acra.ACRA.LOG_TAG;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class LogFileCollector extends AbstractReportFieldCollector {
 
     LogFileCollector() {

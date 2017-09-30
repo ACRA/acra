@@ -34,12 +34,13 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
 
     private final Set<E> mSet;
 
+    @SafeVarargs
     public ImmutableSet(E... elements) {
         this(Arrays.asList(elements));
     }
 
     public ImmutableSet(Collection<E> collection) {
-        this.mSet = new LinkedHashSet<E>(collection);
+        this.mSet = new LinkedHashSet<>(collection);
     }
 
     @Override
@@ -75,7 +76,7 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
     @NonNull
     @Override
     public Iterator<E> iterator() {
-        return new UnmodifiableIteratorWrapper<E>(mSet.iterator());
+        return new UnmodifiableIteratorWrapper<>(mSet.iterator());
     }
 
     @Override
@@ -115,7 +116,7 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
         private final Set<E> mSet;
 
         public Builder() {
-            mSet = new LinkedHashSet<E>();
+            mSet = new LinkedHashSet<>();
         }
 
         public void add(E element) {
@@ -123,7 +124,7 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
         }
 
         public ImmutableSet<E> build() {
-            return new ImmutableSet<E>(mSet);
+            return new ImmutableSet<>(mSet);
         }
     }
 

@@ -16,6 +16,8 @@
 
 package org.acra.creator;
 
+import android.support.annotation.NonNull;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 
@@ -45,6 +47,7 @@ class BuildMethodCreator {
     BuildMethodCreator(ExecutableElement override, ClassName config) {
         this.config = config;
         methodBuilder = MethodSpec.overriding(override)
+                .addAnnotation(NonNull.class)
                 .returns(config);
         anyNonDefault = new ArrayList<>();
     }

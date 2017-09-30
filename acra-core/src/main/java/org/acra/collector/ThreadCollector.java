@@ -19,6 +19,8 @@ package org.acra.collector;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
@@ -29,6 +31,7 @@ import org.json.JSONObject;
  *
  * @author Kevin Gaudin & F43nd1r
  */
+@AutoService(Collector.class)
 final class ThreadCollector extends AbstractReportFieldCollector {
     ThreadCollector() {
         super(ReportField.THREAD_DETAILS);
