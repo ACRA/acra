@@ -53,8 +53,10 @@ final class StacktraceCollector extends AbstractReportFieldCollector {
         switch (reportField) {
             case STACK_TRACE:
                 target.put(ReportField.STACK_TRACE, getStackTrace(reportBuilder.getMessage(), reportBuilder.getException()));
+                break;
             case STACK_TRACE_HASH:
                 target.put(ReportField.STACK_TRACE_HASH, getStackTraceHash(reportBuilder.getException()));
+                break;
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

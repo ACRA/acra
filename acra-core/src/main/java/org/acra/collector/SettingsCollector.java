@@ -57,10 +57,13 @@ final class SettingsCollector extends AbstractReportFieldCollector {
         switch (reportField) {
             case SETTINGS_SYSTEM:
                 target.put(ReportField.SETTINGS_SYSTEM, collectSystemSettings(context));
+                break;
             case SETTINGS_SECURE:
                 target.put(ReportField.SETTINGS_SECURE, collectSecureSettings(context, config));
+                break;
             case SETTINGS_GLOBAL:
                 target.put(ReportField.SETTINGS_GLOBAL, collectGlobalSettings(context, config));
+                break;
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

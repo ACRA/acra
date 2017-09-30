@@ -48,8 +48,10 @@ final class PackageManagerCollector extends AbstractReportFieldCollector {
             switch (reportField) {
                 case APP_VERSION_NAME:
                     target.put(ReportField.APP_VERSION_NAME, info.versionName);
+                    break;
                 case APP_VERSION_CODE:
                     target.put(ReportField.APP_VERSION_CODE, info.versionCode);
+                    break;
             }
         }
     }

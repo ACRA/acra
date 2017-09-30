@@ -77,8 +77,10 @@ public final class ConfigurationCollector extends AbstractReportFieldCollector i
         switch (reportField) {
             case INITIAL_CONFIGURATION:
                 target.put(ReportField.INITIAL_CONFIGURATION, initialConfiguration);
+                break;
             case CRASH_CONFIGURATION:
                 target.put(ReportField.CRASH_CONFIGURATION, collectConfiguration(context));
+                break;
             default:
                 throw new IllegalArgumentException();
         }

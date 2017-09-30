@@ -58,10 +58,13 @@ final class MemoryInfoCollector extends AbstractReportFieldCollector {
         switch (reportField) {
             case DUMPSYS_MEMINFO:
                 target.put(ReportField.DUMPSYS_MEMINFO, collectMemInfo());
+                break;
             case TOTAL_MEM_SIZE:
                 target.put(ReportField.TOTAL_MEM_SIZE, getTotalInternalMemorySize());
+                break;
             case AVAILABLE_MEM_SIZE:
                 target.put(ReportField.AVAILABLE_MEM_SIZE, getAvailableInternalMemorySize());
+                break;
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();

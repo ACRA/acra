@@ -26,7 +26,9 @@ import org.acra.config.CoreConfiguration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -47,9 +49,14 @@ public final class CrashReportDataFactory {
         this.context = context;
         this.config = config;
         collectors = new ArrayList<>();
-        for (Collector collector : ServiceLoader.load(Collector.class)) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Loaded collector of class " + collector.getClass().getName());
-            collectors.add(collector);
+        for (final Iterator<Collector> iterator = ServiceLoader.load(Collector.class).iterator(); iterator.hasNext(); ) {
+            try {
+                final Collector collector = iterator.next();
+                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Loaded collector of class " + collector.getClass().getName());
+                collectors.add(collector);
+            }catch (ServiceConfigurationError e){
+                ACRA.log.e(LOG_TAG, "Unable to load collector", e);
+            }
         }
         Collections.sort(collectors, new Comparator<Collector>() {
             @Override
@@ -85,7 +92,7 @@ public final class CrashReportDataFactory {
             try {
                 collector.collect(context, config, builder, crashReportData);
             }catch (CollectorException e){
-                ACRA.log.w(LOG_TAG, e.getMessage());
+                ACRA.log.w(LOG_TAG, e);
             }catch (Throwable t) {
                 ACRA.log.e(LOG_TAG, "Error in collector " + collector.getClass().getSimpleName(), t);
             }

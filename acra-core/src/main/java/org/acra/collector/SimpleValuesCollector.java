@@ -54,24 +54,34 @@ final class SimpleValuesCollector extends AbstractReportFieldCollector {
         switch (reportField) {
             case IS_SILENT:
                 target.put(ReportField.IS_SILENT, reportBuilder.isSendSilently());
+                break;
             case REPORT_ID:
                 target.put(ReportField.REPORT_ID, UUID.randomUUID().toString());
+                break;
             case INSTALLATION_ID:
                 target.put(ReportField.INSTALLATION_ID, Installation.id(context));
+                break;
             case PACKAGE_NAME:
                 target.put(ReportField.PACKAGE_NAME, context.getPackageName());
+                break;
             case PHONE_MODEL:
                 target.put(ReportField.PHONE_MODEL, Build.MODEL);
+                break;
             case ANDROID_VERSION:
                 target.put(ReportField.ANDROID_VERSION, Build.VERSION.RELEASE);
+                break;
             case BRAND:
                 target.put(ReportField.BRAND, Build.BRAND);
+                break;
             case PRODUCT:
                 target.put(ReportField.PRODUCT, Build.PRODUCT);
+                break;
             case FILE_PATH:
                 target.put(ReportField.FILE_PATH, getApplicationFilePath());
+                break;
             case USER_IP:
                 target.put(ReportField.USER_IP, getLocalIpAddress());
+                break;
             default:
                 //will not happen if used correctly
                 throw new IllegalArgumentException();
