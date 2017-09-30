@@ -40,13 +40,11 @@ import java.util.UUID;
  */
 @AutoService(Collector.class)
 final class SimpleValuesCollector extends AbstractReportFieldCollector {
-    private final Context context;
 
-    SimpleValuesCollector(Context context) {
+    SimpleValuesCollector() {
         super(ReportField.IS_SILENT, ReportField.REPORT_ID, ReportField.INSTALLATION_ID,
                 ReportField.PACKAGE_NAME, ReportField.PHONE_MODEL, ReportField.ANDROID_VERSION,
                 ReportField.BRAND, ReportField.PRODUCT, ReportField.FILE_PATH, ReportField.USER_IP);
-        this.context = context;
     }
 
     @Override
@@ -77,7 +75,7 @@ final class SimpleValuesCollector extends AbstractReportFieldCollector {
                 target.put(ReportField.PRODUCT, Build.PRODUCT);
                 break;
             case FILE_PATH:
-                target.put(ReportField.FILE_PATH, getApplicationFilePath());
+                target.put(ReportField.FILE_PATH, getApplicationFilePath(context));
                 break;
             case USER_IP:
                 target.put(ReportField.USER_IP, getLocalIpAddress());
@@ -94,7 +92,7 @@ final class SimpleValuesCollector extends AbstractReportFieldCollector {
     }
 
     @NonNull
-    private String getApplicationFilePath() {
+    private String getApplicationFilePath(@NonNull Context context) {
         return context.getFilesDir().getAbsolutePath();
     }
 

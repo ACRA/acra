@@ -47,7 +47,7 @@ import java.io.IOException;
  *
  * @author Kevin Gaudin
  */
-@SuppressWarnings({"WeakerAccess","unused"})
+@SuppressWarnings({"WeakerAccess", "unused"})
 @Keep
 public final class ACRA {
     private ACRA() {
@@ -238,42 +238,42 @@ public final class ACRA {
         if (!senderServiceProcess) {
             // Indicate that ACRA is or is not listening for crashes.
             log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
-        }
-        errorReporterSingleton = new ErrorReporter(mApplication, configProxy, enableAcra, supportedAndroidVersion, !senderServiceProcess);
+            errorReporterSingleton = new ErrorReporter(mApplication, configProxy, enableAcra, supportedAndroidVersion);
 
-        // Check for approved reports and send them (if enabled).
-        // NB don't check if senderServiceProcess as it will gather these reports itself.
-        if (checkReportsOnApplicationStart && !senderServiceProcess) {
-            final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(mApplication, config);
-            if (config.deleteOldUnsentReportsOnApplicationStart()) {
-                startupProcessor.deleteUnsentReportsFromOldAppVersion();
-            }
-            if (config.deleteUnapprovedReportsOnApplicationStart()) {
-                startupProcessor.deleteAllUnapprovedReportsBarOne();
-            }
-            if (enableAcra) {
-                startupProcessor.sendApprovedReports();
-            }
-        }
-
-        // We HAVE to keep a reference otherwise the listener could be garbage
-        // collected:
-        // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
-        mPrefListener = new OnSharedPreferenceChangeListener() {
-
-            @Override
-            public void onSharedPreferenceChanged(@NonNull SharedPreferences sharedPreferences, String key) {
-                if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
-                    final boolean enableAcra = !shouldDisableACRA(sharedPreferences);
-                    getErrorReporter().setEnabled(enableAcra);
+            // Check for approved reports and send them (if enabled).
+            // NB don't check if senderServiceProcess as it will gather these reports itself.
+            if (checkReportsOnApplicationStart) {
+                final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(mApplication, config);
+                if (config.deleteOldUnsentReportsOnApplicationStart()) {
+                    startupProcessor.deleteUnsentReportsFromOldAppVersion();
+                }
+                if (config.deleteUnapprovedReportsOnApplicationStart()) {
+                    startupProcessor.deleteAllUnapprovedReportsBarOne();
+                }
+                if (enableAcra) {
+                    startupProcessor.sendApprovedReports();
                 }
             }
-        };
 
-        // This listener has to be set after initAcra is called to avoid a
-        // NPE in ErrorReporter.disable() because
-        // the context could be null at this moment.
-        prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+            // We HAVE to keep a reference otherwise the listener could be garbage
+            // collected:
+            // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
+            mPrefListener = new OnSharedPreferenceChangeListener() {
+
+                @Override
+                public void onSharedPreferenceChanged(@NonNull SharedPreferences sharedPreferences, String key) {
+                    if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
+                        final boolean enableAcra = !shouldDisableACRA(sharedPreferences);
+                        getErrorReporter().setEnabled(enableAcra);
+                    }
+                }
+            };
+
+            // This listener has to be set after initAcra is called to avoid a
+            // NPE in ErrorReporter.disable() because
+            // the context could be null at this moment.
+            prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+        }
     }
 
     /**

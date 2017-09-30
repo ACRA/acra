@@ -76,14 +76,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
 
     /**
      * Can only be constructed from within this class.
-     *
-     * @param context                     Context for the application in which ACRA is running.
+     *  @param context                     Context for the application in which ACRA is running.
      * @param config                      AcraConfig to use when reporting and sending errors.
      * @param enabled                     Whether this ErrorReporter should capture Exceptions and forward their reports.
-     * @param listenForUncaughtExceptions Whether to listen for uncaught Exceptions.
      */
     ErrorReporter(@NonNull Application context, @NonNull CoreConfiguration config,
-                  boolean enabled, boolean supportedAndroidVersion, boolean listenForUncaughtExceptions) {
+                  boolean enabled, boolean supportedAndroidVersion) {
 
         this.context = context;
         this.config = config;
@@ -93,12 +91,8 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
         crashReportDataFactory.collectStartUp();
 
         final Thread.UncaughtExceptionHandler defaultExceptionHandler;
-        if (listenForUncaughtExceptions) {
-            defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-            Thread.setDefaultUncaughtExceptionHandler(this);
-        } else {
-            defaultExceptionHandler = null;
-        }
+        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
 
         final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
         final InstanceCreator instanceCreator = new InstanceCreator();
