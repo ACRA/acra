@@ -8,16 +8,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath 'net.researchgate:gradle-release:2.5.0'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
-apply plugin: 'com.jfrog.artifactory'
 
 allprojects {
     repositories {
@@ -100,7 +97,10 @@ subprojects {
         }
 
         afterEvaluate {
-            javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files })
+            try {
+                javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files })
+            } catch (ignored) {
+            }
             javadoc.dependsOn generateReleaseSources
         }
 
@@ -167,32 +167,32 @@ subprojects {
                 }
             }
         }
-    }
-    plugins.withType(BintrayPlugin) {
-        bintray {
-            user = artifactoryUser
-            key = artifactoryApiKey
-            publications = ['maven']
-            publish = true
-            pkg {
-                repo = 'maven'
-                name = pomName
-                websiteUrl = pomUrl
-                vcsUrl = pomVcsUrl
-                licenses = [pomLicenseName]
-                publicDownloadNumbers = true
-                version {
-                    name = project.version
-                    desc = pomDescription
-                    mavenCentralSync {
-                        sync = true
-                        user = ossrhUser
-                        password = ossrhPassword
+        plugins.withType(BintrayPlugin) {
+            bintray {
+                user = artifactoryUser
+                key = artifactoryApiKey
+                publications = ['maven']
+                publish = true
+                pkg {
+                    repo = 'maven'
+                    name = pomName
+                    websiteUrl = pomUrl
+                    vcsUrl = pomVcsUrl
+                    licenses = [pomLicenseName]
+                    publicDownloadNumbers = true
+                    version {
+                        name = project.version
+                        desc = pomDescription
+                        mavenCentralSync {
+                            sync = true
+                            user = ossrhUser
+                            password = ossrhPassword
+                        }
                     }
                 }
             }
+            bintrayUpload.dependsOn(build, javadocJar, sourcesJar, 'generatePomFileForMavenPublication')
         }
-        bintrayUpload.dependsOn(build)
     }
 }
 

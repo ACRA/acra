@@ -80,12 +80,6 @@ public @interface AcraDialog {
     @DrawableRes int resIcon() default android.R.drawable.ic_dialog_alert;
 
     /**
-     * @return Resource id for the Toast text triggered when the user accepts to
-     * send a report in the crash dialog.
-     */
-    @StringRes int resOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
-
-    /**
      * @return Resource id for the text in the crash dialog.
      */
     @AnyNonDefault @StringRes int resText() default ACRAConstants.DEFAULT_RES_VALUE;

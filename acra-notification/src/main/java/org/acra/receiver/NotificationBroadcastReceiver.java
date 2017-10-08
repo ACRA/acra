@@ -80,12 +80,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
                                 }
                             }
                             new SenderServiceStarter(context, config).startService(false, true);
-
-                            // Optional Toast to thank the user
-                            final int toastId = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class).resOkToast();
-                            if (toastId != 0) {
-                                ToastSender.sendToast(context, toastId, Toast.LENGTH_LONG);
-                            }
                         }
                         break;
                     case NotificationInteraction.INTENT_ACTION_DISCARD:

@@ -147,12 +147,6 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         // Start the report sending task
         final SenderServiceStarter starter = new SenderServiceStarter(getApplicationContext(), config);
         starter.startService(false, true);
-
-        // Optional Toast to thank the user
-        final int toastId = ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).resOkToast();
-        if (toastId != 0) {
-            ToastSender.sendToast(getApplicationContext(), toastId, Toast.LENGTH_LONG);
-        }
     }
 
     protected final CoreConfiguration getConfig() {

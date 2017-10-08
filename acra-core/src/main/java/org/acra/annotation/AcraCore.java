@@ -18,6 +18,7 @@ package org.acra.annotation;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
@@ -410,4 +411,14 @@ public @interface AcraCore {
      * @since 4.9.3
      */
     @Instantiatable @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
+
+    /**
+     * @return Resource id for the Toast text triggered when a report was sent successfully.
+     */
+    @StringRes int resReportSendSuccessToast() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * @return Resource id for the Toast text triggered when no report was sent successfully.
+     */
+    @StringRes int resReportSendFailureToast() default ACRAConstants.DEFAULT_RES_VALUE;
 }

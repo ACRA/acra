@@ -114,12 +114,6 @@ public @interface AcraNotification {
     @StringRes int resCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
-     * @return Resource id for the Toast text triggered when the user accepts to
-     * send a report in the crash dialog.
-     */
-    @StringRes int resOkToast() default ACRAConstants.DEFAULT_RES_VALUE;
-
-    /**
      * @return if a normal click on the notification should send the report
      */
     boolean sendOnClick() default false;

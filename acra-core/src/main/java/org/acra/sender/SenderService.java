@@ -19,6 +19,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -26,6 +27,7 @@ import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.util.InstanceCreator;
+import org.acra.util.ToastSender;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -89,6 +91,10 @@ public class SenderService extends IntentService {
 
                 reportDistributor.distribute(report);
                 reportsSentCount++;
+            }
+            final int toastRes = reportsSentCount > 0 ? config.resReportSendSuccessToast() : config.resReportSendFailureToast();
+            if (toastRes != ACRAConstants.DEFAULT_RES_VALUE) {
+                ToastSender.sendToast(this, toastRes, Toast.LENGTH_LONG);
             }
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "", e);
