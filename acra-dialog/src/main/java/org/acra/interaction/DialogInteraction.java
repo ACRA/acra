@@ -46,12 +46,6 @@ public class DialogInteraction implements ReportInteraction {
      */
     public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
     /**
-     * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
-     * <p>
-     * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
-     */
-    public static final String EXTRA_REPORT_EXCEPTION = "REPORT_EXCEPTION";
-    /**
      * Used in the intent starting CrashReportDialog to provide the AcraConfig to use when gathering the crash info.
      * <p>
      * This can be used by any BaseCrashReportDialog subclass to custom the dialog.

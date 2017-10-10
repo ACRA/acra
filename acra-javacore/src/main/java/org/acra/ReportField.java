@@ -57,10 +57,6 @@ public enum ReportField {
      * Android Build details.
      */
     BUILD {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Device brand (manufacturer or carrier).
@@ -83,20 +79,12 @@ public enum ReportField {
      * the application build.
      */
     BUILD_CONFIG {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Contains key = value pairs defined by the application developer during
      * the application execution.
      */
     CUSTOM_DATA {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * The Holy Stack Trace.
@@ -113,28 +101,16 @@ public enum ReportField {
      *
      */
     INITIAL_CONFIGURATION {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * android.content.res.Configuration fields state on the application crash.
      */
     CRASH_CONFIGURATION {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Device display specifications.
      */
     DISPLAY {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Comment added by the user in the CrashReportDialog.
@@ -190,55 +166,31 @@ public enum ReportField {
      * Features declared as available on this device by the system.
      */
     DEVICE_FEATURES {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * External storage state and standard directories.
      */
     ENVIRONMENT {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * System settings.
      */
     SETTINGS_SYSTEM {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Secure settings (applications can't modify them).
      */
     SETTINGS_SECURE {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Global settings, introduced in Android 4.2 (API level 17) to centralize settings for multiple users.
      */
     SETTINGS_GLOBAL {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * SharedPreferences contents
      */
     SHARED_PREFERENCES {
-        @Override
-        public boolean containsKeyValuePairs() {
-            return true;
-        }
     },
     /**
      * Content of your own application log file.
@@ -257,16 +209,6 @@ public enum ReportField {
     /**
      * Retrieves the user IP address(es).
      */
-    USER_IP;
+    USER_IP
 
-    /**
-     * Whether this field is a collection of key/value pairs.
-     * 
-     * @return true if the field contains a string with a key/value pair on each
-     *         line, key and value separated by an equal sign
-     * 
-     */
-    public boolean containsKeyValuePairs() {
-        return false;
-    }
 }

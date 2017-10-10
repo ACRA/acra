@@ -23,7 +23,9 @@ import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 import static org.acra.ACRA.DEV_LOGGING;
@@ -42,8 +44,13 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
     @Override
     public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
         final List<ReportSenderFactory> factoryList = new ArrayList<>();
-        for (ReportSenderFactory factory : ServiceLoader.load(ReportSenderFactory.class)) {
-            factoryList.add(factory);
+        //noinspection ForLoopReplaceableByForEach
+        for (final Iterator<ReportSenderFactory> iterator = ServiceLoader.load(ReportSenderFactory.class).iterator(); iterator.hasNext(); ) {
+            try {
+                factoryList.add(iterator.next());
+            }catch (ServiceConfigurationError e){
+                ACRA.log.e(ACRA.LOG_TAG, "Unable to load ReportSenderFactory", e);
+            }
         }
         if (factoryList.size() == 1) {
             if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Autodiscovered ReportSenderFactory of type " + factoryList.get(0).getClass().getSimpleName());

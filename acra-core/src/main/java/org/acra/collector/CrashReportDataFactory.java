@@ -49,6 +49,7 @@ public final class CrashReportDataFactory {
         this.context = context;
         this.config = config;
         collectors = new ArrayList<>();
+        //noinspection ForLoopReplaceableByForEach need to catch exception in iterator.next()
         for (final Iterator<Collector> iterator = ServiceLoader.load(Collector.class).iterator(); iterator.hasNext(); ) {
             try {
                 final Collector collector = iterator.next();

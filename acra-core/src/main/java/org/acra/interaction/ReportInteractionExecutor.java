@@ -19,11 +19,14 @@ package org.acra.interaction;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -41,8 +44,13 @@ public class ReportInteractionExecutor {
 
     public ReportInteractionExecutor() {
         reportInteractions = new ArrayList<>();
-        for (ReportInteraction interaction : ServiceLoader.load(ReportInteraction.class)) {
-            reportInteractions.add(interaction);
+        //noinspection ForLoopReplaceableByForEach
+        for (final Iterator<ReportInteraction> iterator = ServiceLoader.load(ReportInteraction.class).iterator(); iterator.hasNext(); ) {
+            try {
+                reportInteractions.add(iterator.next());
+            } catch (ServiceConfigurationError e) {
+                ACRA.log.e(ACRA.LOG_TAG, "Unable to load interaction", e);
+            }
         }
     }
 
@@ -57,6 +65,7 @@ public class ReportInteractionExecutor {
             futures.add(executorService.submit(new Callable<Boolean>() {
                 @Override
                 public Boolean call() {
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Calling ReportInteraction of class " + reportInteraction.getClass().getName());
                     return reportInteraction.performInteraction(context, config, reportFile);
                 }
             }));

@@ -68,6 +68,7 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     protected byte[] asBytes(Pair<String, List<Uri>> content) throws IOException {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         final Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
+        //noinspection TryFinallyCanBeTryWithResources we do not target api 19
         try {
             writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
             writer.append(CONTENT_TYPE).append(type.getContentType()).append(NEW_LINE).append(NEW_LINE);

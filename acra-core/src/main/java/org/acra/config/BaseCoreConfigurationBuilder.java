@@ -25,9 +25,11 @@ import org.acra.annotation.Transform;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -44,9 +46,15 @@ public final class BaseCoreConfigurationBuilder {
     BaseCoreConfigurationBuilder(@NonNull Class<?> app) {
         reportContentChanges = new EnumMap<>(ReportField.class);
         configurationBuilders = new ArrayList<>();
-        for (ConfigurationBuilderFactory factory : ServiceLoader.load(ConfigurationBuilderFactory.class)) {
-            if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Discovered and loaded plugin of type " + factory.getClass().getSimpleName().replace("BuilderFactory", ""));
-            configurationBuilders.add(factory.create(app));
+        //noinspection ForLoopReplaceableByForEach
+        for (final Iterator<ConfigurationBuilderFactory> iterator = ServiceLoader.load(ConfigurationBuilderFactory.class).iterator(); iterator.hasNext(); ) {
+            try {
+                final ConfigurationBuilderFactory factory = iterator.next();
+                if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Discovered and loaded plugin of type " + factory.getClass().getSimpleName().replace("BuilderFactory", ""));
+                configurationBuilders.add(factory.create(app));
+            }catch (ServiceConfigurationError e){
+                ACRA.log.e(ACRA.LOG_TAG, "Unable to load ConfigurationBuilderFactory", e);
+            }
         }
     }
 

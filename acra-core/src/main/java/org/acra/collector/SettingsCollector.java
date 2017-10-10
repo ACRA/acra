@@ -31,7 +31,6 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -72,14 +71,14 @@ public final class SettingsCollector extends AbstractReportFieldCollector {
         }
     }
 
-    private JSONObject collectSettings(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<?> settings) throws JSONException, NoSuchMethodException {
+    private JSONObject collectSettings(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<?> settings) throws NoSuchMethodException {
         final JSONObject result = new JSONObject();
         final Field[] keys = settings.getFields();
         final Method getString = settings.getMethod("getString", ContentResolver.class, String.class);
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(config, key)) {
                 try {
-                    final Object value = getString.invoke(null, context.getContentResolver(), (String) key.get(null));
+                    final Object value = getString.invoke(null, context.getContentResolver(), key.get(null));
                     if (value != null) {
                         result.put(key.getName(), value);
                     }

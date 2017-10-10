@@ -60,6 +60,7 @@ import static org.acra.ACRA.LOG_TAG;
  * If an error occurs while sending a report, it is kept for later attempts.
  * </p>
  */
+@SuppressWarnings({"WeakerAccess", "unused", "SameParameterValue"})
 public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final boolean supportedAndroidVersion;
@@ -115,7 +116,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
      * @see #removeCustomData(String)
      * @see #getCustomData(String)
      */
-    @SuppressWarnings("unused")
     public String putCustomData(@NonNull String key, String value) {
         return customData.put(key, value);
     }
@@ -128,7 +128,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
      * @see #putCustomData(String, String)
      * @see #getCustomData(String)
      */
-    @SuppressWarnings("unused")
     public String removeCustomData(@NonNull String key) {
         return customData.remove(key);
     }
@@ -136,7 +135,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
     /**
      * Removes all key/value pairs from your reports custom data field.
      */
-    @SuppressWarnings("unused")
     public void clearCustomData() {
         customData.clear();
     }
@@ -149,7 +147,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
      * @see #putCustomData(String, String)
      * @see #removeCustomData(String)
      */
-    @SuppressWarnings("unused")
     public String getCustomData(@NonNull String key) {
         return customData.get(key);
     }
@@ -195,7 +192,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
      * @param e The {@link Throwable} to be reported. If null the report will
      *          contain a new Exception("Report requested by developer").
      */
-    @SuppressWarnings("unused")
     public void handleSilentException(@Nullable Throwable e) {
         new ReportBuilder()
                 .exception(e)
@@ -228,7 +224,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
      * @param endApplication Set this to true if you want the application to be ended after
      *                       sending the report.
      */
-    @SuppressWarnings({"unused", "SameParameterValue", "WeakerAccess"})
     public void handleException(@Nullable Throwable e, boolean endApplication) {
         final ReportBuilder builder = new ReportBuilder();
         builder.exception(e)
@@ -247,7 +242,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
      * @param e The {@link Throwable} to be reported. If null the report will
      *          contain a new Exception("Report requested by developer").
      */
-    @SuppressWarnings("unused")
     public void handleException(@Nullable Throwable e) {
         handleException(e, false);
     }
