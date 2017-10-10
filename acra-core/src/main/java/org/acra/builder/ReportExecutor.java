@@ -14,20 +14,12 @@ import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
-import org.acra.interaction.ReportInteraction;
+import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ProcessFinisher;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
@@ -110,37 +102,12 @@ public class ReportExecutor {
             processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
         }
 
-        final List<ReportInteraction> reportInteractions = new ArrayList<>();
-        for (ReportInteraction interaction : ServiceLoader.load(ReportInteraction.class)) {
-            reportInteractions.add(interaction);
-        }
+        final ReportInteractionExecutor executor = new ReportInteractionExecutor();
         if (reportBuilder.isSendSilently()) {
             //if size == 0 we have no interaction and can send all reports
-            startSendingReports(reportInteractions.size() != 0);
+            startSendingReports(executor.hasInteractions());
         } else {
-            final ExecutorService executorService = Executors.newCachedThreadPool();
-            final List<Future<Boolean>> futures = new ArrayList<>();
-            for (final ReportInteraction reportInteraction : reportInteractions) {
-                futures.add(executorService.submit(new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() {
-                        return reportInteraction.performInteraction(context, config, reportBuilder, reportFile);
-                    }
-                }));
-            }
-            boolean sendReports = true;
-            for (Future<Boolean> future : futures){
-                while (!future.isDone()) {
-                    try {
-                        sendReports &= future.get();
-                    } catch (InterruptedException ignored) {
-                    } catch (ExecutionException e) {
-                        //ReportInteraction crashed, so ignore it
-                        break;
-                    }
-                }
-            }
-            if (sendReports) {
+            if (executor.performInteractions(context, config, reportFile)) {
                 startSendingReports(false);
             }
         }

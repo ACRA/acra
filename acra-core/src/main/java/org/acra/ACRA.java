@@ -234,16 +234,7 @@ public final class ACRA {
             // Check for approved reports and send them (if enabled).
             // NB don't check if senderServiceProcess as it will gather these reports itself.
             if (checkReportsOnApplicationStart) {
-                final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(app, config);
-                if (config.deleteOldUnsentReportsOnApplicationStart()) {
-                    startupProcessor.deleteUnsentReportsFromOldAppVersion();
-                }
-                if (config.deleteUnapprovedReportsOnApplicationStart()) {
-                    startupProcessor.deleteAllUnapprovedReportsBarOne();
-                }
-                if (enableAcra) {
-                    startupProcessor.sendApprovedReports();
-                }
+                new ApplicationStartupProcessor(app, config).checkReports(enableAcra);
             }
 
             // register after initAcra is called to avoid a

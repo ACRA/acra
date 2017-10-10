@@ -29,7 +29,7 @@ public class ToastInteraction implements ReportInteraction {
     private static final int TOAST_WAIT_DURATION = 2000;
 
     @Override
-    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
+    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         Looper.prepare();
         ToastSender.sendToast(context, ConfigUtils.getSenderConfiguration(config, ToastConfiguration.class).resText(), Toast.LENGTH_LONG);
         final Looper looper = Looper.myLooper();

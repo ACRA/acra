@@ -60,7 +60,7 @@ public class NotificationInteraction implements ReportInteraction {
     private static final String CHANNEL = "ACRA";
 
     @Override
-    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
+    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
         if (prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
             return true;

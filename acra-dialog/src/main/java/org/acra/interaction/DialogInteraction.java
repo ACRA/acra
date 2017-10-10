@@ -48,28 +48,28 @@ public class DialogInteraction implements ReportInteraction {
     public static final String EXTRA_REPORT_FILE = "REPORT_FILE";
     /**
      * Used in the intent starting CrashReportDialog to provide the Exception that caused the crash.
-     *
+     * <p>
      * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
      */
     public static final String EXTRA_REPORT_EXCEPTION = "REPORT_EXCEPTION";
     /**
      * Used in the intent starting CrashReportDialog to provide the AcraConfig to use when gathering the crash info.
-     *
+     * <p>
      * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
      */
     public static final String EXTRA_REPORT_CONFIG = "REPORT_CONFIG";
 
     @Override
-    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull File reportFile) {
+    public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
-        if(prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)){
+        if (prefs.getBoolean(ACRA.PREF_ALWAYS_ACCEPT, false)) {
             return true;
         }
         // Create a new activity task with the confirmation dialog.
         // This new task will be persisted on application restart
         // right after its death.
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating CrashReportDialog for " + reportFile);
-        final Intent dialogIntent = createCrashReportDialogIntent(context, config, reportFile, reportBuilder);
+        final Intent dialogIntent = createCrashReportDialogIntent(context, config, reportFile);
         dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(dialogIntent);
         return false;
@@ -78,15 +78,13 @@ public class DialogInteraction implements ReportInteraction {
     /**
      * Creates an Intent that can be used to create and show a CrashReportDialog.
      *
-     * @param reportFile        Error report file to display in the crash report dialog.
-     * @param reportBuilder     ReportBuilder containing the details of the crash.
+     * @param reportFile Error report file to display in the crash report dialog.
      */
     @NonNull
-    private Intent createCrashReportDialogIntent(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile, @NonNull ReportBuilder reportBuilder) {
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile + " exception=" + reportBuilder.getException());
+    private Intent createCrashReportDialogIntent(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile);
         final Intent dialogIntent = new Intent(context, ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).reportDialogClass());
         dialogIntent.putExtra(EXTRA_REPORT_FILE, reportFile);
-        dialogIntent.putExtra(EXTRA_REPORT_EXCEPTION, reportBuilder.getException());
         dialogIntent.putExtra(EXTRA_REPORT_CONFIG, config);
         return dialogIntent;
     }
