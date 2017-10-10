@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 
 /**
@@ -34,7 +35,7 @@ public class SharedPreferencesFactory {
         //noinspection ConstantConditions
         if (context == null) {
             throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
-        } else if (!"".equals(config.sharedPreferencesName())) {
+        } else if (!ACRAConstants.DEFAULT_STRING_VALUE.equals(config.sharedPreferencesName())) {
             return context.getSharedPreferences(config.sharedPreferencesName(), config.sharedPreferencesMode());
         } else {
             return PreferenceManager.getDefaultSharedPreferences(context);

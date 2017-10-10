@@ -16,6 +16,7 @@
 package org.acra;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -60,13 +61,11 @@ import static org.acra.ACRA.LOG_TAG;
  * If an error occurs while sending a report, it is kept for later attempts.
  * </p>
  */
-public class ErrorReporter implements Thread.UncaughtExceptionHandler {
+public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final boolean supportedAndroidVersion;
 
     private final Application context;
-    @NonNull
-    private final CoreConfiguration config;
 
     @NonNull
     private final ReportExecutor reportExecutor;
@@ -84,7 +83,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
                   boolean enabled, boolean supportedAndroidVersion) {
 
         this.context = context;
-        this.config = config;
         this.supportedAndroidVersion = supportedAndroidVersion;
 
         final CrashReportDataFactory crashReportDataFactory = new CrashReportDataFactory(context, config);
@@ -223,30 +221,6 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * This method looks for pending reports and does the action required depending on the interaction mode set.
-     * <p>
-     * There is no need to call this method as ACRA will by default check for errors on report start.
-     * <p>
-     * Whether ACRA checks for reports on app start is controlled by {@link ACRA#init(Application, CoreConfiguration, boolean)},
-     * but the default is that it will.
-     *
-     * @deprecated since 4.8.0 No replacement.
-     */
-    @SuppressWarnings(" unused")
-    public void checkReportsOnApplicationStart() {
-        final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(context, config);
-        if (config.deleteOldUnsentReportsOnApplicationStart()) {
-            startupProcessor.deleteUnsentReportsFromOldAppVersion();
-        }
-        if (config.deleteUnapprovedReportsOnApplicationStart()) {
-            startupProcessor.deleteAllUnapprovedReportsBarOne();
-        }
-        if (reportExecutor.isEnabled()) {
-            startupProcessor.sendApprovedReports();
-        }
-    }
-
-    /**
      * Send a report for a {@link Throwable} with the reporting interaction mode
      * configured by the developer.
      *
@@ -255,7 +229,7 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
      * @param endApplication Set this to true if you want the application to be ended after
      *                       sending the report.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "SameParameterValue", "WeakerAccess"})
     public void handleException(@Nullable Throwable e, boolean endApplication) {
         final ReportBuilder builder = new ReportBuilder();
         builder.exception(e)
@@ -277,5 +251,12 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler {
     @SuppressWarnings("unused")
     public void handleException(@Nullable Throwable e) {
         handleException(e, false);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (ACRA.PREF_DISABLE_ACRA.equals(key) || ACRA.PREF_ENABLE_ACRA.equals(key)) {
+            setEnabled(!ACRA.shouldDisableACRA(sharedPreferences));
+        }
     }
 }

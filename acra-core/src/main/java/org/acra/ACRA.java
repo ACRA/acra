@@ -15,6 +15,7 @@
  */
 package org.acra;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -108,17 +109,10 @@ public final class ACRA {
      */
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
-    private static Application mApplication;
-    @Nullable
-    private static CoreConfiguration configProxy;
-
     // Accessible via ACRA#getErrorReporter().
+    @SuppressLint("StaticFieldLeak")
     @Nullable
     private static ErrorReporter errorReporterSingleton;
-
-    // NB don't convert to a local field because then it could be garbage
-    // collected and then we would have no PreferenceListener.
-    private static OnSharedPreferenceChangeListener mPrefListener; // TODO consider moving to ErrorReport so it doesn't need to be a static field.
 
     /**
      * <p>
@@ -213,37 +207,34 @@ public final class ACRA {
         final boolean supportedAndroidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
         if (!supportedAndroidVersion) {
             // NB We keep initialising so that everything is configured. But ACRA is never enabled below.
-            log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
+            log.w(LOG_TAG, "ACRA 5.0.0+ requires Gingerbread or greater. ACRA is disabled and will NOT catch crashes or send messages.");
         }
 
-        if (mApplication != null) {
+        if (errorReporterSingleton != null) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
             return;
         }
-        mApplication = app;
 
         //noinspection ConstantConditions
         if (config == null) {
             log.e(LOG_TAG, "ACRA#init called but no CoreConfiguration provided");
             return;
         }
-        configProxy = config;
 
-        final SharedPreferences prefs = new SharedPreferencesFactory(mApplication, configProxy).create();
+        final SharedPreferences prefs = new SharedPreferencesFactory(app, config).create();
 
         new LegacyFileHandler(app, prefs).updateToCurrentVersionIfNecessary();
-
-        // Initialize ErrorReporter with all required data
-        final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
         if (!senderServiceProcess) {
+            // Initialize ErrorReporter with all required data
+            final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
             // Indicate that ACRA is or is not listening for crashes.
-            log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + mApplication.getPackageName() + ", initializing...");
-            errorReporterSingleton = new ErrorReporter(mApplication, configProxy, enableAcra, supportedAndroidVersion);
+            log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + app.getPackageName() + ", initializing...");
+            errorReporterSingleton = new ErrorReporter(app, config, enableAcra, supportedAndroidVersion);
 
             // Check for approved reports and send them (if enabled).
             // NB don't check if senderServiceProcess as it will gather these reports itself.
             if (checkReportsOnApplicationStart) {
-                final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(mApplication, config);
+                final ApplicationStartupProcessor startupProcessor = new ApplicationStartupProcessor(app, config);
                 if (config.deleteOldUnsentReportsOnApplicationStart()) {
                     startupProcessor.deleteUnsentReportsFromOldAppVersion();
                 }
@@ -255,24 +246,10 @@ public final class ACRA {
                 }
             }
 
-            // We HAVE to keep a reference otherwise the listener could be garbage
-            // collected:
-            // http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently/3104265#3104265
-            mPrefListener = new OnSharedPreferenceChangeListener() {
-
-                @Override
-                public void onSharedPreferenceChanged(@NonNull SharedPreferences sharedPreferences, String key) {
-                    if (PREF_DISABLE_ACRA.equals(key) || PREF_ENABLE_ACRA.equals(key)) {
-                        final boolean enableAcra = !shouldDisableACRA(sharedPreferences);
-                        getErrorReporter().setEnabled(enableAcra);
-                    }
-                }
-            };
-
-            // This listener has to be set after initAcra is called to avoid a
+            // register after initAcra is called to avoid a
             // NPE in ErrorReporter.disable() because
             // the context could be null at this moment.
-            prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
+            prefs.registerOnSharedPreferenceChangeListener(errorReporterSingleton);
         }
     }
 
@@ -281,7 +258,7 @@ public final class ACRA {
      */
     @SuppressWarnings("unused")
     public static boolean isInitialised() {
-        return configProxy != null;
+        return errorReporterSingleton != null;
     }
 
     /**
@@ -326,7 +303,7 @@ public final class ACRA {
      *              disabled.
      * @return true if prefs indicate that ACRA should be disabled.
      */
-    private static boolean shouldDisableACRA(@NonNull SharedPreferences prefs) {
+    static boolean shouldDisableACRA(@NonNull SharedPreferences prefs) {
         boolean disableAcra = false;
         try {
             final boolean enableAcra = prefs.getBoolean(PREF_ENABLE_ACRA, true);
@@ -335,33 +312,6 @@ public final class ACRA {
             // In case of a ClassCastException
         }
         return disableAcra;
-    }
-
-    /**
-     * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
-     * @deprecated since 4.8.0 use {@link SharedPreferencesFactory} instead.
-     */
-    @SuppressWarnings("unused")
-    @NonNull
-    public static SharedPreferences getACRASharedPreferences() {
-        if (configProxy == null) {
-            throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
-        }
-        return new SharedPreferencesFactory(mApplication, configProxy).create();
-    }
-
-    /**
-     * Provides the current ACRA configuration.
-     *
-     * @return Current ACRA {@link AcraCore} configuration instance.
-     * @deprecated since 4.8.0 {@link CoreConfiguration} should be passed into classes instead of retrieved statically.
-     */
-    @NonNull
-    public static CoreConfiguration getConfig() {
-        if (configProxy == null) {
-            throw new IllegalStateException("Cannot call ACRA.getConfig() before ACRA.init().");
-        }
-        return configProxy;
     }
 
     public static void setLog(@NonNull ACRALog log) {

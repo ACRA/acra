@@ -27,6 +27,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.SystemServices;
 import org.json.JSONException;
@@ -123,6 +124,7 @@ final class DropBoxCollector extends AbstractReportFieldCollector {
     @Override
     boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
         return super.shouldCollect(context, config, collect, reportBuilder) &&
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN || new PackageManagerWrapper(context).hasPermission(Manifest.permission.READ_LOGS));
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN || new PackageManagerWrapper(context).hasPermission(Manifest.permission.READ_LOGS))
+                && new SharedPreferencesFactory(context, config).create().getBoolean(ACRA.PREF_ENABLE_SYSTEM_LOGS, true);
     }
 }
