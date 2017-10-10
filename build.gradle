@@ -6,6 +6,7 @@ import com.jfrog.bintray.gradle.BintrayPlugin
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0-beta7'
@@ -98,7 +99,7 @@ subprojects {
 
         afterEvaluate {
             try {
-                javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files })
+                javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files }) + files('build/generated/source/r/release')
             } catch (ignored) {
             }
             javadoc.dependsOn generateReleaseSources

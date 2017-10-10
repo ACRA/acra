@@ -40,7 +40,7 @@ import static org.acra.ACRA.LOG_TAG;
  * Collects the N last lines of a text stream. Use this collector if your
  * application handles its own logging system.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class LogFileCollector extends AbstractReportFieldCollector {

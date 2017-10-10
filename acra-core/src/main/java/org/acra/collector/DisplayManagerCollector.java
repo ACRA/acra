@@ -42,7 +42,7 @@ import java.util.Arrays;
 /**
  * Collects information about the connected display(s)
  *
- * @author (original author unknown) & F43nd1r
+ * @author (original author unknown) &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class DisplayManagerCollector extends AbstractReportFieldCollector {

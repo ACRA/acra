@@ -41,7 +41,7 @@ import java.lang.reflect.Modifier;
  * Collects data about available codecs on the device through the MediaCodecList
  * API introduced in Android 4.1 JellyBean.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class MediaCodecListCollector extends AbstractReportFieldCollector {

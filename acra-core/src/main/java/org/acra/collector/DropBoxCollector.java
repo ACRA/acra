@@ -49,7 +49,7 @@ import static org.acra.ACRA.LOG_TAG;
  * debugging applications. Application specific tags can be provided by the app
  * dev to track his own usage of the DropBoxManager.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class DropBoxCollector extends AbstractReportFieldCollector {

@@ -41,7 +41,7 @@ import static org.acra.ACRA.LOG_TAG;
  * collects data from {@link System}, {@link Global} and {@link Secure} Settings
  * classes.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class SettingsCollector extends AbstractReportFieldCollector {

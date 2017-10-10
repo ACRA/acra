@@ -32,7 +32,6 @@ import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.builder.ReportBuilder;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.NotificationConfiguration;

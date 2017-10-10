@@ -31,7 +31,7 @@ import org.json.JSONObject;
 /**
  * Features declared as available on the device.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class DeviceFeaturesCollector extends AbstractReportFieldCollector {

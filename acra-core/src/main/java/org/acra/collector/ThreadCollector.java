@@ -29,7 +29,7 @@ import org.json.JSONObject;
 /**
  * Collects some data identifying a Thread
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class ThreadCollector extends AbstractReportFieldCollector {

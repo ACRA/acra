@@ -43,7 +43,7 @@ import static org.acra.ACRA.LOG_TAG;
 /**
  * Executes logcat commands and collects it's output.
  *
- * @author Kevin Gaudin & F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class LogCatCollector extends AbstractReportFieldCollector {
