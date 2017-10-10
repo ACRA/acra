@@ -3,6 +3,7 @@ package org.acra.sender;
 import android.content.Context;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
+
 import org.acra.config.CoreConfiguration;
 
 /**

@@ -22,20 +22,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
-import android.widget.Toast;
 
 import org.acra.ACRA;
 import org.acra.collector.CrashReportData;
-import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
-import org.acra.config.NotificationConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
 import org.acra.interaction.NotificationInteraction;
 import org.acra.sender.SenderService;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.SystemServices;
-import org.acra.util.ToastSender;
 import org.json.JSONException;
 
 import java.io.File;

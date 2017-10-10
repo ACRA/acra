@@ -19,8 +19,9 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 dependencies {
-    compile project(':acra-core')
-    provided "com.google.auto.service:auto-service:$autoServiceVersion"
+    implementation "com.android.support:support-fragment:$supportVersion"
+    api project(':acra-core')
+    compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
     annotationProcessor project(':annotationprocessor')
-    provided project(':annotations')
+    compileOnly project(':annotations')
 }

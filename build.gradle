@@ -95,14 +95,16 @@ subprojects {
             source = android.sourceSets.main.java.srcDirs
             source += files('build/generated/source/aidl/release') + files('build/generated/source/apt/release')
             javadoc.classpath += files(android.getBootClasspath().join(File.pathSeparator))
-        }
-
-        afterEvaluate {
-            try {
-                javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files }) + files('build/generated/source/r/release')
-            } catch (ignored) {
+            doFirst {
+                try {
+                    javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files }) + files('build/generated/source/r/release')
+                } catch (e) {
+                    logger.warn('failed to get classpath for javadoc', e)
+                }
             }
-            javadoc.dependsOn generateReleaseSources
+            afterEvaluate {
+                dependsOn assembleRelease
+            }
         }
 
         task javadocJar(type: Jar, dependsOn: javadoc) {

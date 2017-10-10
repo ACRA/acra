@@ -19,16 +19,14 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.acra.annotation.AcraCore;
+import org.acra.config.ACRAConfigurationException;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.CoreConfigurationBuilder;
-import org.acra.config.ACRAConfigurationException;
 import org.acra.legacy.LegacyFileHandler;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;

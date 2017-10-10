@@ -28,7 +28,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 
 import org.acra.ModelUtils;
-import org.acra.definition.Type;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
 import org.acra.config.ConfigurationBuilder;
@@ -39,6 +38,7 @@ import org.acra.definition.FieldSetter;
 import org.acra.definition.Method;
 import org.acra.definition.Transformable;
 import org.acra.definition.Transformer;
+import org.acra.definition.Type;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +47,9 @@ import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
-import static org.acra.ModelUtils.*;
+import static org.acra.ModelUtils.FIELD_0;
+import static org.acra.ModelUtils.PARAM_0;
+import static org.acra.ModelUtils.VAR_0;
 
 /**
  * @author F43nd1r

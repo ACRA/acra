@@ -28,10 +28,10 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.acra.ModelUtils;
-import org.acra.definition.Type;
 import org.acra.annotation.Configuration;
 import org.acra.config.ConfigurationBuilderFactory;
 import org.acra.definition.Method;
+import org.acra.definition.Type;
 
 import java.io.IOException;
 import java.io.Serializable;

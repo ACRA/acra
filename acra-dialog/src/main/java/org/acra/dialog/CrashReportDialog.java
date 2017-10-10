@@ -18,8 +18,8 @@ import android.widget.TextView;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.ConfigUtils;
-import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.config.DialogConfiguration;
+import org.acra.prefs.SharedPreferencesFactory;
 
 
 /**

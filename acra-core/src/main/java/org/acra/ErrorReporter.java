@@ -27,7 +27,6 @@ import org.acra.builder.ReportExecutor;
 import org.acra.builder.ReportPrimer;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
-import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
 

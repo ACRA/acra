@@ -24,9 +24,8 @@ import android.support.annotation.NonNull;
 import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
-import org.acra.builder.ReportBuilder;
-import org.acra.config.CoreConfiguration;
 import org.acra.config.ConfigUtils;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.DialogConfiguration;
 import org.acra.prefs.SharedPreferencesFactory;
 

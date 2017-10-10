@@ -25,9 +25,9 @@ android {
 }
 
 dependencies {
-    compile project(':acra-core')
-    compile 'com.android.support:support-v4:26.0.0'
-    provided "com.google.auto.service:auto-service:$autoServiceVersion"
+    api project(':acra-core')
+    implementation 'com.android.support:support-compat:26.1.0'
+    compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
     annotationProcessor project(':annotationprocessor')
-    provided project(':annotations')
+    compileOnly project(':annotations')
 }

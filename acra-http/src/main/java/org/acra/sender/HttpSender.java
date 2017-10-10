@@ -26,14 +26,14 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.collector.CrashReportData;
-import org.acra.config.CoreConfiguration;
 import org.acra.config.Configuration;
+import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
 import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
-import org.acra.util.UriUtils;
 import org.acra.http.MultipartHttpRequest;
 import org.acra.util.InstanceCreator;
+import org.acra.util.UriUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
