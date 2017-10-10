@@ -74,6 +74,7 @@ public class NotificationInteraction implements ReportInteraction {
         //We have to create a channel on Oreo+, because notifications without one aren't allowed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(CHANNEL, context.getString(notificationConfig.resChannelName()), notificationConfig.resChannelImportance());
+            channel.setSound(null, null);
             if (notificationConfig.resChannelDescription() != ACRAConstants.DEFAULT_RES_VALUE) {
                 channel.setDescription(context.getString(notificationConfig.resChannelDescription()));
             }
@@ -85,7 +86,6 @@ public class NotificationInteraction implements ReportInteraction {
                 .setContentTitle(context.getString(notificationConfig.resTitle()))
                 .setContentText(context.getString(notificationConfig.resText()))
                 .setSmallIcon(notificationConfig.resIcon())
-                .setDefaults(0)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
         //add ticker if set
         if (notificationConfig.resTickerText() != ACRAConstants.DEFAULT_RES_VALUE) {
