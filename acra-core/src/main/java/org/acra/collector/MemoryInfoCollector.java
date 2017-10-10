@@ -43,8 +43,8 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class MemoryInfoCollector extends AbstractReportFieldCollector {
-    MemoryInfoCollector() {
+public final class MemoryInfoCollector extends AbstractReportFieldCollector {
+    public MemoryInfoCollector() {
         super(ReportField.DUMPSYS_MEMINFO, ReportField.TOTAL_MEM_SIZE, ReportField.AVAILABLE_MEM_SIZE);
     }
 

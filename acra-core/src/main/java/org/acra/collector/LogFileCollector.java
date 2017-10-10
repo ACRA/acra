@@ -43,9 +43,9 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class LogFileCollector extends AbstractReportFieldCollector {
+public final class LogFileCollector extends AbstractReportFieldCollector {
 
-    LogFileCollector() {
+    public LogFileCollector() {
         super(ReportField.APPLICATION_LOG);
     }
 

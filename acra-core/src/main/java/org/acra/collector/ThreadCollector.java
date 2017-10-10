@@ -32,8 +32,8 @@ import org.json.JSONObject;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class ThreadCollector extends AbstractReportFieldCollector {
-    ThreadCollector() {
+public final class ThreadCollector extends AbstractReportFieldCollector {
+    public ThreadCollector() {
         super(ReportField.THREAD_DETAILS);
     }
 

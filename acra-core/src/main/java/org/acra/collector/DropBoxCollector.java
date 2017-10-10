@@ -52,7 +52,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class DropBoxCollector extends AbstractReportFieldCollector {
+public final class DropBoxCollector extends AbstractReportFieldCollector {
 
     private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",
@@ -61,7 +61,7 @@ final class DropBoxCollector extends AbstractReportFieldCollector {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault()); //iCal format (used for backwards compatibility)
 
-    DropBoxCollector() {
+    public DropBoxCollector() {
         super(ReportField.DROPBOX);
     }
 

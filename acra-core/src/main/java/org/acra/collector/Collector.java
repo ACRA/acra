@@ -17,6 +17,7 @@
 package org.acra.collector;
 
 import android.content.Context;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import org.acra.builder.ReportBuilder;
@@ -26,7 +27,7 @@ import org.acra.config.CoreConfiguration;
  * @author F43nd1r
  * @since 29.09.2017
  */
-
+@Keep
 public interface Collector {
     void collect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData crashReportData) throws CollectorException;
 

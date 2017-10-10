@@ -33,9 +33,9 @@ import org.acra.util.PackageManagerWrapper;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-final class PackageManagerCollector extends AbstractReportFieldCollector {
+public final class PackageManagerCollector extends AbstractReportFieldCollector {
 
-    PackageManagerCollector() {
+    public PackageManagerCollector() {
         super(ReportField.APP_VERSION_NAME, ReportField.APP_VERSION_CODE);
     }
 

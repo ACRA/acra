@@ -39,9 +39,9 @@ import java.util.UUID;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-final class SimpleValuesCollector extends AbstractReportFieldCollector {
+public final class SimpleValuesCollector extends AbstractReportFieldCollector {
 
-    SimpleValuesCollector() {
+    public SimpleValuesCollector() {
         super(ReportField.IS_SILENT, ReportField.REPORT_ID, ReportField.INSTALLATION_ID,
                 ReportField.PACKAGE_NAME, ReportField.PHONE_MODEL, ReportField.ANDROID_VERSION,
                 ReportField.BRAND, ReportField.PRODUCT, ReportField.FILE_PATH, ReportField.USER_IP);

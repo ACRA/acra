@@ -45,9 +45,9 @@ import java.util.Arrays;
  * @author (original author unknown) & F43nd1r
  */
 @AutoService(Collector.class)
-final class DisplayManagerCollector extends AbstractReportFieldCollector {
+public final class DisplayManagerCollector extends AbstractReportFieldCollector {
 
-    DisplayManagerCollector() {
+    public DisplayManagerCollector() {
         super(ReportField.DISPLAY);
     }
 

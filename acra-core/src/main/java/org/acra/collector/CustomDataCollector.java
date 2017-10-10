@@ -32,9 +32,9 @@ import org.json.JSONObject;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-final class CustomDataCollector extends AbstractReportFieldCollector {
+public final class CustomDataCollector extends AbstractReportFieldCollector {
 
-    CustomDataCollector(){
+    public CustomDataCollector(){
         super(ReportField.CUSTOM_DATA);
     }
 

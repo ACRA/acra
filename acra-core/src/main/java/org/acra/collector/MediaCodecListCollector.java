@@ -44,7 +44,7 @@ import java.lang.reflect.Modifier;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class MediaCodecListCollector extends AbstractReportFieldCollector {
+public final class MediaCodecListCollector extends AbstractReportFieldCollector {
 
     private enum CodecType {
         AVC, H263, MPEG4, AAC
@@ -66,7 +66,7 @@ final class MediaCodecListCollector extends AbstractReportFieldCollector {
     private final SparseArray<String> mMPEG4ProfileValues = new SparseArray<>();
     private final SparseArray<String> mAACProfileValues = new SparseArray<>();
 
-    MediaCodecListCollector() {
+    public MediaCodecListCollector() {
         super(ReportField.MEDIA_CODEC_LIST);
     }
 

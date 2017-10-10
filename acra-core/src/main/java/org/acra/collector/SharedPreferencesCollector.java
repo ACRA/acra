@@ -40,9 +40,9 @@ import java.util.TreeMap;
  * application developer.
  */
 @AutoService(Collector.class)
-final class SharedPreferencesCollector extends AbstractReportFieldCollector {
+public final class SharedPreferencesCollector extends AbstractReportFieldCollector {
 
-    SharedPreferencesCollector() {
+    public SharedPreferencesCollector() {
         super(ReportField.USER_EMAIL, ReportField.SHARED_PREFERENCES);
     }
 

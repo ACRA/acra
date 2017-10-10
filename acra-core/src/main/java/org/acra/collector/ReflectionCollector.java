@@ -44,9 +44,9 @@ import java.util.Arrays;
  * @author Kevin Gaudin
  */
 @AutoService(Collector.class)
-final class ReflectionCollector extends AbstractReportFieldCollector {
+public final class ReflectionCollector extends AbstractReportFieldCollector {
 
-    ReflectionCollector() {
+    public ReflectionCollector() {
         super(ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.ENVIRONMENT);
     }
 

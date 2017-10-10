@@ -37,10 +37,10 @@ import java.util.Locale;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-final class TimeCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
+public final class TimeCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
     private Calendar appStartDate;
 
-    TimeCollector() {
+    public TimeCollector() {
         super(ReportField.USER_APP_START_DATE, ReportField.USER_CRASH_DATE);
     }
 

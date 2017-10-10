@@ -38,9 +38,9 @@ import org.acra.util.SystemServices;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-final class DeviceIdCollector extends AbstractReportFieldCollector {
+public final class DeviceIdCollector extends AbstractReportFieldCollector {
 
-    DeviceIdCollector() {
+    public DeviceIdCollector() {
         super(ReportField.DEVICE_ID);
     }
 

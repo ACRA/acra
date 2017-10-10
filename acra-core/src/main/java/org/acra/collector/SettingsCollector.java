@@ -44,11 +44,11 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class SettingsCollector extends AbstractReportFieldCollector {
+public final class SettingsCollector extends AbstractReportFieldCollector {
 
     private static final String ERROR = "Error: ";
 
-    SettingsCollector() {
+    public SettingsCollector() {
         super(ReportField.SETTINGS_SYSTEM, ReportField.SETTINGS_SECURE, ReportField.SETTINGS_GLOBAL);
     }
 

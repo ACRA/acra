@@ -37,8 +37,8 @@ import java.io.Writer;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-final class StacktraceCollector extends AbstractReportFieldCollector {
-    StacktraceCollector() {
+public final class StacktraceCollector extends AbstractReportFieldCollector {
+    public StacktraceCollector() {
         super(ReportField.STACK_TRACE, ReportField.STACK_TRACE_HASH);
     }
 

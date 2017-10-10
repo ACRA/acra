@@ -34,9 +34,9 @@ import org.json.JSONObject;
  * @author Kevin Gaudin & F43nd1r
  */
 @AutoService(Collector.class)
-final class DeviceFeaturesCollector extends AbstractReportFieldCollector {
+public final class DeviceFeaturesCollector extends AbstractReportFieldCollector {
 
-    DeviceFeaturesCollector() {
+    public DeviceFeaturesCollector() {
         super(ReportField.DEVICE_FEATURES);
     }
 
