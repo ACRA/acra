@@ -260,6 +260,11 @@ public @interface AcraCore {
     boolean deleteOldUnsentReportsOnApplicationStart() default true;
 
     /**
+     * @return how many approved but unsent reports should be kept. Default is to keep all reports
+     */
+    int keepApprovedReportsUpTo() default ACRAConstants.KEEP_ALL;
+
+    /**
      * Set this to true if you prefer displaying the native force close dialog after the ACRA is done.
      * Recommended: Keep this set to false if using  ReportingInteractionMode#DIALOG for notification.
      *

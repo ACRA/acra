@@ -56,6 +56,8 @@ public final class ACRAConstants {
 
     public static final int DEFAULT_BUFFER_SIZE_IN_BYTES = 8192;
 
+    public static final int KEEP_ALL = 0;
+
     /**
      * Default list of {@link ReportField}s to be sent in reports. You can set
      * your own list with

@@ -3,9 +3,11 @@ package org.acra.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.ReportLocator;
@@ -37,22 +39,31 @@ public final class ApplicationStartupProcessor {
             deleteUnsentReportsFromOldAppVersion();
         }
         if (config.deleteUnapprovedReportsOnApplicationStart()) {
-            deleteAllUnapprovedReportsBarOne();
+            reportDeleter.deleteReports(false, 1);
+        }
+        if(config.keepApprovedReportsUpTo() > ACRAConstants.KEEP_ALL) {
+            reportDeleter.deleteReports(true, config.keepApprovedReportsUpTo());
         }
         if (enableAcra) {
             sendApprovedReports();
-            approveReports();
+            approveOneReport();
         }
     }
 
-    private void approveReports() {
+    private void approveOneReport() {
         final File[] reports = reportLocator.getUnapprovedReports();
 
         if (reports.length == 0) {
             return; // There are no unapproved reports, so bail now.
         }
-        //only approve one report at a time to prevent overwhelming users
-        new ReportInteractionExecutor().performInteractions(context, config, reports[0]);
+        //cannot directly create stuff from onAttachBaseContext, so defer the call
+        new Handler(context.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                //only approve one report at a time to prevent overwhelming users
+                new ReportInteractionExecutor().performInteractions(context, config, reports[0]);
+            }
+        });
     }
 
     /**
@@ -69,17 +80,6 @@ public final class ApplicationStartupProcessor {
 
             prefs.edit().putInt(ACRA.PREF_LAST_VERSION_NR, appVersion).apply();
         }
-    }
-
-    /**
-     * Deletes all the unapproved reports except for the last one.
-     *
-     * NOTIFICATION or DIALOG mode require explicit approval by user.
-     * If latest notification/dialog has been ignored: neither accepted nor refused; they will accumulate.
-     * So destroy all unapproved reports bar the last one.
-     */
-    private void deleteAllUnapprovedReportsBarOne() {
-        reportDeleter.deleteReports(false, 1);
     }
 
     /**
