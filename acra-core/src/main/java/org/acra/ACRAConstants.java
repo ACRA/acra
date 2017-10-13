@@ -15,14 +15,17 @@
  */
 package org.acra;
 
+import static org.acra.ReportField.*;
+
 /**
  * Responsible for collating those constants shared among the ACRA components.
- * 
+ *
  * @author William Ferguson
  * @since 4.3.0
  */
 public final class ACRAConstants {
-    private ACRAConstants(){}
+    private ACRAConstants() {
+    }
 
     public static final String REPORTFILE_EXTENSION = ".stacktrace";
 
@@ -35,7 +38,7 @@ public final class ACRAConstants {
      * This key is used to store the silent state of a report sent by
      * handleSilentException().
      */
-    public static final String SILENT_SUFFIX = "-" + ReportField.IS_SILENT;
+    public static final String SILENT_SUFFIX = "-" + IS_SILENT;
     /**
      * This is the maximum number of previously stored reports that we send
      * in one batch to avoid overloading the network.
@@ -63,11 +66,9 @@ public final class ACRAConstants {
      * your own list with
      * {@link org.acra.annotation.AcraCore#reportContent()}.
      */
-    public static final ReportField[] DEFAULT_REPORT_FIELDS = { ReportField.REPORT_ID, ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
-            ReportField.PACKAGE_NAME, ReportField.FILE_PATH, ReportField.PHONE_MODEL, ReportField.BRAND, ReportField.PRODUCT, ReportField.ANDROID_VERSION, ReportField.BUILD, ReportField.TOTAL_MEM_SIZE,
-            ReportField.AVAILABLE_MEM_SIZE, ReportField.BUILD_CONFIG, ReportField.CUSTOM_DATA, ReportField.IS_SILENT, ReportField.STACK_TRACE, ReportField.INITIAL_CONFIGURATION, ReportField.CRASH_CONFIGURATION,
-            ReportField.DISPLAY, ReportField.USER_COMMENT, ReportField.USER_EMAIL, ReportField.USER_APP_START_DATE, ReportField.USER_CRASH_DATE, ReportField.DUMPSYS_MEMINFO, ReportField.LOGCAT,
-            ReportField.INSTALLATION_ID, ReportField.DEVICE_FEATURES, ReportField.ENVIRONMENT, ReportField.SHARED_PREFERENCES };
+    public static final ReportField[] DEFAULT_REPORT_FIELDS = {REPORT_ID, APP_VERSION_CODE, APP_VERSION_NAME, PACKAGE_NAME, FILE_PATH, PHONE_MODEL, BRAND, PRODUCT, ANDROID_VERSION,
+            BUILD, TOTAL_MEM_SIZE, AVAILABLE_MEM_SIZE, BUILD_CONFIG, CUSTOM_DATA, IS_SILENT, STACK_TRACE, INITIAL_CONFIGURATION, CRASH_CONFIGURATION, DISPLAY, USER_COMMENT, USER_EMAIL,
+            USER_APP_START_DATE, USER_CRASH_DATE, DUMPSYS_MEMINFO, LOGCAT, INSTALLATION_ID, DEVICE_FEATURES, ENVIRONMENT, SHARED_PREFERENCES};
 
     public static final String DATE_TIME_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
 
