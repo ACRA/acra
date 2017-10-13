@@ -70,7 +70,7 @@ public final class TimeCollector extends AbstractReportFieldCollector implements
 
     @Override
     boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
-        return true;
+        return collect == ReportField.USER_CRASH_DATE || super.shouldCollect(context, config, collect, reportBuilder);
     }
 
     @NonNull
