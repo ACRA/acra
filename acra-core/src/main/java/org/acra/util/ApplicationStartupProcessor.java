@@ -61,7 +61,7 @@ public final class ApplicationStartupProcessor {
             @Override
             public void run() {
                 //only approve one report at a time to prevent overwhelming users
-                new ReportInteractionExecutor().performInteractions(context, config, reports[0]);
+                new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
             }
         });
     }

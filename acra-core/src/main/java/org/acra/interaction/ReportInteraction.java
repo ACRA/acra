@@ -39,4 +39,6 @@ public interface ReportInteraction {
      * @return if reports should be sent instantly
      */
     boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile);
+
+    boolean enabled(@NonNull CoreConfiguration config);
 }

@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package org.acra.config;
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
-/**
- * @author F43nd1r
- * @since 01.06.2017
- */
-
-public final class ConfigUtils {
-
-    public static <T extends Configuration> T getPluginConfiguration(CoreConfiguration config, Class<T> c) {
-        T pluginConfiguration = null;
-        for (Configuration configuration : config.pluginConfigurations()) {
-            if (c.isAssignableFrom(configuration.getClass())) {
-                //noinspection unchecked
-                pluginConfiguration = (T) configuration;
-                break;
-            }
-        }
-        return pluginConfiguration;
+android {
+    defaultConfig {
+        minSdkVersion 19
     }
+    packagingOptions {
+        pickFirst 'META-INF/LICENSE.txt' // picks the JavaMail license file
+    }
+}
 
+dependencies {
+    api project(':acra-core')
+    implementation "com.sun.mail:android-mail:$javaMailVersion"
+    compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
+    annotationProcessor project(':annotationprocessor')
+    compileOnly project(':annotations')
 }

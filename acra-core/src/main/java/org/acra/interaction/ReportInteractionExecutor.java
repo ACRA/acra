@@ -41,13 +41,22 @@ import java.util.concurrent.Future;
 
 public class ReportInteractionExecutor {
     private final List<ReportInteraction> reportInteractions;
+    @NonNull
+    private final Context context;
+    @NonNull
+    private final CoreConfiguration config;
 
-    public ReportInteractionExecutor() {
+    public ReportInteractionExecutor(@NonNull final Context context, @NonNull final CoreConfiguration config) {
+        this.context = context;
+        this.config = config;
         reportInteractions = new ArrayList<>();
         //noinspection ForLoopReplaceableByForEach
         for (final Iterator<ReportInteraction> iterator = ServiceLoader.load(ReportInteraction.class).iterator(); iterator.hasNext(); ) {
             try {
-                reportInteractions.add(iterator.next());
+                final ReportInteraction reportInteraction = iterator.next();
+                if(reportInteraction.enabled(config)) {
+                    reportInteractions.add(reportInteraction);
+                }
             } catch (ServiceConfigurationError e) {
                 ACRA.log.e(ACRA.LOG_TAG, "Unable to load interaction", e);
             }
@@ -58,7 +67,7 @@ public class ReportInteractionExecutor {
         return reportInteractions.size() > 0;
     }
 
-    public boolean performInteractions(@NonNull final Context context, @NonNull final CoreConfiguration config, @NonNull final File reportFile) {
+    public boolean performInteractions(@NonNull final File reportFile) {
         final ExecutorService executorService = Executors.newCachedThreadPool();
         final List<Future<Boolean>> futures = new ArrayList<>();
         for (final ReportInteraction reportInteraction : reportInteractions) {

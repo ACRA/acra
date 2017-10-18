@@ -47,7 +47,7 @@ public final class KeyStoreHelper {
      */
     @Nullable
     public static KeyStore getKeyStore(@NonNull Context context, @NonNull CoreConfiguration config) {
-        final HttpSenderConfiguration senderConfiguration = ConfigUtils.getSenderConfiguration(config, HttpSenderConfiguration.class);
+        final HttpSenderConfiguration senderConfiguration = ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class);
         final InstanceCreator instanceCreator = new InstanceCreator();
         KeyStore keyStore = instanceCreator.create(senderConfiguration.keyStoreFactoryClass(), new NoKeyStoreFactory()).create(context);
         if(keyStore == null) {

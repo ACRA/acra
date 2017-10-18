@@ -38,7 +38,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 02.06.2017
  */
 @AutoService(ReportInteraction.class)
-public class DialogInteraction implements ReportInteraction {
+public class DialogInteraction extends BaseReportInteraction {
     /**
      * Used in the intent starting CrashReportDialog to provide the name of the
      * latest generated report file in order to be able to associate the user
@@ -51,6 +51,10 @@ public class DialogInteraction implements ReportInteraction {
      * This can be used by any BaseCrashReportDialog subclass to custom the dialog.
      */
     public static final String EXTRA_REPORT_CONFIG = "REPORT_CONFIG";
+
+    public DialogInteraction() {
+        super(DialogConfiguration.class);
+    }
 
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
@@ -76,7 +80,7 @@ public class DialogInteraction implements ReportInteraction {
     @NonNull
     private Intent createCrashReportDialogIntent(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating DialogIntent for " + reportFile);
-        final Intent dialogIntent = new Intent(context, ConfigUtils.getSenderConfiguration(config, DialogConfiguration.class).reportDialogClass());
+        final Intent dialogIntent = new Intent(context, ConfigUtils.getPluginConfiguration(config, DialogConfiguration.class).reportDialogClass());
         dialogIntent.putExtra(EXTRA_REPORT_FILE, reportFile);
         dialogIntent.putExtra(EXTRA_REPORT_CONFIG, config);
         return dialogIntent;

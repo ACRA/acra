@@ -48,7 +48,7 @@ import java.io.File;
  */
 
 @AutoService(ReportInteraction.class)
-public class NotificationInteraction implements ReportInteraction {
+public class NotificationInteraction extends BaseReportInteraction {
     public static final String INTENT_ACTION_SEND = "org.acra.intent.send";
     public static final String INTENT_ACTION_DISCARD = "org.acra.intent.discard";
     public static final String KEY_COMMENT = "comment";
@@ -57,6 +57,10 @@ public class NotificationInteraction implements ReportInteraction {
     private static final int ACTION_SEND = 667;
     private static final int ACTION_DISCARD = 668;
     private static final String CHANNEL = "ACRA";
+
+    public NotificationInteraction() {
+        super(NotificationConfiguration.class);
+    }
 
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
@@ -69,7 +73,7 @@ public class NotificationInteraction implements ReportInteraction {
         if (notificationManager == null) {
             return true;
         }
-        final NotificationConfiguration notificationConfig = ConfigUtils.getSenderConfiguration(config, NotificationConfiguration.class);
+        final NotificationConfiguration notificationConfig = ConfigUtils.getPluginConfiguration(config, NotificationConfiguration.class);
         //We have to create a channel on Oreo+, because notifications without one aren't allowed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(CHANNEL, context.getString(notificationConfig.resChannelName()), notificationConfig.resChannelImportance());

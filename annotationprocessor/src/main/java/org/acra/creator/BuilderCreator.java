@@ -42,6 +42,7 @@ import org.acra.definition.Type;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.lang.model.element.ExecutableElement;
@@ -57,6 +58,7 @@ import static org.acra.ModelUtils.VAR_0;
  */
 
 class BuilderCreator {
+    static final String ENABLED = "enabled";
 
     private final TypeSpec.Builder classBuilder;
     private final MethodSpec.Builder constructor;
@@ -83,6 +85,10 @@ class BuilderCreator {
                 .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class)), PARAM_0).addAnnotation(NonNull.class).build())
                 .addJavadoc("@param $L class annotated with {@link $T}\n", PARAM_0, baseAnnotation.getName());
         build = new BuildMethodCreator(utils.getOnlyMethod(configurationBuilder.getElement()), config);
+        final Field enabled = new Field(ENABLED, utils.getBooleanType(), Collections.emptyList(), null, null);
+        enabled.addTo(classBuilder);
+        methods.add(new FieldGetter(enabled));
+        methods.add(new FieldSetter(enabled, builder));
     }
 
     private void addConvenienceConstructor() {
@@ -96,7 +102,8 @@ class BuilderCreator {
 
     private void handleAnnotationMethods() {
         constructor.addStatement("final $1T $2L = $3L.getAnnotation($1T.class)", baseAnnotation.getName(), VAR_0, PARAM_0)
-                .beginControlFlow("if ($L != null)", VAR_0);
+                .addStatement("$L = $L != null", ENABLED, VAR_0)
+                .beginControlFlow("if ($L)", ENABLED);
         for (ExecutableElement method : utils.getMethods(baseAnnotation.getElement())) {
             final Field field = Field.from(method, utils);
             field.addTo(classBuilder);

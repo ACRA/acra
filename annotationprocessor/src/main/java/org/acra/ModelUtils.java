@@ -109,6 +109,10 @@ public class ModelUtils {
         return new Type(elementUtils.getTypeElement(c.getName()));
     }
 
+    public Type getBooleanType(){
+        return new Type(null, typeUtils.getPrimitiveType(TypeKind.BOOLEAN), TypeName.BOOLEAN);
+    }
+
     /**
      * Returns an immutable type extending this type, or if the type is an array a immutable list type
      *

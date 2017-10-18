@@ -21,16 +21,20 @@ import java.io.File;
  * @since 04.06.2017
  */
 @AutoService(ReportInteraction.class)
-public class ToastInteraction implements ReportInteraction {
+public class ToastInteraction extends BaseReportInteraction {
     /**
      * Number of milliseconds to wait after displaying a toast.
      */
     private static final int TOAST_WAIT_DURATION = 2000;
 
+    public ToastInteraction() {
+        super(ToastConfiguration.class);
+    }
+
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         Looper.prepare();
-        ToastSender.sendToast(context, ConfigUtils.getSenderConfiguration(config, ToastConfiguration.class).resText(), Toast.LENGTH_LONG);
+        ToastSender.sendToast(context, ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class).resText(), Toast.LENGTH_LONG);
         final Looper looper = Looper.myLooper();
         if(looper != null) {
             new Handler(looper).postDelayed(new Runnable() {

@@ -102,12 +102,12 @@ public class ReportExecutor {
             processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
         }
 
-        final ReportInteractionExecutor executor = new ReportInteractionExecutor();
+        final ReportInteractionExecutor executor = new ReportInteractionExecutor(context, config);
         if (reportBuilder.isSendSilently()) {
             //if size == 0 we have no interaction and can send all reports
             startSendingReports(executor.hasInteractions());
         } else {
-            if (executor.performInteractions(context, config, reportFile)) {
+            if (executor.performInteractions(reportFile)) {
                 startSendingReports(false);
             }
         }

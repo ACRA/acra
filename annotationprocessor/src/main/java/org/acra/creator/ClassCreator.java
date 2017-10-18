@@ -98,7 +98,7 @@ public class ClassCreator {
             } else {
                 constructor.addStatement("$1L = $2L.$1L()", name, PARAM_0);
             }
-            classBuilder.addField(FieldSpec.builder(type, name, Modifier.PRIVATE).addAnnotations(method.getAnnotations()).build());
+            classBuilder.addField(FieldSpec.builder(type, name, Modifier.PRIVATE, Modifier.FINAL).addAnnotations(method.getAnnotations()).build());
             classBuilder.addMethod(MethodSpec.methodBuilder(name)
                     .returns(type)
                     .addModifiers(Modifier.PUBLIC)

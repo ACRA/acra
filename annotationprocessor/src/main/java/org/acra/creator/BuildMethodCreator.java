@@ -19,6 +19,7 @@ package org.acra.creator;
 import android.support.annotation.NonNull;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 
 import org.acra.annotation.AnyNonDefault;
@@ -43,16 +44,19 @@ class BuildMethodCreator {
     private final MethodSpec.Builder methodBuilder;
     private final List<ExecutableElement> anyNonDefault;
     private final ClassName config;
+    private final List<CodeBlock> statements;
 
     BuildMethodCreator(ExecutableElement override, ClassName config) {
         this.config = config;
         methodBuilder = MethodSpec.overriding(override)
                 .addAnnotation(NonNull.class)
-                .returns(config);
+                .returns(config)
+                .beginControlFlow("if ($L)", BuilderCreator.ENABLED);
         anyNonDefault = new ArrayList<>();
+        statements = new ArrayList<>();
     }
 
-    void addValidation(Field field, ExecutableElement method){
+    void addValidation(Field field, ExecutableElement method) {
         if (!field.hasDefault()) {
             methodBuilder.beginControlFlow("if ($L == null)", field.getName())
                     .addStatement("throw new $T(\"$L has to be set\")", ACRAConfigurationException.class, field.getName())
@@ -71,16 +75,20 @@ class BuildMethodCreator {
         }
     }
 
-    void addMethodCall(String delegate, String methodName){
-        methodBuilder.addStatement("$L.$L()", delegate, methodName);
+    void addMethodCall(String delegate, String methodName) {
+        statements.add(CodeBlock.builder().addStatement("$L.$L()", delegate, methodName).build());
     }
 
-    MethodSpec build(){
+    MethodSpec build() {
         if (anyNonDefault.size() > 0) {
             methodBuilder.beginControlFlow("if ($L)", anyNonDefault.stream().map(m -> m.getSimpleName().toString() + "() == " + m.getDefaultValue()).collect(Collectors.joining(" && ")))
                     .addStatement("throw new $T(\"One of $L must not be default\")", ACRAConfigurationException.class,
                             anyNonDefault.stream().map(m -> m.getSimpleName().toString()).collect(Collectors.joining(", ")))
                     .endControlFlow();
+        }
+        methodBuilder.endControlFlow();
+        for (CodeBlock s : statements){
+            methodBuilder.addCode(s);
         }
         methodBuilder.addStatement("return new $T(this)", config);
         return methodBuilder.build();

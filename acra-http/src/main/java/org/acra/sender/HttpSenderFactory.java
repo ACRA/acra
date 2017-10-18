@@ -22,12 +22,16 @@ import android.support.annotation.NonNull;
 import com.google.auto.service.AutoService;
 
 import org.acra.config.CoreConfiguration;
+import org.acra.config.HttpSenderConfiguration;
 
 /**
  * Constructs a {@link HttpSender} with no report field mappings.
  */
 @AutoService(ReportSenderFactory.class)
-public final class HttpSenderFactory implements ReportSenderFactory {
+public final class HttpSenderFactory extends BaseReportSenderFactory {
+    public HttpSenderFactory() {
+        super(HttpSenderConfiguration.class);
+    }
 
     @NonNull
     @Override

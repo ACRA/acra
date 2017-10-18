@@ -137,7 +137,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     protected Intent buildAttachmentIntent(@NonNull String subject, @NonNull String body, @NonNull ArrayList<Uri> attachments, boolean contentAttached) {
         final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ConfigUtils.getSenderConfiguration(config, MailSenderConfiguration.class).mailTo()});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).mailTo()});
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.setType("message/rfc822");
@@ -156,7 +156,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     protected Intent buildResolveIntent(@NonNull String subject, @NonNull String body) {
         final Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.fromParts("mailto", ConfigUtils.getSenderConfiguration(config, MailSenderConfiguration.class).mailTo(), null));
+        intent.setData(Uri.fromParts("mailto", ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).mailTo(), null));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, body);
@@ -239,7 +239,7 @@ public class EmailIntentSender implements ReportSender {
     protected boolean fillAttachmentList(@NonNull Context context, @NonNull CrashReportData errorContent, @NonNull List<Uri> attachments) {
         final InstanceCreator instanceCreator = new InstanceCreator();
         attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config));
-        if (ConfigUtils.getSenderConfiguration(config, MailSenderConfiguration.class).reportAsFile()) {
+        if (ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).reportAsFile()) {
             final Uri report = createAttachmentFromString(context, "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION, errorContent.toJSON());
             if (report != null) {
                 attachments.add(report);

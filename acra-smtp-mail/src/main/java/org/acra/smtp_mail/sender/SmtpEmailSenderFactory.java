@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.acra.sender;
+package org.acra.smtp_mail.sender;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -22,20 +22,23 @@ import android.support.annotation.NonNull;
 import com.google.auto.service.AutoService;
 
 import org.acra.config.CoreConfiguration;
-import org.acra.config.MailSenderConfiguration;
+import org.acra.config.SmtpMailSenderConfiguration;
+import org.acra.sender.BaseReportSenderFactory;
+import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderFactory;
 
 /**
- * Constructs an {@link EmailIntentSender}.
+ * Created by Lukas on 18.10.2017.
  */
 @AutoService(ReportSenderFactory.class)
-public final class EmailIntentSenderFactory extends BaseReportSenderFactory {
-    public EmailIntentSenderFactory() {
-        super(MailSenderConfiguration.class);
+public class SmtpEmailSenderFactory extends BaseReportSenderFactory {
+    public SmtpEmailSenderFactory() {
+        super(SmtpMailSenderConfiguration.class);
     }
 
     @NonNull
     @Override
     public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
-        return new EmailIntentSender(config);
+        return new SmtpEmailSender(config);
     }
 }

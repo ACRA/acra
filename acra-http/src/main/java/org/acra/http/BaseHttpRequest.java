@@ -109,7 +109,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             handleResponse(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
             urlConnection.disconnect();
         } catch (SocketTimeoutException e) {
-            if (ConfigUtils.getSenderConfiguration(config, HttpSenderConfiguration.class).dropReportsOnTimeout()) {
+            if (ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class).dropReportsOnTimeout()) {
                 Log.w(ACRA.LOG_TAG, "Dropped report due to timeout");
             } else {
                 throw e;

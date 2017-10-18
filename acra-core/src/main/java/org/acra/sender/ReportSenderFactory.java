@@ -25,4 +25,6 @@ public interface ReportSenderFactory {
      */
     @NonNull
     ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config);
+
+    boolean enabled(@NonNull CoreConfiguration config);
 }

@@ -48,7 +48,7 @@ public class Field {
         return new Field(method.getSimpleName().toString(), utils.getType(method.getReturnType()), utils.getAnnotations(method), method.getDefaultValue(), utils.getJavadoc(method));
     }
 
-    private Field(String name, Type type, List<AnnotationSpec> annotations, AnnotationValue defaultValue, String javadoc) {
+    public Field(String name, Type type, List<AnnotationSpec> annotations, AnnotationValue defaultValue, String javadoc) {
         this.name = name;
         this.type = type;
         this.annotations = annotations;

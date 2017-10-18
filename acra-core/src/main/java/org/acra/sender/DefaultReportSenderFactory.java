@@ -47,8 +47,11 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
         //noinspection ForLoopReplaceableByForEach
         for (final Iterator<ReportSenderFactory> iterator = ServiceLoader.load(ReportSenderFactory.class).iterator(); iterator.hasNext(); ) {
             try {
-                factoryList.add(iterator.next());
-            }catch (ServiceConfigurationError e){
+                final ReportSenderFactory reportSenderFactory = iterator.next();
+                if (reportSenderFactory.enabled(config)) {
+                    factoryList.add(reportSenderFactory);
+                }
+            } catch (ServiceConfigurationError e) {
                 ACRA.log.e(ACRA.LOG_TAG, "Unable to load ReportSenderFactory", e);
             }
         }
@@ -61,5 +64,10 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
             ACRA.log.w(LOG_TAG, "No ReportSenderFactories were discovered. No reports will be sent");
         }
         return new NullSender();
+    }
+
+    @Override
+    public boolean enabled(@NonNull CoreConfiguration config) {
+        return true;
     }
 }
