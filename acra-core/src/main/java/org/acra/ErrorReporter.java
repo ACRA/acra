@@ -21,10 +21,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.acra.builder.LastActivityManager;
-import org.acra.builder.NoOpReportPrimer;
 import org.acra.builder.ReportBuilder;
 import org.acra.builder.ReportExecutor;
-import org.acra.builder.ReportPrimer;
 import org.acra.collector.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
 import org.acra.util.InstanceCreator;
@@ -94,10 +92,9 @@ public class ErrorReporter implements Thread.UncaughtExceptionHandler, SharedPre
 
         final LastActivityManager lastActivityManager = new LastActivityManager(this.context);
         final InstanceCreator instanceCreator = new InstanceCreator();
-        final ReportPrimer reportPrimer = instanceCreator.create(config.reportPrimerClass(), new NoOpReportPrimer());
         final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
-        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, reportPrimer, processFinisher);
+        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, processFinisher);
         reportExecutor.setEnabled(enabled);
     }
 

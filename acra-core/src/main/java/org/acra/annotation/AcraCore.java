@@ -24,8 +24,6 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.AttachmentUriProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.builder.NoOpReportPrimer;
-import org.acra.builder.ReportPrimer;
 import org.acra.config.BaseCoreConfigurationBuilder;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
@@ -368,11 +366,6 @@ public @interface AcraCore {
      * @return the directory of the application log file
      */
     @NonNull Directory applicationLogFileDir() default Directory.FILES_LEGACY;
-
-    /**
-     * @return Class that is ued to provide any extra details for a crash.
-     */
-    @Instantiatable @NonNull Class<? extends ReportPrimer> reportPrimerClass() default NoOpReportPrimer.class;
 
     /**
      * @return a Class that decides if a report should be resent (usually if one or more senders failed).
