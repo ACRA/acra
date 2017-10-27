@@ -16,7 +16,6 @@
 
 package org.acra.annotation;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
@@ -67,18 +66,6 @@ public @interface AcraCore {
      * {@link android.preference.PreferenceManager#getDefaultSharedPreferences(android.content.Context)}.
      */
     @NonNull String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
-
-    /**
-     * If using a custom {@link #sharedPreferencesName()}, pass
-     * here the mode that you need for the SharedPreference file creation:
-     * {@link android.content.Context#MODE_PRIVATE}, {@link android.content.Context#MODE_WORLD_READABLE} or
-     * {@link android.content.Context#MODE_WORLD_WRITEABLE}. Default is
-     * {@link android.content.Context#MODE_PRIVATE}.
-     *
-     * @return Mode to use with the SharedPreference creation.
-     * @see android.content.Context#getSharedPreferences(String, int)
-     */
-    int sharedPreferencesMode() default Context.MODE_PRIVATE;
 
     /**
      * If enabled, DropBox events collection will include system tags:

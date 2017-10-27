@@ -36,7 +36,7 @@ public class SharedPreferencesFactory {
         if (context == null) {
             throw new IllegalStateException("Cannot call ACRA.getACRASharedPreferences() before ACRA.init().");
         } else if (!ACRAConstants.DEFAULT_STRING_VALUE.equals(config.sharedPreferencesName())) {
-            return context.getSharedPreferences(config.sharedPreferencesName(), config.sharedPreferencesMode());
+            return context.getSharedPreferences(config.sharedPreferencesName(), Context.MODE_PRIVATE);
         } else {
             return PreferenceManager.getDefaultSharedPreferences(context);
         }
