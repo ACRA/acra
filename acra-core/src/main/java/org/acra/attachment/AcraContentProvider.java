@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import org.acra.ACRA;
+import org.acra.annotation.AcraCore;
 import org.acra.file.Directory;
 
 import java.io.File;
@@ -42,6 +43,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Provides access to attachments for senders
+ * For uri schema, see {@link AcraCore#attachmentUris()}
+ *
  * @author F43nd1r
  * @since 13.03.2017
  */
@@ -60,6 +64,16 @@ public class AcraContentProvider extends ContentProvider {
         return true;
     }
 
+    /**
+     * Provides file metadata
+     *
+     * @param uri           the file uri
+     * @param projection    any combination of {@link OpenableColumns#DISPLAY_NAME} and {@link OpenableColumns#SIZE}
+     * @param selection     ignored
+     * @param selectionArgs ignored
+     * @param sortOrder     ignored
+     * @return file metadata in a cursor with a single row
+     */
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
@@ -84,8 +98,12 @@ public class AcraContentProvider extends ContentProvider {
         return cursor;
     }
 
+    /**
+     * @param uri the file uri
+     * @return file represented by uri, or null if it can't be resolved
+     */
     @Nullable
-    private File getFileForUri(Uri uri) {
+    private File getFileForUri(@NonNull Uri uri) {
         if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme()) || !authority.equals(uri.getAuthority())) {
             return null;
         }
@@ -101,29 +119,62 @@ public class AcraContentProvider extends ContentProvider {
         }
     }
 
-    @Nullable
+    /**
+     * Provides file mimeType
+     *
+     * @param uri the file uri
+     * @return mimeType, default is {@link #MIME_TYPE_OCTET_STREAM}
+     * @see #guessMimeType(Uri)
+     */
+    @NonNull
     @Override
     public String getType(@NonNull Uri uri) {
         return guessMimeType(uri);
     }
 
+    /**
+     * @param uri    ignored
+     * @param values ignored
+     * @throws UnsupportedOperationException always
+     */
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         throw new UnsupportedOperationException("No insert supported");
     }
 
+    /**
+     * @param uri           ignored
+     * @param selection     ignored
+     * @param selectionArgs ignored
+     * @throws UnsupportedOperationException always
+     */
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         throw new UnsupportedOperationException("No delete supported");
     }
 
+    /**
+     * @param uri           ignored
+     * @param values        ignored
+     * @param selection     ignored
+     * @param selectionArgs ignored
+     * @throws UnsupportedOperationException always
+     */
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         throw new UnsupportedOperationException("No update supported");
     }
 
-    @Nullable
+    /**
+     * Open a file for read
+     *
+     * @param uri  the file uri
+     * @param mode ignored
+     * @return a {@link ParcelFileDescriptor} for the File
+     * @throws FileNotFoundException if the file cannot be resolved
+     */
+    @NonNull
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
         final File file = getFileForUri(uri);
@@ -138,6 +189,11 @@ public class AcraContentProvider extends ContentProvider {
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
+    /**
+     * @param context a a context
+     * @return authority of this provider
+     */
+    @NonNull
     private static String getAuthority(@NonNull Context context) {
         return context.getPackageName() + ".acra";
     }
@@ -149,6 +205,7 @@ public class AcraContentProvider extends ContentProvider {
      * @param file    the file
      * @return the uri
      */
+    @NonNull
     public static Uri getUriForFile(@NonNull Context context, @NonNull File file) {
         return getUriForFile(context, Directory.ROOT, file.getPath());
     }
@@ -161,6 +218,7 @@ public class AcraContentProvider extends ContentProvider {
      * @param relativePath the file path
      * @return the uri
      */
+    @NonNull
     public static Uri getUriForFile(@NonNull Context context, @NonNull Directory directory, @NonNull String relativePath) {
         return new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
@@ -172,10 +230,12 @@ public class AcraContentProvider extends ContentProvider {
 
     /**
      * Tries to guess the mime type from uri extension
+     *
      * @param uri the uri
      * @return the mime type of the uri, with fallback {@link #MIME_TYPE_OCTET_STREAM}
      */
-    public static String guessMimeType(Uri uri){
+    @NonNull
+    public static String guessMimeType(@NonNull Uri uri) {
         String type = null;
         final String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
                 .toString());

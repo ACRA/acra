@@ -27,6 +27,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.SystemServices;
@@ -38,7 +39,7 @@ import org.acra.util.SystemServices;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-public final class DeviceIdCollector extends AbstractReportFieldCollector {
+public final class DeviceIdCollector extends BaseReportFieldCollector {
 
     public DeviceIdCollector() {
         super(ReportField.DEVICE_ID);

@@ -30,6 +30,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,7 +45,7 @@ import java.lang.reflect.Modifier;
  * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
-public final class MediaCodecListCollector extends AbstractReportFieldCollector {
+public final class MediaCodecListCollector extends BaseReportFieldCollector {
 
     private enum CodecType {
         AVC, H263, MPEG4, AAC

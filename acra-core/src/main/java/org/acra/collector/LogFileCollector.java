@@ -25,6 +25,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.file.Directory;
 import org.acra.util.IOUtils;
 
@@ -43,7 +44,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
-public final class LogFileCollector extends AbstractReportFieldCollector {
+public final class LogFileCollector extends BaseReportFieldCollector {
 
     public LogFileCollector() {
         super(ReportField.APPLICATION_LOG);

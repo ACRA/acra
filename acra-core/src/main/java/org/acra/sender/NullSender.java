@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 
 import static org.acra.ACRA.LOG_TAG;
 

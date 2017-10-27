@@ -30,7 +30,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.AcraContentProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.MailSenderConfiguration;

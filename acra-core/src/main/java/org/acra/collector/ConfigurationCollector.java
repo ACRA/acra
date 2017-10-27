@@ -27,6 +27,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,7 +49,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin and F43nd1r
  */
 @AutoService(Collector.class)
-public final class ConfigurationCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
+public final class ConfigurationCollector extends BaseReportFieldCollector implements ApplicationStartupCollector {
 
     private static final String SUFFIX_MASK = "_MASK";
     private static final String FIELD_SCREENLAYOUT = "screenLayout";

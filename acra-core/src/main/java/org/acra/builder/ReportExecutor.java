@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acra.builder;
 
 import android.content.Context;
@@ -9,8 +24,8 @@ import android.widget.Toast;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.collector.CrashReportData;
-import org.acra.collector.CrashReportDataFactory;
+import org.acra.data.CrashReportData;
+import org.acra.data.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ReportingAdministrator;
 import org.acra.file.CrashReportPersister;
@@ -51,9 +66,17 @@ public class ReportExecutor {
 
     private boolean enabled = false;
 
-    public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config,
-                          @NonNull CrashReportDataFactory crashReportDataFactory, @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler,
-                          @NonNull ProcessFinisher processFinisher) {
+    /**
+     * Creates a new instance
+     *
+     * @param context a context
+     * @param config the config
+     * @param crashReportDataFactory factory used to collect data
+     * @param defaultExceptionHandler pass-through handler
+     * @param processFinisher used to end process after reporting
+     */
+    public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportDataFactory crashReportDataFactory,
+                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
@@ -75,6 +98,12 @@ public class ReportExecutor {
         }
     }
 
+    /**
+     * pass-through to default handler
+     *
+     * @param t the crashed thread
+     * @param e the uncaught exception
+     */
     public void handReportToDefaultExceptionHandler(@Nullable Thread t, @NonNull Throwable e) {
         if (defaultExceptionHandler != null) {
             ACRA.log.i(LOG_TAG, "ACRA is disabled for " + context.getPackageName()
@@ -96,7 +125,7 @@ public class ReportExecutor {
     }
 
     /**
-     * Try to send a report, if an error occurs stores a report file for a later attempt.
+     * Try to create a report. Also starts {@link org.acra.sender.SenderService}
      *
      * @param reportBuilder The report builder used to assemble the report
      */
@@ -198,7 +227,7 @@ public class ReportExecutor {
     }
 
     /**
-     * Starts a Thread to start sending outstanding error reports.
+     * Starts a Process to start sending outstanding error reports.
      *
      * @param onlySendSilentReports If true then only send silent reports.
      */
@@ -223,17 +252,10 @@ public class ReportExecutor {
     }
 
     /**
-     * When a report can't be sent, it is saved here in a file in the root of
-     * the application private directory.
+     * Store a report
      *
-     * @param file      In a few rare cases, we write the report again with additional
-     *                  data (user comment for example). In such cases, you can
-     *                  provide the already existing file name here to overwrite the
-     *                  report file. If null, a new file report will be generated
-     * @param crashData Can be used to save an alternative (or previously generated)
-     *                  report data. Used to store again a report with the addition of
-     *                  user comment. If null, the default current crash data are
-     *                  used.
+     * @param file      the file to store in
+     * @param crashData the content
      */
     private void saveCrashReportFile(@NonNull File file, @NonNull CrashReportData crashData) {
         try {

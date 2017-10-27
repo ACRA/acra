@@ -18,7 +18,7 @@ package org.acra.sender;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 
 /**
  * A simple interface for defining various crash report senders.

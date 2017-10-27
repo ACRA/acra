@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

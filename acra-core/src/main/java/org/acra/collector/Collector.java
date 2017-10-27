@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 
 /**
  * @author F43nd1r

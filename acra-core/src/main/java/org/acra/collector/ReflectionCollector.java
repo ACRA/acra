@@ -26,6 +26,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,7 +45,7 @@ import java.util.Arrays;
  * @author Kevin Gaudin
  */
 @AutoService(Collector.class)
-public final class ReflectionCollector extends AbstractReportFieldCollector {
+public final class ReflectionCollector extends BaseReportFieldCollector {
 
     public ReflectionCollector() {
         super(ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.ENVIRONMENT);

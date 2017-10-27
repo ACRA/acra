@@ -28,7 +28,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.builder.ReportBuilder;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 import org.acra.file.ReportLocator;
 import org.acra.util.IOUtils;
 import org.acra.util.ToastSender;

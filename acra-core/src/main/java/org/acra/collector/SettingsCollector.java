@@ -31,6 +31,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -45,7 +46,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
-public final class SettingsCollector extends AbstractReportFieldCollector {
+public final class SettingsCollector extends BaseReportFieldCollector {
 
     private static final String ERROR = "Error: ";
 

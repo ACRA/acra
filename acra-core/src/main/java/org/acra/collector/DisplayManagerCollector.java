@@ -32,6 +32,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +46,7 @@ import java.util.Arrays;
  * @author (original author unknown) &amp; F43nd1r
  */
 @AutoService(Collector.class)
-public final class DisplayManagerCollector extends AbstractReportFieldCollector {
+public final class DisplayManagerCollector extends BaseReportFieldCollector {
 
     public DisplayManagerCollector() {
         super(ReportField.DISPLAY);

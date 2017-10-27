@@ -26,6 +26,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +41,7 @@ import java.util.TreeMap;
  * application developer.
  */
 @AutoService(Collector.class)
-public final class SharedPreferencesCollector extends AbstractReportFieldCollector {
+public final class SharedPreferencesCollector extends BaseReportFieldCollector {
 
     public SharedPreferencesCollector() {
         super(ReportField.USER_EMAIL, ReportField.SHARED_PREFERENCES);

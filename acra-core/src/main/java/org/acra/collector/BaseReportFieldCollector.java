@@ -21,16 +21,17 @@ import android.support.annotation.NonNull;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 
 /**
- * Represents a collector.
+ * Base implementation of a collector.
  * Maintains information on which fields can be collected by this collector.
  * Validates constraints in which a field should (not) be collected.
  *
  * @author F43nd1r
  * @since 4.9.1
  */
-abstract class AbstractReportFieldCollector implements Collector {
+abstract class BaseReportFieldCollector implements Collector {
     private final ReportField[] reportFields;
 
     /**
@@ -39,7 +40,7 @@ abstract class AbstractReportFieldCollector implements Collector {
      * @param firstField the first supported field (split away to ensure each collector supports at least one field)
      * @param reportFields the supported reportFields
      */
-    AbstractReportFieldCollector(@NonNull ReportField firstField, @NonNull ReportField... reportFields) {
+    BaseReportFieldCollector(@NonNull ReportField firstField, @NonNull ReportField... reportFields) {
         this.reportFields = new ReportField[reportFields.length + 1];
         this.reportFields[0] = firstField;
         if(reportFields.length > 0) {

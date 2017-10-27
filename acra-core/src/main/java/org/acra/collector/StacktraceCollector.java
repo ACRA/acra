@@ -25,6 +25,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,7 +38,7 @@ import java.io.Writer;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-public final class StacktraceCollector extends AbstractReportFieldCollector {
+public final class StacktraceCollector extends BaseReportFieldCollector {
     public StacktraceCollector() {
         super(ReportField.STACK_TRACE, ReportField.STACK_TRACE_HASH);
     }

@@ -38,6 +38,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Main ACRA configuration
+ *
  * @author F43nd1r
  * @since 01.06.2017
  */
@@ -135,7 +137,7 @@ public @interface AcraCore {
      * reports.
      * </p>
      * <p>
-     * The fields order is significant. You can also use this property to modify
+     * The fields order may be significant depending on your sender. You can also use this property to modify
      * fields order in your reports.
      * </p>
      * <p>
@@ -216,18 +218,15 @@ public @interface AcraCore {
      * Default is true.
      * <p>
      * Silent and Toast reports are automatically approved.
-     * Dialog and Notification reports required explicit approval by the user before they are sent.
+     * Dialog and Notification reports require explicit approval by the user before they are sent.
      * </p>
      * <p>
-     * On application restart the user is prompted with approval for any unsent reports.
+     * On application restart the user is prompted with approval for one unsent report.
      * So you generally don't want to accumulate unapproved reports, otherwise you will prompt them multiple times.
      * </p>
      * <p>
      * If this is set to true then all unapproved reports bar one will be deleted on application start.
      * The last report is always retained because that is the report that probably just happened.
-     * </p>
-     * <p>
-     * If set to false then on restart the user will be prompted with approval for each unapproved report.
      * </p>
      *
      * @return true if ACRA should delete unapproved reports on application start.
@@ -246,12 +245,13 @@ public @interface AcraCore {
 
     /**
      * @return how many approved but unsent reports should be kept. Default is to keep all reports
+     * @since 5.0.0
      */
     int keepApprovedReportsUpTo() default ACRAConstants.KEEP_ALL;
 
     /**
      * Set this to true if you prefer displaying the native force close dialog after the ACRA is done.
-     * Recommended: Keep this set to false if using  ReportingInteractionMode#DIALOG for notification.
+     * Recommended: Keep this set to false if using interactions with user input.
      *
      * @return true if the native force close dialog should be displayed.
      */
@@ -268,7 +268,7 @@ public @interface AcraCore {
 
     /**
      * Set this to true if you want to include only logcat lines related to your
-     * Application process.
+     * Application process. Note that this is always done by android starting with API 16 (Jellybean)
      *
      * @return true if you want to filter logcat with your process id.
      */
@@ -287,7 +287,7 @@ public @interface AcraCore {
      * mode. Only signed application packages will send reports. Default value
      * is true.
      *
-     * @return false if reports should not be sent.
+     * @return false if reports should not be sent from unsigned packages.
      */
     boolean sendReportsInDevMode() default true;
 
@@ -327,13 +327,9 @@ public @interface AcraCore {
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
-     * path/name of your application log file. If the string does not contain
-     * any path separator, the file is assumed as being in
-     * {@link android.content.Context#getFilesDir()}.
+     * path/name of your application log file.
      *
      * @return a String containing the path/name of your application log file.
-     * If the string does not contain any path separator, the file is
-     * assumed as being in {@link android.content.Context#getFilesDir()}.
      */
     @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_STRING_VALUE;
 
@@ -374,7 +370,7 @@ public @interface AcraCore {
      * where [applicationId] is your application package name,
      * [Directory] is one of the enum constants in {@link Directory} in lower case
      * and [Path] is the relative path to the file in that directory
-     * e.g. content://org.acra.provider/files/thisIsATest.txt
+     * e.g. content://org.acra.test.acra/files/thisIsATest.txt
      * </p>
      * Side effects:
      * <ul>
@@ -399,11 +395,13 @@ public @interface AcraCore {
 
     /**
      * @return Resource id for the Toast text triggered when a report was sent successfully.
+     * @since 5.0.0
      */
     @StringRes int resReportSendSuccessToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
      * @return Resource id for the Toast text triggered when no report was sent successfully.
+     * @since 5.0.0
      */
     @StringRes int resReportSendFailureToast() default ACRAConstants.DEFAULT_RES_VALUE;
 }

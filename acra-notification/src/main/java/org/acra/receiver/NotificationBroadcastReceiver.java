@@ -24,7 +24,7 @@ import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
 
 import org.acra.ACRA;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;

@@ -9,12 +9,18 @@ import org.acra.config.CoreConfiguration;
 import java.util.List;
 
 /**
+ * Provides attachment uris to ACRA
+ *
  * @author F43nd1r
  * @since 09.03.2017
  */
-
 public interface AttachmentUriProvider {
 
+    /**
+     * @param context       a context
+     * @param configuration ACRA configuration
+     * @return all file uris that should be attached to the report
+     */
     @NonNull
-    List<Uri> getAttachments(Context context, CoreConfiguration configuration);
+    List<Uri> getAttachments(@NonNull Context context, @NonNull CoreConfiguration configuration);
 }

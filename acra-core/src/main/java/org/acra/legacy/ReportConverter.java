@@ -22,7 +22,7 @@ import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.util.IOUtils;

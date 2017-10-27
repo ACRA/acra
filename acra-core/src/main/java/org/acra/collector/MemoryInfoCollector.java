@@ -28,6 +28,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.util.IOUtils;
 
 import java.io.File;
@@ -43,7 +44,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
-public final class MemoryInfoCollector extends AbstractReportFieldCollector {
+public final class MemoryInfoCollector extends BaseReportFieldCollector {
     public MemoryInfoCollector() {
         super(ReportField.DUMPSYS_MEMINFO, ReportField.TOTAL_MEM_SIZE, ReportField.AVAILABLE_MEM_SIZE);
     }

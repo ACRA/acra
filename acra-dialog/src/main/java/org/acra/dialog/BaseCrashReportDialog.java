@@ -21,7 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import org.acra.ACRA;
-import org.acra.collector.CrashReportData;
+import org.acra.data.CrashReportData;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;

@@ -23,6 +23,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.json.JSONObject;
 
 /**
@@ -32,7 +33,7 @@ import org.json.JSONObject;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-public final class CustomDataCollector extends AbstractReportFieldCollector {
+public final class CustomDataCollector extends BaseReportFieldCollector {
 
     public CustomDataCollector(){
         super(ReportField.CUSTOM_DATA);

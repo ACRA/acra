@@ -24,6 +24,7 @@ import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,7 +38,7 @@ import java.util.Locale;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-public final class TimeCollector extends AbstractReportFieldCollector implements ApplicationStartupCollector {
+public final class TimeCollector extends BaseReportFieldCollector implements ApplicationStartupCollector {
     private Calendar appStartDate;
 
     public TimeCollector() {

@@ -22,11 +22,18 @@ import android.support.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 
 /**
+ * A collector that is also called at startup
+ *
  * @author F43nd1r
  * @since 29.09.2017
  */
 
 @SuppressWarnings("WeakerAccess")
 public interface ApplicationStartupCollector extends Collector {
+    /**
+     * collect startup data
+     * @param context a context
+     * @param config the config
+     */
     void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config);
 }

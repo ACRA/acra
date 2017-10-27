@@ -27,6 +27,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.PackageManagerWrapper;
 import org.acra.util.SystemServices;
@@ -52,7 +53,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
-public final class DropBoxCollector extends AbstractReportFieldCollector {
+public final class DropBoxCollector extends BaseReportFieldCollector {
 
     private static final String[] SYSTEM_TAGS = {"system_app_anr", "system_app_wtf", "system_app_crash",
             "system_server_anr", "system_server_wtf", "system_server_crash", "BATTERY_DISCHARGE_INFO",

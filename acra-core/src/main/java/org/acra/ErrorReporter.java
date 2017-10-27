@@ -23,7 +23,7 @@ import android.support.annotation.Nullable;
 import org.acra.builder.LastActivityManager;
 import org.acra.builder.ReportBuilder;
 import org.acra.builder.ReportExecutor;
-import org.acra.collector.CrashReportDataFactory;
+import org.acra.data.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;

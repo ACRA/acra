@@ -24,6 +24,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.util.PackageManagerWrapper;
 
 /**
@@ -33,7 +34,7 @@ import org.acra.util.PackageManagerWrapper;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-public final class PackageManagerCollector extends AbstractReportFieldCollector {
+public final class PackageManagerCollector extends BaseReportFieldCollector {
 
     public PackageManagerCollector() {
         super(ReportField.APP_VERSION_NAME, ReportField.APP_VERSION_CODE);

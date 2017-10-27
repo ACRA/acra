@@ -24,6 +24,7 @@ import com.google.auto.service.AutoService;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.util.Installation;
 
 import java.net.InetAddress;
@@ -39,7 +40,7 @@ import java.util.UUID;
  * @since 4.9.1
  */
 @AutoService(Collector.class)
-public final class SimpleValuesCollector extends AbstractReportFieldCollector {
+public final class SimpleValuesCollector extends BaseReportFieldCollector {
 
     public SimpleValuesCollector() {
         super(ReportField.IS_SILENT, ReportField.REPORT_ID, ReportField.INSTALLATION_ID,
