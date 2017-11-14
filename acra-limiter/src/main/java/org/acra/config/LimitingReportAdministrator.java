@@ -34,6 +34,7 @@ import org.acra.util.IOUtils;
 import org.acra.util.ToastSender;
 import org.json.JSONException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
@@ -146,7 +147,13 @@ public class LimitingReportAdministrator implements ReportingAdministrator {
     }
 
     private LimiterData loadLimiterData(@NonNull Context context, LimiterConfiguration limiterConfiguration) throws IOException, JSONException {
-        final LimiterData limiterData = new LimiterData(IOUtils.streamToString(context.openFileInput(FILE_LIMITER_DATA)));
+        String data = null;
+        try {
+            data = IOUtils.streamToString(context.openFileInput(FILE_LIMITER_DATA));
+        } catch (FileNotFoundException ignored) {
+            //file does not exist, we will create it
+        }
+        final LimiterData limiterData = new LimiterData(data);
         final Calendar keepAfter = Calendar.getInstance();
         keepAfter.add(Calendar.MINUTE, (int) -limiterConfiguration.periodUnit().toMinutes(limiterConfiguration.period()));
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "purging reports older than " + keepAfter.getTime().toString());
