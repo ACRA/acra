@@ -25,10 +25,11 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.data.CrashReportData;
 import org.acra.config.Configuration;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
+import org.acra.data.CrashReportData;
+import org.acra.data.StringFormat;
 import org.acra.http.BinaryHttpRequest;
 import org.acra.http.DefaultHttpRequest;
 import org.acra.http.MultipartHttpRequest;
@@ -36,14 +37,10 @@ import org.acra.util.InstanceCreator;
 import org.acra.util.UriUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -68,31 +65,6 @@ import static org.acra.ACRA.LOG_TAG;
 public class HttpSender implements ReportSender {
 
     /**
-     * Converts a Map of parameters into a URL encoded Sting.
-     *
-     * @param parameters Map of parameters to convert.
-     * @return URL encoded String representing the parameters.
-     * @throws UnsupportedEncodingException if one of the parameters couldn't be converted to UTF-8.
-     */
-    @NonNull
-    private static String getParamsAsFormString(@NonNull Map<?, ?> parameters) throws UnsupportedEncodingException {
-
-        final StringBuilder dataBfr = new StringBuilder();
-        for (final Map.Entry<?, ?> entry : parameters.entrySet()) {
-            if (dataBfr.length() != 0) {
-                dataBfr.append('&');
-            }
-            final Object preliminaryValue = entry.getValue();
-            final Object value = (preliminaryValue == null) ? "" : preliminaryValue;
-            dataBfr.append(URLEncoder.encode(entry.getKey().toString(), ACRAConstants.UTF8));
-            dataBfr.append('=');
-            dataBfr.append(URLEncoder.encode(value.toString(), ACRAConstants.UTF8));
-        }
-
-        return dataBfr.toString();
-    }
-
-    /**
      * Available HTTP methods to send data. Only POST and PUT are currently
      * supported.
      */
@@ -113,52 +85,12 @@ public class HttpSender implements ReportSender {
         abstract URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException;
     }
 
-    /**
-     * Type of report data encoding, currently supports Html Form encoding and
-     * JSON.
-     */
-    public enum Type {
-        /**
-         * Send data as a www form encoded list of key/values.
-         *
-         * @see <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4">Form content types</a>
-         */
-        FORM("application/x-www-form-urlencoded") {
-            @Override
-            String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return getParamsAsFormString(sender.convertToForm(report));
-            }
-        },
-        /**
-         * Send data as a structured JSON tree.
-         */
-        JSON("application/json") {
-            @Override
-            String convertReport(HttpSender sender, CrashReportData report) throws IOException {
-                return sender.convertToJson(report);
-            }
-        };
-        private final String contentType;
-
-        Type(String contentType) {
-            this.contentType = contentType;
-        }
-
-        @NonNull
-        public String getContentType() {
-            return contentType;
-        }
-
-        abstract String convertReport(HttpSender sender, CrashReportData report) throws IOException;
-    }
-
     private final CoreConfiguration config;
     private final HttpSenderConfiguration httpConfig;
-    @Nullable
+    @NonNull
     private final Uri mFormUri;
-    private final Map<ReportField, String> mMapping;
     private final Method mMethod;
-    private final Type mType;
+    private final StringFormat mType;
     @Nullable
     private String mUsername;
     @Nullable
@@ -175,35 +107,12 @@ public class HttpSender implements ReportSender {
      *               {@link Method#POST} and {@link Method#PUT} are available. If
      *               {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
      *               is appended to the formUri to be compliant with RESTful APIs.
-     * @param type   {@link Type} of encoding used to send the report body.
-     *               {@link Type#FORM} is a simple Key/Value pairs list as defined
+     * @param type   {@link StringFormat} of encoding used to send the report body.
+     *               {@link StringFormat#KEY_VALUE_LIST} is a simple Key/Value pairs list as defined
      *               by the application/x-www-form-urlencoded mime type.
      */
-    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable Type type) {
+    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable StringFormat type) {
         this(config, method, type, null);
-    }
-
-    /**
-     * <p>
-     * Create a new HttpSender instance with its destination taken from the supplied config.
-     * </p>
-     *
-     * @param config  AcraConfig declaring the
-     * @param method  HTTP {@link Method} to be used to send data. Currently only
-     *                {@link Method#POST} and {@link Method#PUT} are available. If
-     *                {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
-     *                is appended to the formUri to be compliant with RESTful APIs.
-     * @param type    {@link Type} of encoding used to send the report body.
-     *                {@link Type#FORM} is a simple Key/Value pairs list as defined
-     *                by the application/x-www-form-urlencoded mime type.
-     * @param mapping Applies only to {@link Method#POST} method parameter. If null,
-     *                POST parameters will be named with {@link ReportField} values
-     *                converted to String with .toString(). If not null, POST
-     *                parameters will be named with the result of
-     *                mapping.get(ReportField.SOME_FIELD);
-     */
-    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable Type type, @Nullable Map<ReportField, String> mapping) {
-        this(config, method, type, null, mapping);
     }
 
     /**
@@ -217,31 +126,25 @@ public class HttpSender implements ReportSender {
      *                {@link Method#POST} and {@link Method#PUT} are available. If
      *                {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
      *                is appended to the formUri to be compliant with RESTful APIs.
-     * @param type    {@link Type} of encoding used to send the report body.
-     *                {@link Type#FORM} is a simple Key/Value pairs list as defined
+     * @param type    {@link StringFormat} of encoding used to send the report body.
+     *                {@link StringFormat#KEY_VALUE_LIST} is a simple Key/Value pairs list as defined
      *                by the application/x-www-form-urlencoded mime type.
      * @param formUri The URL of your server-side crash report collection script.
-     * @param mapping Applies only to {@link Method#POST} method parameter. If null,
-     *                POST parameters will be named with {@link ReportField} values
-     *                converted to String with .toString(). If not null, POST
-     *                parameters will be named with the result of
-     *                mapping.get(ReportField.SOME_FIELD);
      */
-    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable Type type, @Nullable String formUri, @Nullable Map<ReportField, String> mapping) {
+    public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable StringFormat type, @Nullable String formUri) {
         this.config = config;
         this.httpConfig = getHttpSenderConfiguration(config);
         mMethod = (method == null) ? httpConfig.httpMethod() : method;
-        mType = (type == null) ? httpConfig.reportType() : type;
-        mFormUri = (formUri == null) ? null : Uri.parse(formUri);
-        mMapping = mapping;
+        mFormUri = Uri.parse((formUri == null) ? httpConfig.uri() : formUri);
+        mType = (type == null) ? config.reportFormat() : type;
         mUsername = null;
         mPassword = null;
     }
 
-    private static HttpSenderConfiguration getHttpSenderConfiguration(CoreConfiguration config){
+    private static HttpSenderConfiguration getHttpSenderConfiguration(CoreConfiguration config) {
         HttpSenderConfiguration httpSenderConfiguration = null;
-        for (Configuration configuration : config.pluginConfigurations()){
-            if(configuration instanceof HttpSenderConfiguration){
+        for (Configuration configuration : config.pluginConfigurations()) {
+            if (configuration instanceof HttpSenderConfiguration) {
                 httpSenderConfiguration = (HttpSenderConfiguration) configuration;
                 break;
             }
@@ -267,7 +170,7 @@ public class HttpSender implements ReportSender {
     @Override
     public void send(@NonNull Context context, @NonNull CrashReportData report) throws ReportSenderException {
         try {
-            final String baseUrl = mFormUri == null ? httpConfig.uri() : mFormUri.toString();
+            final String baseUrl = mFormUri.toString();
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + baseUrl);
 
             final String login = mUsername != null ? mUsername : isNull(httpConfig.basicAuthLogin()) ? null : httpConfig.basicAuthLogin();
@@ -277,34 +180,34 @@ public class HttpSender implements ReportSender {
             final List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
 
             // Generate report body depending on requested type
-            final String reportAsString = mType.convertReport(this, report);
+            final String reportAsString = convertToString(report, mType);
 
             // Adjust URL depending on method
             final URL reportUrl = mMethod.createURL(baseUrl, report);
 
-            sendHttpRequests(config, context, mMethod, mType, login, password, httpConfig.connectionTimeout(),
+            sendHttpRequests(config, context, mMethod, mType.getMatchingHttpContentType(), login, password, httpConfig.connectionTimeout(),
                     httpConfig.socketTimeout(), httpConfig.httpHeaders(), reportAsString, reportUrl, uris);
 
-        } catch (@NonNull IOException e) {
-            throw new ReportSenderException("Error while sending " + httpConfig.reportType()
+        } catch (@NonNull Exception e) {
+            throw new ReportSenderException("Error while sending " + config.reportFormat()
                     + " report via Http " + mMethod.name(), e);
         }
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void sendHttpRequests(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+    protected void sendHttpRequests(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull String contentType,
                                     @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                     @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
         switch (method) {
             case POST:
                 if (attachments.isEmpty()) {
-                    sendWithoutAttachments(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
+                    sendWithoutAttachments(configuration, context, method, contentType, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
                 } else {
-                    postMultipart(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url, attachments);
+                    postMultipart(configuration, context, contentType, login, password, connectionTimeOut, socketTimeOut, headers, content, url, attachments);
                 }
                 break;
             case PUT:
-                sendWithoutAttachments(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
+                sendWithoutAttachments(configuration, context, method, contentType, login, password, connectionTimeOut, socketTimeOut, headers, content, url);
                 for (Uri uri : attachments) {
                     putAttachment(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers, url, uri);
                 }
@@ -313,17 +216,17 @@ public class HttpSender implements ReportSender {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void sendWithoutAttachments(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull Type type,
+    protected void sendWithoutAttachments(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Method method, @NonNull String contentType,
                                           @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                           @NonNull String content, @NonNull URL url) throws IOException {
-        new DefaultHttpRequest(configuration, context, method, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content);
+        new DefaultHttpRequest(configuration, context, method, contentType, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content);
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void postMultipart(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull Type type,
+    protected void postMultipart(@NonNull CoreConfiguration configuration, @NonNull Context context, @NonNull String contentType,
                                  @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                  @NonNull String content, @NonNull URL url, @NonNull List<Uri> attachments) throws IOException {
-        new MultipartHttpRequest(configuration, context, type, login, password, connectionTimeOut, socketTimeOut, headers).send(url, Pair.create(content, attachments));
+        new MultipartHttpRequest(configuration, context, contentType, login, password, connectionTimeOut, socketTimeOut, headers).send(url, Pair.create(content, attachments));
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -335,43 +238,14 @@ public class HttpSender implements ReportSender {
     }
 
     /**
-     * Convert a report to json
+     * Convert a report to string
      *
      * @param report the report to convert
-     * @return a json representation of the report
+     * @return a string representation of the report
      */
     @SuppressWarnings("WeakerAccess")
-    protected String convertToJson(CrashReportData report) {
-        return report.toJSON();
-    }
-
-    /**
-     * Convert a report to a form-prepared map
-     *
-     * @param report the report to convert
-     * @return a form representation of the report
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected Map<String, String> convertToForm(CrashReportData report) {
-        return remap(report.toStringMap("\n"));
-    }
-
-    @NonNull
-    private Map<String, String> remap(@NonNull Map<String, String> report) {
-
-        final Set<ReportField> fields = config.reportContent();
-
-        final Map<String, String> finalReport = new LinkedHashMap<>(report.size());
-        for (ReportField field : fields) {
-            final String value = report.remove(field.toString());
-            if (mMapping == null || mMapping.get(field) == null) {
-                finalReport.put(field.toString(), value);
-            } else {
-                finalReport.put(mMapping.get(field), value);
-            }
-        }
-        finalReport.putAll(report);
-        return finalReport;
+    protected String convertToString(CrashReportData report, StringFormat format) throws Exception {
+        return format.toFormattedString(report, config.reportContent(), "&", "\n", true);
     }
 
     private boolean isNull(@Nullable String aString) {

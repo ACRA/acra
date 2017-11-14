@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,8 +32,18 @@ import java.util.Set;
  * @since 4.9.0
  */
 public final class ImmutableSet<E> implements Set<E>, Serializable {
+    private static final ImmutableSet<Object> EMPTY = new ImmutableSet<>();
+
+    public static <T> ImmutableSet<T> empty() {
+        //noinspection unchecked
+        return (ImmutableSet<T>) EMPTY;
+    }
 
     private final Set<E> mSet;
+
+    private ImmutableSet(){
+        this.mSet = Collections.emptySet();
+    }
 
     @SafeVarargs
     public ImmutableSet(E... elements) {

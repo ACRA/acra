@@ -50,13 +50,13 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     @NonNull
     private final Context context;
     @NonNull
-    private final HttpSender.Type type;
+    private final String contentType;
 
-    public MultipartHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Type type, @Nullable String login, @Nullable String password,
+    public MultipartHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull String contentType, @Nullable String login, @Nullable String password,
                                 int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
         super(config, context, HttpSender.Method.POST, login, password, connectionTimeOut, socketTimeOut, headers);
         this.context = context;
-        this.type = type;
+        this.contentType = contentType;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
         //noinspection TryFinallyCanBeTryWithResources we do not target api 19
         try {
             writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
-            writer.append(CONTENT_TYPE).append(type.getContentType()).append(NEW_LINE).append(NEW_LINE);
+            writer.append(CONTENT_TYPE).append(contentType).append(NEW_LINE).append(NEW_LINE);
             writer.append(content.first);
             for (Uri uri : content.second) {
                 writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);

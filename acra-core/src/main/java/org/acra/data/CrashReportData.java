@@ -18,19 +18,17 @@ package org.acra.data;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
+import org.acra.collections.ImmutableSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -178,47 +176,23 @@ public final class CrashReportData {
     }
 
     @NonNull
-    public String toJSON() {
-        return content.toString();
+    public String toJSON() throws JSONException {
+        try {
+            return StringFormat.JSON.toFormattedString(this, ImmutableSet.<ReportField>empty(), "", "", false);
+        } catch (JSONException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new JSONException(e.getMessage());
+        }
     }
 
-    public Map<String, String> toStringMap(String joiner) {
-        final Map<String, String> map = new HashMap<>(content.length());
+    @NonNull
+    public Map<String, Object> toMap() {
+        final Map<String, Object> map = new HashMap<>(content.length());
         for (final Iterator<String> iterator = content.keys(); iterator.hasNext(); ) {
             final String key = iterator.next();
-            map.put(key, valueToString(joiner, get(key)));
+            map.put(key, get(key));
         }
         return map;
     }
-
-    private String valueToString(String joiner, Object value) {
-        if (value instanceof JSONObject) {
-            return TextUtils.join(joiner, flatten((JSONObject) value));
-        } else {
-            return String.valueOf(value);
-        }
-    }
-
-    private List<String> flatten(JSONObject json)  {
-        final List<String> result = new ArrayList<>();
-        for (final Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
-            final String key = iterator.next();
-            Object value;
-            try {
-                value = json.get(key);
-            } catch (JSONException e) {
-                value = null;
-            }
-            if (value instanceof JSONObject) {
-                for (String s : flatten((JSONObject) value)) {
-                    result.add(key + "." + s);
-                }
-            } else {
-                result.add(key + "=" + value);
-            }
-        }
-        return result;
-    }
-
-
 }

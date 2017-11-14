@@ -33,17 +33,17 @@ import java.util.Map;
 
 public class DefaultHttpRequest extends BaseHttpRequest<String> {
     @NonNull
-    private final HttpSender.Type type;
+    private final String contentType;
 
-    public DefaultHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method, @NonNull HttpSender.Type type,
+    public DefaultHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method, @NonNull String contentType,
                               @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
         super(config, context, method, login, password, connectionTimeOut, socketTimeOut, headers);
-        this.type = type;
+        this.contentType = contentType;
     }
 
     @Override
     protected String getContentType(@NonNull Context context, @NonNull String s) {
-        return type.getContentType();
+        return contentType;
     }
 
     @Override

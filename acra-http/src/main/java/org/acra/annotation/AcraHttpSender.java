@@ -73,15 +73,6 @@ public @interface AcraHttpSender {
     @NonNull HttpSender.Method httpMethod();
 
     /**
-     * <p>
-     * The {@link HttpSender.Type} to be used when posting with {@link #uri()}.
-     * </p>
-     *
-     * @return the report type used when posting reports
-     */
-    @NonNull HttpSender.Type reportType();
-
-    /**
      * @return Value in milliseconds for timeout attempting to connect to a network.
      */
     int connectionTimeout() default 5000;

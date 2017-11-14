@@ -27,13 +27,12 @@ import android.support.annotation.Nullable;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.ReportField;
 import org.acra.attachment.AcraContentProvider;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.data.CrashReportData;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.MailSenderConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.util.IOUtils;
 import org.acra.util.InstanceCreator;
 
@@ -41,8 +40,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -67,9 +64,14 @@ public class EmailIntentSender implements ReportSender {
         final PackageManager pm = context.getPackageManager();
 
         final String subject = buildSubject(context);
-        final String body = buildBody(errorContent);
+        final String body;
+        try {
+            body = config.reportFormat().toFormattedString(errorContent, config.reportContent(), "\n", "\n\t", false);
+        } catch (Exception e) {
+            throw new ReportSenderException("Failed to convert Report to text", e);
+        }
         final ArrayList<Uri> attachments = new ArrayList<>();
-        final boolean contentAttached = fillAttachmentList(context, errorContent, attachments);
+        final boolean contentAttached = fillAttachmentList(context, body, attachments);
 
         //we have to resolve with sendto, because send is supported by non-email apps
         final Intent resolveIntent = buildResolveIntent(subject, body);
@@ -208,39 +210,18 @@ public class EmailIntentSender implements ReportSender {
     }
 
     /**
-     * Creates the message body
-     *
-     * @param errorContent the report content
-     * @return the message body
-     */
-    @NonNull
-    protected String buildBody(@NonNull CrashReportData errorContent) {
-        final Set<ReportField> fields = config.reportContent();
-
-        final StringBuilder builder = new StringBuilder();
-        final Map<String, String> content = errorContent.toStringMap("\n\t");
-        for (ReportField field : fields) {
-            builder.append(field.toString()).append('=').append(content.remove(field.toString())).append('\n');
-        }
-        for (Map.Entry<String, String> entry : content.entrySet()){
-            builder.append(entry.getKey()).append('=').append(entry.getValue()).append('\n');
-        }
-        return builder.toString();
-    }
-
-    /**
      * Adds all attachment uris into the given list
      *
-     * @param context      a context
-     * @param errorContent the report content
-     * @param attachments  the target list
+     * @param context     a context
+     * @param body        the report content
+     * @param attachments the target list
      * @return if the attachments contain the content
      */
-    protected boolean fillAttachmentList(@NonNull Context context, @NonNull CrashReportData errorContent, @NonNull List<Uri> attachments) {
+    protected boolean fillAttachmentList(@NonNull Context context, @NonNull String body, @NonNull List<Uri> attachments) {
         final InstanceCreator instanceCreator = new InstanceCreator();
         attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config));
         if (ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).reportAsFile()) {
-            final Uri report = createAttachmentFromString(context, "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION, errorContent.toJSON());
+            final Uri report = createAttachmentFromString(context, "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION, body);
             if (report != null) {
                 attachments.add(report);
                 return true;

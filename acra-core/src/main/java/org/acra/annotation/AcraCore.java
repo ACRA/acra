@@ -26,6 +26,7 @@ import org.acra.attachment.DefaultAttachmentProvider;
 import org.acra.config.BaseCoreConfigurationBuilder;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
+import org.acra.data.StringFormat;
 import org.acra.file.Directory;
 import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.ReportSenderFactory;
@@ -404,4 +405,6 @@ public @interface AcraCore {
      * @since 5.0.0
      */
     @StringRes int resReportSendFailureToast() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    @NonNull StringFormat reportFormat() default StringFormat.JSON;
 }
