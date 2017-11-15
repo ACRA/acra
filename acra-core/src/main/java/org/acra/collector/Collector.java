@@ -30,8 +30,20 @@ import org.acra.data.CrashReportData;
  */
 @Keep
 public interface Collector {
+    /**
+     * Execute collection
+     *
+     * @param context         a context
+     * @param config          current Configuration
+     * @param reportBuilder   current ReportBuilder
+     * @param crashReportData put results here
+     * @throws CollectorException if collection failed
+     */
     void collect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData crashReportData) throws CollectorException;
 
+    /**
+     * @return when this collector should be called compared to other collectors
+     */
     @NonNull
     Order getOrder();
 

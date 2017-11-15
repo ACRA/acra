@@ -67,7 +67,8 @@ public final class CrashReportPersister {
      *
      * @param crashData     CrashReportData to save.
      * @param file          File into which to store the CrashReportData.
-     * @throws java.io.IOException if the CrashReportData could not be written to the OutputStream.
+     * @throws IOException if the CrashReportData could not be written to the OutputStream.
+     * @throws JSONException if the crashData could not be converted to JSON.
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException, JSONException {
         IOUtils.writeStringToFile(file, crashData.toJSON());

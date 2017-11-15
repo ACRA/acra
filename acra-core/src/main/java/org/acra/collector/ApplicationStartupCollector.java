@@ -32,8 +32,9 @@ import org.acra.config.CoreConfiguration;
 public interface ApplicationStartupCollector extends Collector {
     /**
      * collect startup data
+     *
      * @param context a context
-     * @param config the config
+     * @param config  the config
      */
     void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config);
 }

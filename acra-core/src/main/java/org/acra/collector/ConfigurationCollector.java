@@ -87,6 +87,9 @@ public final class ConfigurationCollector extends BaseReportFieldCollector imple
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config) {
         if(config.reportContent().contains(ReportField.INITIAL_CONFIGURATION)) {
@@ -95,11 +98,11 @@ public final class ConfigurationCollector extends BaseReportFieldCollector imple
     }
 
     /**
-     * Creates an Element listing all values human readable
+     * Creates a {@link JSONObject} listing all values human readable
      * from the provided Configuration instance.
      *
      * @param conf The Configuration to be described.
-     * @return An Element describing all the fields of the given Configuration,
+     * @return A JSONObject with all fields of the given Configuration,
      * with values replaced by constant names.
      */
     @NonNull

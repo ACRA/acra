@@ -37,23 +37,23 @@ abstract class BaseReportFieldCollector implements Collector {
     /**
      * create a new Collector that is able to collect these reportFields
      *
-     * @param firstField the first supported field (split away to ensure each collector supports at least one field)
+     * @param firstField   the first supported field (split away to ensure each collector supports at least one field)
      * @param reportFields the supported reportFields
      */
     BaseReportFieldCollector(@NonNull ReportField firstField, @NonNull ReportField... reportFields) {
         this.reportFields = new ReportField[reportFields.length + 1];
         this.reportFields[0] = firstField;
-        if(reportFields.length > 0) {
+        if (reportFields.length > 0) {
             System.arraycopy(reportFields, 0, this.reportFields, 1, reportFields.length);
         }
     }
 
     /**
-     * this should check if the set contains the field, but may add additional checks like permissions etc.
+     * this should check if the config contains the field, but may add additional checks like permissions etc.
      *
      * @param context       a context
      * @param config        current configuration
-     * @param collect       the filed to collect
+     * @param collect       the field to collect
      * @param reportBuilder the current reportBuilder
      * @return if this field should be collected now
      */
@@ -61,6 +61,10 @@ abstract class BaseReportFieldCollector implements Collector {
         return config.reportContent().contains(collect);
     }
 
+    /**
+     * Calls {@link #shouldCollect(Context, CoreConfiguration, ReportField, ReportBuilder)} for each ReportField
+     * and then {@link #collect(ReportField, Context, CoreConfiguration, ReportBuilder, CrashReportData)} if it returned true
+     */
     @Override
     public final void collect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws CollectorException {
         for (ReportField field : reportFields) {
@@ -75,8 +79,21 @@ abstract class BaseReportFieldCollector implements Collector {
         }
     }
 
+    /**
+     * Collect a ReportField
+     *
+     * @param reportField the reportField to collect
+     * @param context a context
+     * @param config current Configuration
+     * @param reportBuilder current ReportBuilder
+     * @param target put results here
+     * @throws Exception if collection failed
+     */
     abstract void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception;
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Order getOrder() {

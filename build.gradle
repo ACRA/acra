@@ -94,7 +94,10 @@ subprojects {
         task javadoc(type: Javadoc) {
             source = android.sourceSets.main.java.srcDirs
             source += files('build/generated/source/aidl/release') + files('build/generated/source/apt/release')
-            javadoc.classpath += files(android.getBootClasspath().join(File.pathSeparator))
+            classpath += files(android.getBootClasspath().join(File.pathSeparator))
+            options.with {
+                linksOffline "http://d.android.com/reference", "${android.getSdkDirectory().getAbsolutePath()}/docs/reference"
+            }
             doFirst {
                 try {
                     javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files }) + files('build/generated/source/r/release')
@@ -104,6 +107,21 @@ subprojects {
             }
             afterEvaluate {
                 dependsOn assembleRelease
+                options {
+                    opt ->
+                        project.configurations.implementation.getAllDependencies().each { dep ->
+                            if(dep.group != project.group) return
+                            def uriPart = "${dep.group}/${dep.name}/${dep.version}/"
+                            try {
+                                def url = "http://www.javadoc.io/page/${uriPart}"
+                                def depProject = project.parent.childProjects[dep.name]
+                                def destination = "${depProject.buildDir}/docs/javadoc/"
+                                opt.linksOffline(url, destination)
+                            } catch (ignored) {
+                                println "${uriPart} javadoc won't be linked"
+                            }
+                        }
+                }
             }
         }
 

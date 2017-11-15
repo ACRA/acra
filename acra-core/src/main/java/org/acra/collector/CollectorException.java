@@ -17,6 +17,8 @@
 package org.acra.collector;
 
 /**
+ * Thrown by collectors
+ *
  * @author F43nd1r
  * @since 29.09.2017
  */

@@ -242,6 +242,7 @@ public class HttpSender implements ReportSender {
      *
      * @param report the report to convert
      * @return a string representation of the report
+     * @throws Exception if conversion failed
      */
     @SuppressWarnings("WeakerAccess")
     protected String convertToString(CrashReportData report, StringFormat format) throws Exception {
