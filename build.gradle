@@ -1,76 +1,76 @@
 import com.android.build.gradle.LibraryPlugin
 import com.jfrog.bintray.gradle.BintrayPlugin
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "com.android.tools.build:gradle:$androidBuildPluginVersion"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion"
     }
 }
 
-allprojects {
-    repositories {
-        jcenter()
-        maven { url 'https://maven.google.com/' }
+apply from: 'pom.gradle'
+// allow pom content to be accessed directly
+class MapDelegate {
+    Map map
+    List list
+    String name
+
+    MapDelegate(String name) {
+        def mc = new ExpandoMetaClass(MapDelegate, false, true)
+        mc.initialize()
+        this.metaClass = mc
+        map = [:]
+        list = []
+        this.name = name
     }
-}
 
-ext.createPom = { pom ->
-    pom.withXml {
-        def xml = {
-            name pomName
-            description pomDescription
-            url pomUrl
-
-            scm {
-                connection 'scm:git:https://github.com/F43nd1r/acra.git'
-                developerConnection 'scm:git:git@github.com:F43nd1r/acra.git'
-                url pomVcsUrl
-            }
-
-            licenses {
-                license {
-                    name pomLicenseName
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'kevin.gaudin'
-                    name 'Kevin Gaudin'
-                }
-                developer {
-                    id 'william.ferguson'
-                    name 'William Ferguson'
-                }
-                developer {
-                    id 'f43nd1r'
-                    name 'Lukas Morawietz'
-                }
+    def methodMissing(String name, args) {
+        def value = args[0]
+        if (value instanceof Closure) {
+            value.delegate = new MapDelegate(name)
+            value.resolveStrategy = Closure.DELEGATE_ONLY
+            value.call()
+            if (this.name == "${name}s") {
+                list.add(value)
+                return
             }
         }
-        xml.resolveStrategy = DELEGATE_FIRST
-        asNode().children().last() + xml
+        map.put(name, value)
+    }
+
+    def prepare() {
+        map.each { name, value ->
+            if (value instanceof Closure) {
+                if (value.list.empty) {
+                    value.prepare()
+                } else {
+                    value = value.list
+                    value.each { it -> it.prepare() }
+                }
+            }
+            this.metaClass.registerInstanceMethod("get${name.capitalize()}", { -> value })
+        }
     }
 }
 
+pom.resolveStrategy = Closure.DELEGATE_ONLY
+pom.delegate = new MapDelegate('project')
+pom.call()
+pom.prepare()
+
 subprojects {
+    repositories {
+        jcenter()
+        google()
+    }
     plugins.withType(LibraryPlugin) {
         android {
             compileSdkVersion Integer.parseInt(androidVersion)
             buildToolsVersion androidBuildToolsVersion
-
             defaultConfig {
                 minSdkVersion androidMinVersion
                 targetSdkVersion androidVersion
@@ -92,35 +92,29 @@ subprojects {
         }
 
         task javadoc(type: Javadoc) {
-            source = android.sourceSets.main.java.srcDirs
-            source += files('build/generated/source/aidl/release') + files('build/generated/source/apt/release')
-            classpath += files(android.getBootClasspath().join(File.pathSeparator))
+            source = android.sourceSets.main.java.srcDirs + files("${project.buildDir}/generated/source/aidl/release") + files("${project.buildDir}/generated/source/apt/release")
+            classpath += files(android.getBootClasspath().join(File.pathSeparator)) + files("${project.buildDir}/generated/source/r/release")
             options.with {
-                linksOffline "http://d.android.com/reference", "${android.getSdkDirectory().getAbsolutePath()}/docs/reference"
+                linksOffline "http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference"
             }
             doFirst {
                 try {
-                    javadoc.classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files }) + files('build/generated/source/r/release')
+                    classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files })
                 } catch (e) {
-                    logger.warn('failed to get classpath for javadoc', e)
+                    logger.warn 'failed to get classpath for javadoc', e
                 }
             }
             afterEvaluate {
                 dependsOn assembleRelease
-                options {
-                    opt ->
-                        project.configurations.implementation.getAllDependencies().each { dep ->
-                            if(dep.group != project.group) return
-                            def uriPart = "${dep.group}/${dep.name}/${dep.version}/"
-                            try {
-                                def url = "http://www.javadoc.io/page/${uriPart}"
-                                def depProject = project.parent.childProjects[dep.name]
-                                def destination = "${depProject.buildDir}/docs/javadoc/"
-                                opt.linksOffline(url, destination)
-                            } catch (ignored) {
-                                println "${uriPart} javadoc won't be linked"
-                            }
+                options { opt ->
+                    project.configurations.implementation.getAllDependencies().each { dep ->
+                        if (dep.group != project.group) return
+                        try {
+                            opt.linksOffline "http://www.javadoc.io/page/${dep.group}/${dep.name}/${dep.version}/", "${rootProject.childProjects[dep.name].buildDir}/docs/javadoc/"
+                        } catch (e) {
+                            logger.warn "${dep.name} javadoc won't be linked", e
                         }
+                    }
                 }
             }
         }
@@ -129,7 +123,6 @@ subprojects {
             from javadoc
             classifier = 'javadoc'
         }
-
     }
     plugins.withType(JavaPlugin) {
         task sourcesJar(type: Jar) {
@@ -150,22 +143,20 @@ subprojects {
                     version version
                     artifact sourcesJar
                     artifact javadocJar
-                    createPom(pom)
+                    pom.withXml {
+                        asNode().children().last() + rootProject.ext.pom
+                    }
                     if (tasks.findByName('bundleRelease')) {
                         artifact bundleRelease
                         pom.withXml {
                             def dependenciesNode = asNode().appendNode('dependencies')
-
                             // List all compile dependencies and write to POM
                             configurations.implementation.getAllDependencies().each { dep ->
-                                if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
-                                    return // ignore invalid dependencies
-
+                                if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified") return // ignore invalid dependencies
                                 def dependencyNode = dependenciesNode.appendNode('dependency')
                                 dependencyNode.appendNode('groupId', dep.group)
                                 dependencyNode.appendNode('artifactId', dep.name)
                                 dependencyNode.appendNode('version', dep.version)
-
                                 if (!dep.transitive) {
                                     // If this dependency is transitive, we should force exclude all its dependencies them from the POM
                                     def exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
@@ -196,14 +187,14 @@ subprojects {
                 publish = true
                 pkg {
                     repo = 'maven'
-                    name = pomName
-                    websiteUrl = pomUrl
-                    vcsUrl = pomVcsUrl
-                    licenses = [pomLicenseName]
+                    name = pom.name
+                    websiteUrl = pom.url
+                    vcsUrl = pom.scm.url
+                    licenses = pom.licenses*.name
                     publicDownloadNumbers = true
                     version {
                         name = project.version
-                        desc = pomDescription
+                        desc = pom.description
                         mavenCentralSync {
                             sync = true
                             user = ossrhUser
