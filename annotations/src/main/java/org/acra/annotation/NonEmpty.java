@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * This array must not be empty for the configuration to be valid
+ *
  * @author F43nd1r
  * @since 03.06.2017
  */

@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * All classes in annotation methods with this have to have a public, no-args constructor for the configuration to be valid
+ *
  * @author F43nd1r
  * @since 03.06.2017
  */

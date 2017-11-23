@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * This method should run before the configuration is built
+ *
  * @author F43nd1r
  * @since 03.06.2017
  */

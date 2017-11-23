@@ -17,10 +17,17 @@
 package org.acra.config;
 
 /**
+ * A configuration object
+ *
  * @author F43nd1r
  * @since 01.06.2017
  */
 
 public interface Configuration {
+    /**
+     * checks if the corresponding plugin is enabled
+     *
+     * @return if this is enabled
+     */
     boolean enabled();
 }

@@ -19,11 +19,19 @@ package org.acra.config;
 import android.support.annotation.NonNull;
 
 /**
+ * A {@link Configuration} builder
+ *
  * @author F43nd1r
  * @since 01.06.2017
  */
 
 public interface ConfigurationBuilder {
+    /**
+     * Builds the configuration
+     *
+     * @return the fully configured and immutable configuration
+     * @throws ACRAConfigurationException if the configuration is invalid
+     */
     @NonNull
     Configuration build() throws ACRAConfigurationException;
 }

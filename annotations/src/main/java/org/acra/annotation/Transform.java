@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * This method transforms the content of a field before it is added to the configuration
+ *
  * @author F43nd1r
  * @since 04.06.2017
  */

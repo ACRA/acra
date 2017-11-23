@@ -20,11 +20,19 @@ import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 /**
+ * A factory for configuration builders
+ *
  * @author F43nd1r
  * @since 01.06.2017
  */
 @Keep
 public interface ConfigurationBuilderFactory {
+    /**
+     * creates a new builder
+     *
+     * @param annotatedClass the class holding the annotation from which the builder should pull its values
+     * @return a new builder with values from the annotation
+     */
     @NonNull
-    ConfigurationBuilder create(@NonNull Class<?> annotatedObject);
+    ConfigurationBuilder create(@NonNull Class<?> annotatedClass);
 }

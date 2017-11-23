@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Any of the annotation methods annotated with this has to be different from the default value for the configuration to be valid
+ *
  * @author F43nd1r
  * @since 03.06.2017
  */
