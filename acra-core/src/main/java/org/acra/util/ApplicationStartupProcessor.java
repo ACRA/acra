@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.ReportLocator;
@@ -40,9 +39,6 @@ public final class ApplicationStartupProcessor {
         }
         if (config.deleteUnapprovedReportsOnApplicationStart()) {
             reportDeleter.deleteReports(false, 1);
-        }
-        if(config.keepApprovedReportsUpTo() > ACRAConstants.KEEP_ALL) {
-            reportDeleter.deleteReports(true, config.keepApprovedReportsUpTo());
         }
         if (enableAcra) {
             sendApprovedReports();

@@ -52,21 +52,16 @@ import java.lang.annotation.Target;
 public @interface AcraCore {
 
     /**
-     * @return Name of the SharedPreferences that will host ACRA settings you
-     * can make accessible to your users through a preferences screen:
+     * Name of the SharedPreferences that will host ACRA settings which you can make accessible to your users through a preferences screen:
      * <ul>
-     * <li>
-     * {@link org.acra.ACRA#PREF_DISABLE_ACRA} or {@link org.acra.ACRA#PREF_ENABLE_ACRA}</li>
-     * <li>
-     * {@link org.acra.ACRA#PREF_ALWAYS_ACCEPT}</li>
-     * <li>
-     * {@link org.acra.ACRA#PREF_ENABLE_DEVICE_ID}</li>
-     * <li>
-     * {@link org.acra.ACRA#PREF_ENABLE_SYSTEM_LOGS}</li>
+     * <li>{@link org.acra.ACRA#PREF_DISABLE_ACRA} or {@link org.acra.ACRA#PREF_ENABLE_ACRA}</li>
+     * <li>{@link org.acra.ACRA#PREF_ALWAYS_ACCEPT}</li>
+     * <li>{@link org.acra.ACRA#PREF_ENABLE_DEVICE_ID}</li>
+     * <li>{@link org.acra.ACRA#PREF_ENABLE_SYSTEM_LOGS}</li>
      * </ul>
-     * preference. Default is to use the application default
-     * SharedPreferences, as retrieved with
-     * {@link android.preference.PreferenceManager#getDefaultSharedPreferences(android.content.Context)}.
+     * Default is to use the application default SharedPreferences, as retrieved with {@link android.preference.PreferenceManager#getDefaultSharedPreferences(android.content.Context)}
+     *
+     * @return SharedPreferences name.
      */
     @NonNull String sharedPreferencesName() default ACRAConstants.DEFAULT_STRING_VALUE;
 
@@ -90,133 +85,57 @@ public @interface AcraCore {
      * <li>data_app_strictmode</li>
      * </ul>
      *
-     * @return True if system tags are to be included as part of DropBox events.
+     * @return if system tags are to be included as part of DropBox events.
      */
     boolean includeDropBoxSystemTags() default false;
 
     /**
-     * @return Array of tags that you want to be fetched when collecting DropBox
-     * entries.
+     * Custom tags to be included in DropBox event collection
+     *
+     * @return tags that you want to be fetched when collecting DropBox events.
      */
     @NonNull String[] additionalDropBoxTags() default {};
 
     /**
-     * @return Number of minutes to look back when collecting events from
-     * DropBoxManager.
+     * DropBox event collection will look back this many minutes
+     *
+     * @return Number of minutes to look back.
      */
     int dropboxCollectionMinutes() default 5;
 
     /**
      * <p>
-     * Arguments to be passed to the logcat command line. Default is { "-t",
-     * "100", "-v", "time" } for:
+     * Arguments to be passed to the logcat command line. Default is { "-t", "100", "-v", "time" } for:
      * </p>
-     * <pre>
-     * logcat -t 100 -v time
-     * </pre>
+     * <pre>logcat -t 100 -v time</pre>
      * <p>
-     * Do not include -b arguments for buffer selection, include
-     * {@link ReportField#EVENTSLOG} and {@link ReportField#RADIOLOG} in
-     * {@link #reportContent()} to activate alternative
-     * logcat buffers reporting. They will use the same other arguments as those
-     * provided here.
+     * Do not include -b arguments for buffer selection, include {@link ReportField#EVENTSLOG} and {@link ReportField#RADIOLOG} in {@link #reportContent()} to activate alternative logcat buffers reporting.
+     * They will use the same other arguments as those provided here.
      * </p>
      * <p>
-     * See <a href=
-     * "http://developer.android.com/intl/fr/guide/developing/tools/adb.html#logcatoptions"
-     * >Listing of logcat Command Options</a>.
+     * See <a href="http://developer.android.com/intl/fr/guide/developing/tools/adb.html#logcatoptions">Listing of logcat Command Options</a>.
      * </p>
      *
-     * @return Array of arguments to supply if retrieving the log as part of the
-     * report.
+     * @return arguments to supply if retrieving the log as part of the report.
      */
     @NonNull String[] logcatArguments() default {"-t", "" + ACRAConstants.DEFAULT_LOG_LINES, "-v", "time"};
 
     /**
      * <p>
-     * Redefines the list of {@link ReportField}s collected and sent in your
-     * reports.
+     * Redefines the list of {@link ReportField}s collected and sent in your reports.
      * </p>
      * <p>
-     * The fields order may be significant depending on your sender. You can also use this property to modify
-     * fields order in your reports.
+     * You can also use this property to modify fields order in your reports.
      * </p>
      * <p>
-     * The default list is the following
-     * </p>
-     * <ul>
-     * <li>
-     * {@link ReportField#REPORT_ID}</li>
-     * <li>
-     * {@link ReportField#APP_VERSION_CODE}</li>
-     * <li>
-     * {@link ReportField#APP_VERSION_NAME}</li>
-     * <li>
-     * {@link ReportField#PACKAGE_NAME}</li>
-     * <li>
-     * {@link ReportField#FILE_PATH}</li>
-     * <li>
-     * {@link ReportField#PHONE_MODEL}</li>
-     * <li>
-     * {@link ReportField#BRAND}</li>
-     * <li>
-     * {@link ReportField#PRODUCT}</li>
-     * <li>
-     * {@link ReportField#ANDROID_VERSION}</li>
-     * <li>
-     * {@link ReportField#BUILD}</li>
-     * <li>
-     * {@link ReportField#TOTAL_MEM_SIZE}</li>
-     * <li>
-     * {@link ReportField#AVAILABLE_MEM_SIZE}</li>
-     * <li>
-     * {@link ReportField#CUSTOM_DATA}</li>
-     * <li>
-     * {@link ReportField#IS_SILENT}</li>
-     * <li>
-     * {@link ReportField#STACK_TRACE}</li>
-     * <li>
-     * {@link ReportField#INITIAL_CONFIGURATION}</li>
-     * <li>
-     * {@link ReportField#CRASH_CONFIGURATION}</li>
-     * <li>
-     * {@link ReportField#DISPLAY}</li>
-     * <li>
-     * {@link ReportField#USER_COMMENT}</li>
-     * <li>
-     * {@link ReportField#USER_EMAIL}</li>
-     * <li>
-     * {@link ReportField#USER_APP_START_DATE}</li>
-     * <li>
-     * {@link ReportField#USER_CRASH_DATE}</li>
-     * <li>
-     * {@link ReportField#DUMPSYS_MEMINFO}</li>
-     * <li>
-     * {@link ReportField#LOGCAT}</li>
-     * <li>
-     * {@link ReportField#INSTALLATION_ID}</li>
-     * <li>
-     * {@link ReportField#DEVICE_FEATURES}</li>
-     * <li>
-     * {@link ReportField#ENVIRONMENT}</li>
-     * <li>
-     * {@link ReportField#SHARED_PREFERENCES}</li>
-     * <li>
-     * {@link ReportField#SETTINGS_SYSTEM}</li>
-     * <li>
-     * {@link ReportField#SETTINGS_SECURE}</li>
-     * <li>
-     * {@link ReportField#SETTINGS_GLOBAL}</li>
-     * </ul>
+     * The default list is {@link org.acra.ACRAConstants#DEFAULT_REPORT_FIELDS}
      *
-     * @return ReportField Array listing the fields to be included in the
-     * report.
+     * @return fields to be included in the report.
      */
     @NonNull ReportField[] reportContent() default {};
 
     /**
      * Controls whether unapproved reports are deleted on application start or not.
-     * Default is true.
      * <p>
      * Silent and Toast reports are automatically approved.
      * Dialog and Notification reports require explicit approval by the user before they are sent.
@@ -230,113 +149,93 @@ public @interface AcraCore {
      * The last report is always retained because that is the report that probably just happened.
      * </p>
      *
-     * @return true if ACRA should delete unapproved reports on application start.
+     * @return if ACRA should delete unapproved reports on application start.
      */
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
     /**
-     * This property can be used to determine whether old (out of date) reports
-     * should be sent or not. By default they are discarded.
+     * This property can be used to determine whether old (out of date) reports should be sent or not.
      *
-     * @return true if ACRA should delete any unsent reports on startup if the
-     * application has been updated since the last time the application
-     * was started.
+     * @return if ACRA should delete any unsent reports on startup if the application has been updated since the last time the application was started.
      */
     boolean deleteOldUnsentReportsOnApplicationStart() default true;
 
     /**
-     * @return how many approved but unsent reports should be kept. Default is to keep all reports
-     * @since 5.0.0
-     */
-    int keepApprovedReportsUpTo() default ACRAConstants.KEEP_ALL;
-
-    /**
-     * Set this to true if you prefer displaying the native force close dialog after the ACRA is done.
+     * Set this to true if you prefer displaying the native force close dialog after ACRA is done.
      * Recommended: Keep this set to false if using interactions with user input.
      *
-     * @return true if the native force close dialog should be displayed.
+     * @return if the native force close dialog should be displayed.
      */
     boolean alsoReportToAndroidFramework() default false;
 
     /**
-     * Add here your {@link android.content.SharedPreferences} identifier Strings if you use
-     * others than your application's default. They will be added to the
-     * {@link ReportField#SHARED_PREFERENCES} field.
+     * Add here your {@link android.content.SharedPreferences} identifier Strings if you use others than your application's default. They will be added to the {@link ReportField#SHARED_PREFERENCES} field.
      *
-     * @return String Array containing the names of the additional preferences.
+     * @return names of additional preferences.
      */
     @NonNull String[] additionalSharedPreferences() default {};
 
     /**
-     * Set this to true if you want to include only logcat lines related to your
-     * Application process. Note that this is always done by android starting with API 16 (Jellybean)
+     * Set this to true if you want to include only logcat lines related to your Application process. Note that this is always done by android starting with API 16 (Jellybean)
      *
      * @return true if you want to filter logcat with your process id.
      */
-    boolean logcatFilterByPid() default false;
+    boolean logcatFilterByPid() default true;
 
     /**
-     * Set this to true if you want to read logcat lines in a non blocking way for your
-     * thread. It has a default timeout of 3 seconds.
+     * Set this to true if you want to read logcat lines in a non blocking way for your thread. It has a default timeout of 3 seconds.
      *
-     * @return true if you want that reading of logcat lines to not block current thread.
+     * @return if reading of logcat lines should not block the current thread.
      */
-    boolean nonBlockingReadForLogcat() default false;
+    boolean logcatReadNonBlocking() default false;
 
     /**
-     * Set this to false if you want to disable sending reports in development
-     * mode. Only signed application packages will send reports. Default value
-     * is true.
+     * Set this to false if you want to disable sending reports in development mode. Only signed application packages will send reports.
      *
-     * @return false if reports should not be sent from unsigned packages.
+     * @return if reports should only be sent from signed packages.
      */
     boolean sendReportsInDevMode() default true;
 
     /**
-     * Provide here regex patterns to be evaluated on each SharedPreference key
-     * to exclude KV pairs from the collected SharedPreferences. This allows you
-     * to exclude sensitive user data like passwords to be collected.
+     * Provide here regex patterns to be evaluated on each {@link android.content.SharedPreferences} key to exclude KV pairs from the collected SharedPreferences.
+     * This allows you to exclude sensitive user data like passwords from being collected.
      *
-     * @return an array of regex patterns, every matching key is not collected.
+     * @return regex patterns, every matching key is not collected.
      */
     @NonNull String[] excludeMatchingSharedPreferencesKeys() default {};
 
     /**
-     * Provide here regex patterns to be evaluated on each Settings.System,
-     * Settings.Secure and Settings.Global key to exclude KV pairs from the
-     * collected SharedPreferences. This allows you to exclude sensitive data to
-     * be collected.
+     * Provide here regex patterns to be evaluated on each {@link android.provider.Settings.System}, {@link android.provider.Settings.Secure} and {@link android.provider.Settings.Global} key to exclude KV pairs from being collected.
+     * This allows you to exclude sensitive data from being collected.
      *
-     * @return an array of regex patterns, every matching key is not collected.
+     * @return regex patterns, every matching key is not collected.
      */
     @NonNull String[] excludeMatchingSettingsKeys() default {};
 
     /**
      * The default value will be a BuildConfig class residing in the same package as the Application class.
+     * You only have to set this option if your BuildConfig class is obfuscated.
      *
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
     @NonNull Class buildConfigClass() default Object.class;
 
     /**
-     * The default {@link org.acra.sender.ReportSenderFactory} automatically discovers ReportSenderFactories
+     * The default {@link org.acra.sender.ReportSenderFactory} automatically discovers other ReportSenderFactories.
      *
-     * @return List of the {@link org.acra.sender.ReportSenderFactory} with which to construct the
-     * {@link org.acra.sender.ReportSender}s that will send the crash reports.
+     * @return {@link org.acra.sender.ReportSenderFactory}s with which to construct the {@link org.acra.sender.ReportSender}s that will send the crash reports.
      */
     @NonEmpty @Instantiatable @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
 
     /**
-     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
-     * path/name of your application log file.
+     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the path/name of your application log file.
      *
-     * @return a String containing the path/name of your application log file.
+     * @return path/name of your application log file.
      */
     @NonNull String applicationLogFile() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
-     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the
-     * number of latest lines of your application log file to be collected.
+     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the number of latest lines of your application log file to be collected.
      * Default value is 100.
      *
      * @return number of lines to collect.
@@ -344,21 +243,24 @@ public @interface AcraCore {
     int applicationLogFileLines() default ACRAConstants.DEFAULT_LOG_LINES;
 
     /**
-     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the root
-     * for the path provided in {@link #applicationLogFile()}
+     * To use in combination with {@link ReportField#APPLICATION_LOG} to set the root for the path provided in {@link #applicationLogFile()}
      *
      * @return the directory of the application log file
      */
     @NonNull Directory applicationLogFileDir() default Directory.FILES_LEGACY;
 
     /**
-     * @return a Class that decides if a report should be resent (usually if one or more senders failed).
+     * Implement a custom {@link RetryPolicy} to decide if a failed report should be resent or not.
+     *
+     * @return a class that decides if a report should be resent (usually if one or more senders failed).
      * @since 4.9.1
      */
     @Instantiatable @NonNull Class<? extends RetryPolicy> retryPolicyClass() default DefaultRetryPolicy.class;
 
     /**
-     * @return true if all services running in a process should be stopped before it is killed.
+     * If you have services which might crash on startup android will try to restart them indefinitely. Set this to true to prevent that.
+     *
+     * @return if all services running in a process should be stopped before it is killed.
      * @since 4.9.2
      */
     boolean stopServicesOnCrash() default false;
@@ -367,18 +269,15 @@ public @interface AcraCore {
      * Allows to attach files to crash reports.
      * <p>
      * ACRA contains a file provider under the following Uri:
-     * content://[applicationId].acra/[Directory]/[Path]
-     * where [applicationId] is your application package name,
-     * [Directory] is one of the enum constants in {@link Directory} in lower case
-     * and [Path] is the relative path to the file in that directory
+     * <code>content://[applicationId].acra/[Directory]/[Path]</code>
+     * where <code>[applicationId]</code> is your application package name, <code>[Directory]</code> is one of the enum constants in {@link Directory} in lower case and <code>[Path]</code> is the relative path to the file in that directory
      * e.g. content://org.acra.test.acra/files/thisIsATest.txt
      * </p>
      * Side effects:
      * <ul>
      * <li>POST mode: requests will be sent with content-type multipart/mixed</li>
-     * <li>PUT mode: There will be additional requests with the attachments. Naming scheme: [report-id]-[filename] </li>
-     * <li>EMAIL mode: Some email clients do not support attachments, so some email may lack these attachments.
-     * Note that attachments will be readable to email clients when they are sent.</li>
+     * <li>PUT mode: There will be additional requests with the attachments. Naming scheme: [report-id]-[filename]</li>
+     * <li>EMAIL mode: Some email clients do not support attachments, so some email may lack these attachments. Note that attachments might be readable to email clients when they are sent.</li>
      * </ul>
      *
      * @return uris to be attached to crash reports.
@@ -387,7 +286,7 @@ public @interface AcraCore {
     @NonNull String[] attachmentUris() default {};
 
     /**
-     * Allows attachmentUri configuration at runtime instead of compile time.
+     * Allows {@link #attachmentUris()} configuration at runtime instead of compile time.
      *
      * @return a class that decides which uris should be attached to reports
      * @since 4.9.3
@@ -395,16 +294,26 @@ public @interface AcraCore {
     @Instantiatable @NonNull Class<? extends AttachmentUriProvider> attachmentUriProvider() default DefaultAttachmentProvider.class;
 
     /**
+     * Toast shown when a report is sent successfully
+     *
      * @return Resource id for the Toast text triggered when a report was sent successfully.
      * @since 5.0.0
      */
     @StringRes int resReportSendSuccessToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
+     * Toast shown when report sending fails
+     *
      * @return Resource id for the Toast text triggered when no report was sent successfully.
      * @since 5.0.0
      */
     @StringRes int resReportSendFailureToast() default ACRAConstants.DEFAULT_RES_VALUE;
 
+    /**
+     * Format in which the report should be sent
+     *
+     * @return report format
+     * @since 5.0.0
+     */
     @NonNull StringFormat reportFormat() default StringFormat.JSON;
 }

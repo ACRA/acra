@@ -144,7 +144,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
      */
     @NonNull
     private String streamToString(@NonNull CoreConfiguration config, @NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
-        if (config.nonBlockingReadForLogcat()) {
+        if (config.logcatReadNonBlocking()) {
             return IOUtils.streamToStringNonBlockingRead(input, filter, limit);
         } else {
             return IOUtils.streamToString(input, filter, limit);
