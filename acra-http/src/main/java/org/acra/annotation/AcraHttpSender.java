@@ -33,6 +33,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Http sender configuration
+ *
  * @author F43nd1r
  * @since 01.06.2017
  */
@@ -46,6 +48,7 @@ public @interface AcraHttpSender {
      * The Uri of your own server-side script that will receive reports.
      *
      * @return URI of a server to which to send reports.
+     * @since 5.0.0
      */
     String uri();
 
@@ -53,6 +56,7 @@ public @interface AcraHttpSender {
      * you can set here and in {@link #basicAuthPassword()} the credentials for a BASIC HTTP authentication.
      *
      * @return Login to use.
+     * @since 5.0.0
      */
     @NonNull String basicAuthLogin() default ACRAConstants.NULL_VALUE;
 
@@ -60,6 +64,7 @@ public @interface AcraHttpSender {
      * you can set here and in {@link #basicAuthLogin()} the credentials for a BASIC HTTP authentication.
      *
      * @return Password to use.
+     * @since 5.0.0
      */
     @NonNull String basicAuthPassword() default ACRAConstants.NULL_VALUE;
 
@@ -69,44 +74,66 @@ public @interface AcraHttpSender {
      * </p>
      *
      * @return HTTP method used when posting reports.
+     * @since 5.0.0
      */
     @NonNull HttpSender.Method httpMethod();
 
     /**
+     * timeout for server connection
+     *
      * @return Value in milliseconds for timeout attempting to connect to a network.
+     * @see java.net.HttpURLConnection#setConnectTimeout(int)
+     * @since 5.0.0
      */
     int connectionTimeout() default 5000;
 
     /**
-     * If the request is retried due to timeout, the socketTimeout will double
-     * before retrying the request.
+     * timeout for socket connection
      *
      * @return Value in milliseconds for timeout receiving a response to a network request.
+     * @see java.net.HttpURLConnection#setReadTimeout(int)
+     * @since 5.0.0
      */
     int socketTimeout() default 20000;
 
     /**
+     * allows to prevent resending of timed out reports, possibly relieving server stress, but also reducing received report counts
+     *
      * @return if timed out reports should be dropped
+     * @since 5.0.0
      */
     boolean dropReportsOnTimeout() default false;
 
     /**
+     * A custom class supplying a {@link java.security.KeyStore}, which will be used for ssl authentication.
+     * A base implementation is available: {@link org.acra.security.BaseKeyStoreFactory}
+     *
      * @return Class which creates a keystore that can contain trusted certificates
+     * @since 5.0.0
      */
     @NonNull Class<? extends KeyStoreFactory> keyStoreFactoryClass() default NoKeyStoreFactory.class;
 
     /**
+     * a certificate used for ssl authentication
+     *
      * @return path to a custom trusted certificate. Must start with "asset://" if the file is in the assets folder
+     * @since 5.0.0
      */
     @NonNull String certificatePath() default ACRAConstants.DEFAULT_STRING_VALUE;
 
     /**
+     * a certificate used for ssl authentication
+     *
      * @return resource id of a custom trusted certificate.
+     * @since 5.0.0
      */
     @RawRes int resCertificate() default ACRAConstants.DEFAULT_RES_VALUE;
 
     /**
+     * type of the certificate used for ssl authentication
+     *
      * @return specify the type of the certificate set in either {@link #certificatePath()} or {@link #resCertificate()}
+     * @since 5.0.0
      */
     @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
 }

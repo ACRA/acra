@@ -29,6 +29,8 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Limiter configuration
+ *
  * @author F43nd1r
  * @since 26.10.2017
  */
@@ -38,17 +40,59 @@ import java.util.concurrent.TimeUnit;
 @Inherited
 @Configuration
 public @interface AcraLimiter {
+    /**
+     * Unit of {@link #period()}
+     *
+     * @return a time unit
+     * @since 5.0.0
+     */
     TimeUnit periodUnit() default TimeUnit.DAYS;
 
+    /**
+     * Reports which have been collected before this will not be considered for any limits except {@link #failedReportLimit()}
+     *
+     * @return number of {@link #periodUnit()}s in which to limit reports
+     * @since 5.0.0
+     */
     long period() default 7;
 
+    /**
+     * general limit of reports
+     *
+     * @return maximum number of reports per period
+     * @since 5.0.0
+     */
     int overallLimit() default 25;
 
+    /**
+     * limit for reports with the same stacktrace
+     *
+     * @return maximum number of reports with the same stacktrace per period
+     * @since 5.0.0
+     */
     int stacktraceLimit() default 3;
 
+    /**
+     * limit for reports with the same exception class
+     *
+     * @return maximum number of reports with the same exception class per period
+     * @since 5.0.0
+     */
     int exceptionClassLimit() default 10;
 
+    /**
+     * limit for unsent reports
+     *
+     * @return maximum number of unsent reports to keep
+     * @since 5.0.0
+     */
     int failedReportLimit() default 5;
 
+    /**
+     * toast shown when a report was not collected or sent because a limit was exceeded
+     *
+     * @return Resource id for the toast shown when a crash was ignored
+     * @since 5.0.0
+     */
     @StringRes int resIgnoredCrashToast() default ACRAConstants.DEFAULT_RES_VALUE;
 }

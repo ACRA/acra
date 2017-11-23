@@ -16,6 +16,7 @@
 
 package org.acra.annotation;
 
+import android.content.Context;
 import android.support.annotation.IntRange;
 import android.support.annotation.StringRes;
 import android.widget.Toast;
@@ -39,10 +40,11 @@ import java.lang.annotation.Target;
 public @interface AcraToast {
 
     /**
-     * Resource id for the Toast text triggered when the application crashes
+     * toast text triggered when the application crashes
      *
-     * @return Resource id for the Toast text triggered when the application
-     * crashes.
+     * @return Resource id for the Toast text triggered when the application crashes.
+     * @see android.widget.Toast#makeText(Context, int, int)
+     * @since 5.0.0
      */
     @StringRes int resText();
 
@@ -50,6 +52,8 @@ public @interface AcraToast {
      * One of {@link android.widget.Toast#LENGTH_LONG} and {@link android.widget.Toast#LENGTH_SHORT}
      *
      * @return toast length
+     * @see android.widget.Toast#makeText(Context, int, int)
+     * @since 5.0.0
      */
     @IntRange(from = 0, to = 1) int length() default Toast.LENGTH_LONG;
 }

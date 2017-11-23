@@ -37,16 +37,18 @@ import java.lang.annotation.Target;
 public @interface AcraMailSender {
 
     /**
-     * <p>
-     * Add your crash reports mailbox here if you want to send reports via
-     * email.
+     * your crash reports mailbox
      *
      * @return email address to which to send reports.
+     * @since 5.0.0
      */
     @NonNull String mailTo();
 
     /**
+     * Sending the report as an attachment prevents issues with report size and the user from modifying it
+     *
      * @return if the report should be an attachment instead of plain text.
+     * @since 5.0.0
      */
     boolean reportAsFile() default true;
 }
