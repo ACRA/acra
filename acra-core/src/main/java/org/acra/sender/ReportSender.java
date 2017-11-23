@@ -22,23 +22,19 @@ import org.acra.data.CrashReportData;
 
 /**
  * A simple interface for defining various crash report senders.
- * 
+ *
  * @author Kevin Gaudin
  */
 public interface ReportSender {
 
     /**
      * Send crash report data.
-     *
+     * <p>
      * Method will be called from the {@link SenderService}.
      *
-     * @param context       Android Context in which to send the crash report.
-     * @param errorContent  Stores key/value pairs for each report field.
-     *                      A report field is identified by a {@link org.acra.ReportField} enum value.
-     * @throws ReportSenderException
-     *             If anything goes fatally wrong during the handling of crash
-     *             data, you can (should) throw a {@link ReportSenderException}
-     *             with a custom message.
+     * @param context      Android Context in which to send the crash report.
+     * @param errorContent Stores key/value pairs for each report field.
+     * @throws ReportSenderException If anything goes fatally wrong during the handling of crash data, you can (should) throw a {@link ReportSenderException} with a custom message.
      */
     void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException;
 }

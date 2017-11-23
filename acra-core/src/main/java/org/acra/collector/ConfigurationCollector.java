@@ -39,14 +39,11 @@ import java.util.Map;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Inspects a {@link Configuration} object through reflection API in order to
- * generate a human readable String with values replaced with their constants
- * names. The {@link Configuration#toString()} method was not enough as values
- * like 0, 1, 2 or 3 aren't readable. Using reflection API allows to
- * retrieve hidden fields and can make us hope to be compatible with all Android
- * API levels, even those which are not published yet.
+ * Inspects a {@link Configuration} object through reflection API in order to generate a human readable String with values replaced with their constants names.
+ * The {@link Configuration#toString()} method was not enough as values like 0, 1, 2 or 3 aren't readable.
+ * Using reflection API allows to retrieve hidden fields and can make us hope to be compatible with all Android API levels, even those which are not published yet.
  *
- * @author Kevin Gaudin and F43nd1r
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class ConfigurationCollector extends BaseReportFieldCollector implements ApplicationStartupCollector {

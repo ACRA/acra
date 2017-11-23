@@ -39,8 +39,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 /**
- * Collects data about available codecs on the device through the MediaCodecList
- * API introduced in Android 4.1 JellyBean.
+ * Collects data about available codecs on the device through the MediaCodecList API introduced in Android 4.1 JellyBean.
  *
  * @author Kevin Gaudin &amp; F43nd1r
  */
@@ -136,9 +135,7 @@ public final class MediaCodecListCollector extends BaseReportFieldCollector {
     }
 
     /**
-     * Builds an Element describing the list of available codecs on the device
-     * with their capabilities (supported Color Formats, Codec Profiles et
-     * Levels).
+     * Builds a JSONObject describing the list of available codecs on the device with their capabilities (supported Color Formats, Codec Profiles and Levels).
      *
      * @return The media codecs information
      */
@@ -177,13 +174,11 @@ public final class MediaCodecListCollector extends BaseReportFieldCollector {
     }
 
     /**
-     * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a
-     * specific codec type.
+     * Retrieve capabilities (ColorFormats and CodecProfileLevels) for a specific codec type.
      *
      * @param codecInfo the currently inspected codec
      * @param type      supported type to collect
-     * @return the color formats and codec profile levels
-     * available for a specific codec type.
+     * @return the color formats and codec profile levels available for a specific codec type.
      */
     @NonNull
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

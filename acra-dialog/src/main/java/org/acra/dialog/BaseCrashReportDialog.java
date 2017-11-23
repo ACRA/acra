@@ -39,17 +39,19 @@ import static org.acra.ReportField.USER_EMAIL;
 
 /**
  * Activity which implements the base functionality for a CrashReportDialog.
- *
+ * <p>
  * Activities which extend from this class can override init to create a custom view.
- *
+ * <p>
  * The methods sendCrash(comment, userEmail) and cancelReports() can be used to send or cancel
  * sending of reports respectively.
- *
- * This Activity will be instantiated with 2 arguments:
+ * <p>
+ * This Activity must be instantiated with 2 arguments:
  * <ol>
  * <li>{@link DialogInteraction#EXTRA_REPORT_FILE}</li>
  * <li>{@link DialogInteraction#EXTRA_REPORT_CONFIG}</li>
  * </ol>
+ *
+ * @author F43nd1r &amp; Various
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseCrashReportDialog extends FragmentActivity {
@@ -61,9 +63,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
      * NB if you were previously creating and showing your dialog in this method,
      * you should move that code to {@link #init(Bundle)}.
      *
-     * @param savedInstanceState    If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * @param savedInstanceState If the activity is being re-initialized then this Bundle contains the data it most recently supplied in {@link #onSaveInstanceState}.
      */
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,9 +91,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
     /**
      * Handle any necessary pre-onCreate() setup here.
      *
-     * @param savedInstanceState    If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * @param savedInstanceState If the activity is being re-initialized then this Bundle contains the data it most recently supplied in {@link #onSaveInstanceState}.
      */
     @SuppressWarnings("EmptyMethod")
     protected void preInit(@Nullable Bundle savedInstanceState) {
@@ -102,9 +100,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
     /**
      * Responsible for creating and showing the crash report dialog.
      *
-     * @param savedInstanceState    If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * @param savedInstanceState If the activity is being re-initialized then this Bundle contains the data it most recently supplied in {@link #onSaveInstanceState}.
      */
     protected void init(@Nullable Bundle savedInstanceState) {
     }
@@ -119,7 +115,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
 
 
     /**
-     * Send crash report given user's comment and email address. If none should be empty strings
+     * Send crash report given user's comment and email address.
      *
      * @param comment   Comment (may be null) provided by the user.
      * @param userEmail Email address (may be null) provided by the client.
@@ -141,6 +137,11 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
         starter.startService(false, true);
     }
 
+    /**
+     * Provides the config to subclasses
+     *
+     * @return the main config
+     */
     protected final CoreConfiguration getConfig() {
         return config;
     }

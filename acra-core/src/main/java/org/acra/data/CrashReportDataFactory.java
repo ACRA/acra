@@ -37,9 +37,9 @@ import java.util.ServiceLoader;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Responsible for creating the CrashReportData for an Exception.
+ * Responsible for collecting the CrashReportData for an Exception.
  *
- * @author William Ferguson
+ * @author F43nd1r
  * @since 4.3.0
  */
 public final class CrashReportDataFactory {

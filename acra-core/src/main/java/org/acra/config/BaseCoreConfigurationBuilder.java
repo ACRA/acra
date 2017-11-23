@@ -37,6 +37,12 @@ import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.DEFAULT_REPORT_FIELDS;
 
+
+/**
+ * Contains builder methods which can't be generated
+ *
+ * @author F43nd1r
+ */
 public final class BaseCoreConfigurationBuilder {
 
     private final Map<ReportField, Boolean> reportContentChanges;
@@ -52,7 +58,7 @@ public final class BaseCoreConfigurationBuilder {
                 final ConfigurationBuilderFactory factory = iterator.next();
                 if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Discovered and loaded plugin of type " + factory.getClass().getSimpleName().replace("BuilderFactory", ""));
                 configurationBuilders.add(factory.create(app));
-            }catch (ServiceConfigurationError e){
+            } catch (ServiceConfigurationError e) {
                 ACRA.log.e(ACRA.LOG_TAG, "Unable to load ConfigurationBuilderFactory", e);
             }
         }

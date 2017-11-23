@@ -33,11 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
- * This is basically the source of {@link java.util.Properties} adapted to extend an
- * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
- * amounts of android time in the generation of a date comment when storing to
- * file.
+ * Handles persistence of {@link CrashReportData}
  */
 public final class CrashReportPersister {
 

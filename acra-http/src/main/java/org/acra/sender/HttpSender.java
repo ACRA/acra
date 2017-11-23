@@ -45,22 +45,9 @@ import java.util.Map;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * <p>
- * The {@link ReportSender} used by ACRA when
- * has been defined in order to post crash data to a custom server-side data
- * collection script. It sends all data in a POST request with parameters named
- * with easy to understand names (basically a string conversion of
- * {@link ReportField} enum values) or based on your own conversion Map from
- * {@link ReportField} values to String.
- * </p>
- * <p>
- * To use specific POST parameter names, you can provide your own report fields
- * mapping scheme:
- * </p>
- * <pre>
- * Just create and declare a {@link ReportSenderFactory} that constructs a mapping
- * from each {@link ReportField} to another name.
- * </pre>
+ * The {@link ReportSender} used by ACRA for http sending
+ *
+ * @author F43nd1r &amp; Various
  */
 public class HttpSender implements ReportSender {
 
@@ -99,17 +86,13 @@ public class HttpSender implements ReportSender {
     /**
      * <p>
      * Create a new HttpSender instance with its destination taken from the supplied config.
-     * Uses {@link ReportField} values converted to String with .toString() as form parameters.
      * </p>
      *
      * @param config AcraConfig declaring the
-     * @param method HTTP {@link Method} to be used to send data. Currently only
-     *               {@link Method#POST} and {@link Method#PUT} are available. If
-     *               {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
-     *               is appended to the formUri to be compliant with RESTful APIs.
+     * @param method HTTP {@link Method} to be used to send data. Currently only {@link Method#POST} and {@link Method#PUT} are available.
+     *               If {@link Method#PUT} is used, the {@link ReportField#REPORT_ID} is appended to the formUri to be compliant with RESTful APIs.
      * @param type   {@link StringFormat} of encoding used to send the report body.
-     *               {@link StringFormat#KEY_VALUE_LIST} is a simple Key/Value pairs list as defined
-     *               by the application/x-www-form-urlencoded mime type.
+     *               {@link StringFormat#KEY_VALUE_LIST} is a simple Key/Value pairs list as defined by the application/x-www-form-urlencoded mime type.
      */
     public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable StringFormat type) {
         this(config, method, type, null);
@@ -122,13 +105,10 @@ public class HttpSender implements ReportSender {
      * </p>
      *
      * @param config  AcraConfig declaring the
-     * @param method  HTTP {@link Method} to be used to send data. Currently only
-     *                {@link Method#POST} and {@link Method#PUT} are available. If
-     *                {@link Method#PUT} is used, the {@link ReportField#REPORT_ID}
-     *                is appended to the formUri to be compliant with RESTful APIs.
+     * @param method  HTTP {@link Method} to be used to send data. Currently only {@link Method#POST} and {@link Method#PUT} are available.
+     *                If {@link Method#PUT} is used, the {@link ReportField#REPORT_ID} is appended to the formUri to be compliant with RESTful APIs.
      * @param type    {@link StringFormat} of encoding used to send the report body.
-     *                {@link StringFormat#KEY_VALUE_LIST} is a simple Key/Value pairs list as defined
-     *                by the application/x-www-form-urlencoded mime type.
+     *                {@link StringFormat#KEY_VALUE_LIST} is a simple Key/Value pairs list as defined by the application/x-www-form-urlencoded mime type.
      * @param formUri The URL of your server-side crash report collection script.
      */
     public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable StringFormat type, @Nullable String formUri) {
@@ -154,8 +134,7 @@ public class HttpSender implements ReportSender {
 
     /**
      * <p>
-     * Set credentials for this HttpSender that override (if present) the ones
-     * set globally.
+     * Set credentials for this HttpSender that override (if present) the ones set globally.
      * </p>
      *
      * @param username The username to set for HTTP Basic Auth.

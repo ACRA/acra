@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Represents possible report formats
+ *
  * @author F43nd1r
  * @since 14.11.2017
  */
@@ -128,7 +130,7 @@ public enum StringFormat {
     public abstract String toFormattedString(CrashReportData data, ImmutableSet<ReportField> order, String mainJoiner, String subJoiner, boolean urlEncode) throws Exception;
 
     @NonNull
-    public String getMatchingHttpContentType(){
+    public String getMatchingHttpContentType() {
         return contentType;
     }
 }

@@ -36,9 +36,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Collects the content (key/value pairs) of SharedPreferences, from the
- * application default preferences or any other preferences asked by the
- * application developer.
+ * Collects the content (key/value pairs) of SharedPreferences, from the application default preferences or any other preferences asked by the application developer.
+ *
+ * @author F43nd1r &amp; Various
  */
 @AutoService(Collector.class)
 public final class SharedPreferencesCollector extends BaseReportFieldCollector {
@@ -95,8 +95,8 @@ public final class SharedPreferencesCollector extends BaseReportFieldCollector {
             if (prefEntries.isEmpty()) {
                 result.put(sharedPrefId, "empty");
             } else {
-                for (final Iterator<String> iterator = prefEntries.keySet().iterator(); iterator.hasNext();){
-                    if(filteredKey(config, iterator.next())){
+                for (final Iterator<String> iterator = prefEntries.keySet().iterator(); iterator.hasNext(); ) {
+                    if (filteredKey(config, iterator.next())) {
                         iterator.remove();
                     }
                 }

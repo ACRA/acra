@@ -17,10 +17,11 @@
 package org.acra.config;
 
 /**
+ * Allows easy access to Plugin configurations from the main configuration
+ *
  * @author F43nd1r
  * @since 01.06.2017
  */
-
 public final class ConfigUtils {
 
     public static <T extends Configuration> T getPluginConfiguration(CoreConfiguration config, Class<T> c) {

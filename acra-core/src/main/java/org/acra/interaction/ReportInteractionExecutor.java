@@ -35,6 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
+ * Manages and executes all report interactions
+ *
  * @author F43nd1r
  * @since 10.10.2017
  */
@@ -54,7 +56,7 @@ public class ReportInteractionExecutor {
         for (final Iterator<ReportInteraction> iterator = ServiceLoader.load(ReportInteraction.class).iterator(); iterator.hasNext(); ) {
             try {
                 final ReportInteraction reportInteraction = iterator.next();
-                if(reportInteraction.enabled(config)) {
+                if (reportInteraction.enabled(config)) {
                     reportInteractions.add(reportInteraction);
                 }
             } catch (ServiceConfigurationError e) {

@@ -25,6 +25,8 @@ import org.acra.config.CoreConfiguration;
 import java.io.File;
 
 /**
+ * A user interaction before reports are sent
+ *
  * @author F43nd1r
  * @since 02.06.2017
  */
@@ -33,12 +35,20 @@ public interface ReportInteraction {
 
     /**
      * Perform interaction synchronously
-     * @param context a context
-     * @param config the configuration
+     *
+     * @param context    a context
+     * @param config     the configuration
      * @param reportFile the file with the report content
      * @return if reports should be sent instantly
      */
     boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile);
 
+
+    /**
+     * controls if this instance is active
+     *
+     * @param config the current config
+     * @return if this instance should be called
+     */
     boolean enabled(@NonNull CoreConfiguration config);
 }

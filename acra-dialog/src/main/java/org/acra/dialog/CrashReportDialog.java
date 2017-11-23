@@ -24,8 +24,9 @@ import org.acra.prefs.SharedPreferencesFactory;
 
 /**
  * This is the dialog Activity used by ACRA to get authorization from the user
- * to send reports. Requires android:launchMode="singleInstance" in your
- * AndroidManifest to work properly.
+ * to send reports.
+ *
+ * @author F43nd1r &amp; Various
  **/
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener {
@@ -50,7 +51,7 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
         sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), getConfig());
         dialogConfiguration = ConfigUtils.getPluginConfiguration(getConfig(), DialogConfiguration.class);
         final int themeResourceId = dialogConfiguration.resTheme();
-        if(themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
+        if (themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
 
         buildAndShowDialog(savedInstanceState);
     }

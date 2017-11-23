@@ -60,16 +60,12 @@ public final class LogCatCollector extends BaseReportFieldCollector {
     }
 
     /**
-     * Executes the logcat command with arguments taken from
-     * {@link org.acra.annotation.AcraCore#logcatArguments()}
+     * Executes the logcat command with arguments taken from {@link org.acra.annotation.AcraCore#logcatArguments()}
      *
      * @param bufferName The name of the buffer to be read: "main" (default), "radio" or "events".
-     * @return A {@link String} containing the latest lines of the output.
-     * Default is 100 lines, use "-t", "300" in
-     * {@link org.acra.annotation.AcraCore#logcatArguments()} if you want 300 lines.
-     * You should be aware that increasing this value causes a longer
-     * report generation time and a bigger footprint on the device data
-     * plan consumption.
+     * @return A string containing the latest lines of the output.
+     * Default is 100 lines, use "-t", "300" in {@link org.acra.annotation.AcraCore#logcatArguments()} if you want 300 lines.
+     * You should be aware that increasing this value causes a longer report generation time and a bigger footprint on the device data plan consumption.
      */
     private String collectLogCat(@NonNull CoreConfiguration config, @Nullable String bufferName) throws IOException {
         final int myPid = android.os.Process.myPid();
@@ -133,8 +129,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
     }
 
     /**
-     * Reads an InputStream into a string in an non blocking way for current thread
-     * It has a default timeout of 3 seconds.
+     * Reads an InputStream into a string respecting blocking settings.
      *
      * @param input  the stream
      * @param filter should return false for lines which should be excluded

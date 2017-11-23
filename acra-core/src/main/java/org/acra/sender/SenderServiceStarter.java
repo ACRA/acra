@@ -23,7 +23,7 @@ public class SenderServiceStarter {
     }
 
     /**
-     * Starts a Thread to start sending outstanding error reports.
+     * Starts a process to start sending outstanding error reports.
      *
      * @param onlySendSilentReports If true then only send silent reports.
      * @param approveReportsFirst   If true then approve unapproved reports first.

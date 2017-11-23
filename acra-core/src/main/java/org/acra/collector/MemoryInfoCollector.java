@@ -73,8 +73,7 @@ public final class MemoryInfoCollector extends BaseReportFieldCollector {
     }
 
     /**
-     * Collect results of the <code>dumpsys meminfo</code> command restricted to
-     * this application process.
+     * Collect results of the <code>dumpsys meminfo</code> command restricted to this application process.
      *
      * @return The execution result.
      */
@@ -118,8 +117,7 @@ public final class MemoryInfoCollector extends BaseReportFieldCollector {
     }
 
     /**
-     * Calculates the total memory of the device. This is based on an inspection of the filesystem, which in android
-     * devices is stored in RAM.
+     * Calculates the total memory of the device. This is based on an inspection of the filesystem, which in android devices is stored in RAM.
      *
      * @return Total number of bytes.
      */

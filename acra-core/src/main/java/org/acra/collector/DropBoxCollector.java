@@ -44,11 +44,9 @@ import java.util.Locale;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Collects data from the {@link DropBoxManager}. A
- * set of DropBox tags have been identified in the Android source code. , we
- * collect data associated to these tags with hope that some of them could help
- * debugging applications. Application specific tags can be provided by the app
- * dev to track his own usage of the DropBoxManager.
+ * Collects data from the {@link DropBoxManager}. A set of DropBox tags have been identified in the Android source code.
+ * We collect data associated to these tags with hope that some of them could help debugging applications.
+ * Application specific tags can be provided by the app dev to track his own usage of the DropBoxManager.
  *
  * @author Kevin Gaudin &amp; F43nd1r
  */

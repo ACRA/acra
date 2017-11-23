@@ -31,7 +31,7 @@ public interface RetryPolicy {
     /**
      * @param senders a list of all senders.
      * @param failedSenders a list of all failed senders with the thrown exceptions.
-     * @return <code>true</code> if the request should be resent later, otherwise <code>false</code>.
+     * @return if the request should be resent later.
      */
     boolean shouldRetrySend(List<ReportSender> senders, List<FailedSender> failedSenders);
 

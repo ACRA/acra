@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
+ * Converts and moves legacy files
+ *
  * @author F43nd1r
  * @since 12.10.2016
  */
@@ -35,7 +37,7 @@ public class LegacyFileHandler {
         this.prefs = prefs;
     }
 
-    public void updateToCurrentVersionIfNecessary(){
+    public void updateToCurrentVersionIfNecessary() {
         // Check prefs to see if we have converted from legacy (pre 4.8.0) ACRA
         if (!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, false)) {
             // If not then move reports to approved/unapproved folders and mark as converted.
@@ -44,7 +46,7 @@ public class LegacyFileHandler {
             // Mark as converted.
             prefs.edit().putBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_4_8_0, true).apply();
         }
-        if(!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_JSON, false)){
+        if (!prefs.getBoolean(PREF__LEGACY_ALREADY_CONVERTED_TO_JSON, false)) {
             new ReportConverter(context).convert();
 
             // Mark as converted.

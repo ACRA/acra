@@ -43,19 +43,7 @@ import static org.acra.ACRA.LOG_TAG;
  * <p>
  * When a crash occurs, it collects data of the crash context (device, system,
  * stack trace...) and writes a report file in the application private
- * directory. This report file is then sent:
- * </p>
- * <ul>
- * <li>immediately if org.acra.annotation.AcraCore#reportingInteractionMode() is set to
- * ReportingInteractionMode#SILENT or
- * ReportingInteractionMode#TOAST,</li>
- * <li>on application start if in the previous case the transmission could not
- * technically be made,</li>
- * <li>when the user accepts to send it if org.acra.annotation.AcraCore#reportingInteractionMode() is set
- * to ReportingInteractionMode#NOTIFICATION.</li>
- * </ul>
- * <p>
- * If an error occurs while sending a report, it is kept for later attempts.
+ * directory, which may then be sent.
  * </p>
  */
 @SuppressWarnings({"WeakerAccess", "unused", "SameParameterValue"})

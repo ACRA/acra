@@ -38,11 +38,10 @@ import java.util.Arrays;
 
 /**
  * Collector retrieving key/value pairs from static fields and getters.
- * Reflection API usage allows to retrieve data without having to
- * implement a class for each android version of each interesting class.
+ * Reflection API usage allows to retrieve data without having to implement a class for each android version of each interesting class.
  * It can also help find hidden properties.
  *
- * @author Kevin Gaudin
+ * @author Kevin Gaudin &amp; F43nd1r
  */
 @AutoService(Collector.class)
 public final class ReflectionCollector extends BaseReportFieldCollector {

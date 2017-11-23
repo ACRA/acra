@@ -32,11 +32,9 @@ import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Will send reports by email if the 'mailTo' parameter is configured,
- * otherwise via HTTP if the 'formUri' parameter is configured and
- * internet permission has been granted.
- * <p>
- * If neither 'formUri' or 'mailTo' has been configured, then a NullSender will be returned.
+ * Will auto-discover other ReportSenderFactories. If exactly one is found, delegates to that one. Otherwise returns a {@link NullSender}
+ *
+ * @author F43nd1r
  */
 public final class DefaultReportSenderFactory implements ReportSenderFactory {
 

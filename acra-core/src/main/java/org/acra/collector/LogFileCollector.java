@@ -38,8 +38,7 @@ import java.io.InputStream;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Collects the N last lines of a text stream. Use this collector if your
- * application handles its own logging system.
+ * Collects the N last lines of a text stream. Use this collector if your application handles its own logging system.
  *
  * @author Kevin Gaudin &amp; F43nd1r
  */

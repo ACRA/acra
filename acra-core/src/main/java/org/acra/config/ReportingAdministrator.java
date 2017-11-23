@@ -24,16 +24,46 @@ import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 
 /**
+ * Controls if reports are sent
+ *
  * @author F43nd1r
  * @since 26.10.2017
  */
 @Keep
 public interface ReportingAdministrator {
+    /**
+     * Determines if report collection should start
+     *
+     * @param context       a context
+     * @param config        the current config
+     * @param reportBuilder the reportBuilder for the report about to be collected
+     * @return if this report should be collected
+     */
     boolean shouldStartCollecting(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder);
 
+    /**
+     * Determines if a collected report should be sent
+     *
+     * @param context         a context
+     * @param config          the current config
+     * @param crashReportData the collected report
+     * @return if this report should be sent
+     */
     boolean shouldSendReport(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportData crashReportData);
 
+    /**
+     * notifies the user about a dropped report
+     *
+     * @param context a context
+     * @param config  the current config
+     */
     void notifyReportDropped(@NonNull Context context, @NonNull CoreConfiguration config);
 
+    /**
+     * controls if this instance is active
+     *
+     * @param config the current config
+     * @return if this instance should be called
+     */
     boolean enabled(@NonNull CoreConfiguration config);
 }

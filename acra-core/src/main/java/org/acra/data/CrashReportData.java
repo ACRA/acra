@@ -30,14 +30,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Stores a crash reports data with {@link org.acra.ReportField} enum values as keys.
- * <p>
- * This is basically the source of {@link Properties} adapted to extend an
- * EnumMap instead of Hashtable and with a few tweaks to avoid losing crazy
- * amounts of android time in the generation of a date comment when storing to file.
+ * Stores a crash report data
  */
 public final class CrashReportData {
     private final JSONObject content;

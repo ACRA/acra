@@ -28,7 +28,7 @@ import org.acra.data.CrashReportData;
 import org.acra.util.PackageManagerWrapper;
 
 /**
- * Collects PackageInfo values
+ * Collects {@link PackageInfo} values
  *
  * @author F43nd1r
  * @since 4.9.1

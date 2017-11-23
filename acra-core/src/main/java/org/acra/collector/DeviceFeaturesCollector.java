@@ -30,7 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Features declared as available on the device.
+ * Collects features declared as available on the device.
  *
  * @author Kevin Gaudin &amp; F43nd1r
  */
