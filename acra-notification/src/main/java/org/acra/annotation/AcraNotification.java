@@ -16,7 +16,6 @@
 
 package org.acra.annotation;
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -135,11 +134,11 @@ public @interface AcraNotification {
     /**
      * notification channel importance. Must be one of
      * <ul>
-     * <li>{@link NotificationManager#IMPORTANCE_NONE}</li>
-     * <li>{@link NotificationManager#IMPORTANCE_LOW}</li>
-     * <li>{@link NotificationManager#IMPORTANCE_DEFAULT}</li>
-     * <li>{@link NotificationManager#IMPORTANCE_HIGH}</li>
-     * <li>{@link NotificationManager#IMPORTANCE_MAX}</li>
+     * <li>{@link android.app.NotificationManager#IMPORTANCE_NONE}</li>
+     * <li>{@link android.app.NotificationManager#IMPORTANCE_LOW}</li>
+     * <li>{@link android.app.NotificationManager#IMPORTANCE_DEFAULT}</li>
+     * <li>{@link android.app.NotificationManager#IMPORTANCE_HIGH}</li>
+     * <li>{@link android.app.NotificationManager#IMPORTANCE_MAX}</li>
      * </ul>
      *
      * @return notification channel importance. Default is {@link android.app.NotificationManager#IMPORTANCE_HIGH}

@@ -220,6 +220,7 @@ public class HttpSender implements ReportSender {
      * Convert a report to string
      *
      * @param report the report to convert
+     * @param format the format to convert to
      * @return a string representation of the report
      * @throws Exception if conversion failed
      */
