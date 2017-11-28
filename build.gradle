@@ -25,6 +25,18 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$androidBuildPluginVersion"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion"
+        classpath "net.researchgate:gradle-release:$releasePluginVersion"
+    }
+}
+apply plugin: 'net.researchgate.release'
+
+release {
+    tagTemplate = '$name-$version'
+}
+
+task build {
+    afterEvaluate {
+        dependsOn subprojects*.getTasksByName('build', false)
     }
 }
 
@@ -203,6 +215,7 @@ subprojects {
                 publish = true
                 pkg {
                     repo = 'maven'
+                    userOrg = 'acra'
                     name = pom.name
                     websiteUrl = pom.url
                     vcsUrl = pom.scm.url
@@ -212,7 +225,7 @@ subprojects {
                         name = project.version
                         desc = pom.description
                         mavenCentralSync {
-                            sync = true
+                            sync = false
                             user = ossrhUser
                             password = ossrhPassword
                         }
