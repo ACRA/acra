@@ -37,6 +37,7 @@ release {
 task build {
     afterEvaluate {
         dependsOn subprojects*.getTasksByName('build', false)
+        afterReleaseBuild.dependsOn subprojects*.getTasksByName('bintrayUpload', false)
     }
 }
 
