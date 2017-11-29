@@ -35,9 +35,9 @@ release {
 }
 
 task build {
-    afterEvaluate {
-        dependsOn subprojects*.getTasksByName('build', false)
-        afterReleaseBuild.dependsOn subprojects*.getTasksByName('bintrayUpload', false)
+    subprojects.each {
+        beforeReleaseBuild.dependsOn "${it.path}:clean"
+        dependsOn "${it.path}:build"
     }
 }
 
@@ -234,6 +234,7 @@ subprojects {
                 }
             }
             bintrayUpload.dependsOn(build, javadocJar, sourcesJar, 'generatePomFileForMavenPublication')
+            rootProject.afterReleaseBuild.dependsOn bintrayUpload
         }
     }
 }
