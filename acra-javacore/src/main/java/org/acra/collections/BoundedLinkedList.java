@@ -17,6 +17,7 @@ package org.acra.collections;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -69,14 +70,9 @@ public final class BoundedLinkedList<E> extends LinkedList<E> {
     public boolean addAll(@NonNull Collection<? extends E> collection) {
         final int size = collection.size();
         if (size > maxSize) {
-            final LinkedList<? extends E> list = new LinkedList<>(collection);
-            for (int i = 0; i < size - maxSize; i++) {
-                list.removeFirst();
-            }
-            collection = list;
+            collection = new ArrayList<>(collection).subList(size - maxSize, size);
         }
-        final int totalNeededSize = size() + collection.size();
-        final int overhead = totalNeededSize - maxSize;
+        final int overhead = size() + collection.size() - maxSize;
         if (overhead > 0) {
             removeRange(0, overhead);
         }

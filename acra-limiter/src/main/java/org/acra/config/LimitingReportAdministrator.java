@@ -31,6 +31,7 @@ import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 import org.acra.file.ReportLocator;
 import org.acra.util.IOUtils;
+import org.acra.util.StreamReader;
 import org.acra.util.ToastSender;
 import org.json.JSONException;
 
@@ -149,7 +150,7 @@ public class LimitingReportAdministrator implements ReportingAdministrator {
     private LimiterData loadLimiterData(@NonNull Context context, LimiterConfiguration limiterConfiguration) throws IOException, JSONException {
         String data = null;
         try {
-            data = IOUtils.streamToString(context.openFileInput(FILE_LIMITER_DATA));
+            data = new StreamReader(context.openFileInput(FILE_LIMITER_DATA)).read();
         } catch (FileNotFoundException ignored) {
             //file does not exist, we will create it
         }

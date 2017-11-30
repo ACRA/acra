@@ -30,8 +30,8 @@ import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportData;
 import org.acra.prefs.SharedPreferencesFactory;
-import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
+import org.acra.util.StreamReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +48,7 @@ import static org.acra.ACRA.LOG_TAG;
  */
 @AutoService(Collector.class)
 public final class LogCatCollector extends BaseReportFieldCollector {
+    private static final int READ_TIMEOUT = 3000;
 
     public LogCatCollector() {
         super(ReportField.LOGCAT, ReportField.EVENTSLOG, ReportField.RADIOLOG);
@@ -69,7 +70,8 @@ public final class LogCatCollector extends BaseReportFieldCollector {
      */
     private String collectLogCat(@NonNull CoreConfiguration config, @Nullable String bufferName) throws IOException {
         final int myPid = android.os.Process.myPid();
-        final String myPidStr = config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
+        // no need to filter on jellybean onwards, android does that anyway
+        final String myPidStr = Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN && config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
 
         final List<String> commandLine = new ArrayList<>();
         commandLine.add("logcat");
@@ -93,10 +95,10 @@ public final class LogCatCollector extends BaseReportFieldCollector {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Retrieving logcat output...");
 
         try {
-            return streamToString(config, process.getInputStream(), new Predicate<String>() {
+            return streamToString(config, process.getInputStream(), myPidStr == null ? null : new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
-                    return myPidStr == null || s.contains(myPidStr);
+                    return s.contains(myPidStr);
                 }
             }, tailCount);
         } finally {
@@ -138,11 +140,11 @@ public final class LogCatCollector extends BaseReportFieldCollector {
      * @throws IOException if the stream cannot be read.
      */
     @NonNull
-    private String streamToString(@NonNull CoreConfiguration config, @NonNull InputStream input, Predicate<String> filter, int limit) throws IOException {
+    private String streamToString(@NonNull CoreConfiguration config, @NonNull InputStream input, @Nullable Predicate<String> filter, int limit) throws IOException {
+        final StreamReader reader = new StreamReader(input).setFilter(filter).setLimit(limit);
         if (config.logcatReadNonBlocking()) {
-            return IOUtils.streamToStringNonBlockingRead(input, filter, limit);
-        } else {
-            return IOUtils.streamToString(input, filter, limit);
+            reader.setTimeout(READ_TIMEOUT);
         }
+        return reader.read();
     }
 }

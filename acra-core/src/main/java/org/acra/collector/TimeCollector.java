@@ -39,10 +39,12 @@ import java.util.Locale;
  */
 @AutoService(Collector.class)
 public final class TimeCollector extends BaseReportFieldCollector implements ApplicationStartupCollector {
+    private final SimpleDateFormat dateFormat;
     private Calendar appStartDate;
 
     public TimeCollector() {
         super(ReportField.USER_APP_START_DATE, ReportField.USER_CRASH_DATE);
+        dateFormat = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
     }
 
     @Override
@@ -76,7 +78,6 @@ public final class TimeCollector extends BaseReportFieldCollector implements App
 
     @NonNull
     private String getTimeString(@NonNull Calendar time) {
-        final SimpleDateFormat format = new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH);
-        return format.format(time.getTimeInMillis());
+        return dateFormat.format(time.getTimeInMillis());
     }
 }

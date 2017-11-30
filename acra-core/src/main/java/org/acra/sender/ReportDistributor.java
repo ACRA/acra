@@ -74,16 +74,16 @@ final class ReportDistributor {
             final CrashReportPersister persister = new CrashReportPersister();
             final CrashReportData previousCrashReport = persister.load(reportFile);
             sendCrashReport(previousCrashReport);
-            IOUtils.deleteReport(reportFile);
+            IOUtils.deleteFile(reportFile);
         } catch (RuntimeException e) {
             ACRA.log.e(LOG_TAG, "Failed to send crash reports for " + reportFile, e);
-            IOUtils.deleteReport(reportFile);
+            IOUtils.deleteFile(reportFile);
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "Failed to load crash report for " + reportFile, e);
-            IOUtils.deleteReport(reportFile);
+            IOUtils.deleteFile(reportFile);
         } catch (JSONException e) {
             ACRA.log.e(LOG_TAG, "Failed to load crash report for " + reportFile, e);
-            IOUtils.deleteReport(reportFile);
+            IOUtils.deleteFile(reportFile);
         }catch (ReportSenderException e) {
             ACRA.log.e(LOG_TAG, "Failed to send crash report for " + reportFile, e);
             // An issue occurred while sending this report but we can still try to

@@ -32,9 +32,8 @@ import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.ApplicationStartupProcessor;
-import org.acra.util.IOUtils;
+import org.acra.util.StreamReader;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -264,7 +263,7 @@ public final class ACRA {
     @Nullable
     private static String getCurrentProcessName() {
         try {
-            return IOUtils.streamToString(new FileInputStream("/proc/self/cmdline")).trim();
+            return new StreamReader("/proc/self/cmdline").read().trim();
         } catch (IOException e) {
             return null;
         }

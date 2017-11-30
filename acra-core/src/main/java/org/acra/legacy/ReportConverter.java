@@ -76,7 +76,7 @@ class ReportConverter {
                     converted++;
                 } else {
                     //reports without these keys are probably invalid
-                    IOUtils.deleteReport(report);
+                    IOUtils.deleteFile(report);
                 }
             } catch (Throwable e) {
                 try {
@@ -86,7 +86,7 @@ class ReportConverter {
                 } catch (Throwable t) {
                     //File matches neither of the known formats, remove it.
                     ACRA.log.w(LOG_TAG, "Unable to read report file " + report.getPath() + ". Deleting", e);
-                    IOUtils.deleteReport(report);
+                    IOUtils.deleteFile(report);
                 }
             } finally {
                 IOUtils.safeClose(in);

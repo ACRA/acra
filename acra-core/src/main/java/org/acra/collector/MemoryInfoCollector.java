@@ -29,7 +29,7 @@ import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
 import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportData;
-import org.acra.util.IOUtils;
+import org.acra.util.StreamReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,7 +86,7 @@ public final class MemoryInfoCollector extends BaseReportFieldCollector {
             commandLine.add(Integer.toString(android.os.Process.myPid()));
 
             final Process process = Runtime.getRuntime().exec(commandLine.toArray(new String[commandLine.size()]));
-            return IOUtils.streamToString(process.getInputStream());
+            return new StreamReader(process.getInputStream()).read();
         } catch (IOException e) {
             ACRA.log.e(LOG_TAG, "MemoryInfoCollector.meminfo could not retrieve data", e);
             return null;

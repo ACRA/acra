@@ -21,16 +21,13 @@ package org.acra.file;
 
 import android.support.annotation.NonNull;
 
-import org.acra.ACRAConstants;
 import org.acra.data.CrashReportData;
 import org.acra.util.IOUtils;
+import org.acra.util.StreamReader;
 import org.json.JSONException;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Handles persistence of {@link CrashReportData}
@@ -40,20 +37,14 @@ public final class CrashReportPersister {
     /**
      * Loads properties from the specified {@code File}.
      *
-     * @param file  Report file from which to load the CrashData.
+     * @param file Report file from which to load the CrashData.
      * @return CrashReportData read from the supplied File.
-     * @throws IOException if error occurs during reading from the {@code File}.
+     * @throws IOException   if error occurs during reading from the {@code File}.
      * @throws JSONException if the stream cannot be parsed as a JSON object.
      */
     @NonNull
     public CrashReportData load(@NonNull File file) throws IOException, JSONException {
-
-        final InputStream in = new BufferedInputStream(new FileInputStream(file), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES);
-        try {
-            return new CrashReportData(IOUtils.streamToString(in));
-        }finally {
-            IOUtils.safeClose(in);
-        }
+        return new CrashReportData(new StreamReader(file).read());
     }
 
     /**
@@ -61,9 +52,9 @@ public final class CrashReportPersister {
      * putting the specified comment at the beginning. The output from this
      * method is suitable for being read by the load() method.
      *
-     * @param crashData     CrashReportData to save.
-     * @param file          File into which to store the CrashReportData.
-     * @throws IOException if the CrashReportData could not be written to the OutputStream.
+     * @param crashData CrashReportData to save.
+     * @param file      File into which to store the CrashReportData.
+     * @throws IOException   if the CrashReportData could not be written to the OutputStream.
      * @throws JSONException if the crashData could not be converted to JSON.
      */
     public void store(@NonNull CrashReportData crashData, @NonNull File file) throws IOException, JSONException {
