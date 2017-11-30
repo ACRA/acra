@@ -74,7 +74,7 @@ abstract class BaseReportFieldCollector implements Collector {
                 }
             } catch (Throwable t) {
                 target.put(field, (String) null);
-                throw new CollectorException("Error while retrieving " + field.name() + " data", t);
+                throw new CollectorException("Error while retrieving " + field.name() + " data:" + t.getMessage(), t);
             }
         }
     }

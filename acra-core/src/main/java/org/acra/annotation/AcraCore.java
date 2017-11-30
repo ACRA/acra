@@ -316,4 +316,11 @@ public @interface AcraCore {
      * @since 5.0.0
      */
     @NonNull StringFormat reportFormat() default StringFormat.JSON;
+
+    /**
+     * Allow parallel collection. Increases performance but might pollute e.g. logcat output
+     * @return if parallel collection should be active
+     * @since 5.0.1
+     */
+    boolean parallel() default true;
 }

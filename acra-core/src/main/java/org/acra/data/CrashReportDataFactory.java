@@ -33,6 +33,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -77,7 +81,7 @@ public final class CrashReportDataFactory {
                 } catch (Throwable t) {
                     o2 = Collector.Order.NORMAL;
                 }
-                return o2.ordinal() - o1.ordinal();
+                return o1.ordinal() - o2.ordinal();
             }
         });
     }
@@ -89,16 +93,35 @@ public final class CrashReportDataFactory {
      * @return CrashReportData identifying the current crash.
      */
     @NonNull
-    public CrashReportData createCrashData(@NonNull ReportBuilder builder) {
+    public CrashReportData createCrashData(@NonNull final ReportBuilder builder) {
+        final ExecutorService executorService = config.parallel() ? Executors.newCachedThreadPool() : Executors.newSingleThreadExecutor();
         final CrashReportData crashReportData = new CrashReportData();
-        for (Collector collector : collectors) {
-            //catch absolutely everything possible here so no collector obstructs the others
-            try {
-                collector.collect(context, config, builder, crashReportData);
-            }catch (CollectorException e){
-                ACRA.log.w(LOG_TAG, e);
-            }catch (Throwable t) {
-                ACRA.log.e(LOG_TAG, "Error in collector " + collector.getClass().getSimpleName(), t);
+        final List<Future<?>> futures = new ArrayList<>();
+        for (final Collector collector : collectors) {
+            futures.add(executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    //catch absolutely everything possible here so no collector obstructs the others
+                    try {
+                        if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Calling collector " + collector.getClass().getName());
+                        collector.collect(context, config, builder, crashReportData);
+                        if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Collector " + collector.getClass().getName() + " completed");
+                    }catch (CollectorException e){
+                        ACRA.log.w(LOG_TAG, e);
+                    }catch (Throwable t) {
+                        ACRA.log.e(LOG_TAG, "Error in collector " + collector.getClass().getSimpleName(), t);
+                    }
+                }
+            }));
+        }
+        for (Future<?> future : futures) {
+            while (!future.isDone()) {
+                try {
+                    future.get();
+                } catch (InterruptedException ignored) {
+                } catch (ExecutionException e) {
+                    break;
+                }
             }
         }
         return crashReportData;

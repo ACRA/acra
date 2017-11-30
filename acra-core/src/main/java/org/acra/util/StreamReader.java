@@ -84,6 +84,9 @@ public class StreamReader {
                 return text;
             }
             final String[] lines = text.split("\\r?\\n");
+            if(lines.length <= limit){
+                return text;
+            }
             return TextUtils.join("\n", Arrays.copyOfRange(lines, lines.length - limit, lines.length));
         }
         final String[] lines = text.split("\\r?\\n");

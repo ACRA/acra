@@ -45,7 +45,7 @@ public final class CrashReportData {
         content = new JSONObject(json);
     }
 
-    public void put(@NonNull String key, boolean value) {
+    public synchronized void put(@NonNull String key, boolean value) {
         try {
             content.put(key, value);
         } catch (JSONException e) {
@@ -53,7 +53,7 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull String key, double value) {
+    public synchronized void put(@NonNull String key, double value) {
         try {
             content.put(key, value);
         } catch (JSONException e) {
@@ -61,7 +61,7 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull String key, int value) {
+    public synchronized void put(@NonNull String key, int value) {
         try {
             content.put(key, value);
         } catch (JSONException e) {
@@ -69,7 +69,7 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull String key, long value) {
+    public synchronized void put(@NonNull String key, long value) {
         try {
             content.put(key, value);
         } catch (JSONException e) {
@@ -77,7 +77,7 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull String key, @Nullable String value) {
+    public synchronized void put(@NonNull String key, @Nullable String value) {
         if (value == null) {
             putNA(key);
             return;
@@ -89,7 +89,7 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull String key, @Nullable JSONObject value) {
+    public synchronized void put(@NonNull String key, @Nullable JSONObject value) {
         if (value == null) {
             putNA(key);
             return;
@@ -101,7 +101,7 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull String key, @Nullable JSONArray value) {
+    public synchronized void put(@NonNull String key, @Nullable JSONArray value) {
         if (value == null) {
             putNA(key);
             return;
@@ -113,31 +113,31 @@ public final class CrashReportData {
         }
     }
 
-    public void put(@NonNull ReportField key, boolean value) {
+    public synchronized void put(@NonNull ReportField key, boolean value) {
         put(key.toString(), value);
     }
 
-    public void put(@NonNull ReportField key, double value) {
+    public synchronized void put(@NonNull ReportField key, double value) {
         put(key.toString(), value);
     }
 
-    public void put(@NonNull ReportField key, int value) {
+    public synchronized void put(@NonNull ReportField key, int value) {
         put(key.toString(), value);
     }
 
-    public void put(@NonNull ReportField key, long value) {
+    public synchronized void put(@NonNull ReportField key, long value) {
         put(key.toString(), value);
     }
 
-    public void put(@NonNull ReportField key, @Nullable String value) {
+    public synchronized void put(@NonNull ReportField key, @Nullable String value) {
         put(key.toString(), value);
     }
 
-    public void put(@NonNull ReportField key, @Nullable JSONObject value) {
+    public synchronized void put(@NonNull ReportField key, @Nullable JSONObject value) {
         put(key.toString(), value);
     }
 
-    public void put(@NonNull ReportField key, @Nullable JSONArray value) {
+    public synchronized void put(@NonNull ReportField key, @Nullable JSONArray value) {
         put(key.toString(), value);
     }
 
