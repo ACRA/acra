@@ -113,6 +113,16 @@ subprojects {
             lintOptions {
                 abortOnError false
             }
+            testOptions {
+                unitTests {
+                    includeAndroidResources = true
+                }
+            }
+        }
+
+        dependencies {
+            testImplementation "junit:junit:$junitVersion"
+            testImplementation "org.robolectric:robolectric:3.5.1"
         }
 
         task sourcesJar(type: Jar) {
@@ -160,8 +170,8 @@ subprojects {
         }
 
         task javadocJar(type: Jar, dependsOn: javadoc) {
+            from javadoc
             classifier = 'javadoc'
-            from javadoc.destinationDir
         }
     }
     plugins.withType(MavenPublishPlugin) {
