@@ -6,14 +6,14 @@ apply plugin: 'com.jfrog.artifactory'
 
 android {
     compileSdkVersion Integer.parseInt(androidVersion)
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.2'
 
     lintOptions {
         abortOnError false
     }
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 14
         targetSdkVersion androidVersion
         versionName version
         consumerProguardFile proguardFile
