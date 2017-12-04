@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Provides access to attachments for senders
@@ -220,11 +221,16 @@ public class AcraContentProvider extends ContentProvider {
      */
     @NonNull
     public static Uri getUriForFile(@NonNull Context context, @NonNull Directory directory, @NonNull String relativePath) {
-        return new Uri.Builder()
+        final Uri.Builder builder = new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_CONTENT)
                 .authority(getAuthority(context))
-                .path(directory.name().toLowerCase() + (relativePath.charAt(0) == File.separatorChar ? "" : File.separator) + relativePath)
-                .build();
+                .appendPath(directory.name().toLowerCase());
+        for (String segment : relativePath.split(Pattern.quote(File.separator))) {
+            if (segment.length() > 0) {
+                builder.appendPath(segment);
+            }
+        }
+        return builder.build();
     }
 
 

@@ -99,7 +99,7 @@ public enum Directory {
     ROOT {
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
-            return new File("/", fileName);
+            return new File(fileName);
         }
     };
 
