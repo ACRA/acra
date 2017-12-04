@@ -37,7 +37,6 @@ import static org.acra.ACRA.LOG_TAG;
  * specific application installation.
  * </p>
  * <p>
- * <p>
  * This was taken from <a href="http://android-developers.blogspot.com/2011/03/identifying-app-installations.html"> the
  * android developers blog.</a>
  * </p>
