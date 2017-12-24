@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotation annotated with this will be used as basis for the BaseConfigurationBuilder
+ * The annotation annotated with this will be used as basis for Configurations and their Builders
  *
  * @author F43nd1r
  * @since 17.03.2017
@@ -31,4 +31,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Configuration {
+    Class baseBuilderClass() default Object.class;
+    boolean createBuilderFactory() default true;
 }
