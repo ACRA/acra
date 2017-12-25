@@ -1,3 +1,7 @@
+![license](https://img.shields.io/github/license/ACRA/acra.svg)
+[ ![Bintray](https://api.bintray.com/packages/acra/maven/ACRA/images/download.svg) ](https://bintray.com/acra/maven/ACRA/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/ch.acra/acra.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22ch.acra%22%20AND%20a%3A%22acra%22)
+
 [![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)
 
 What is ACRA ?
