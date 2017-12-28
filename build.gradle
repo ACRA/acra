@@ -237,8 +237,10 @@ subprojects {
                         desc = pom.description
                         mavenCentralSync {
                             sync = false
-                            user = ossrhUser
-                            password = ossrhPassword
+                            if (hasProperty('ossrhUser')) {
+                                user = ossrhUser
+                                password = ossrhPassword
+                            }
                         }
                     }
                 }
@@ -251,4 +253,27 @@ subprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+task joinedJavadoc(type: Javadoc) {
+    subprojects { project ->
+        afterEvaluate {
+            def tasks = project.tasks.withType(Javadoc)
+            rootProject.joinedJavadoc {
+                source += files(tasks.collect { it.source })
+                classpath += files(tasks.collect { it.classpath })
+            }
+            plugins.withType(LibraryPlugin) {
+                rootProject.joinedJavadoc {
+                    options.with {
+                        linksOffline "http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference"
+                    }
+                    doFirst {
+                        classpath += files(android.libraryVariants.collect { variant -> variant.javaCompile.classpath.files })
+                    }
+                }
+            }
+        }
+    }
+    destinationDir = file("${project.buildDir}/javadoc")
 }
