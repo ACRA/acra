@@ -276,6 +276,9 @@ public final class ACRA {
     @NonNull
     public static ErrorReporter getErrorReporter() {
         if (errorReporterSingleton == null) {
+            if (isACRASenderServiceProcess()) {
+                throw new IllegalStateException("Cannot access ErrorReporter in ACRAs SenderService process. Protect your calls with if(!ACRA.isACRASenderServiceProcess())");
+            }
             throw new IllegalStateException("Cannot access ErrorReporter before ACRA#init");
         }
         return errorReporterSingleton;
