@@ -15,7 +15,6 @@
  */
 package org.acra;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,6 +30,8 @@ import org.acra.legacy.LegacyFileHandler;
 import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 import org.acra.prefs.SharedPreferencesFactory;
+import org.acra.reporter.ErrorReporterImpl;
+import org.acra.reporter.ErrorReporterStub;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.StreamReader;
 
@@ -106,10 +107,8 @@ public final class ACRA {
      */
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
-    // Accessible via ACRA#getErrorReporter().
-    @SuppressLint("StaticFieldLeak")
-    @Nullable
-    private static ErrorReporter errorReporterSingleton;
+    @NonNull
+    private static ErrorReporter errorReporterSingleton = new ErrorReporterStub();
 
     /**
      * <p>
@@ -207,7 +206,7 @@ public final class ACRA {
             log.w(LOG_TAG, "ACRA 5.0.0+ requires Gingerbread or greater. ACRA is disabled and will NOT catch crashes or send messages.");
         }
 
-        if (errorReporterSingleton != null) {
+        if (isInitialised()) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
             return;
         }
@@ -223,10 +222,11 @@ public final class ACRA {
         new LegacyFileHandler(app, prefs).updateToCurrentVersionIfNecessary();
         if (!senderServiceProcess) {
             // Initialize ErrorReporter with all required data
-            final boolean enableAcra = supportedAndroidVersion && !shouldDisableACRA(prefs);
+            final boolean enableAcra = supportedAndroidVersion && !SharedPreferencesFactory.shouldDisableACRA(prefs);
             // Indicate that ACRA is or is not listening for crashes.
             log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + app.getPackageName() + ", initializing...");
-            errorReporterSingleton = new ErrorReporter(app, config, enableAcra, supportedAndroidVersion);
+            ErrorReporterImpl reporter = new ErrorReporterImpl(app, config, enableAcra, supportedAndroidVersion);
+            errorReporterSingleton = reporter;
 
             // Check for approved reports and send them (if enabled).
             // NB don't check if senderServiceProcess as it will gather these reports itself.
@@ -237,7 +237,7 @@ public final class ACRA {
             // register after initAcra is called to avoid a
             // NPE in ErrorReporter.disable() because
             // the context could be null at this moment.
-            prefs.registerOnSharedPreferenceChangeListener(errorReporterSingleton);
+            prefs.registerOnSharedPreferenceChangeListener(reporter);
         }
     }
 
@@ -246,7 +246,7 @@ public final class ACRA {
      */
     @SuppressWarnings("unused")
     public static boolean isInitialised() {
-        return errorReporterSingleton != null;
+        return errorReporterSingleton.isRegistered();
     }
 
     /**
@@ -275,32 +275,9 @@ public final class ACRA {
      */
     @NonNull
     public static ErrorReporter getErrorReporter() {
-        if (errorReporterSingleton == null) {
-            throw new IllegalStateException("Cannot access ErrorReporter before ACRA#init");
-        }
         return errorReporterSingleton;
     }
 
-
-    /**
-     * Check if the application default shared preferences contains true for the
-     * key "acra.disable", do not activate ACRA. Also checks the alternative
-     * opposite setting "acra.enable" if "acra.disable" is not found.
-     *
-     * @param prefs SharedPreferences to check to see whether ACRA should be
-     *              disabled.
-     * @return true if prefs indicate that ACRA should be disabled.
-     */
-    static boolean shouldDisableACRA(@NonNull SharedPreferences prefs) {
-        boolean disableAcra = false;
-        try {
-            final boolean enableAcra = prefs.getBoolean(PREF_ENABLE_ACRA, true);
-            disableAcra = prefs.getBoolean(PREF_DISABLE_ACRA, !enableAcra);
-        } catch (Exception e) {
-            // In case of a ClassCastException
-        }
-        return disableAcra;
-    }
 
     public static void setLog(@NonNull ACRALog log) {
         //noinspection ConstantConditions (do not rely on annotation alone)
