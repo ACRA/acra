@@ -63,10 +63,10 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
 
 
     /**
-     * Can only be constructed from within this class.
-     *  @param context                     Context for the application in which ACRA is running.
-     * @param config                      AcraConfig to use when reporting and sending errors.
-     * @param enabled                     Whether this ErrorReporter should capture Exceptions and forward their reports.
+     * @param context                 Context for the application in which ACRA is running.
+     * @param config                  AcraConfig to use when reporting and sending errors.
+     * @param enabled                 Whether this ErrorReporter should capture Exceptions and forward their reports.
+     * @param supportedAndroidVersion the minimal supported version
      */
     public ErrorReporterImpl(@NonNull Application context, @NonNull CoreConfiguration config,
                              boolean enabled, boolean supportedAndroidVersion) {
@@ -90,19 +90,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * <p>
-     * Use this method to provide the ErrorReporter with data of your running
-     * application. You should call this at several key places in your code the
-     * same way as you would output important debug data in a log file. Only the
-     * latest value is kept for each key (no history of the values is sent in
-     * the report).
-     * </p>
-     *
-     * @param key   A key for your custom data.
-     * @param value The value associated to your key.
-     * @return The previous value for this key if there was one, or null.
-     * @see #removeCustomData(String)
-     * @see #getCustomData(String)
+     * {@inheritDoc}
      */
     @Override
     public String putCustomData(@NonNull String key, String value) {
@@ -110,12 +98,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * Removes a key/value pair from your reports custom data field.
-     *
-     * @param key The key of the data to be removed.
-     * @return The value for this key before removal.
-     * @see #putCustomData(String, String)
-     * @see #getCustomData(String)
+     * {@inheritDoc}
      */
     @Override
     public String removeCustomData(@NonNull String key) {
@@ -123,7 +106,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * Removes all key/value pairs from your reports custom data field.
+     * {@inheritDoc}
      */
     @Override
     public void clearCustomData() {
@@ -131,12 +114,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * Gets the current value for a key in your reports custom data field.
-     *
-     * @param key The key of the data to be retrieved.
-     * @return The value for this key.
-     * @see #putCustomData(String, String)
-     * @see #removeCustomData(String)
+     * {@inheritDoc}
      */
     @Override
     public String getCustomData(@NonNull String key) {
@@ -179,10 +157,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * Mark this report as silent as send it.
-     *
-     * @param e The {@link Throwable} to be reported. If null the report will
-     *          contain a new Exception("Report requested by developer").
+     * {@inheritDoc}
      */
     @Override
     public void handleSilentException(@Nullable Throwable e) {
@@ -194,10 +169,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * Enable or disable this ErrorReporter. By default it is enabled.
-     *
-     * @param enabled Whether this ErrorReporter should capture Exceptions and
-     *                forward them as crash reports.
+     * {@inheritDoc}
      */
     @Override
     public void setEnabled(boolean enabled) {
@@ -209,19 +181,16 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRegistered() {
         return Thread.getDefaultUncaughtExceptionHandler() == this;
     }
 
     /**
-     * Send a report for a {@link Throwable} with the reporting interaction mode
-     * configured by the developer.
-     *
-     * @param e              The {@link Throwable} to be reported. If null the report will
-     *                       contain a new Exception("Report requested by developer").
-     * @param endApplication Set this to true if you want the application to be ended after
-     *                       sending the report.
+     * {@inheritDoc}
      */
     @Override
     public void handleException(@Nullable Throwable e, boolean endApplication) {
@@ -235,12 +204,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     /**
-     * Send a report for a {@link Throwable} with the reporting interaction mode
-     * configured by the developer, the application is then killed and restarted
-     * by the system.
-     *
-     * @param e The {@link Throwable} to be reported. If null the report will
-     *          contain a new Exception("Report requested by developer").
+     * {@inheritDoc}
      */
     @Override
     public void handleException(@Nullable Throwable e) {
