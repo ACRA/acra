@@ -27,8 +27,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.lang.model.type.TypeKind;
-
 /**
  * @author F43nd1r
  * @since 12.06.2017
@@ -74,16 +72,6 @@ public class FieldGetter extends FieldMethod implements org.acra.definition.Tran
         final List<Object> params = new ArrayList<>();
         params.add(getField().getName());
         String result = "$" + params.size() + "L";
-        final Object defaultValue = getField().getDefaultValue();
-        if (defaultValue != null) {
-            result = "$" + params.size() + "L != null ? " + result + " : ";
-            if (getField().getType().getMirror().getKind() == TypeKind.ARRAY) {
-                params.add(utils.erasure(getField().getType().getMirror()));
-                result += "new $" + params.size() + "T";
-            }
-            params.add(defaultValue);
-            result += "$" + params.size() + "L";
-        }
         return Pair.of(result, params);
     }
 }

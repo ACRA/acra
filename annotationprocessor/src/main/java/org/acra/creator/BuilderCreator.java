@@ -86,7 +86,7 @@ class BuilderCreator {
                 .addJavadoc("@param $L class annotated with {@link $T}\n", PARAM_0, baseAnnotation.getName());
         build = new BuildMethodCreator(utils.getOnlyMethod(configurationBuilder.getElement()), config);
         final Field enabled = new Field(ENABLED, utils.getBooleanType(), Collections.emptyList(), null, null);
-        enabled.addTo(classBuilder);
+        enabled.addTo(classBuilder, utils);
         methods.add(new FieldGetter(enabled));
         methods.add(new FieldSetter(enabled, builder));
     }
@@ -106,7 +106,7 @@ class BuilderCreator {
                 .beginControlFlow("if ($L)", ENABLED);
         for (ExecutableElement method : utils.getMethods(baseAnnotation.getElement())) {
             final Field field = Field.from(method, utils);
-            field.addTo(classBuilder);
+            field.addTo(classBuilder, utils);
             methods.add(new FieldGetter(field));
             methods.add(new FieldSetter(field, builder));
             build.addValidation(field, method);
