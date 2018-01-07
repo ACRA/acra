@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 
@@ -39,6 +40,26 @@ public class SharedPreferencesFactory {
     public SharedPreferencesFactory(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
+    }
+
+    /**
+     * Check if the application default shared preferences contains true for the
+     * key "acra.disable", do not activate ACRA. Also checks the alternative
+     * opposite setting "acra.enable" if "acra.disable" is not found.
+     *
+     * @param prefs SharedPreferences to check to see whether ACRA should be
+     *              disabled.
+     * @return true if prefs indicate that ACRA should be disabled.
+     */
+    public static boolean shouldDisableACRA(@NonNull SharedPreferences prefs) {
+        boolean disableAcra = false;
+        try {
+            final boolean enableAcra = prefs.getBoolean(ACRA.PREF_ENABLE_ACRA, true);
+            disableAcra = prefs.getBoolean(ACRA.PREF_DISABLE_ACRA, !enableAcra);
+        } catch (Exception e) {
+            // In case of a ClassCastException
+        }
+        return disableAcra;
     }
 
     /**
