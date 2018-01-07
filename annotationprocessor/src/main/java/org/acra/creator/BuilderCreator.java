@@ -36,7 +36,6 @@ import org.acra.definition.Field;
 import org.acra.definition.FieldGetter;
 import org.acra.definition.FieldSetter;
 import org.acra.definition.Method;
-import org.acra.definition.Transformable;
 import org.acra.definition.Transformer;
 import org.acra.definition.Type;
 
@@ -138,7 +137,7 @@ class BuilderCreator {
                 build.addMethodCall(FIELD_0, method.getSimpleName().toString());
             } else if (method.getAnnotation(Transform.class) != null) {
                 final String transform = method.getAnnotation(Transform.class).methodName();
-                methods.stream().filter(m -> m instanceof Transformable).map(Transformable.class::cast).filter(m -> m.getName().equals(transform)).findAny()
+                methods.stream().filter(m -> m instanceof FieldGetter).map(FieldGetter.class::cast).filter(m -> m.getName().equals(transform)).findAny()
                         .ifPresent(m -> methods.set(methods.indexOf(m), Transformer.from(method, FIELD_0, m, utils)));
             } else {
                 methods.add(DelegateMethod.from(method, FIELD_0, builder, utils));

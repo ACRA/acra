@@ -73,10 +73,6 @@ public class Field {
         return defaultValue != null;
     }
 
-    AnnotationValue getDefaultValue() {
-        return defaultValue;
-    }
-
     public void addTo(TypeSpec.Builder builder, ModelUtils utils) {
         annotations.removeIf(a -> a.type.equals(TypeName.get(NonNull.class)));
         final FieldSpec.Builder field = FieldSpec.builder(type.getName(), name, Modifier.PRIVATE)

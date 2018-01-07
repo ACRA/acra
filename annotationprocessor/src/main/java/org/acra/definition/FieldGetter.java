@@ -22,9 +22,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.acra.ModelUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +30,7 @@ import java.util.List;
  * @since 12.06.2017
  */
 
-public class FieldGetter extends FieldMethod implements org.acra.definition.Transformable {
+public class FieldGetter extends FieldMethod {
     public FieldGetter(Field field) {
         super(field);
     }
@@ -44,11 +42,10 @@ public class FieldGetter extends FieldMethod implements org.acra.definition.Tran
 
     @Override
     public void writeTo(TypeSpec.Builder builder, ModelUtils utils) {
-        final Pair<String, List<Object>> statement = getStatementWithParams(utils);
         builder.addMethod(MethodSpec.methodBuilder(getField().getName())
                 .addAnnotations(getField().getAnnotations())
                 .returns(getField().getType().getName())
-                .addStatement("return " + statement.getKey(), statement.getValue().toArray())
+                .addStatement("return $L", getField().getName())
                 .build());
     }
 
@@ -67,11 +64,4 @@ public class FieldGetter extends FieldMethod implements org.acra.definition.Tran
         return getField().getType().getName();
     }
 
-    @Override
-    public Pair<String, List<Object>> getStatementWithParams(ModelUtils utils) {
-        final List<Object> params = new ArrayList<>();
-        params.add(getField().getName());
-        String result = "$" + params.size() + "L";
-        return Pair.of(result, params);
-    }
 }
