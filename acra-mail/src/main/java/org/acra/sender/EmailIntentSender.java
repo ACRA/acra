@@ -52,11 +52,14 @@ import static org.acra.ACRA.LOG_TAG;
  */
 @SuppressWarnings("WeakerAccess")
 public class EmailIntentSender implements ReportSender {
+    public static final String DEFAULT_REPORT_FILENAME = "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION;
 
     private final CoreConfiguration config;
+    private final MailSenderConfiguration mailConfig;
 
     public EmailIntentSender(@NonNull CoreConfiguration config) {
         this.config = config;
+        this.mailConfig = ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class);
     }
 
     @Override
@@ -206,6 +209,9 @@ public class EmailIntentSender implements ReportSender {
      */
     @NonNull
     protected String buildSubject(@NonNull Context context) {
+        if (mailConfig.subject() != ACRAConstants.DEFAULT_RES_VALUE) {
+            return context.getString(mailConfig.subject());
+        }
         return context.getPackageName() + " Crash Report";
     }
 
@@ -220,8 +226,8 @@ public class EmailIntentSender implements ReportSender {
     protected boolean fillAttachmentList(@NonNull Context context, @NonNull String body, @NonNull List<Uri> attachments) {
         final InstanceCreator instanceCreator = new InstanceCreator();
         attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config));
-        if (ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).reportAsFile()) {
-            final Uri report = createAttachmentFromString(context, "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION, body);
+        if (mailConfig.reportAsFile()) {
+            final Uri report = createAttachmentFromString(context, mailConfig.reportFileName(), body);
             if (report != null) {
                 attachments.add(report);
                 return true;
