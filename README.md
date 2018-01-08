@@ -33,7 +33,7 @@ The user is notified of an error only once, and you might enhance the perceived 
 
 Please do not hesitate to open defects/enhancements requests in [the issue tracker](http://github.com/ACRA/acra/issues).
 
-Latest version ACRA v5.0.0 - 24-DEC-2017
+Latest version ACRA v5.0.1 - 8-JAN-2018
 ===========================================
 
 For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
