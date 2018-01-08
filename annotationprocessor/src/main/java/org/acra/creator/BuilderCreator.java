@@ -36,7 +36,6 @@ import org.acra.definition.Field;
 import org.acra.definition.FieldGetter;
 import org.acra.definition.FieldSetter;
 import org.acra.definition.Method;
-import org.acra.definition.Transformable;
 import org.acra.definition.Transformer;
 import org.acra.definition.Type;
 
@@ -86,7 +85,7 @@ class BuilderCreator {
                 .addJavadoc("@param $L class annotated with {@link $T}\n", PARAM_0, baseAnnotation.getName());
         build = new BuildMethodCreator(utils.getOnlyMethod(configurationBuilder.getElement()), config);
         final Field enabled = new Field(ENABLED, utils.getBooleanType(), Collections.emptyList(), null, null);
-        enabled.addTo(classBuilder);
+        enabled.addTo(classBuilder, utils);
         methods.add(new FieldGetter(enabled));
         methods.add(new FieldSetter(enabled, builder));
     }
@@ -106,7 +105,7 @@ class BuilderCreator {
                 .beginControlFlow("if ($L)", ENABLED);
         for (ExecutableElement method : utils.getMethods(baseAnnotation.getElement())) {
             final Field field = Field.from(method, utils);
-            field.addTo(classBuilder);
+            field.addTo(classBuilder, utils);
             methods.add(new FieldGetter(field));
             methods.add(new FieldSetter(field, builder));
             build.addValidation(field, method);
@@ -138,7 +137,7 @@ class BuilderCreator {
                 build.addMethodCall(FIELD_0, method.getSimpleName().toString());
             } else if (method.getAnnotation(Transform.class) != null) {
                 final String transform = method.getAnnotation(Transform.class).methodName();
-                methods.stream().filter(m -> m instanceof Transformable).map(Transformable.class::cast).filter(m -> m.getName().equals(transform)).findAny()
+                methods.stream().filter(m -> m instanceof FieldGetter).map(FieldGetter.class::cast).filter(m -> m.getName().equals(transform)).findAny()
                         .ifPresent(m -> methods.set(methods.indexOf(m), Transformer.from(method, FIELD_0, m, utils)));
             } else {
                 methods.add(DelegateMethod.from(method, FIELD_0, builder, utils));

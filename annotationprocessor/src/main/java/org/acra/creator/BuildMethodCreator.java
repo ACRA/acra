@@ -28,6 +28,7 @@ import org.acra.annotation.NonEmpty;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.ClassValidator;
 import org.acra.definition.Field;
+import org.acra.definition.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ class BuildMethodCreator {
 
     void addValidation(Field field, ExecutableElement method) {
         if (!field.hasDefault()) {
-            methodBuilder.beginControlFlow("if ($L == null)", field.getName())
+            methodBuilder.beginControlFlow("if ($L == $L)", field.getName(), getDefault(field.getType()))
                     .addStatement("throw new $T(\"$L has to be set\")", ACRAConfigurationException.class, field.getName())
                     .endControlFlow();
         }
@@ -75,6 +76,29 @@ class BuildMethodCreator {
         }
     }
 
+    private String getDefault(Type type) {
+        switch (type.getMirror().getKind()) {
+            case BOOLEAN:
+                return "false";
+            case BYTE:
+                return "0";
+            case SHORT:
+                return "0";
+            case INT:
+                return "0";
+            case LONG:
+                return "0L";
+            case CHAR:
+                return "\u0000";
+            case FLOAT:
+                return "0.0f";
+            case DOUBLE:
+                return "0.0d";
+            default:
+                return "null";
+        }
+    }
+
     void addMethodCall(String delegate, String methodName) {
         statements.add(CodeBlock.builder().addStatement("$L.$L()", delegate, methodName).build());
     }
@@ -87,7 +111,7 @@ class BuildMethodCreator {
                     .endControlFlow();
         }
         methodBuilder.endControlFlow();
-        for (CodeBlock s : statements){
+        for (CodeBlock s : statements) {
             methodBuilder.addCode(s);
         }
         methodBuilder.addStatement("return new $T(this)", config);

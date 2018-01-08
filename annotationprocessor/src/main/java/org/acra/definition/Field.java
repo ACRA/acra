@@ -30,6 +30,7 @@ import java.util.List;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeKind;
 
 /**
  * The minimal Definition needed to create a getter
@@ -60,7 +61,7 @@ public class Field {
         return name;
     }
 
-    Type getType() {
+    public Type getType() {
         return type;
     }
 
@@ -72,15 +73,18 @@ public class Field {
         return defaultValue != null;
     }
 
-    AnnotationValue getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void addTo(TypeSpec.Builder builder) {
+    public void addTo(TypeSpec.Builder builder, ModelUtils utils) {
         annotations.removeIf(a -> a.type.equals(TypeName.get(NonNull.class)));
-        builder.addField(FieldSpec.builder(type.getName().box(), name, Modifier.PRIVATE)
-                .addAnnotations(annotations)
-                .build());
+        final FieldSpec.Builder field = FieldSpec.builder(type.getName(), name, Modifier.PRIVATE)
+                .addAnnotations(annotations);
+        if(defaultValue != null){
+            if (type.getMirror().getKind() == TypeKind.ARRAY) {
+                field.initializer("new $T$L", utils.erasure(type.getMirror()), defaultValue);
+            }else {
+                field.initializer("$L", defaultValue);
+            }
+        }
+        builder.addField(field.build());
     }
 
     public String getJavadoc() {

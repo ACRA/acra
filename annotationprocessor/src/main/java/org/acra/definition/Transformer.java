@@ -22,7 +22,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.acra.ModelUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -37,13 +36,13 @@ public class Transformer implements Method {
     private final String name;
     private final String delegate;
     private final Type returnType;
-    private final Transformable transformable;
+    private final FieldGetter transformable;
 
-    public static Transformer from(ExecutableElement method, String field, Transformable transformable, ModelUtils utils) {
+    public static Transformer from(ExecutableElement method, String field, FieldGetter transformable, ModelUtils utils) {
         return new Transformer(method.getSimpleName().toString(), field, utils.getType(method.getReturnType()), transformable);
     }
 
-    private Transformer(String name, String delegate, Type returnType, Transformable transformable) {
+    private Transformer(String name, String delegate, Type returnType, FieldGetter transformable) {
         this.name = name;
         this.delegate = delegate;
         this.returnType = returnType;
@@ -58,15 +57,10 @@ public class Transformer implements Method {
 
     @Override
     public void writeTo(TypeSpec.Builder builder, ModelUtils utils) {
-        final Pair<String, List<Object>> baseStatement = transformable.getStatementWithParams(utils);
-        final List<Object> params = baseStatement.getValue();
-        params.add(delegate);
-        params.add(name);
-        final String statement = "return $" + (params.size() - 1) + "L.$" + params.size() + "L(" + baseStatement.getKey() + ")";
         builder.addMethod(MethodSpec.methodBuilder(transformable.getName())
                 .addAnnotations(transformable.getAnnotations())
                 .returns(returnType.getName())
-                .addStatement(statement, params.toArray())
+                .addStatement("return $L.$L($L)", delegate, name, transformable.getField().getName())
                 .build());
     }
 
