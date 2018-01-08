@@ -32,6 +32,10 @@ apply plugin: 'net.researchgate.release'
 
 release {
     tagTemplate = '$name-$version'
+    git {
+        pushToRemote = 'ACRA'
+        requireBranch = 'master'
+    }
 }
 
 task build {
