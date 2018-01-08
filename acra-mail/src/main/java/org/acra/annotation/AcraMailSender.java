@@ -17,6 +17,10 @@
 package org.acra.annotation;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+
+import org.acra.ACRAConstants;
+import org.acra.sender.EmailIntentSender;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -51,4 +55,21 @@ public @interface AcraMailSender {
      * @since 5.0.0
      */
     boolean reportAsFile() default true;
+
+    /**
+     * custom file name for the report
+     *
+     * @return report file name
+     * @since 5.0.1
+     */
+    @NonNull String reportFileName() default EmailIntentSender.DEFAULT_REPORT_FILENAME;
+
+    /**
+     * custom email subject.
+     * Default is "&lt;applicationId&gt; Crash Report"
+     *
+     * @return resource id of the custom email subject
+     * @since 5.0.1
+     */
+    @StringRes int subject() default ACRAConstants.DEFAULT_RES_VALUE;
 }
