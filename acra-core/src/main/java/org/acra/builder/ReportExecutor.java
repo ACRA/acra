@@ -33,6 +33,7 @@ import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.sender.SenderServiceStarter;
 import org.acra.util.ProcessFinisher;
+import org.acra.util.ToastSender;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -199,7 +200,7 @@ public class ReportExecutor {
                     @Override
                     public void run() {
                         Looper.prepare();
-                        Toast.makeText(context, warning, Toast.LENGTH_LONG).show();
+                        ToastSender.sendToast(context, warning, Toast.LENGTH_LONG);
                         Looper.loop();
                     }
                 }).start();

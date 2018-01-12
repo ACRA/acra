@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018 the ACRA team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package org.acra.definition;
+package org.acra.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author F43nd1r
- * @since 12.06.2017
+ * @since 10.01.2018
  */
-
-abstract class FieldMethod implements Method {
-    private final Field field;
-
-    FieldMethod(Field field) {
-        this.field = field;
-    }
-
-    Field getField() {
-        return field;
-    }
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.METHOD)
+public @interface ConfigurationValue {
 }

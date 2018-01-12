@@ -18,6 +18,9 @@ package org.acra.config;
 
 import android.support.annotation.NonNull;
 
+import org.acra.annotation.BuilderMethod;
+import org.acra.annotation.ConfigurationValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,11 +42,13 @@ public class BaseHttpConfigurationBuilder {
      *
      * @param headers A map associating HTTP header names to their values.
      */
+    @BuilderMethod
     public void setHttpHeaders(@NonNull Map<String, String> headers) {
         this.httpHeaders.clear();
         this.httpHeaders.putAll(headers);
     }
 
+    @ConfigurationValue
     @NonNull
     Map<String, String> httpHeaders() {
         return httpHeaders;

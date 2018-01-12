@@ -79,17 +79,17 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     protected void buildAndShowDialog(@Nullable Bundle savedInstanceState) {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final int titleResourceId = dialogConfiguration.resTitle();
-        if (titleResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
-            dialogBuilder.setTitle(titleResourceId);
+        final String title = dialogConfiguration.title();
+        if (title != null) {
+            dialogBuilder.setTitle(title);
         }
         final int iconResourceId = dialogConfiguration.resIcon();
         if (iconResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState))
-                .setPositiveButton(getText(dialogConfiguration.resPositiveButtonText()), this)
-                .setNegativeButton(getText(dialogConfiguration.resNegativeButtonText()), this);
+                .setPositiveButton(dialogConfiguration.positiveButtonText(), this)
+                .setNegativeButton(dialogConfiguration.negativeButtonText(), this);
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
@@ -152,9 +152,9 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     @NonNull
     protected View getMainView() {
         final TextView text = new TextView(this);
-        final int dialogTextId = dialogConfiguration.resText();
-        if (dialogTextId != ACRAConstants.DEFAULT_RES_VALUE) {
-            text.setText(getText(dialogTextId));
+        final String dialogText = dialogConfiguration.text();
+        if (dialogText != null) {
+            text.setText(dialogText);
         }
         return text;
     }
@@ -166,10 +166,10 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     @Nullable
     protected View getCommentLabel() {
-        final int commentPromptId = dialogConfiguration.resCommentPrompt();
-        if (commentPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
+        final String commentPrompt = dialogConfiguration.commentPrompt();
+        if (commentPrompt != null) {
             final TextView labelView = new TextView(this);
-            labelView.setText(getText(commentPromptId));
+            labelView.setText(commentPrompt);
             return labelView;
         }
         return null;
@@ -198,10 +198,10 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
      */
     @Nullable
     protected View getEmailLabel() {
-        final int emailPromptId = dialogConfiguration.resEmailPrompt();
-        if (emailPromptId != ACRAConstants.DEFAULT_RES_VALUE) {
+        final String emailPrompt = dialogConfiguration.emailPrompt();
+        if (emailPrompt != null) {
             final TextView labelView = new TextView(this);
-            labelView.setText(getText(emailPromptId));
+            labelView.setText(emailPrompt);
             return labelView;
         }
         return null;

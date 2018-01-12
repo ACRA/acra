@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018 the ACRA team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package org.acra.definition;
+package org.acra.processor.element;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
-import org.acra.ModelUtils;
-
-import java.util.List;
+import org.acra.processor.creator.BuildMethodCreator;
 
 /**
  * @author F43nd1r
- * @since 12.06.2017
+ * @since 11.01.2018
  */
 
-public interface Method {
-    boolean shouldPropagate();
-
-    void writeTo(TypeSpec.Builder builder, ModelUtils utils);
-
-    String getName();
-
-    List<AnnotationSpec> getAnnotations();
-
-    TypeName getReturnType();
+public interface ValidatedElement extends Element {
+    void addToBuildMethod(BuildMethodCreator method);
 }

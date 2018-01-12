@@ -71,5 +71,5 @@ public @interface AcraMailSender {
      * @return resource id of the custom email subject
      * @since 5.0.1
      */
-    @StringRes int subject() default ACRAConstants.DEFAULT_RES_VALUE;
+    @StringRes int resSubject() default ACRAConstants.DEFAULT_RES_VALUE;
 }
