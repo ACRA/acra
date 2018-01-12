@@ -17,6 +17,8 @@ package org.acra.sender;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
@@ -94,7 +96,12 @@ public class SenderService extends IntentService {
             }
             final int toastRes = reportsSentCount > 0 ? config.resReportSendSuccessToast() : config.resReportSendFailureToast();
             if (toastRes != ACRAConstants.DEFAULT_RES_VALUE) {
-                ToastSender.sendToast(this, toastRes, Toast.LENGTH_LONG);
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastSender.sendToast(SenderService.this, toastRes, Toast.LENGTH_LONG);
+                    }
+                });
             }
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "", e);
