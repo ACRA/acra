@@ -76,8 +76,8 @@ public enum StringFormat {
                 builder.append(joiner);
             }
             if (urlEncode) {
-                key = URLEncoder.encode(key, ACRAConstants.UTF8);
-                value = URLEncoder.encode(value, ACRAConstants.UTF8);
+                key = key != null ? URLEncoder.encode(key, ACRAConstants.UTF8) : null;
+                value = value != null ? URLEncoder.encode(value, ACRAConstants.UTF8) : null;
             }
             builder.append(key).append('=').append(value);
         }
