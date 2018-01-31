@@ -31,9 +31,9 @@ import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.reporter.ErrorReporterImpl;
-import org.acra.reporter.ErrorReporterStub;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.StreamReader;
+import org.acra.util.StubCreator;
 
 import java.io.IOException;
 
@@ -108,7 +108,7 @@ public final class ACRA {
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
     @NonNull
-    private static ErrorReporter errorReporterSingleton = new ErrorReporterStub();
+    private static ErrorReporter errorReporterSingleton = StubCreator.createErrorReporterStub();
 
     /**
      * <p>
@@ -246,7 +246,7 @@ public final class ACRA {
      */
     @SuppressWarnings("unused")
     public static boolean isInitialised() {
-        return errorReporterSingleton.isRegistered();
+        return errorReporterSingleton instanceof ErrorReporterImpl;
     }
 
     /**

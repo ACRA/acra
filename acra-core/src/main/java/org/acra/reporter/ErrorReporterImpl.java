@@ -185,14 +185,6 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
      * {@inheritDoc}
      */
     @Override
-    public boolean isRegistered() {
-        return Thread.getDefaultUncaughtExceptionHandler() == this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void handleException(@Nullable Throwable e, boolean endApplication) {
         final ReportBuilder builder = new ReportBuilder();
         builder.exception(e)
