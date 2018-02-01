@@ -20,6 +20,7 @@ apply plugin: 'com.jfrog.bintray'
 
 dependencies {
     api project(':acra-core')
+    implementation "com.android.support:support-compat:$supportVersion"
     compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
     annotationProcessor project(':annotationprocessor')
     compileOnly project(':annotations')

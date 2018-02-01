@@ -79,7 +79,7 @@ public class ClassCreator {
         try {
             baseBuilder = processingEnv.getElementUtils().getTypeElement(configuration.baseBuilderClass().getName());
         } catch (MirroredTypeException e) {
-            baseBuilder = MoreTypes.asTypeElement(processingEnv.getTypeUtils(), e.getTypeMirror());
+            baseBuilder = MoreTypes.asTypeElement(e.getTypeMirror());
         }
         final List<Element> elements = new ModelBuilder(baseAnnotation, new ElementFactory(processingEnv.getElementUtils()), baseBuilder, processingEnv.getMessager()).build();
         createBuilderClass(elements);
