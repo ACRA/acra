@@ -65,11 +65,6 @@ public interface ErrorReporter {
     void setEnabled(boolean enabled);
 
     /**
-     * @return if this instance is the current DefaultUncaughtExceptionHandler
-     */
-    boolean isRegistered();
-
-    /**
      * Send a normal report for the given exception
      *
      * @param e              The {@link Throwable} to be reported. If null the report will contain a new Exception("Report requested by developer").
