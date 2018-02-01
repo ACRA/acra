@@ -94,12 +94,12 @@ public class SenderService extends IntentService {
                 reportDistributor.distribute(report);
                 reportsSentCount++;
             }
-            final int toastRes = reportsSentCount > 0 ? config.resReportSendSuccessToast() : config.resReportSendFailureToast();
-            if (toastRes != ACRAConstants.DEFAULT_RES_VALUE) {
+            final String toast = reportsSentCount > 0 ? config.reportSendSuccessToast() : config.reportSendFailureToast();
+            if (toast != null) {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        ToastSender.sendToast(SenderService.this, toastRes, Toast.LENGTH_LONG);
+                        ToastSender.sendToast(SenderService.this, toast, Toast.LENGTH_LONG);
                     }
                 });
             }

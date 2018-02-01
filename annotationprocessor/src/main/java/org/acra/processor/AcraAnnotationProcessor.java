@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018 the ACRA team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.acra;
+package org.acra.processor;
 
+import com.google.auto.common.MoreElements;
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.ClassName;
 
-import org.acra.annotation.AnyNonDefault;
 import org.acra.annotation.Configuration;
-import org.acra.annotation.Instantiatable;
-import org.acra.annotation.NonEmpty;
-import org.acra.annotation.PreBuild;
-import org.acra.annotation.Transform;
-import org.acra.creator.ClassCreator;
+import org.acra.processor.creator.ClassCreator;
+import org.acra.processor.util.Types;
 
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -46,13 +43,12 @@ import javax.tools.Diagnostic;
  * @since 18.03.2017
  */
 @AutoService(Processor.class)
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_9)
 public class AcraAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        return Stream.of(AnyNonDefault.class, Configuration.class, Instantiatable.class, NonEmpty.class, PreBuild.class, Transform.class)
-                .map(Class::getName).collect(Collectors.toSet());
+        return Types.MARKER_ANNOTATIONS.stream().map(ClassName::reflectionName).collect(Collectors.toSet());
     }
 
     @Override
@@ -62,7 +58,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
             if (!annotatedElements.isEmpty()) {
                 for (final Element e : annotatedElements) {
                     if (e.getKind() == ElementKind.ANNOTATION_TYPE) {
-                        new ClassCreator((TypeElement) e, e.getAnnotation(Configuration.class), new ModelUtils(processingEnv)).createClasses();
+                        new ClassCreator(MoreElements.asType(e), e.getAnnotation(Configuration.class), processingEnv).createClasses();
                     } else {
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s",
                                 Configuration.class.getName(), ElementKind.ANNOTATION_TYPE.name()), e);

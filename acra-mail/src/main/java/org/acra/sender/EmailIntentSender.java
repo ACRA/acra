@@ -209,8 +209,9 @@ public class EmailIntentSender implements ReportSender {
      */
     @NonNull
     protected String buildSubject(@NonNull Context context) {
-        if (mailConfig.subject() != ACRAConstants.DEFAULT_RES_VALUE) {
-            return context.getString(mailConfig.subject());
+        final String subject = mailConfig.subject();
+        if (subject != null) {
+            return subject;
         }
         return context.getPackageName() + " Crash Report";
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018 the ACRA team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package org.acra.config;
+package org.acra.processor.element;
 
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeName;
+
+import java.util.Collection;
 
 /**
- * A factory for configuration builders
- *
  * @author F43nd1r
- * @since 01.06.2017
+ * @since 12.01.2018
  */
-@Keep
-public interface ConfigurationBuilderFactory {
-    /**
-     * creates a new builder
-     *
-     * @param annotatedClass the class holding the annotation from which the builder should pull its values
-     * @return a new builder with values from the annotation
-     */
-    @NonNull
-    ConfigurationBuilder create(@NonNull Class<?> annotatedClass);
+
+public interface Element {
+    String getName();
+
+    TypeName getType();
+
+    Collection<AnnotationSpec> getAnnotations();
 }

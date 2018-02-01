@@ -15,10 +15,13 @@
  */
 package org.acra.config;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
+import org.acra.annotation.BuilderMethod;
+import org.acra.annotation.ConfigurationValue;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
 
@@ -49,7 +52,7 @@ public final class BaseCoreConfigurationBuilder {
     private final List<ConfigurationBuilder> configurationBuilders;
     private List<Configuration> configurations;
 
-    BaseCoreConfigurationBuilder(@NonNull Class<?> app) {
+    BaseCoreConfigurationBuilder(@NonNull Context app) {
         reportContentChanges = new EnumMap<>(ReportField.class);
         configurationBuilders = new ArrayList<>();
         //noinspection ForLoopReplaceableByForEach
@@ -100,15 +103,18 @@ public final class BaseCoreConfigurationBuilder {
      * @param field  the field to set
      * @param enable if this field should be reported
      */
+    @BuilderMethod
     public void setReportField(@NonNull ReportField field, boolean enable) {
         this.reportContentChanges.put(field, enable);
     }
 
+    @ConfigurationValue
     @NonNull
     List<Configuration> pluginConfigurations() {
         return configurations;
     }
 
+    @BuilderMethod
     public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(Class<R> c) {
         for (ConfigurationBuilder builder : configurationBuilders) {
             if (c.isAssignableFrom(builder.getClass())) {

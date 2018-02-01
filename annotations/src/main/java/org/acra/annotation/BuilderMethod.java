@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018 the ACRA team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package org.acra.annotation;
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.google.auto.service:auto-service:$autoServiceVersion"
-    compile 'com.squareup:javapoet:1.9.0'
-    compile 'org.apache.commons:commons-lang3:3.7'
-    compile 'org.apache.commons:commons-text:1.1'
-    compile project(':annotations')
-    compile project(':acra-javacore')
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * @author F43nd1r
+ * @since 10.01.2018
+ */
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.METHOD)
+public @interface BuilderMethod {
 }
-
-sourceCompatibility = "1.9"
-targetCompatibility = "1.9"

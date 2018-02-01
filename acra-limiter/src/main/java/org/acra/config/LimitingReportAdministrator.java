@@ -26,7 +26,6 @@ import android.widget.Toast;
 import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 import org.acra.file.ReportLocator;
@@ -108,12 +107,12 @@ public class LimitingReportAdministrator implements ReportingAdministrator {
     @Override
     public void notifyReportDropped(@NonNull final Context context, @NonNull final CoreConfiguration config) {
         final LimiterConfiguration limiterConfiguration = ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class);
-        if (limiterConfiguration.resIgnoredCrashToast() != ACRAConstants.DEFAULT_RES_VALUE) {
+        if (limiterConfiguration.ignoredCrashToast() != null) {
             final Future<?> future = Executors.newSingleThreadExecutor().submit(new Runnable() {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    ToastSender.sendToast(context, limiterConfiguration.resIgnoredCrashToast(), Toast.LENGTH_LONG);
+                    ToastSender.sendToast(context, limiterConfiguration.ignoredCrashToast(), Toast.LENGTH_LONG);
                     final Looper looper = Looper.myLooper();
                     if (looper != null) {
                         new Handler(looper).postDelayed(new Runnable() {

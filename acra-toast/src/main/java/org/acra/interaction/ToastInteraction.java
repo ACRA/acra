@@ -50,7 +50,7 @@ public class ToastInteraction extends BaseReportInteraction {
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         Looper.prepare();
-        ToastSender.sendToast(context, ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class).resText(), Toast.LENGTH_LONG);
+        ToastSender.sendToast(context, ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class).text(), Toast.LENGTH_LONG);
         final Looper looper = Looper.myLooper();
         if(looper != null) {
             new Handler(looper).postDelayed(new Runnable() {
