@@ -24,6 +24,8 @@ import android.webkit.MimeTypeMap;
 
 import com.google.common.net.MediaType;
 
+import org.acra.ACRA;
+import org.acra.log.RobolectricLog;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +55,8 @@ public class AcraContentProviderTest {
 
     @Before
     public void setUp() throws Exception {
+        ACRA.log = new RobolectricLog();
+        ACRA.DEV_LOGGING = true;
         Robolectric.setupContentProvider(AcraContentProvider.class, RuntimeEnvironment.application.getPackageName() + ".acra");
         resolver = RuntimeEnvironment.application.getContentResolver();
         file = File.createTempFile("test", "." + JSON_EXTENSION);

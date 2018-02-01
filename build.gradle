@@ -119,13 +119,17 @@ subprojects {
             testOptions {
                 unitTests {
                     includeAndroidResources = true
+                    all {
+                        systemProperty 'robolectric.logging.enabled', true
+                    }
                 }
             }
         }
 
         dependencies {
             testImplementation "junit:junit:$junitVersion"
-            testImplementation "org.robolectric:robolectric:3.5.1"
+            testImplementation "org.robolectric:robolectric:3.6.1"
+            testImplementation "org.ow2.asm:asm:6.0"
         }
 
         task sourcesJar(type: Jar) {

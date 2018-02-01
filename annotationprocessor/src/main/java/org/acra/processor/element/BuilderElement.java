@@ -129,6 +129,7 @@ public interface BuilderElement extends Element {
             BuilderElement.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
             addSetter(builder, builderName);
             addGetter(builder);
+            constructorAlways.addStatement("$L = $L != null", getName(), Strings.VAR_ANNOTATION);
         }
     }
 }

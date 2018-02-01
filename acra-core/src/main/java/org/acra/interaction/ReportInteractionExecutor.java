@@ -34,6 +34,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static org.acra.ACRA.LOG_TAG;
+
 /**
  * Manages and executes all report interactions
  *
@@ -58,9 +60,11 @@ public class ReportInteractionExecutor {
                 final ReportInteraction reportInteraction = iterator.next();
                 if (reportInteraction.enabled(config)) {
                     reportInteractions.add(reportInteraction);
+                }else if (ACRA.DEV_LOGGING) {
+                    ACRA.log.d(LOG_TAG, "Ignoring disabled ReportInteraction of type " + reportInteraction.getClass().getSimpleName());
                 }
             } catch (ServiceConfigurationError e) {
-                ACRA.log.e(ACRA.LOG_TAG, "Unable to load interaction", e);
+                ACRA.log.e(ACRA.LOG_TAG, "Unable to load ReportInteraction", e);
             }
         }
     }

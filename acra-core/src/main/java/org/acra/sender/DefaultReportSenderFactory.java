@@ -48,6 +48,8 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
                 final ReportSenderFactory reportSenderFactory = iterator.next();
                 if (reportSenderFactory.enabled(config)) {
                     factoryList.add(reportSenderFactory);
+                } else if (ACRA.DEV_LOGGING) {
+                    ACRA.log.d(LOG_TAG, "Ignoring disabled ReportSenderFactory of type " + reportSenderFactory.getClass().getSimpleName());
                 }
             } catch (ServiceConfigurationError e) {
                 ACRA.log.e(ACRA.LOG_TAG, "Unable to load ReportSenderFactory", e);

@@ -99,7 +99,15 @@ public enum Directory {
     ROOT {
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
-            return new File(fileName);
+            String[] parts = fileName.split(File.separator, 2);
+            if (parts.length == 1) return new File(fileName);
+            final File[] roots = File.listRoots();
+            for (File root : roots) {
+                if (parts[0].equals(root.getName())) {
+                    return new File(root, parts[1]);
+                }
+            }
+            return new File(roots[0], fileName);
         }
     };
 
