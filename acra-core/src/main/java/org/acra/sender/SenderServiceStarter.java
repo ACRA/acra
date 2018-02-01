@@ -19,6 +19,7 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
@@ -46,10 +47,10 @@ public class SenderServiceStarter {
      */
     public void startService(boolean onlySendSilentReports, boolean approveReportsFirst) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start SenderService");
-        final Intent intent = new Intent(context, SenderService.class);
+        final Intent intent = new Intent();
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
         intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
         intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
-        context.startService(intent);
+        JobIntentService.enqueueWork(context, SenderService.class, 0, intent);
     }
 }
