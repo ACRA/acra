@@ -73,4 +73,10 @@ public class StringFormatTest {
         assertEquals(MediaType.JSON_UTF_8.type() + "/" + MediaType.JSON_UTF_8.subtype(), StringFormat.JSON.getMatchingHttpContentType());
         assertEquals(MediaType.FORM_DATA.type() + "/" + MediaType.FORM_DATA.subtype(), StringFormat.KEY_VALUE_LIST.getMatchingHttpContentType());
     }
+
+    @Test
+    public void issue626() throws Exception {
+        CrashReportData reportData = new CrashReportData();
+        assertEquals("DEVICE_ID=null", StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID), "\n", " ", true));
+    }
 }
