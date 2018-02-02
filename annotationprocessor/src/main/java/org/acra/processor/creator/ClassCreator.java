@@ -17,39 +17,24 @@
 package org.acra.processor.creator;
 
 import android.support.annotation.NonNull;
-
 import com.google.auto.common.MoreTypes;
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
+import com.squareup.javapoet.*;
 import org.acra.annotation.Configuration;
 import org.acra.config.ConfigurationBuilder;
-import org.acra.processor.element.BuilderElement;
-import org.acra.processor.element.ConfigElement;
-import org.acra.processor.element.Element;
-import org.acra.processor.element.ElementFactory;
-import org.acra.processor.element.ValidatedElement;
+import org.acra.processor.element.*;
 import org.acra.processor.util.Strings;
 import org.acra.processor.util.Types;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 
-import static org.acra.processor.util.Strings.PACKAGE;
-import static org.acra.processor.util.Strings.PARAM_0;
-import static org.acra.processor.util.Strings.VAR_ANNOTATION;
+import static org.acra.processor.util.Strings.*;
 
 /**
  * @author F43nd1r
@@ -61,18 +46,18 @@ public class ClassCreator {
     private final Configuration configuration;
     private final ProcessingEnvironment processingEnv;
     private final String factoryName;
-    private final ClassName config;
-    private final ClassName builder;
+    private final String configName;
+    private final String builderName;
+    private final String builderVisibleName;
 
     public ClassCreator(@NonNull TypeElement baseAnnotation, Configuration configuration, @NonNull ProcessingEnvironment processingEnv) {
         this.baseAnnotation = baseAnnotation;
         this.configuration = configuration;
         this.processingEnv = processingEnv;
-        final String configName = baseAnnotation.getSimpleName().toString().replace("Acra", "") + "Configuration";
-        final String builderName = configName + "Builder";
-        factoryName = builderName + "Factory";
-        config = ClassName.get(PACKAGE, configName);
-        builder = ClassName.get(PACKAGE, builderName);
+        configName = baseAnnotation.getSimpleName().toString().replace("Acra", "") + "Configuration";
+        builderVisibleName = configName + "Builder";
+        builderName = configuration.isPlugin() ? builderVisibleName + "Impl" : builderVisibleName;
+        factoryName = builderVisibleName + "Factory";
 
     }
 
@@ -86,31 +71,50 @@ public class ClassCreator {
         final List<Element> elements = new ModelBuilder(baseAnnotation, new ElementFactory(processingEnv.getElementUtils()), baseBuilder, processingEnv.getMessager()).build();
         createBuilderClass(elements);
         createConfigClass(elements);
-        if (configuration.createBuilderFactory()) {
+        if (configuration.isPlugin()) {
+            createBuilderInterface(elements);
             createFactoryClass();
         }
     }
 
-    private void createBuilderClass(@NonNull List<Element> elements) throws IOException {
-        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(builder.simpleName())
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+    private void createBuilderInterface(@NonNull List<Element> elements) throws IOException {
+        final TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(builderVisibleName)
+                .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ConfigurationBuilder.class);
+        final TypeName baseAnnotation = TypeName.get(this.baseAnnotation.asType());
+        Strings.addClassJavadoc(interfaceBuilder, baseAnnotation);
+        ClassName builder = ClassName.get(PACKAGE, builderVisibleName);
+        elements.stream().filter(BuilderElement.Interface.class::isInstance).map(BuilderElement.Interface.class::cast)
+                .forEach(element -> element.addToBuilderInterface(interfaceBuilder, builder));
+        Strings.writeClass(processingEnv.getFiler(), interfaceBuilder.build());
+    }
+
+    private void createBuilderClass(@NonNull List<Element> elements) throws IOException {
+        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(builderName)
+                .addModifiers(Modifier.FINAL);
         final TypeName baseAnnotation = TypeName.get(this.baseAnnotation.asType());
         Strings.addClassJavadoc(classBuilder, baseAnnotation);
         final MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
                 .addParameter(ParameterSpec.builder(Types.CONTEXT, PARAM_0).addAnnotation(Types.NON_NULL).build())
-                .addJavadoc("@param $L object annotated with {@link $T}\n", PARAM_0, baseAnnotation);
-        constructor.addStatement("final $1T $2L = $3L.getClass().getAnnotation($1T.class)", baseAnnotation, VAR_ANNOTATION, PARAM_0);
+                .addJavadoc("@param $L object annotated with {@link $T}\n", PARAM_0, baseAnnotation)
+                .addStatement("final $1T $2L = $3L.getClass().getAnnotation($1T.class)", baseAnnotation, VAR_ANNOTATION, PARAM_0);
+        if (!configuration.isPlugin()) {
+            classBuilder.addModifiers(Modifier.PUBLIC)
+                    .addSuperinterface(ConfigurationBuilder.class);
+            constructor.addModifiers(Modifier.PUBLIC);
+        } else {
+            classBuilder.addSuperinterface(ClassName.get(PACKAGE, builderVisibleName));
+        }
         final CodeBlock.Builder always = CodeBlock.builder();
         final CodeBlock.Builder whenAnnotationPresent = CodeBlock.builder();
+        ClassName builder = ClassName.get(PACKAGE, builderName);
         elements.stream().filter(BuilderElement.class::isInstance).map(BuilderElement.class::cast).forEach(m -> m.addToBuilder(classBuilder, builder, always, whenAnnotationPresent));
         constructor.addCode(always.build())
                 .beginControlFlow("if ($L)", Strings.FIELD_ENABLED)
                 .addCode(whenAnnotationPresent.build())
                 .endControlFlow();
         classBuilder.addMethod(constructor.build());
-        final BuildMethodCreator build = new BuildMethodCreator(Types.getOnlyMethod(processingEnv, ConfigurationBuilder.class.getName()), config);
+        final BuildMethodCreator build = new BuildMethodCreator(Types.getOnlyMethod(processingEnv, ConfigurationBuilder.class.getName()), ClassName.get(PACKAGE, configName));
         elements.stream().filter(ValidatedElement.class::isInstance).map(ValidatedElement.class::cast).forEach(element -> element.addToBuildMethod(build));
         classBuilder.addMethod(build.build());
         Strings.writeClass(processingEnv.getFiler(), classBuilder.build());
@@ -118,13 +122,13 @@ public class ClassCreator {
 
 
     private void createConfigClass(@NonNull List<Element> elements) throws IOException {
-        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(config.simpleName())
+        final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(configName)
                 .addSuperinterface(Serializable.class)
                 .addSuperinterface(org.acra.config.Configuration.class)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
         Strings.addClassJavadoc(classBuilder, ClassName.get(baseAnnotation.asType()));
         final MethodSpec.Builder constructor = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterSpec.builder(builder, PARAM_0).addAnnotation(Types.NON_NULL).build());
+                .addParameter(ParameterSpec.builder(ClassName.get(PACKAGE, builderName), PARAM_0).addAnnotation(Types.NON_NULL).build());
         elements.stream().filter(ConfigElement.class::isInstance).map(ConfigElement.class::cast).forEach(element -> element.addToConfig(classBuilder, constructor));
         classBuilder.addMethod(constructor.build());
         Strings.writeClass(processingEnv.getFiler(), classBuilder.build());
@@ -138,7 +142,7 @@ public class ClassCreator {
                 .addAnnotation(AnnotationSpec.builder(AutoService.class).addMember("value", "$T.class", configurationBuilderFactory).build())
                 .addMethod(Types.overriding(Types.getOnlyMethod(processingEnv, Strings.CONFIGURATION_BUILDER_FACTORY))
                         .addAnnotation(Types.NON_NULL)
-                        .addStatement("return new $T($L)", builder, PARAM_0)
+                        .addStatement("return new $T($L)", ClassName.get(PACKAGE, builderName), PARAM_0)
                         .build())
                 .build());
     }

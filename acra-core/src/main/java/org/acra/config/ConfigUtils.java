@@ -27,15 +27,13 @@ import android.support.annotation.NonNull;
 public final class ConfigUtils {
 
     public static <T extends Configuration> T getPluginConfiguration(@NonNull CoreConfiguration config, @NonNull Class<T> c) {
-        T pluginConfiguration = null;
         for (Configuration configuration : config.pluginConfigurations()) {
             if (c.isAssignableFrom(configuration.getClass())) {
                 //noinspection unchecked
-                pluginConfiguration = (T) configuration;
-                break;
+                return (T) configuration;
             }
         }
-        return pluginConfiguration;
+        return null;
     }
 
 }

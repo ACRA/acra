@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * @since 10.01.2018
  */
 
-class DelegateMethod extends AbstractElement implements BuilderElement {
+class DelegateMethod extends AbstractElement implements BuilderElement.Interface {
     private final Collection<ParameterSpec> parameters;
     private final Collection<TypeVariableName> typeVariables;
     private final Collection<Modifier> modifiers;
@@ -48,6 +48,17 @@ class DelegateMethod extends AbstractElement implements BuilderElement {
 
     @Override
     public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways, @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
+        final MethodSpec.Builder method = baseMethod(builderName);
+        if (getType().equals(TypeName.VOID)) {
+            method.addStatement("$L.$L($L)", Strings.FIELD_DELEGATE, getName(), parameters.stream().map(p -> p.name).collect(Collectors.joining(", ")))
+                    .addStatement("return this");
+        } else {
+            method.addStatement("return $L.$L($L)", Strings.FIELD_DELEGATE, getName(), parameters.stream().map(p -> p.name).collect(Collectors.joining(", ")));
+        }
+        builder.addMethod(method.build());
+    }
+
+    private MethodSpec.Builder baseMethod(@NonNull ClassName builderName) {
         final MethodSpec.Builder method = MethodSpec.methodBuilder(getName())
                 .addModifiers(modifiers)
                 .addParameters(parameters)
@@ -57,16 +68,20 @@ class DelegateMethod extends AbstractElement implements BuilderElement {
             method.addJavadoc(javadoc.replaceAll("(\n|^) ", "$1"));
         }
         if (getType().equals(TypeName.VOID)) {
-            method.addStatement("$L.$L($L)", Strings.FIELD_DELEGATE, getName(), parameters.stream().map(p -> p.name).collect(Collectors.joining(", ")))
-                    .addStatement("return this")
-                    .returns(builderName)
+            method.returns(builderName)
                     .addAnnotation(Types.NON_NULL)
                     .addJavadoc("@return this instance\n");
         } else {
-            method.addStatement("return $L.$L($L)", Strings.FIELD_DELEGATE, getName(), parameters.stream().map(p -> p.name).collect(Collectors.joining(", ")))
-                    .returns(getType());
+            method.returns(getType());
         }
-        builder.addMethod(method.build());
+        return method;
+    }
+
+    @Override
+    public void addToBuilderInterface(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
+        if (modifiers.contains(Modifier.PUBLIC)) {
+            builder.addMethod(baseMethod(builderName).addModifiers(Modifier.ABSTRACT).build());
+        }
     }
 
     static class Config extends DelegateMethod implements org.acra.processor.element.ConfigElement {

@@ -35,7 +35,7 @@ import java.util.Collection;
  * @since 11.01.2018
  */
 
-class TransformedField implements ConfigElement, BuilderElement, ValidatedElement {
+class TransformedField implements ConfigElement, BuilderElement.Interface, ValidatedElement {
     private final String name;
     private final TypeName type;
     private final Transformable transform;
@@ -64,6 +64,11 @@ class TransformedField implements ConfigElement, BuilderElement, ValidatedElemen
     }
 
     @Override
+    public void addToBuilderInterface(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
+        transform.addToBuilderInterface(builder, builderName);
+    }
+
+    @Override
     public String getName() {
         return transform.getName();
     }
@@ -78,7 +83,7 @@ class TransformedField implements ConfigElement, BuilderElement, ValidatedElemen
         return transform.getAnnotations();
     }
 
-    public interface Transformable extends ValidatedElement {
+    public interface Transformable extends ConfigElement, Interface, ValidatedElement {
         void addWithoutGetter(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent);
     }
 }

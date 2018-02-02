@@ -32,5 +32,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Configuration {
     Class baseBuilderClass() default Object.class;
-    boolean createBuilderFactory() default true;
+    boolean isPlugin() default true;
 }

@@ -55,29 +55,42 @@ public interface BuilderElement extends Element {
     }
 
     default void addSetter(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
-        final MethodSpec.Builder method = createSetter(builderName, getName(), getType(), getAnnotations(), "this.$1L = $1L", getName());
+        final MethodSpec.Builder method = baseSetter(builderName)
+                .addStatement("this.$1L = $1L", getName())
+                .addStatement("return this");
         configureSetter(method);
         builder.addMethod(method.build());
+    }
+
+    default MethodSpec.Builder baseSetter(ClassName builderName) {
+        return MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(getName()))
+                .addParameter(ParameterSpec.builder(getType(), getName()).addAnnotations(getAnnotations()).build())
+                .varargs(getType() instanceof ArrayTypeName)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Types.NON_NULL)
+                .returns(builderName);
     }
 
     default void configureSetter(@NonNull MethodSpec.Builder builder) {
     }
 
-    static MethodSpec.Builder createSetter(@NonNull ClassName builderName, @NonNull String parameterName, @NonNull TypeName parameterType, @NonNull Iterable<AnnotationSpec> annotations,
-                                           @NonNull String statement, @NonNull Object... statementArgs) {
-        return MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(parameterName))
-                .addParameter(ParameterSpec.builder(parameterType, parameterName).addAnnotations(annotations).build())
-                .varargs(parameterType instanceof ArrayTypeName)
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(Types.NON_NULL)
-                .returns(builderName)
-                .addStatement(statement, statementArgs)
-                .addStatement("return this");
-    }
-
     interface Final extends BuilderElement {
         default void configureField(@NonNull FieldSpec.Builder builder) {
             builder.addModifiers(Modifier.FINAL);
+        }
+    }
+
+    interface Interface extends BuilderElement {
+
+        default void addToBuilderInterface(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
+            MethodSpec.Builder setter = MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(getName()))
+                    .addParameter(ParameterSpec.builder(getType(), getName()).addAnnotations(getAnnotations()).build())
+                    .varargs(getType() instanceof ArrayTypeName)
+                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                    .addAnnotation(Types.NON_NULL)
+                    .returns(builderName);
+            configureSetter(setter);
+            builder.addMethod(setter.build());
         }
     }
 
@@ -114,7 +127,7 @@ public interface BuilderElement extends Element {
         }
     }
 
-    class Enabled extends AbstractElement implements BuilderElement, ConfigElement {
+    class Enabled extends AbstractElement implements Interface, ConfigElement {
         public Enabled() {
             super(Strings.FIELD_ENABLED, TypeName.BOOLEAN, Collections.emptyList());
         }
@@ -122,7 +135,7 @@ public interface BuilderElement extends Element {
         @Override
         public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
                                  @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
-            BuilderElement.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+            Interface.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
             addSetter(builder, builderName);
             addGetter(builder);
             constructorAlways.addStatement("$L = $L != null", getName(), Strings.VAR_ANNOTATION);

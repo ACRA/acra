@@ -17,24 +17,17 @@ package org.acra.config;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.BuilderMethod;
 import org.acra.annotation.ConfigurationValue;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
+import org.acra.util.StubCreator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
@@ -115,6 +108,7 @@ public final class BaseCoreConfigurationBuilder {
         return configurations;
     }
 
+    @NonNull
     @BuilderMethod
     public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(@NonNull Class<R> c) {
         for (ConfigurationBuilder builder : configurationBuilders) {
@@ -123,6 +117,15 @@ public final class BaseCoreConfigurationBuilder {
                 return (R) builder;
             }
         }
-        return null;
+        if (c.isInterface()) {
+            ACRA.log.w(ACRA.LOG_TAG, "Couldn't find ConfigurationBuilder " + c.getSimpleName() + ". ALL CALLS TO IT WILL BE IGNORED!");
+            return StubCreator.createStub(c, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) {
+                    return proxy;
+                }
+            });
+        }
+        throw new IllegalArgumentException("Class " + c.getName() + " is not a registered ConfigurationBuilder");
     }
 }

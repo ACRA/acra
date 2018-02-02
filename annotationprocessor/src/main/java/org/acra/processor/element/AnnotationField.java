@@ -26,6 +26,7 @@ import org.acra.processor.util.Types;
 import org.apache.commons.text.WordUtils;
 
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.List;
  * @since 12.01.2018
  */
 
-abstract class AnnotationField extends AbstractElement implements ConfigElement, BuilderElement, ValidatedElement, TransformedField.Transformable {
+abstract class AnnotationField extends AbstractElement implements TransformedField.Transformable {
     private final Collection<ClassName> markers;
     private final String javadoc;
 
@@ -57,7 +58,7 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
 
     @Override
     public final void addWithoutGetter(@NonNull TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
-        BuilderElement.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+        TransformedField.Transformable.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
         addSetter(builder, builderName);
         addInitializer(constructorWhenAnnotationPresent);
     }
@@ -137,12 +138,29 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
         @Override
         public void addSetter(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
             super.addSetter(builder, builderName);
+            final MethodSpec.Builder setter = baseResSetter(builderName)
+                    .addStatement("this.$L = $L.getString($L)", getName(), Strings.FIELD_CONTEXT, Strings.PREFIX_RES + WordUtils.capitalize(getName()))
+                    .addStatement("return this");
+            configureSetter(setter);
+            builder.addMethod(setter.build());
+        }
+
+        private MethodSpec.Builder baseResSetter(ClassName builderName){
             final String parameterName = Strings.PREFIX_RES + WordUtils.capitalize(getName());
             final List<AnnotationSpec> annotations = new ArrayList<>(getAnnotations());
             annotations.removeIf(Types.NULLABLE::equals);
             annotations.add(Types.STRING_RES);
-            final MethodSpec.Builder setter = BuilderElement.createSetter(builderName, parameterName, TypeName.INT, annotations, "this.$L = $L.getString($L)",
-                    getName(), Strings.FIELD_CONTEXT, parameterName);
+            return MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(parameterName))
+                    .addParameter(ParameterSpec.builder(TypeName.INT, parameterName).addAnnotations(annotations).build())
+                    .addModifiers(Modifier.PUBLIC)
+                    .addAnnotation(Types.NON_NULL)
+                    .returns(builderName);
+        }
+
+        @Override
+        public void addToBuilderInterface(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
+            super.addToBuilderInterface(builder, builderName);
+            final MethodSpec.Builder setter = baseResSetter(builderName).addModifiers(Modifier.ABSTRACT);
             configureSetter(setter);
             builder.addMethod(setter.build());
         }
