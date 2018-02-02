@@ -56,8 +56,7 @@ public enum ReportField {
     /**
      * Android Build details.
      */
-    BUILD {
-    },
+    BUILD,
     /**
      * Device brand (manufacturer or carrier).
      */
@@ -78,14 +77,12 @@ public enum ReportField {
      * Contains key = value pairs defined by the application developer during
      * the application build.
      */
-    BUILD_CONFIG {
-    },
+    BUILD_CONFIG,
     /**
      * Contains key = value pairs defined by the application developer during
      * the application execution.
      */
-    CUSTOM_DATA {
-    },
+    CUSTOM_DATA,
     /**
      * The Holy Stack Trace.
      */
@@ -100,18 +97,15 @@ public enum ReportField {
      * android.content.res.Configuration fields state on the application start.
      *
      */
-    INITIAL_CONFIGURATION {
-    },
+    INITIAL_CONFIGURATION,
     /**
      * android.content.res.Configuration fields state on the application crash.
      */
-    CRASH_CONFIGURATION {
-    },
+    CRASH_CONFIGURATION,
     /**
      * Device display specifications.
      */
-    DISPLAY {
-    },
+    DISPLAY,
     /**
      * Comment added by the user in the CrashReportDialog.
      */
@@ -165,33 +159,27 @@ public enum ReportField {
     /**
      * Features declared as available on this device by the system.
      */
-    DEVICE_FEATURES {
-    },
+    DEVICE_FEATURES,
     /**
      * External storage state and standard directories.
      */
-    ENVIRONMENT {
-    },
+    ENVIRONMENT,
     /**
      * System settings.
      */
-    SETTINGS_SYSTEM {
-    },
+    SETTINGS_SYSTEM,
     /**
      * Secure settings (applications can't modify them).
      */
-    SETTINGS_SECURE {
-    },
+    SETTINGS_SECURE,
     /**
      * Global settings, introduced in Android 4.2 (API level 17) to centralize settings for multiple users.
      */
-    SETTINGS_GLOBAL {
-    },
+    SETTINGS_GLOBAL,
     /**
      * SharedPreferences contents
      */
-    SHARED_PREFERENCES {
-    },
+    SHARED_PREFERENCES,
     /**
      * Content of your own application log file.
      */
