@@ -75,8 +75,9 @@ public final class BaseCoreConfigurationBuilder {
         }
     }
 
+    @NonNull
     @Transform(methodName = "reportContent")
-    Set<ReportField> transformReportContent(ReportField[] reportFields) {
+    Set<ReportField> transformReportContent(@NonNull ReportField[] reportFields) {
         final Set<ReportField> reportContent = new LinkedHashSet<>();
         if (reportFields.length != 0) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
@@ -115,7 +116,7 @@ public final class BaseCoreConfigurationBuilder {
     }
 
     @BuilderMethod
-    public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(Class<R> c) {
+    public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(@NonNull Class<R> c) {
         for (ConfigurationBuilder builder : configurationBuilders) {
             if (c.isAssignableFrom(builder.getClass())) {
                 //noinspection unchecked

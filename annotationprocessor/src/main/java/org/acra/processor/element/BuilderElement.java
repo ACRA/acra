@@ -16,23 +16,14 @@
 
 package org.acra.processor.element;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
+import android.support.annotation.NonNull;
+import com.squareup.javapoet.*;
 import org.acra.processor.util.Strings;
 import org.acra.processor.util.Types;
 import org.apache.commons.text.WordUtils;
 
-import java.util.Collections;
-
 import javax.lang.model.element.Modifier;
+import java.util.Collections;
 
 /**
  * @author F43nd1r
@@ -41,16 +32,17 @@ import javax.lang.model.element.Modifier;
 
 public interface BuilderElement extends Element {
 
-    default void addToBuilder(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+    default void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
+                              @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
         final FieldSpec.Builder field = FieldSpec.builder(getType(), getName(), Modifier.PRIVATE).addAnnotations(getAnnotations());
         configureField(field);
         builder.addField(field.build());
     }
 
-    default void configureField(FieldSpec.Builder builder) {
+    default void configureField(@NonNull FieldSpec.Builder builder) {
     }
 
-    default void addGetter(TypeSpec.Builder builder) {
+    default void addGetter(@NonNull TypeSpec.Builder builder) {
         final MethodSpec.Builder method = MethodSpec.methodBuilder(getName())
                 .addAnnotations(getAnnotations())
                 .returns(getType());
@@ -58,20 +50,21 @@ public interface BuilderElement extends Element {
         builder.addMethod(method.build());
     }
 
-    default void configureGetter(MethodSpec.Builder builder) {
+    default void configureGetter(@NonNull MethodSpec.Builder builder) {
         builder.addStatement("return $L", getName());
     }
 
-    default void addSetter(TypeSpec.Builder builder, ClassName builderName) {
+    default void addSetter(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
         final MethodSpec.Builder method = createSetter(builderName, getName(), getType(), getAnnotations(), "this.$1L = $1L", getName());
         configureSetter(method);
         builder.addMethod(method.build());
     }
 
-    default void configureSetter(MethodSpec.Builder builder) {
+    default void configureSetter(@NonNull MethodSpec.Builder builder) {
     }
 
-    static MethodSpec.Builder createSetter(ClassName builderName, String parameterName, TypeName parameterType, Iterable<AnnotationSpec> annotations, String statement, Object... statementArgs) {
+    static MethodSpec.Builder createSetter(@NonNull ClassName builderName, @NonNull String parameterName, @NonNull TypeName parameterType, @NonNull Iterable<AnnotationSpec> annotations,
+                                           @NonNull String statement, @NonNull Object... statementArgs) {
         return MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(parameterName))
                 .addParameter(ParameterSpec.builder(parameterType, parameterName).addAnnotations(annotations).build())
                 .varargs(parameterType instanceof ArrayTypeName)
@@ -83,7 +76,7 @@ public interface BuilderElement extends Element {
     }
 
     interface Final extends BuilderElement {
-        default void configureField(FieldSpec.Builder builder) {
+        default void configureField(@NonNull FieldSpec.Builder builder) {
             builder.addModifiers(Modifier.FINAL);
         }
     }
@@ -94,7 +87,8 @@ public interface BuilderElement extends Element {
         }
 
         @Override
-        public void addToBuilder(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
+                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
             Final.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
             constructorAlways.addStatement("$L = $L", getName(), Strings.PARAM_0);
         }
@@ -103,13 +97,14 @@ public interface BuilderElement extends Element {
     class Delegate extends AbstractElement implements Final {
         private final boolean hasContextParameter;
 
-        Delegate(TypeName type, boolean hasContextParameter) {
+        Delegate(@NonNull TypeName type, boolean hasContextParameter) {
             super(Strings.FIELD_DELEGATE, type, Collections.singleton(Types.NON_NULL));
             this.hasContextParameter = hasContextParameter;
         }
 
         @Override
-        public void addToBuilder(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
+                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
             Final.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
             if (hasContextParameter) {
                 constructorAlways.addStatement("$L = new $T($L)", getName(), getType(), Strings.PARAM_0);
@@ -125,7 +120,8 @@ public interface BuilderElement extends Element {
         }
 
         @Override
-        public void addToBuilder(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
+                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
             BuilderElement.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
             addSetter(builder, builderName);
             addGetter(builder);

@@ -45,7 +45,7 @@ public final class ThreadCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         final Thread t = reportBuilder.getUncaughtExceptionThread();
         if (t != null) {
             final JSONObject result = new JSONObject();

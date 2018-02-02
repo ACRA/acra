@@ -16,6 +16,8 @@
 
 package org.acra.processor.element;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
@@ -31,7 +33,7 @@ class AbstractElement implements Element {
     private final TypeName type;
     private final Collection<AnnotationSpec> annotations;
 
-    AbstractElement(String name, TypeName type, Collection<AnnotationSpec> annotations) {
+    AbstractElement(@NonNull String name, @Nullable TypeName type, @NonNull Collection<AnnotationSpec> annotations) {
         this.type = type;
         this.name = name;
         this.annotations = annotations;

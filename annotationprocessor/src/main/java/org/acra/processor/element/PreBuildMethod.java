@@ -16,6 +16,8 @@
 
 package org.acra.processor.element;
 
+import android.support.annotation.NonNull;
+
 import org.acra.processor.creator.BuildMethodCreator;
 
 import java.util.Collections;
@@ -26,12 +28,12 @@ import java.util.Collections;
  */
 
 class PreBuildMethod extends AbstractElement implements ValidatedElement {
-    PreBuildMethod(String name) {
+    PreBuildMethod(@NonNull String name) {
         super(name, null, Collections.emptyList());
     }
 
     @Override
-    public void addToBuildMethod(BuildMethodCreator method) {
+    public void addToBuildMethod(@NonNull BuildMethodCreator method) {
         method.addDelegateCall(getName());
     }
 }

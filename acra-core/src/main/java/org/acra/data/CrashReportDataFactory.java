@@ -68,7 +68,7 @@ public final class CrashReportDataFactory {
         }
         Collections.sort(collectors, new Comparator<Collector>() {
             @Override
-            public int compare(Collector c1, Collector c2) {
+            public int compare(@NonNull Collector c1, @NonNull Collector c2) {
                 Collector.Order o1;
                 Collector.Order o2;
                 try {

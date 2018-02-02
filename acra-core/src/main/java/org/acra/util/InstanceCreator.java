@@ -17,6 +17,7 @@ package org.acra.util;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import org.acra.ACRA;
 
@@ -34,12 +35,21 @@ public final class InstanceCreator {
 
     /**
      * Create an instance of clazz
-     * @param clazz the clazz to create an instance of
+     *
+     * @param clazz    the clazz to create an instance of
      * @param fallback the value to return in case of a failure
-     * @param <T> the return type
+     * @param <T>      the return type
      * @return a new instance of clazz or fallback
      */
-    public <T> T create(@NonNull Class<? extends T> clazz, @Nullable T fallback) {
+    @NonNull
+    public <T> T create(@NonNull Class<? extends T> clazz, @NonNull T fallback) {
+        T t = create(clazz);
+        return t != null ? t : fallback;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    <T> T create(@NonNull Class<? extends T> clazz) {
         try {
             return clazz.newInstance();
         } catch (InstantiationException e) {
@@ -47,20 +57,21 @@ public final class InstanceCreator {
         } catch (IllegalAccessException e) {
             ACRA.log.e(LOG_TAG, "Failed to create instance of class " + clazz.getName(), e);
         }
-        return fallback;
+        return null;
     }
 
     /**
      * Create instances of the given classes
+     *
      * @param classes the classes to create insatnces of
-     * @param <T> the return type
+     * @param <T>     the return type
      * @return a list of successfully created instances, does not contain null
      */
     @NonNull
     public <T> List<T> create(@NonNull Collection<Class<? extends T>> classes) {
         final List<T> result = new ArrayList<>();
         for (Class<? extends T> clazz : classes) {
-            final T instance = create(clazz, null);
+            final T instance = create(clazz);
             if (instance != null) {
                 result.add(instance);
             }

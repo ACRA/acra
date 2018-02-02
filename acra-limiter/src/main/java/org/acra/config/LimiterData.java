@@ -17,6 +17,7 @@
 package org.acra.config;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
@@ -41,7 +42,7 @@ import java.util.Locale;
 public class LimiterData {
     private final List<ReportMetadata> list;
 
-    public LimiterData(String json) throws JSONException {
+    public LimiterData(@Nullable String json) throws JSONException {
         list = new ArrayList<>();
         if (json != null && !json.isEmpty()) {
             final JSONArray array = new JSONArray(json);
@@ -52,13 +53,14 @@ public class LimiterData {
         }
     }
 
-    public List<ReportMetadata> getReportMetadata() throws JSONException {
+    @NonNull
+    public List<ReportMetadata> getReportMetadata() {
         return list;
     }
 
     public void purgeOldData(Calendar keepAfter) {
         for (final Iterator<ReportMetadata> iterator = list.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().getTimestamp().before(keepAfter)) {
+            if (keepAfter.after(iterator.next().getTimestamp())) {
                 iterator.remove();
             }
         }
@@ -73,7 +75,7 @@ public class LimiterData {
         private static final String KEY_EXCEPTION_CLASS = "class";
         private static final String KEY_TIMESTAMP = "timestamp";
 
-        public ReportMetadata(CrashReportData crashReportData) throws JSONException {
+        ReportMetadata(@NonNull CrashReportData crashReportData) throws JSONException {
             final String stacktrace = crashReportData.getString(ReportField.STACK_TRACE);
             put(KEY_STACK_TRACE, stacktrace);
             final int index = stacktrace.indexOf('\n');
@@ -90,12 +92,8 @@ public class LimiterData {
 
         }
 
-        public ReportMetadata(JSONObject copyFrom) throws JSONException {
+        ReportMetadata(@NonNull JSONObject copyFrom) throws JSONException {
             super(copyFrom, jsonArrayToList(copyFrom.names()));
-        }
-
-        public ReportMetadata(String json) throws JSONException {
-            super(json);
         }
 
         public String getStacktrace() {
@@ -106,7 +104,8 @@ public class LimiterData {
             return optString(KEY_EXCEPTION_CLASS);
         }
 
-        public Calendar getTimestamp() {
+        @Nullable
+        Calendar getTimestamp() {
             final String timestamp = optString(KEY_TIMESTAMP);
             if (timestamp != null) {
                 try {
@@ -121,7 +120,7 @@ public class LimiterData {
     }
 
     @NonNull
-    private static String[] jsonArrayToList(JSONArray array) {
+    private static String[] jsonArrayToList(@Nullable JSONArray array) {
         final List<String> list = new ArrayList<>();
         if (array != null) {
             final int length = array.length();

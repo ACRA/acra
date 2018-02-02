@@ -16,6 +16,7 @@
 
 package org.acra.processor.creator;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import com.google.auto.common.MoreElements;
@@ -56,7 +57,7 @@ class ModelBuilder {
     private final List<Element> elements;
     private final TypeElement baseBuilder;
 
-    ModelBuilder(TypeElement baseAnnotation, ElementFactory modelFactory, TypeElement baseBuilder, Messager messager) {
+    ModelBuilder(@NonNull TypeElement baseAnnotation, @NonNull ElementFactory modelFactory, @NonNull TypeElement baseBuilder, @NonNull Messager messager) {
         this.baseAnnotation = baseAnnotation;
         this.modelFactory = modelFactory;
         this.messager = messager;
@@ -115,6 +116,7 @@ class ModelBuilder {
         }
     }
 
+    @NonNull
     List<Element> build() {
         handleParameter();
         handleAnnotationMethods();

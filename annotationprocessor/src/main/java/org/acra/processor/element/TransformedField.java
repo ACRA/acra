@@ -16,6 +16,8 @@
 
 package org.acra.processor.element;
 
+import android.support.annotation.NonNull;
+
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -38,25 +40,26 @@ class TransformedField implements ConfigElement, BuilderElement, ValidatedElemen
     private final TypeName type;
     private final Transformable transform;
 
-    TransformedField(String name, TypeName type, Transformable transform) {
+    TransformedField(@NonNull String name, @NonNull TypeName type, @NonNull Transformable transform) {
         this.name = name;
         this.type = type;
         this.transform = transform;
     }
 
     @Override
-    public void addToBuilder(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+    public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
+                             @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
         transform.addWithoutGetter(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
         addGetter(builder);
     }
 
     @Override
-    public void configureGetter(MethodSpec.Builder builder) {
+    public void configureGetter(@NonNull MethodSpec.Builder builder) {
         builder.addStatement("return $L.$L($L)", Strings.FIELD_DELEGATE, name, getName());
     }
 
     @Override
-    public void addToBuildMethod(BuildMethodCreator method) {
+    public void addToBuildMethod(@NonNull BuildMethodCreator method) {
         transform.addToBuildMethod(method);
     }
 

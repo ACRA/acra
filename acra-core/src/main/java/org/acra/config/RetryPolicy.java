@@ -15,6 +15,8 @@
  */
 package org.acra.config;
 
+import android.support.annotation.NonNull;
+
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
 
@@ -33,22 +35,24 @@ public interface RetryPolicy {
      * @param failedSenders a list of all failed senders with the thrown exceptions.
      * @return if the request should be resent later.
      */
-    boolean shouldRetrySend(List<ReportSender> senders, List<FailedSender> failedSenders);
+    boolean shouldRetrySend(@NonNull List<ReportSender> senders, @NonNull List<FailedSender> failedSenders);
 
     class FailedSender {
 
         private final ReportSender sender;
         private final ReportSenderException exception;
 
-        public FailedSender(ReportSender sender, ReportSenderException exception) {
+        public FailedSender(@NonNull ReportSender sender, @NonNull ReportSenderException exception) {
             this.sender = sender;
             this.exception = exception;
         }
 
+        @NonNull
         public ReportSender getSender() {
             return sender;
         }
 
+        @NonNull
         public ReportSenderException getException() {
             return exception;
         }

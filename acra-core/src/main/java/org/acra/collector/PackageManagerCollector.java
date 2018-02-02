@@ -41,7 +41,7 @@ public final class PackageManagerCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws CollectorException {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws CollectorException {
         final PackageInfo info = new PackageManagerWrapper(context).getPackageInfo();
         if (info == null) {
             throw new CollectorException("Failed to get package info");

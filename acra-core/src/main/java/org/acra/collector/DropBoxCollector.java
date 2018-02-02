@@ -71,7 +71,7 @@ public final class DropBoxCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception{
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception{
         final DropBoxManager dropbox = SystemServices.getDropBoxManager(context);
 
         final Calendar calendar = Calendar.getInstance();

@@ -34,7 +34,6 @@ import java.util.Map;
  */
 
 public class BinaryHttpRequest extends BaseHttpRequest<Uri> {
-    @NonNull
     private final Context context;
 
     public BinaryHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context,
@@ -43,13 +42,15 @@ public class BinaryHttpRequest extends BaseHttpRequest<Uri> {
         this.context = context;
     }
 
+    @NonNull
     @Override
     protected String getContentType(@NonNull Context context, @NonNull Uri uri) {
         return UriUtils.getMimeType(context, uri);
     }
 
+    @NonNull
     @Override
-    protected byte[] asBytes(Uri content) throws IOException {
+    protected byte[] asBytes(@NonNull Uri content) throws IOException {
         return UriUtils.uriToByteArray(context, content);
     }
 }

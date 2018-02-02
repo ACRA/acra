@@ -15,6 +15,8 @@
  */
 package org.acra.config;
 
+import android.support.annotation.NonNull;
+
 import org.acra.sender.ReportSender;
 
 import java.util.List;
@@ -27,7 +29,7 @@ import java.util.List;
  */
 public class DefaultRetryPolicy implements RetryPolicy {
     @Override
-    public boolean shouldRetrySend(List<ReportSender> senders, List<FailedSender> failedSenders) {
+    public boolean shouldRetrySend(@NonNull List<ReportSender> senders, @NonNull List<FailedSender> failedSenders) {
         return (senders.size() == failedSenders.size()) && !senders.isEmpty();
     }
 }

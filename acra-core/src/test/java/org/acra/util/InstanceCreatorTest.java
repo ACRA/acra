@@ -21,11 +21,11 @@ public class InstanceCreatorTest {
 
     @Test
     public void create() {
-        assertNotNull(instanceCreator.create(ClassWithDefaultConstructor.class, null));
-        assertNotNull(instanceCreator.create(ClassWithExplicitNoArgsConstructor.class, null));
-        assertNull(instanceCreator.create(ClassWithPrivateConstructor.class, null));
-        assertNull(instanceCreator.create(ClassWithImplicitConstructorArg.class, null));
-        assertNull(instanceCreator.create(ClassWithExplicitConstructorArg.class, null));
+        assertNotNull(instanceCreator.create(ClassWithDefaultConstructor.class));
+        assertNotNull(instanceCreator.create(ClassWithExplicitNoArgsConstructor.class));
+        assertNull(instanceCreator.create(ClassWithPrivateConstructor.class));
+        assertNull(instanceCreator.create(ClassWithImplicitConstructorArg.class));
+        assertNull(instanceCreator.create(ClassWithExplicitConstructorArg.class));
     }
 
     @Test

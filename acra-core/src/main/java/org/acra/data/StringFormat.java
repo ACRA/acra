@@ -17,6 +17,7 @@
 package org.acra.data;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.acra.ACRAConstants;
@@ -44,7 +45,7 @@ public enum StringFormat {
     JSON("application/json") {
         @NonNull
         @Override
-        public String toFormattedString(CrashReportData data, ImmutableSet<ReportField> order, String mainJoiner, String subJoiner, boolean urlEncode) throws JSONException {
+        public String toFormattedString(@NonNull CrashReportData data, @NonNull ImmutableSet<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws JSONException {
             final Map<String, Object> map = data.toMap();
             final JSONStringer stringer = new JSONStringer().object();
             for (ReportField field : order) {
@@ -59,7 +60,7 @@ public enum StringFormat {
     KEY_VALUE_LIST("application/x-www-form-urlencoded") {
         @NonNull
         @Override
-        public String toFormattedString(CrashReportData data, ImmutableSet<ReportField> order, String mainJoiner, String subJoiner, boolean urlEncode) throws UnsupportedEncodingException {
+        public String toFormattedString(@NonNull CrashReportData data, @NonNull ImmutableSet<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws UnsupportedEncodingException {
             final Map<String, String> map = toStringMap(data.toMap(), subJoiner);
             final StringBuilder builder = new StringBuilder();
             for (ReportField field : order) {
@@ -71,7 +72,7 @@ public enum StringFormat {
             return builder.toString();
         }
 
-        private void append(StringBuilder builder, String key, String value, String joiner, boolean urlEncode) throws UnsupportedEncodingException {
+        private void append(@NonNull StringBuilder builder, @Nullable String key, @Nullable String value, @Nullable String joiner, boolean urlEncode) throws UnsupportedEncodingException {
             if (builder.length() > 0) {
                 builder.append(joiner);
             }
@@ -82,7 +83,8 @@ public enum StringFormat {
             builder.append(key).append('=').append(value);
         }
 
-        private Map<String, String> toStringMap(Map<String, Object> map, String joiner) {
+        @NonNull
+        private Map<String, String> toStringMap(@NonNull Map<String, Object> map, @NonNull String joiner) {
             final Map<String, String> stringMap = new HashMap<>(map.size());
             for (final Map.Entry<String, Object> entry : map.entrySet()) {
                 stringMap.put(entry.getKey(), valueToString(joiner, entry.getValue()));
@@ -90,7 +92,7 @@ public enum StringFormat {
             return stringMap;
         }
 
-        private String valueToString(String joiner, Object value) {
+        private String valueToString(@NonNull String joiner, @Nullable Object value) {
             if (value instanceof JSONObject) {
                 return TextUtils.join(joiner, flatten((JSONObject) value));
             } else {
@@ -98,7 +100,8 @@ public enum StringFormat {
             }
         }
 
-        private List<String> flatten(JSONObject json) {
+        @NonNull
+        private List<String> flatten(@NonNull JSONObject json) {
             final List<String> result = new ArrayList<>();
             for (final Iterator<String> iterator = json.keys(); iterator.hasNext(); ) {
                 final String key = iterator.next();
@@ -122,12 +125,12 @@ public enum StringFormat {
 
     private final String contentType;
 
-    StringFormat(String contentType) {
+    StringFormat(@NonNull String contentType) {
         this.contentType = contentType;
     }
 
     @NonNull
-    public abstract String toFormattedString(CrashReportData data, ImmutableSet<ReportField> order, String mainJoiner, String subJoiner, boolean urlEncode) throws Exception;
+    public abstract String toFormattedString(@NonNull CrashReportData data, @NonNull ImmutableSet<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws Exception;
 
     @NonNull
     public String getMatchingHttpContentType() {

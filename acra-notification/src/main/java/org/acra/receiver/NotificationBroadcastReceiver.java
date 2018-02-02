@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.RemoteInput;
 
 import org.acra.ACRA;
@@ -47,7 +48,7 @@ import static org.acra.ReportField.USER_COMMENT;
 
 public class NotificationBroadcastReceiver extends BroadcastReceiver {
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         try {
             final NotificationManager notificationManager = SystemServices.getNotificationManager(context);
             notificationManager.cancel(NotificationInteraction.NOTIFICATION_ID);
@@ -70,7 +71,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
                                         final CrashReportData crashData = persister.load(reportFile);
                                         crashData.put(USER_COMMENT, comment.toString());
                                         persister.store(crashData, reportFile);
-                                    } catch (IOException | JSONException e) {
+                                    } catch (@NonNull IOException | JSONException e) {
                                         ACRA.log.w(LOG_TAG, "User comment not added: ", e);
                                     }
                                 }

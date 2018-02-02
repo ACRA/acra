@@ -16,6 +16,7 @@
 
 package org.acra.processor.element;
 
+import android.support.annotation.NonNull;
 import org.acra.processor.creator.BuildMethodCreator;
 
 /**
@@ -24,5 +25,5 @@ import org.acra.processor.creator.BuildMethodCreator;
  */
 
 public interface ValidatedElement extends Element {
-    void addToBuildMethod(BuildMethodCreator method);
+    void addToBuildMethod(@NonNull BuildMethodCreator method);
 }

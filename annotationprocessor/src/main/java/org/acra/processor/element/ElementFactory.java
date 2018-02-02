@@ -16,22 +16,17 @@
 
 package org.acra.processor.element;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeVariableName;
-
+import android.support.annotation.NonNull;
+import com.squareup.javapoet.*;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.util.Elements;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.Elements;
 
 /**
  * @author F43nd1r
@@ -43,11 +38,12 @@ public class ElementFactory {
     private final Elements elements;
 
 
-    public ElementFactory(Elements elements) {
+    public ElementFactory(@NonNull Elements elements) {
         this.elements = elements;
     }
 
-    private static Pair<List<AnnotationSpec>, Set<ClassName>> getAnnotations(ExecutableElement method) {
+    @NonNull
+    private static Pair<List<AnnotationSpec>, Set<ClassName>> getAnnotations(@NonNull ExecutableElement method) {
         final List<AnnotationSpec> specs = method.getAnnotationMirrors().stream().map(AnnotationSpec::get).collect(Collectors.toList());
         final Set<ClassName> markerAnnotations = new HashSet<>();
         for (final Iterator<AnnotationSpec> iterator = specs.iterator(); iterator.hasNext(); ) {
@@ -62,42 +58,49 @@ public class ElementFactory {
         return Pair.of(specs, markerAnnotations);
     }
 
-    public Element fromAnnotationMethod(ExecutableElement method) {
+    @NonNull
+    public Element fromAnnotationMethod(@NonNull ExecutableElement method) {
         final Pair<List<AnnotationSpec>, Set<ClassName>> annotations = getAnnotations(method);
         return new AnnotationField.Normal(method.getSimpleName().toString(), TypeName.get(method.getReturnType()), annotations.getLeft(), annotations.getRight(), method.getDefaultValue(),
                 elements.getDocComment(method));
     }
 
-    public Element fromStringResourceAnnotationMethod(ExecutableElement method) {
+    @NonNull
+    public Element fromStringResourceAnnotationMethod(@NonNull ExecutableElement method) {
         final Pair<List<AnnotationSpec>, Set<ClassName>> annotations = getAnnotations(method);
         return new AnnotationField.StringResource(method.getSimpleName().toString(), annotations.getLeft(), annotations.getRight(),
                 method.getDefaultValue() != null, elements.getDocComment(method));
     }
 
-    public Element fromBuilderDelegateMethod(ExecutableElement method) {
+    @NonNull
+    public Element fromBuilderDelegateMethod(@NonNull ExecutableElement method) {
         return new DelegateMethod(method.getSimpleName().toString(), TypeName.get(method.getReturnType()), getAnnotations(method).getLeft(),
                 method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toList()),
                 method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toList()), method.getModifiers(), elements.getDocComment(method));
     }
 
-    public Element fromConfigDelegateMethod(ExecutableElement method) {
+    @NonNull
+    public Element fromConfigDelegateMethod(@NonNull ExecutableElement method) {
         return new DelegateMethod.Config(method.getSimpleName().toString(), TypeName.get(method.getReturnType()), getAnnotations(method).getLeft(),
                 method.getParameters().stream().map(p -> ParameterSpec.builder(TypeName.get(p.asType()), p.getSimpleName().toString()).build()).collect(Collectors.toList()),
                 method.getTypeParameters().stream().map(TypeVariableName::get).collect(Collectors.toList()), method.getModifiers(), elements.getDocComment(method));
     }
 
-    public Element fromPreBuildDelegateMethod(ExecutableElement method) {
+    @NonNull
+    public Element fromPreBuildDelegateMethod(@NonNull ExecutableElement method) {
         return new PreBuildMethod(method.getSimpleName().toString());
     }
 
-    public Element fromTransformDelegateMethod(ExecutableElement method, Element transform) {
+    @NonNull
+    public Element fromTransformDelegateMethod(@NonNull ExecutableElement method, Element transform) {
         if (transform instanceof TransformedField.Transformable) {
             return new TransformedField(method.getSimpleName().toString(), TypeName.get(method.getReturnType()), (TransformedField.Transformable) transform);
         }
         return transform;
     }
 
-    public Element fromDelegateConstructor(ExecutableElement constructor, boolean hasContextParameter) {
+    @NonNull
+    public Element fromDelegateConstructor(@NonNull ExecutableElement constructor, boolean hasContextParameter) {
         return new BuilderElement.Delegate(TypeName.get(constructor.getEnclosingElement().asType()), hasContextParameter);
     }
 }

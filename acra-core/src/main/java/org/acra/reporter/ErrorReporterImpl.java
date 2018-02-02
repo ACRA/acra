@@ -25,8 +25,8 @@ import org.acra.ErrorReporter;
 import org.acra.builder.LastActivityManager;
 import org.acra.builder.ReportBuilder;
 import org.acra.builder.ReportExecutor;
-import org.acra.data.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportDataFactory;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
@@ -53,12 +53,8 @@ import static org.acra.ACRA.LOG_TAG;
 public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, SharedPreferences.OnSharedPreferenceChangeListener, ErrorReporter {
 
     private final boolean supportedAndroidVersion;
-
     private final Application context;
-
-    @NonNull
     private final ReportExecutor reportExecutor;
-
     private final Map<String, String> customData = new HashMap<>();
 
 
@@ -93,7 +89,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
      * {@inheritDoc}
      */
     @Override
-    public String putCustomData(@NonNull String key, String value) {
+    public String putCustomData(@NonNull String key, @Nullable String value) {
         return customData.put(key, value);
     }
 
@@ -101,6 +97,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
      * {@inheritDoc}
      */
     @Override
+    @Nullable
     public String removeCustomData(@NonNull String key) {
         return customData.remove(key);
     }
@@ -117,6 +114,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
      * {@inheritDoc}
      */
     @Override
+    @Nullable
     public String getCustomData(@NonNull String key) {
         return customData.get(key);
     }
@@ -204,9 +202,9 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    public void onSharedPreferenceChanged(@NonNull SharedPreferences sharedPreferences, @Nullable String key) {
         if (ACRA.PREF_DISABLE_ACRA.equals(key) || ACRA.PREF_ENABLE_ACRA.equals(key)) {
-            setEnabled(!SharedPreferencesFactory.shouldDisableACRA(sharedPreferences));
+            setEnabled(SharedPreferencesFactory.shouldEnableACRA(sharedPreferences));
         }
     }
 }

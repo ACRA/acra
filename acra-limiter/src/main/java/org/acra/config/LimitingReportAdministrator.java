@@ -146,7 +146,8 @@ public class LimitingReportAdministrator implements ReportingAdministrator {
         return ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class).enabled();
     }
 
-    private LimiterData loadLimiterData(@NonNull Context context, LimiterConfiguration limiterConfiguration) throws IOException, JSONException {
+    @NonNull
+    private LimiterData loadLimiterData(@NonNull Context context, @NonNull LimiterConfiguration limiterConfiguration) throws IOException, JSONException {
         String data = null;
         try {
             data = new StreamReader(context.openFileInput(FILE_LIMITER_DATA)).read();

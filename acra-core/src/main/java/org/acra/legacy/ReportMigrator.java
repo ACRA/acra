@@ -36,7 +36,6 @@ final class ReportMigrator {
 
     private final Context context;
     private final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
-    @NonNull
     private final ReportLocator reportLocator;
 
     ReportMigrator(@NonNull Context context) {

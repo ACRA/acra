@@ -16,6 +16,8 @@
 
 package org.acra.processor.creator;
 
+import android.support.annotation.NonNull;
+
 import com.google.auto.common.MoreTypes;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.AnnotationSpec;
@@ -62,7 +64,7 @@ public class ClassCreator {
     private final ClassName config;
     private final ClassName builder;
 
-    public ClassCreator(TypeElement baseAnnotation, Configuration configuration, ProcessingEnvironment processingEnv) {
+    public ClassCreator(@NonNull TypeElement baseAnnotation, Configuration configuration, @NonNull ProcessingEnvironment processingEnv) {
         this.baseAnnotation = baseAnnotation;
         this.configuration = configuration;
         this.processingEnv = processingEnv;
@@ -89,7 +91,7 @@ public class ClassCreator {
         }
     }
 
-    private void createBuilderClass(List<Element> elements) throws IOException {
+    private void createBuilderClass(@NonNull List<Element> elements) throws IOException {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(builder.simpleName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(ConfigurationBuilder.class);
@@ -115,7 +117,7 @@ public class ClassCreator {
     }
 
 
-    private void createConfigClass(List<Element> elements) throws IOException {
+    private void createConfigClass(@NonNull List<Element> elements) throws IOException {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(config.simpleName())
                 .addSuperinterface(Serializable.class)
                 .addSuperinterface(org.acra.config.Configuration.class)

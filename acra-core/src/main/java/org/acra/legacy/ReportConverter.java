@@ -54,7 +54,7 @@ class ReportConverter {
     private static final int NONE = 0, SLASH = 1, UNICODE = 2, CONTINUE = 3, KEY_DONE = 4, IGNORE = 5;
     private final Context context;
 
-    ReportConverter(Context context) {
+    ReportConverter(@NonNull Context context) {
         this.context = context;
     }
 
@@ -297,7 +297,7 @@ class ReportConverter {
         }
     }
 
-    private void putKeyValue(CrashReportData crashData, String key, String value){
+    private void putKeyValue(@NonNull CrashReportData crashData, @NonNull String key, @NonNull String value){
         try {
             crashData.put(key, new JSONObject(value));
         } catch (JSONException e1) {

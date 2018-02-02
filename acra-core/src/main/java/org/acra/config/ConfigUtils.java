@@ -16,6 +16,8 @@
 
 package org.acra.config;
 
+import android.support.annotation.NonNull;
+
 /**
  * Allows easy access to Plugin configurations from the main configuration
  *
@@ -24,7 +26,7 @@ package org.acra.config;
  */
 public final class ConfigUtils {
 
-    public static <T extends Configuration> T getPluginConfiguration(CoreConfiguration config, Class<T> c) {
+    public static <T extends Configuration> T getPluginConfiguration(@NonNull CoreConfiguration config, @NonNull Class<T> c) {
         T pluginConfiguration = null;
         for (Configuration configuration : config.pluginConfigurations()) {
             if (c.isAssignableFrom(configuration.getClass())) {

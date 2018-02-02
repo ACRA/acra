@@ -54,11 +54,8 @@ import static org.acra.ACRA.LOG_TAG;
 @SuppressWarnings("WeakerAccess")
 public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
-    @NonNull
     private final CoreConfiguration config;
-    @NonNull
     private final Context context;
-    @NonNull
     private final Method method;
     private final String login;
     private final String password;
@@ -167,6 +164,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         }
     }
 
+    @NonNull
     protected abstract String getContentType(@NonNull Context context, @NonNull T t);
 
     @SuppressWarnings("WeakerAccess")
@@ -191,7 +189,8 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         }
     }
 
-    protected abstract byte[] asBytes(T content) throws IOException;
+    @NonNull
+    protected abstract byte[] asBytes(@NonNull T content) throws IOException;
 
     @SuppressWarnings("WeakerAccess")
     protected void handleResponse(int responseCode, String responseMessage) throws IOException {

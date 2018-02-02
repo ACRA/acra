@@ -16,6 +16,8 @@
 
 package org.acra.processor.element;
 
+import android.support.annotation.NonNull;
+
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -37,7 +39,7 @@ import static org.acra.processor.util.Strings.PARAM_0;
 
 public interface ConfigElement extends Element {
 
-    default void addToConfig(TypeSpec.Builder builder, MethodSpec.Builder constructor) {
+    default void addToConfig(@NonNull TypeSpec.Builder builder, @NonNull MethodSpec.Builder constructor) {
         //add field
         final TypeName type = getImmutableType();
         builder.addField(FieldSpec.builder(type, getName(), Modifier.PRIVATE, Modifier.FINAL).addAnnotations(getAnnotations()).build());
@@ -55,6 +57,7 @@ public interface ConfigElement extends Element {
                 .build());
     }
 
+    @NonNull
     private TypeName getImmutableType() {
         TypeName type = getType();
         if (type instanceof ParameterizedTypeName) {
@@ -72,7 +75,7 @@ public interface ConfigElement extends Element {
         return type;
     }
 
-    private static TypeName getWithParams(ClassName baseType, ParameterizedTypeName parameterType) {
+    private static TypeName getWithParams(@NonNull ClassName baseType, @NonNull ParameterizedTypeName parameterType) {
         return ParameterizedTypeName.get(baseType, parameterType.typeArguments.toArray(new TypeName[parameterType.typeArguments.size()]));
     }
 }

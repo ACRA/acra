@@ -25,7 +25,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.DefaultAttachmentProvider;
-import org.acra.config.Configuration;
+import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
 import org.acra.data.CrashReportData;
@@ -57,30 +57,30 @@ public class HttpSender implements ReportSender {
      */
     public enum Method {
         POST {
+            @NonNull
             @Override
-            URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException {
+            URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException {
                 return new URL(baseUrl);
             }
         },
         PUT {
+            @NonNull
             @Override
-            URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException {
+            URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException {
                 return new URL(baseUrl + '/' + report.getString(ReportField.REPORT_ID));
             }
         };
 
-        abstract URL createURL(String baseUrl, CrashReportData report) throws MalformedURLException;
+        @NonNull
+        abstract URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException;
     }
 
     private final CoreConfiguration config;
     private final HttpSenderConfiguration httpConfig;
-    @NonNull
     private final Uri mFormUri;
     private final Method mMethod;
     private final StringFormat mType;
-    @Nullable
     private String mUsername;
-    @Nullable
     private String mPassword;
 
     /**
@@ -113,23 +113,12 @@ public class HttpSender implements ReportSender {
      */
     public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable StringFormat type, @Nullable String formUri) {
         this.config = config;
-        this.httpConfig = getHttpSenderConfiguration(config);
+        this.httpConfig = ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class);
         mMethod = (method == null) ? httpConfig.httpMethod() : method;
         mFormUri = Uri.parse((formUri == null) ? httpConfig.uri() : formUri);
         mType = (type == null) ? config.reportFormat() : type;
         mUsername = null;
         mPassword = null;
-    }
-
-    private static HttpSenderConfiguration getHttpSenderConfiguration(CoreConfiguration config) {
-        HttpSenderConfiguration httpSenderConfiguration = null;
-        for (Configuration configuration : config.pluginConfigurations()) {
-            if (configuration instanceof HttpSenderConfiguration) {
-                httpSenderConfiguration = (HttpSenderConfiguration) configuration;
-                break;
-            }
-        }
-        return httpSenderConfiguration;
     }
 
     /**
@@ -224,8 +213,9 @@ public class HttpSender implements ReportSender {
      * @return a string representation of the report
      * @throws Exception if conversion failed
      */
+    @NonNull
     @SuppressWarnings("WeakerAccess")
-    protected String convertToString(CrashReportData report, StringFormat format) throws Exception {
+    protected String convertToString(CrashReportData report, @NonNull StringFormat format) throws Exception {
         return format.toFormattedString(report, config.reportContent(), "&", "\n", true);
     }
 

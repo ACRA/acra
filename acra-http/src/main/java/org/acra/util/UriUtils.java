@@ -41,7 +41,7 @@ public final class UriUtils {
     }
 
     @NonNull
-    public static byte[] uriToByteArray(@NonNull Context context, Uri uri) throws IOException {
+    public static byte[] uriToByteArray(@NonNull Context context, @NonNull Uri uri) throws IOException {
         final InputStream inputStream = context.getContentResolver().openInputStream(uri);
         if (inputStream == null) {
             throw new FileNotFoundException("Could not open " + uri.toString());
@@ -55,7 +55,8 @@ public final class UriUtils {
         return outputStream.toByteArray();
     }
 
-    public static String getFileNameFromUri(Context context, Uri uri) {
+    @NonNull
+    public static String getFileNameFromUri(@NonNull Context context, @NonNull Uri uri) {
         String result = null;
         if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
             final Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
@@ -79,10 +80,12 @@ public final class UriUtils {
         return result;
     }
 
-    public static String getMimeType(Context context, Uri uri) {
+    @NonNull
+    public static String getMimeType(@NonNull Context context, @NonNull Uri uri) {
         if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
             final ContentResolver contentResolver = context.getContentResolver();
-            return contentResolver.getType(uri);
+            String type = contentResolver.getType(uri);
+            if (type != null) return type;
         }
         return AcraContentProvider.guessMimeType(uri);
     }

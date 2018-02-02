@@ -70,7 +70,7 @@ public final class ConfigurationCollector extends BaseReportFieldCollector imple
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config,
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config,
                  @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
         switch (reportField) {
             case INITIAL_CONFIGURATION:
@@ -129,6 +129,7 @@ public final class ConfigurationCollector extends BaseReportFieldCollector imple
         return result;
     }
 
+    @NonNull
     private Map<String, SparseArray<String>> getValueArrays() {
         final Map<String, SparseArray<String>> valueArrays = new HashMap<>();
         final SparseArray<String> hardKeyboardHiddenValues = new SparseArray<>();
@@ -197,7 +198,7 @@ public final class ConfigurationCollector extends BaseReportFieldCollector imple
      * constant name.
      * @throws IllegalAccessException if the supplied field is inaccessible.
      */
-    private Object getFieldValueName(Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
+    private Object getFieldValueName(@NonNull Map<String, SparseArray<String>> valueArrays, @NonNull Configuration conf, @NonNull Field f) throws IllegalAccessException {
         final String fieldName = f.getName();
         switch (fieldName) {
             case FIELD_MCC:

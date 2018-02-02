@@ -49,7 +49,7 @@ public final class SimpleValuesCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         switch (reportField) {
             case IS_SILENT:
                 target.put(ReportField.IS_SILENT, reportBuilder.isSendSilently());

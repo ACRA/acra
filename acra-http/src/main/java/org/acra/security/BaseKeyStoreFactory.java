@@ -67,16 +67,19 @@ public abstract class BaseKeyStoreFactory implements KeyStoreFactory {
         this.certificateType = certificateType;
     }
 
+    @Nullable
     protected abstract InputStream getInputStream(@NonNull Context context);
 
     protected String getKeyStoreType() {
         return KeyStore.getDefaultType();
     }
 
+    @NonNull
     protected Type getStreamType() {
         return Type.CERTIFICATE;
     }
 
+    @Nullable
     protected char[] getPassword() {
         return null;
     }

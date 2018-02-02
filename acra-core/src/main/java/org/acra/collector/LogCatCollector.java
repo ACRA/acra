@@ -97,7 +97,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
         try {
             return streamToString(config, process.getInputStream(), myPidStr == null ? null : new Predicate<String>() {
                 @Override
-                public boolean apply(String s) {
+                public boolean apply(@NonNull String s) {
                     return s.contains(myPidStr);
                 }
             }, tailCount);
@@ -114,7 +114,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws IOException {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws IOException {
         String bufferName = null;
         switch (reportField) {
             case LOGCAT:

@@ -89,7 +89,7 @@ abstract class BaseReportFieldCollector implements Collector {
      * @param target put results here
      * @throws Exception if collection failed
      */
-    abstract void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception;
+    abstract void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception;
 
     /**
      * {@inheritDoc}

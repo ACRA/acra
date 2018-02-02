@@ -34,6 +34,7 @@ import java.util.Set;
 public final class ImmutableSet<E> implements Set<E>, Serializable {
     private static final ImmutableSet<Object> EMPTY = new ImmutableSet<>();
 
+    @NonNull
     public static <T> ImmutableSet<T> empty() {
         //noinspection unchecked
         return (ImmutableSet<T>) EMPTY;
@@ -50,7 +51,7 @@ public final class ImmutableSet<E> implements Set<E>, Serializable {
         this(Arrays.asList(elements));
     }
 
-    public ImmutableSet(Collection<E> collection) {
+    public ImmutableSet(@NonNull Collection<E> collection) {
         this.mSet = new LinkedHashSet<>(collection);
     }
 

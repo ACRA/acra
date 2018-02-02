@@ -16,6 +16,9 @@
 
 package org.acra.processor.creator;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -46,7 +49,7 @@ public class BuildMethodCreator {
     private final ClassName config;
     private final List<CodeBlock> statements;
 
-    BuildMethodCreator(ExecutableElement override, ClassName config) {
+    BuildMethodCreator(@NonNull ExecutableElement override, @NonNull ClassName config) {
         this.config = config;
         methodBuilder = Types.overriding(override)
                 .addAnnotation(Types.NON_NULL)
@@ -56,27 +59,28 @@ public class BuildMethodCreator {
         statements = new ArrayList<>();
     }
 
-    public void addNotUnset(String name, TypeName type) {
+    public void addNotUnset(@NonNull String name, @NonNull TypeName type) {
         methodBuilder.beginControlFlow("if ($L == $L)", name, getDefault(type))
                 .addStatement("throw new $T(\"$L has to be set\")", ACRAConfigurationException.class, name)
                 .endControlFlow();
     }
 
-    public void addNotEmpty(String name) {
+    public void addNotEmpty(@NonNull String name) {
         methodBuilder.beginControlFlow("if ($L.length == 0)", name)
                 .addStatement("throw new $T(\"$L cannot be empty\")", ACRAConfigurationException.class, name)
                 .endControlFlow();
     }
 
-    public void addInstantiatable(String name) {
+    public void addInstantiatable(@NonNull String name) {
         methodBuilder.addStatement("$T.check($L)", ClassValidator.class, name);
     }
 
-    public void addAnyNonDefault(String name, AnnotationValue defaultValue) {
+    public void addAnyNonDefault(@NonNull String name, @Nullable AnnotationValue defaultValue) {
         anyNonDefault.put(name, defaultValue);
     }
 
-    private String getDefault(TypeName type) {
+    @NonNull
+    private String getDefault(@NonNull TypeName type) {
         if (type.isPrimitive()) {
             if (type.equals(TypeName.BOOLEAN)) {
                 return "false";
@@ -99,10 +103,11 @@ public class BuildMethodCreator {
         return "null";
     }
 
-    public void addDelegateCall(String methodName) {
+    public void addDelegateCall(@NonNull String methodName) {
         statements.add(CodeBlock.builder().addStatement("$L.$L()", Strings.FIELD_DELEGATE, methodName).build());
     }
 
+    @NonNull
     MethodSpec build() {
         if (anyNonDefault.size() > 0) {
             methodBuilder.beginControlFlow("if ($L)", anyNonDefault.entrySet().stream().map(field -> field.getKey() + " == " + field.getValue()).collect(Collectors.joining(" && ")))

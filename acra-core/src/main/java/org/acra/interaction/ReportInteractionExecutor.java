@@ -45,9 +45,7 @@ import static org.acra.ACRA.LOG_TAG;
 
 public class ReportInteractionExecutor {
     private final List<ReportInteraction> reportInteractions;
-    @NonNull
     private final Context context;
-    @NonNull
     private final CoreConfiguration config;
 
     public ReportInteractionExecutor(@NonNull final Context context, @NonNull final CoreConfiguration config) {

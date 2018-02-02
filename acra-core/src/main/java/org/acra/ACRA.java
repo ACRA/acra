@@ -222,7 +222,7 @@ public final class ACRA {
         new LegacyFileHandler(app, prefs).updateToCurrentVersionIfNecessary();
         if (!senderServiceProcess) {
             // Initialize ErrorReporter with all required data
-            final boolean enableAcra = supportedAndroidVersion && !SharedPreferencesFactory.shouldDisableACRA(prefs);
+            final boolean enableAcra = supportedAndroidVersion && SharedPreferencesFactory.shouldEnableACRA(prefs);
             // Indicate that ACRA is or is not listening for crashes.
             log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + app.getPackageName() + ", initializing...");
             ErrorReporterImpl reporter = new ErrorReporterImpl(app, config, enableAcra, supportedAndroidVersion);

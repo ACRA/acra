@@ -16,17 +16,17 @@
 
 package org.acra.processor.util;
 
+import android.support.annotation.NonNull;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor9;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author F43nd1r
@@ -39,33 +39,38 @@ public class InitializerVisitor extends SimpleAnnotationValueVisitor9<String, Li
         this.type = type;
     }
 
+    @NonNull
     @Override
-    protected String defaultAction(Object o, List<Object> objects) {
+    protected String defaultAction(Object o, @NonNull List<Object> objects) {
         objects.add(o);
         return "$L";
     }
 
+    @NonNull
     @Override
-    public String visitString(String s, List<Object> objects) {
+    public String visitString(String s, @NonNull List<Object> objects) {
         objects.add(s);
         return "$S";
     }
 
+    @NonNull
     @Override
-    public String visitEnumConstant(VariableElement c, List<Object> objects) {
+    public String visitEnumConstant(@NonNull VariableElement c, @NonNull List<Object> objects) {
         objects.add(c.asType());
         objects.add(c.getSimpleName());
         return "$T.$L";
     }
 
+    @NonNull
     @Override
-    public String visitType(TypeMirror t, List<Object> objects) {
+    public String visitType(TypeMirror t, @NonNull List<Object> objects) {
         objects.add(t);
         return "$T.class";
     }
 
+    @NonNull
     @Override
-    public String visitArray(List<? extends AnnotationValue> values, List<Object> objects) {
+    public String visitArray(@NonNull List<? extends AnnotationValue> values, @NonNull List<Object> objects) {
         ArrayTypeName arrayTypeName = (ArrayTypeName) type;
         if (arrayTypeName.componentType instanceof ParameterizedTypeName) {
             arrayTypeName = ArrayTypeName.of(((ParameterizedTypeName) arrayTypeName.componentType).rawType);

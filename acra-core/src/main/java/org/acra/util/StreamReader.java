@@ -62,21 +62,25 @@ public class StreamReader {
         this.inputStream = inputStream;
     }
 
+    @NonNull
     public StreamReader setLimit(int limit) {
         this.limit = limit;
         return this;
     }
 
+    @NonNull
     public StreamReader setTimeout(int timeout) {
         this.timeout = timeout;
         return this;
     }
 
+    @NonNull
     public StreamReader setFilter(Predicate<String> filter) {
         this.filter = filter;
         return this;
     }
 
+    @NonNull
     public String read() throws IOException {
         final String text = timeout == INDEFINITE ? readFully() : readWithTimeout();
         if (filter == null) {
@@ -99,6 +103,7 @@ public class StreamReader {
         return TextUtils.join("\n", buffer);
     }
 
+    @NonNull
     private String readFully() throws IOException {
         final Reader input = new InputStreamReader(inputStream);
         try {
@@ -114,6 +119,7 @@ public class StreamReader {
         }
     }
 
+    @NonNull
     private String readWithTimeout() throws IOException {
         final long until = System.currentTimeMillis() + timeout;
         try {
@@ -129,7 +135,7 @@ public class StreamReader {
         }
     }
 
-    private int fillBufferUntil(byte[] buffer, long until) throws IOException {
+    private int fillBufferUntil(@NonNull byte[] buffer, long until) throws IOException {
         int bufferOffset = 0;
         while (System.currentTimeMillis() < until && bufferOffset < buffer.length) {
             final int readResult = inputStream.read(buffer, bufferOffset, Math.min(inputStream.available(), buffer.length - bufferOffset));

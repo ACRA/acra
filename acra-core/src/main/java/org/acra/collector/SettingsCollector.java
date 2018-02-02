@@ -54,7 +54,7 @@ public final class SettingsCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         switch (reportField) {
             case SETTINGS_SYSTEM:
                 target.put(ReportField.SETTINGS_SYSTEM, collectSettings(context, config, System.class));
@@ -71,6 +71,7 @@ public final class SettingsCollector extends BaseReportFieldCollector {
         }
     }
 
+    @NonNull
     private JSONObject collectSettings(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<?> settings) throws NoSuchMethodException {
         final JSONObject result = new JSONObject();
         final Field[] keys = settings.getFields();
@@ -78,6 +79,7 @@ public final class SettingsCollector extends BaseReportFieldCollector {
         for (final Field key : keys) {
             if (!key.isAnnotationPresent(Deprecated.class) && key.getType() == String.class && isAuthorized(config, key)) {
                 try {
+                    //noinspection JavaReflectionInvocation
                     final Object value = getString.invoke(null, context.getContentResolver(), key.get(null));
                     if (value != null) {
                         result.put(key.getName(), value);

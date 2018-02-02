@@ -82,6 +82,6 @@ public class RobolectricLog implements ACRALog {
     @Nullable
     @Override
     public String getStackTraceString(Throwable tr) {
-        return tr.toString();
+        return String.valueOf(tr);
     }
 }

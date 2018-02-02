@@ -16,6 +16,7 @@
 
 package org.acra.annotation;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import org.acra.ACRAConstants;
@@ -46,7 +47,7 @@ public @interface AcraLimiter {
      * @return a time unit
      * @since 5.0.0
      */
-    TimeUnit periodUnit() default TimeUnit.DAYS;
+    @NonNull TimeUnit periodUnit() default TimeUnit.DAYS;
 
     /**
      * Reports which have been collected before this will not be considered for any limits except {@link #failedReportLimit()}

@@ -16,25 +16,19 @@
 
 package org.acra.processor.element;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.squareup.javapoet.*;
 import org.acra.processor.creator.BuildMethodCreator;
 import org.acra.processor.util.InitializerVisitor;
 import org.acra.processor.util.Strings;
 import org.acra.processor.util.Types;
 import org.apache.commons.text.WordUtils;
 
+import javax.lang.model.element.AnnotationValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.lang.model.element.AnnotationValue;
 
 /**
  * @author F43nd1r
@@ -45,24 +39,24 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
     private final Collection<ClassName> markers;
     private final String javadoc;
 
-    AnnotationField(String name, TypeName type, Collection<AnnotationSpec> annotations, String javadoc, Collection<ClassName> markers) {
+    AnnotationField(@NonNull String name, @NonNull TypeName type, @NonNull Collection<AnnotationSpec> annotations, @Nullable String javadoc, @NonNull Collection<ClassName> markers) {
         super(name, type, annotations);
         this.javadoc = javadoc;
         this.markers = markers;
     }
 
-    boolean hasMarker(ClassName marker) {
+    boolean hasMarker(@NonNull ClassName marker) {
         return markers.contains(marker);
     }
 
     @Override
-    public final void addToBuilder(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+    public final void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways, @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
         addWithoutGetter(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
         addGetter(builder);
     }
 
     @Override
-    public final void addWithoutGetter(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
+    public final void addWithoutGetter(@NonNull TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
         BuilderElement.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
         addSetter(builder, builderName);
         addInitializer(constructorWhenAnnotationPresent);
@@ -71,7 +65,7 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
     protected abstract void addInitializer(CodeBlock.Builder constructorWhenAnnotationPresent);
 
     @Override
-    public void configureSetter(MethodSpec.Builder builder) {
+    public void configureSetter(@NonNull MethodSpec.Builder builder) {
         if (javadoc != null) {
             builder.addJavadoc(javadoc.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + getName() + " $1@return this instance\n"));
         }
@@ -86,12 +80,12 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
         }
 
         @Override
-        public void addInitializer(CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
             constructorWhenAnnotationPresent.addStatement("$1L = $2L.$1L()", getName(), Strings.VAR_ANNOTATION);
         }
 
         @Override
-        public void configureField(FieldSpec.Builder builder) {
+        public void configureField(@NonNull FieldSpec.Builder builder) {
             if (defaultValue != null) {
                 final List<Object> parameters = new ArrayList<>();
                 final String statement = defaultValue.accept(new InitializerVisitor(getType()), parameters);
@@ -100,7 +94,7 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
         }
 
         @Override
-        public void addToBuildMethod(BuildMethodCreator method) {
+        public void addToBuildMethod(@NonNull BuildMethodCreator method) {
             if (defaultValue == null) {
                 method.addNotUnset(getName(), getType());
             }
@@ -118,6 +112,7 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
     }
 
     static class StringResource extends AnnotationField {
+        @NonNull
         private final String originalName;
         private final boolean allowNull;
 
@@ -133,14 +128,14 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
         }
 
         @Override
-        public void addInitializer(CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
             constructorWhenAnnotationPresent.beginControlFlow("if ($L.$L() != 0)", Strings.VAR_ANNOTATION, originalName)
                     .addStatement("$L = $L.getString($L.$L())", getName(), Strings.FIELD_CONTEXT, Strings.VAR_ANNOTATION, originalName)
                     .endControlFlow();
         }
 
         @Override
-        public void addSetter(TypeSpec.Builder builder, ClassName builderName) {
+        public void addSetter(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName) {
             super.addSetter(builder, builderName);
             final String parameterName = Strings.PREFIX_RES + WordUtils.capitalize(getName());
             final List<AnnotationSpec> annotations = new ArrayList<>(getAnnotations());
@@ -153,7 +148,7 @@ abstract class AnnotationField extends AbstractElement implements ConfigElement,
         }
 
         @Override
-        public void addToBuildMethod(BuildMethodCreator method) {
+        public void addToBuildMethod(@NonNull BuildMethodCreator method) {
             if (!allowNull) {
                 method.addNotUnset(getName(), getType());
             }

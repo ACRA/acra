@@ -50,7 +50,7 @@ public @interface AcraHttpSender {
      * @return URI of a server to which to send reports.
      * @since 5.0.0
      */
-    String uri();
+    @NonNull String uri();
 
     /**
      * you can set here and in {@link #basicAuthPassword()} the credentials for a BASIC HTTP authentication.

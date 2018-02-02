@@ -43,6 +43,7 @@ import static org.acra.ACRA.LOG_TAG;
  */
 public final class PackageManagerWrapper {
 
+    @NonNull
     private final Context context;
 
     public PackageManagerWrapper(@NonNull Context context) {

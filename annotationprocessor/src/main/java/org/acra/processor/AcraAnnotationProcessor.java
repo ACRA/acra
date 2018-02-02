@@ -16,17 +16,14 @@
 
 package org.acra.processor;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.auto.common.MoreElements;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
-
 import org.acra.annotation.Configuration;
 import org.acra.processor.creator.ClassCreator;
 import org.acra.processor.util.Types;
-
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -37,6 +34,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author F43nd1r
@@ -52,7 +52,7 @@ public class AcraAnnotationProcessor extends AbstractProcessor {
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public boolean process(@Nullable Set<? extends TypeElement> annotations, @NonNull RoundEnvironment roundEnv) {
         try {
             final ArrayList<? extends Element> annotatedElements = new ArrayList<>(roundEnv.getElementsAnnotatedWith(Configuration.class));
             if (!annotatedElements.isEmpty()) {

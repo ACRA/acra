@@ -55,7 +55,7 @@ public final class MemoryInfoCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
         switch (reportField) {
             case DUMPSYS_MEMINFO:
                 target.put(ReportField.DUMPSYS_MEMINFO, collectMemInfo());

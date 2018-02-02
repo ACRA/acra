@@ -48,7 +48,7 @@ public final class LogFileCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws IOException {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws IOException {
         target.put(ReportField.APPLICATION_LOG, new StreamReader(config.applicationLogFileDir().getFile(context, config.applicationLogFile()))
                 .setLimit(config.applicationLogFileLines()).read());
     }

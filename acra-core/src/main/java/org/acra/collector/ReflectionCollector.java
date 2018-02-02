@@ -51,7 +51,7 @@ public final class ReflectionCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target)
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target)
             throws JSONException, ClassNotFoundException {
         final JSONObject result = new JSONObject();
         switch (reportField) {
@@ -104,7 +104,7 @@ public final class ReflectionCollector extends BaseReportFieldCollector {
      *
      * @param someClass the class to be inspected.
      */
-    private void collectStaticGettersResults(@NonNull Class<?> someClass, JSONObject container) throws JSONException {
+    private void collectStaticGettersResults(@NonNull Class<?> someClass, @NonNull JSONObject container) throws JSONException {
         final Method[] methods = someClass.getMethods();
         for (final Method method : methods) {
             if (method.getParameterTypes().length == 0

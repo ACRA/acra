@@ -32,7 +32,6 @@ import java.util.Map;
  */
 
 public class DefaultHttpRequest extends BaseHttpRequest<String> {
-    @NonNull
     private final String contentType;
 
     public DefaultHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull HttpSender.Method method, @NonNull String contentType,
@@ -41,13 +40,15 @@ public class DefaultHttpRequest extends BaseHttpRequest<String> {
         this.contentType = contentType;
     }
 
+    @NonNull
     @Override
     protected String getContentType(@NonNull Context context, @NonNull String s) {
         return contentType;
     }
 
+    @NonNull
     @Override
-    protected byte[] asBytes(String content) throws IOException {
+    protected byte[] asBytes(@NonNull String content) throws IOException {
         return content.getBytes(ACRAConstants.UTF8);
     }
 }

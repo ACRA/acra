@@ -190,7 +190,7 @@ public class EmailIntentSender implements ReportSender {
         context.startActivity(chooser);
     }
 
-    private void grantPermission(@NonNull Context context, Intent intent, String packageName, List<Uri> attachments) {
+    private void grantPermission(@NonNull Context context, @NonNull Intent intent, String packageName, @NonNull List<Uri> attachments) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } else {

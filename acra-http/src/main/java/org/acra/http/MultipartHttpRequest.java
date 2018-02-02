@@ -47,9 +47,7 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     private static final String BOUNDARY_FIX = "--";
     private static final String NEW_LINE = "\r\n";
     private static final String CONTENT_TYPE = "Content-Type: ";
-    @NonNull
     private final Context context;
-    @NonNull
     private final String contentType;
 
     public MultipartHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull String contentType, @Nullable String login, @Nullable String password,
@@ -59,13 +57,15 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
         this.contentType = contentType;
     }
 
+    @NonNull
     @Override
     protected String getContentType(@NonNull Context context, @NonNull Pair<String, List<Uri>> stringListPair) {
         return "multipart/mixed; boundary=" + BOUNDARY;
     }
 
+    @NonNull
     @Override
-    protected byte[] asBytes(Pair<String, List<Uri>> content) throws IOException {
+    protected byte[] asBytes(@NonNull Pair<String, List<Uri>> content) throws IOException {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         final Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
         //noinspection TryFinallyCanBeTryWithResources we do not target api 19

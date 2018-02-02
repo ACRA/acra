@@ -48,7 +48,7 @@ public final class SharedPreferencesCollector extends BaseReportFieldCollector {
     }
 
     @Override
-    void collect(ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
         switch (reportField) {
             case USER_EMAIL:
                 target.put(ReportField.USER_EMAIL, new SharedPreferencesFactory(context, config).create().getString(ACRA.PREF_USER_EMAIL_ADDRESS, null));

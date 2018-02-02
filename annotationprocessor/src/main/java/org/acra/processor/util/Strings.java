@@ -16,15 +16,15 @@
 
 package org.acra.processor.util;
 
+import android.support.annotation.NonNull;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import javax.annotation.processing.Filer;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
-
-import javax.annotation.processing.Filer;
 
 /**
  * @author F43nd1r
@@ -47,7 +47,7 @@ public final class Strings {
     private Strings() {
     }
 
-    public static void addClassJavadoc(TypeSpec.Builder builder, TypeName base) {
+    public static void addClassJavadoc(@NonNull TypeSpec.Builder builder, @NonNull TypeName base) {
         builder.addJavadoc("Class generated based on {@link $T} ($L)\n", base, DATE_FORMAT.format(Calendar.getInstance().getTime()));
     }
 
@@ -58,7 +58,7 @@ public final class Strings {
      * @param typeSpec the class
      * @throws IOException if writing fails
      */
-    public static void writeClass(Filer filer, TypeSpec typeSpec) throws IOException {
+    public static void writeClass(@NonNull Filer filer, @NonNull TypeSpec typeSpec) throws IOException {
         JavaFile.builder(PACKAGE, typeSpec)
                 .skipJavaLangImports(true)
                 .indent("    ")

@@ -33,6 +33,7 @@ public enum Directory {
      * Otherwise it behaves like {@link #FILES}.
      */
     FILES_LEGACY {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return (fileName.startsWith("/") ? Directory.ROOT : Directory.FILES).getFile(context, fileName);
@@ -42,6 +43,7 @@ public enum Directory {
      * Directory returned by {@link Context#getFilesDir()}
      */
     FILES {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getFilesDir(), fileName);
@@ -51,6 +53,7 @@ public enum Directory {
      * Directory returned by {@link Context#getExternalFilesDir(String)}
      */
     EXTERNAL_FILES {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getExternalFilesDir(null), fileName);
@@ -60,6 +63,7 @@ public enum Directory {
      * Directory returned by {@link Context#getCacheDir()}
      */
     CACHE {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getCacheDir(), fileName);
@@ -69,6 +73,7 @@ public enum Directory {
      * Directory returned by {@link Context#getExternalCacheDir()}
      */
     EXTERNAL_CACHE {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(context.getExternalCacheDir(), fileName);
@@ -79,6 +84,7 @@ public enum Directory {
      * Will fall back to {@link Context#getFilesDir()} on API &lt; 21
      */
     NO_BACKUP_FILES {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(ContextCompat.getNoBackupFilesDir(context), fileName);
@@ -88,6 +94,7 @@ public enum Directory {
      * Directory returned by {@link Environment#getExternalStorageDirectory()}
      */
     EXTERNAL_STORAGE {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             return new File(Environment.getExternalStorageDirectory(), fileName);
@@ -97,6 +104,7 @@ public enum Directory {
      * Root Directory, paths in this directory are absolute paths
      */
     ROOT {
+        @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
             String[] parts = fileName.split(File.separator, 2);
@@ -111,5 +119,6 @@ public enum Directory {
         }
     };
 
+    @NonNull
     public abstract File getFile(@NonNull Context context, @NonNull String fileName);
 }

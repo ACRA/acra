@@ -40,7 +40,7 @@ public final class ImmutableList<E> implements List<E>, Serializable {
         this(Arrays.asList(elements));
     }
 
-    public ImmutableList(Collection<E> collection) {
+    public ImmutableList(@NonNull Collection<E> collection) {
         this.mList = new ArrayList<>(collection);
     }
 

@@ -135,6 +135,7 @@ public class NotificationInteraction extends BaseReportInteraction {
         return PendingIntent.getBroadcast(context, ACTION_DISCARD, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    @NonNull
     private RemoteViews getSmallView(@NonNull Context context, @NonNull NotificationConfiguration notificationConfig, @NonNull PendingIntent sendIntent, @NonNull PendingIntent discardIntent) {
         final RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.notification_small);
         view.setTextViewText(R.id.text, notificationConfig.text());
@@ -146,6 +147,7 @@ public class NotificationInteraction extends BaseReportInteraction {
         return view;
     }
 
+    @NonNull
     private RemoteViews getBigView(@NonNull Context context, @NonNull NotificationConfiguration notificationConfig) {
         final RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.notification_big);
         view.setTextViewText(R.id.text, notificationConfig.text());
