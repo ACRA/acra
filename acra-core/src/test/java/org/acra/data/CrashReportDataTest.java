@@ -33,7 +33,7 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class CrashReportDataTest {
     @Test
-    public void put() throws Exception {
+    public void put() {
         final CrashReportData data = new CrashReportData();
         data.put(ReportField.DEVICE_ID, "FAKE_ID");
         assertEquals("FAKE_ID", data.getString(ReportField.DEVICE_ID));
@@ -45,7 +45,7 @@ public class CrashReportDataTest {
     }
 
     @Test
-    public void containsKey() throws Exception {
+    public void containsKey() {
         final CrashReportData data = new CrashReportData();
         data.put(ReportField.DEVICE_ID, "FAKE_ID");
         data.put("CUSTOM","\n");
@@ -55,7 +55,7 @@ public class CrashReportDataTest {
     }
 
     @Test
-    public void toMap() throws Exception {
+    public void toMap() {
         final CrashReportData data = new CrashReportData();
         data.put(ReportField.DEVICE_ID, "FAKE_ID");
         data.put("CUSTOM",-1);

@@ -69,7 +69,7 @@ public class StringFormatTest {
     }
 
     @Test
-    public void getMatchingHttpContentType() throws Exception {
+    public void getMatchingHttpContentType() {
         assertEquals(MediaType.JSON_UTF_8.type() + "/" + MediaType.JSON_UTF_8.subtype(), StringFormat.JSON.getMatchingHttpContentType());
         assertEquals(MediaType.FORM_DATA.type() + "/" + MediaType.FORM_DATA.subtype(), StringFormat.KEY_VALUE_LIST.getMatchingHttpContentType());
     }

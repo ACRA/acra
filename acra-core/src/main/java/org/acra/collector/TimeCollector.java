@@ -48,7 +48,7 @@ public final class TimeCollector extends BaseReportFieldCollector implements App
     }
 
     @Override
-    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception {
+    void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
         final Calendar time;
         switch (reportField) {
             case USER_APP_START_DATE:

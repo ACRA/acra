@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(RobolectricTestRunner.class)
 public class InstallationTest {
     @Test
-    public void id() throws Exception {
+    public void id() {
         final String id = Installation.id(RuntimeEnvironment.application);
         assertEquals(id, Installation.id(RuntimeEnvironment.application));
         for(File child : RuntimeEnvironment.application.getFilesDir().listFiles()){

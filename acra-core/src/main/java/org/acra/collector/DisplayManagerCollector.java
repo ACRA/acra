@@ -117,19 +117,15 @@ public final class DisplayManagerCollector extends BaseReportFieldCollector {
     }
 
     private void collectRectSize(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            final Rect size = new Rect();
-            display.getRectSize(size);
-            container.put("rectSize", new JSONArray(Arrays.asList(size.top, size.left, size.width(), size.height())));
-        }
+        final Rect size = new Rect();
+        display.getRectSize(size);
+        container.put("rectSize", new JSONArray(Arrays.asList(size.top, size.left, size.width(), size.height())));
     }
 
     private void collectSize(@NonNull Display display, @NonNull JSONObject container) throws JSONException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            final Point size = new Point();
-            display.getSize(size);
-            container.put("size", new JSONArray(Arrays.asList(size.x, size.y)));
-        }
+        final Point size = new Point();
+        display.getSize(size);
+        container.put("size", new JSONArray(Arrays.asList(size.x, size.y)));
     }
 
     private void collectRealSize(@NonNull Display display, @NonNull JSONObject container) throws JSONException {

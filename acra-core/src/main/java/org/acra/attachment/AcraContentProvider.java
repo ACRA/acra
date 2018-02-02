@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
 public class AcraContentProvider extends ContentProvider {
     private static final String[] COLUMNS = {
             OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
-    public static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
+    private static final String MIME_TYPE_OCTET_STREAM = "application/octet-stream";
     private String authority;
 
     @Override
@@ -219,6 +219,7 @@ public class AcraContentProvider extends ContentProvider {
      * @param relativePath the file path
      * @return the uri
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static Uri getUriForFile(@NonNull Context context, @NonNull Directory directory, @NonNull String relativePath) {
         final Uri.Builder builder = new Uri.Builder()

@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
  */
 public final class ConfigUtils {
 
+    @NonNull
     public static <T extends Configuration> T getPluginConfiguration(@NonNull CoreConfiguration config, @NonNull Class<T> c) {
         for (Configuration configuration : config.pluginConfigurations()) {
             if (c.isAssignableFrom(configuration.getClass())) {
@@ -33,7 +34,7 @@ public final class ConfigUtils {
                 return (T) configuration;
             }
         }
-        return null;
+        throw new IllegalArgumentException(c.getName() + " is no registered configuration");
     }
 
 }

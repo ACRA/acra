@@ -29,7 +29,7 @@ import android.telephony.TelephonyManager;
  */
 
 public final class SystemServices {
-    private SystemServices(){
+    private SystemServices() {
     }
 
     @NonNull
@@ -55,14 +55,14 @@ public final class SystemServices {
     @NonNull
     private static Object getService(@NonNull Context context, @NonNull String id) throws ServiceNotReachedException {
         final Object service = context.getSystemService(id);
-        if(service == null){
+        if (service == null) {
             throw new ServiceNotReachedException("Unable to load SystemService " + id);
         }
         return service;
     }
 
-    public static class ServiceNotReachedException extends Exception{
-        public ServiceNotReachedException(String message) {
+    static class ServiceNotReachedException extends Exception {
+        ServiceNotReachedException(String message) {
             super(message);
         }
     }

@@ -39,10 +39,10 @@ import java.util.Locale;
  * @since 26.10.2017
  */
 
-public class LimiterData {
+class LimiterData {
     private final List<ReportMetadata> list;
 
-    public LimiterData(@Nullable String json) throws JSONException {
+    LimiterData(@Nullable String json) throws JSONException {
         list = new ArrayList<>();
         if (json != null && !json.isEmpty()) {
             final JSONArray array = new JSONArray(json);

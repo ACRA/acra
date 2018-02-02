@@ -64,7 +64,7 @@ public class AcraContentProviderTest {
     }
 
     @Test
-    public void query() throws Exception {
+    public void query() {
         final Cursor cursor = resolver.query(AcraContentProvider.getUriForFile(RuntimeEnvironment.application, file), new String[]{OpenableColumns.SIZE, OpenableColumns.DISPLAY_NAME}, null, null, null);
         assertNotNull(cursor);
         assertTrue(cursor.moveToFirst());
@@ -82,7 +82,7 @@ public class AcraContentProviderTest {
     }
 
     @Test
-    public void guessMimeType() throws Exception {
+    public void guessMimeType() {
         assertEquals(JSON_MIMETYPE, AcraContentProvider.guessMimeType(AcraContentProvider.getUriForFile(RuntimeEnvironment.application, file)));
     }
 

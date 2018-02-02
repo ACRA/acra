@@ -20,7 +20,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Log;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.BuildConfig;
@@ -31,6 +30,9 @@ import org.acra.security.KeyStoreHelper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.util.IOUtils;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,10 +42,6 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -203,7 +201,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             //timeout or server error. Repeat the request later.
             ACRA.log.w(LOG_TAG, "Could not send ACRA Post responseCode=" + responseCode + " message=" + responseMessage);
             throw new IOException("Host returned error code " + responseCode);
-        } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST && responseCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
+        } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
             // Client error. The request must not be repeated. Discard it.
             ACRA.log.w(LOG_TAG, responseCode + ": Client error - request will be discarded");
         } else {
