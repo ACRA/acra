@@ -24,7 +24,7 @@ import com.squareup.javapoet.TypeName;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.SimpleAnnotationValueVisitor9;
+import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @author F43nd1r
  * @since 12.01.2018
  */
-public class InitializerVisitor extends SimpleAnnotationValueVisitor9<String, List<Object>> {
+public class InitializerVisitor extends SimpleAnnotationValueVisitor8<String, List<Object>> {
     private final TypeName type;
 
     public InitializerVisitor(TypeName type) {

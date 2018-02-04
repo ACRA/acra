@@ -18,11 +18,8 @@ package org.acra.processor.element;
 
 import android.support.annotation.NonNull;
 
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -41,7 +38,7 @@ public interface ConfigElement extends Element {
 
     default void addToConfig(@NonNull TypeSpec.Builder builder, @NonNull MethodSpec.Builder constructor) {
         //add field
-        final TypeName type = getImmutableType();
+        final TypeName type = Types.getImmutableType(getType());
         builder.addField(FieldSpec.builder(type, getName(), Modifier.PRIVATE, Modifier.FINAL).addAnnotations(getAnnotations()).build());
         if (!type.equals(getType())) {
             constructor.addStatement("$1L = new $2T($3L.$1L())", getName(), type, PARAM_0);
@@ -55,27 +52,5 @@ public interface ConfigElement extends Element {
                 .addStatement("return $L", getName())
                 .addModifiers(Modifier.PUBLIC)
                 .build());
-    }
-
-    @NonNull
-    private TypeName getImmutableType() {
-        TypeName type = getType();
-        if (type instanceof ParameterizedTypeName) {
-            final TypeName genericType = ((ParameterizedTypeName) type).rawType;
-            if (Types.MAP.equals(genericType)) {
-                type = getWithParams(Types.IMMUTABLE_MAP, (ParameterizedTypeName) type);
-            } else if (Types.SET.equals(genericType)) {
-                return getWithParams(Types.IMMUTABLE_SET, (ParameterizedTypeName) type);
-            } else if (Types.LIST.equals(genericType)) {
-                type = getWithParams(Types.IMMUTABLE_LIST, (ParameterizedTypeName) type);
-            }
-        } else if (type instanceof ArrayTypeName) {
-            type = ParameterizedTypeName.get(Types.IMMUTABLE_LIST, ((ArrayTypeName) type).componentType);
-        }
-        return type;
-    }
-
-    private static TypeName getWithParams(@NonNull ClassName baseType, @NonNull ParameterizedTypeName parameterType) {
-        return ParameterizedTypeName.get(baseType, parameterType.typeArguments.toArray(new TypeName[parameterType.typeArguments.size()]));
     }
 }

@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * @since 18.03.2017
  */
 @AutoService(Processor.class)
-@SupportedSourceVersion(SourceVersion.RELEASE_9)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class AcraAnnotationProcessor extends AbstractProcessor {
 
     @Override

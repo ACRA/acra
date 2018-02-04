@@ -19,31 +19,11 @@ package org.acra.processor.util;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeVariableName;
-
-import org.acra.annotation.AnyNonDefault;
-import org.acra.annotation.BuilderMethod;
-import org.acra.annotation.Configuration;
-import org.acra.annotation.ConfigurationValue;
-import org.acra.annotation.Instantiatable;
-import org.acra.annotation.NonEmpty;
-import org.acra.annotation.PreBuild;
-import org.acra.annotation.Transform;
+import com.squareup.javapoet.*;
+import org.acra.annotation.*;
 import org.acra.collections.ImmutableList;
 import org.acra.collections.ImmutableMap;
 import org.acra.collections.ImmutableSet;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
@@ -51,6 +31,11 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author F43nd1r
@@ -104,5 +89,26 @@ public final class Types {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Needs exactly one method", typeElement);
             throw new IllegalArgumentException();
         }
+    }
+
+    @NonNull
+    public static TypeName getImmutableType(TypeName type) {
+        if (type instanceof ParameterizedTypeName) {
+            final TypeName genericType = ((ParameterizedTypeName) type).rawType;
+            if (MAP.equals(genericType)) {
+                type = getWithParams(IMMUTABLE_MAP, (ParameterizedTypeName) type);
+            } else if (SET.equals(genericType)) {
+                return getWithParams(IMMUTABLE_SET, (ParameterizedTypeName) type);
+            } else if (LIST.equals(genericType)) {
+                type = getWithParams(IMMUTABLE_LIST, (ParameterizedTypeName) type);
+            }
+        } else if (type instanceof ArrayTypeName) {
+            type = ParameterizedTypeName.get(IMMUTABLE_LIST, ((ArrayTypeName) type).componentType);
+        }
+        return type;
+    }
+
+    private static TypeName getWithParams(@NonNull ClassName baseType, @NonNull ParameterizedTypeName parameterType) {
+        return ParameterizedTypeName.get(baseType, parameterType.typeArguments.toArray(new TypeName[parameterType.typeArguments.size()]));
     }
 }
