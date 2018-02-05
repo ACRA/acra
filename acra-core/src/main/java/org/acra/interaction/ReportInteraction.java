@@ -50,5 +50,7 @@ public interface ReportInteraction {
      * @param config the current config
      * @return if this instance should be called
      */
-    boolean enabled(@NonNull CoreConfiguration config);
+    default boolean enabled(@NonNull CoreConfiguration config) {
+        return true;
+    }
 }

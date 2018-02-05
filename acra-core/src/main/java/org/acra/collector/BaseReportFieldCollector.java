@@ -90,13 +90,4 @@ abstract class BaseReportFieldCollector implements Collector {
      * @throws Exception if collection failed
      */
     abstract void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) throws Exception;
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public Order getOrder() {
-        return Order.NORMAL;
-    }
 }

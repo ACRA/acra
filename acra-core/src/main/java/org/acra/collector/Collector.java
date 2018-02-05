@@ -45,7 +45,9 @@ public interface Collector {
      * @return when this collector should be called compared to other collectors
      */
     @NonNull
-    Order getOrder();
+    default Order getOrder() {
+        return Order.NORMAL;
+    }
 
     enum Order {
         FIRST,

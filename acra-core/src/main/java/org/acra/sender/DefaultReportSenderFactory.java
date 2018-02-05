@@ -65,9 +65,4 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
         }
         return new NullSender();
     }
-
-    @Override
-    public boolean enabled(@NonNull CoreConfiguration config) {
-        return true;
-    }
 }
