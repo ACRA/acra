@@ -69,13 +69,9 @@ public final class ApplicationStartupProcessor {
             return; // There are no unapproved reports, so bail now.
         }
         //cannot directly create stuff from onAttachBaseContext, so defer the call
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
+        new Handler(context.getMainLooper()).post(() ->
                 //only approve one report at a time to prevent overwhelming users
-                new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
-            }
-        });
+                new ReportInteractionExecutor(context, config).performInteractions(reports[0]));
     }
 
     /**

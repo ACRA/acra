@@ -199,13 +199,10 @@ public class ReportExecutor {
                 if (Debug.isDebuggerConnected()) {
                     //Killing a process with a debugger attached would kill the whole application including our service, so we can't do that.
                     final String warning = "Warning: Acra may behave differently with a debugger attached";
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Looper.prepare();
-                            ToastSender.sendToast(context, warning, Toast.LENGTH_LONG);
-                            Looper.loop();
-                        }
+                    new Thread(() -> {
+                        Looper.prepare();
+                        ToastSender.sendToast(context, warning, Toast.LENGTH_LONG);
+                        Looper.loop();
                     }).start();
                     ACRA.log.w(LOG_TAG, warning);
                 } else {

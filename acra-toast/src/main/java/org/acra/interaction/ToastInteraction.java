@@ -53,14 +53,11 @@ public class ToastInteraction extends BaseReportInteraction {
         ToastSender.sendToast(context, ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class).text(), Toast.LENGTH_LONG);
         final Looper looper = Looper.myLooper();
         if(looper != null) {
-            new Handler(looper).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        looper.quitSafely();
-                    } else {
-                        looper.quit();
-                    }
+            new Handler(looper).postDelayed(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    looper.quitSafely();
+                } else {
+                    looper.quit();
                 }
             }, TOAST_WAIT_DURATION);
             Looper.loop();

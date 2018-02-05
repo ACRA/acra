@@ -94,12 +94,7 @@ public class SenderService extends JobIntentService {
             }
             final String toast = reportsSentCount > 0 ? config.reportSendSuccessToast() : config.reportSendFailureToast();
             if (toast != null) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastSender.sendToast(SenderService.this, toast, Toast.LENGTH_LONG);
-                    }
-                });
+                new Handler(Looper.getMainLooper()).post(() -> ToastSender.sendToast(SenderService.this, toast, Toast.LENGTH_LONG));
             }
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "", e);

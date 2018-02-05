@@ -1,13 +1,10 @@
 package org.acra.util;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 public final class StubCreator {
@@ -16,14 +13,10 @@ public final class StubCreator {
 
     @NonNull
     public static ErrorReporter createErrorReporterStub() {
-        return createStub(ErrorReporter.class, new InvocationHandler() {
-            @Nullable
-            @Override
-            public Object invoke(Object proxy, @NonNull Method method, Object[] args) {
-                String message = ACRA.isACRASenderServiceProcess() ? "in SenderService process" : "before ACRA#init (if you did call #init, check if your configuration is valid)";
-                ACRA.log.w(ACRA.LOG_TAG, String.format("ErrorReporter#%s called %s. THIS CALL WILL BE IGNORED!", method.getName(), message));
-                return null;
-            }
+        return createStub(ErrorReporter.class, (proxy, method, args) -> {
+            String message = ACRA.isACRASenderServiceProcess() ? "in SenderService process" : "before ACRA#init (if you did call #init, check if your configuration is valid)";
+            ACRA.log.w(ACRA.LOG_TAG, String.format("ErrorReporter#%s called %s. THIS CALL WILL BE IGNORED!", method.getName(), message));
+            return null;
         });
     }
 

@@ -18,17 +18,11 @@ package org.acra.interaction;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
-import java.util.concurrent.Callable;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,12 +69,9 @@ public class ReportInteractionExecutor {
         final ExecutorService executorService = Executors.newCachedThreadPool();
         final List<Future<Boolean>> futures = new ArrayList<>();
         for (final ReportInteraction reportInteraction : reportInteractions) {
-            futures.add(executorService.submit(new Callable<Boolean>() {
-                @Override
-                public Boolean call() {
-                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Calling ReportInteraction of class " + reportInteraction.getClass().getName());
-                    return reportInteraction.performInteraction(context, config, reportFile);
-                }
+            futures.add(executorService.submit(() -> {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Calling ReportInteraction of class " + reportInteraction.getClass().getName());
+                return reportInteraction.performInteraction(context, config, reportFile);
             }));
         }
         boolean sendReports = true;

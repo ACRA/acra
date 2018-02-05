@@ -173,7 +173,7 @@ public final class CrashReportData {
     @NonNull
     public String toJSON() throws JSONException {
         try {
-            return StringFormat.JSON.toFormattedString(this, ImmutableSet.<ReportField>empty(), "", "", false);
+            return StringFormat.JSON.toFormattedString(this, ImmutableSet.empty(), "", "", false);
         } catch (JSONException e) {
             throw e;
         } catch (Exception e) {

@@ -18,7 +18,6 @@ package org.acra.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.builder.ReportBuilder;
 import org.acra.collector.ApplicationStartupCollector;
@@ -26,13 +25,7 @@ import org.acra.collector.Collector;
 import org.acra.collector.CollectorException;
 import org.acra.config.CoreConfiguration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,23 +59,20 @@ public final class CrashReportDataFactory {
                 ACRA.log.e(LOG_TAG, "Unable to load collector", e);
             }
         }
-        Collections.sort(collectors, new Comparator<Collector>() {
-            @Override
-            public int compare(@NonNull Collector c1, @NonNull Collector c2) {
-                Collector.Order o1;
-                Collector.Order o2;
-                try {
-                    o1 = c1.getOrder();
-                } catch (Throwable t) {
-                    o1 = Collector.Order.NORMAL;
-                }
-                try {
-                    o2 = c2.getOrder();
-                } catch (Throwable t) {
-                    o2 = Collector.Order.NORMAL;
-                }
-                return o1.ordinal() - o2.ordinal();
+        Collections.sort(collectors, (c1, c2) -> {
+            Collector.Order o1;
+            Collector.Order o2;
+            try {
+                o1 = c1.getOrder();
+            } catch (Throwable t) {
+                o1 = Collector.Order.NORMAL;
             }
+            try {
+                o2 = c2.getOrder();
+            } catch (Throwable t) {
+                o2 = Collector.Order.NORMAL;
+            }
+            return o1.ordinal() - o2.ordinal();
         });
     }
 
@@ -98,19 +88,16 @@ public final class CrashReportDataFactory {
         final CrashReportData crashReportData = new CrashReportData();
         final List<Future<?>> futures = new ArrayList<>();
         for (final Collector collector : collectors) {
-            futures.add(executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    //catch absolutely everything possible here so no collector obstructs the others
-                    try {
-                        if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Calling collector " + collector.getClass().getName());
-                        collector.collect(context, config, builder, crashReportData);
-                        if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Collector " + collector.getClass().getName() + " completed");
-                    }catch (CollectorException e){
-                        ACRA.log.w(LOG_TAG, e);
-                    }catch (Throwable t) {
-                        ACRA.log.e(LOG_TAG, "Error in collector " + collector.getClass().getSimpleName(), t);
-                    }
+            futures.add(executorService.submit(() -> {
+                //catch absolutely everything possible here so no collector obstructs the others
+                try {
+                    if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Calling collector " + collector.getClass().getName());
+                    collector.collect(context, config, builder, crashReportData);
+                    if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Collector " + collector.getClass().getName() + " completed");
+                }catch (CollectorException e){
+                    ACRA.log.w(LOG_TAG, e);
+                }catch (Throwable t) {
+                    ACRA.log.e(LOG_TAG, "Error in collector " + collector.getClass().getSimpleName(), t);
                 }
             }));
         }

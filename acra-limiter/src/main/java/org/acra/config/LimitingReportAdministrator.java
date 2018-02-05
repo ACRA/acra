@@ -108,25 +108,19 @@ public class LimitingReportAdministrator implements ReportingAdministrator {
     public void notifyReportDropped(@NonNull final Context context, @NonNull final CoreConfiguration config) {
         final LimiterConfiguration limiterConfiguration = ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class);
         if (limiterConfiguration.ignoredCrashToast() != null) {
-            final Future<?> future = Executors.newSingleThreadExecutor().submit(new Runnable() {
-                @Override
-                public void run() {
-                    Looper.prepare();
-                    ToastSender.sendToast(context, limiterConfiguration.ignoredCrashToast(), Toast.LENGTH_LONG);
-                    final Looper looper = Looper.myLooper();
-                    if (looper != null) {
-                        new Handler(looper).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                                    looper.quitSafely();
-                                } else {
-                                    looper.quit();
-                                }
-                            }
-                        }, 4000);
-                        Looper.loop();
-                    }
+            final Future<?> future = Executors.newSingleThreadExecutor().submit(() -> {
+                Looper.prepare();
+                ToastSender.sendToast(context, limiterConfiguration.ignoredCrashToast(), Toast.LENGTH_LONG);
+                final Looper looper = Looper.myLooper();
+                if (looper != null) {
+                    new Handler(looper).postDelayed(() -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                            looper.quitSafely();
+                        } else {
+                            looper.quit();
+                        }
+                    }, 4000);
+                    Looper.loop();
                 }
             });
             while (!future.isDone()) {

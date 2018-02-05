@@ -94,7 +94,7 @@ public class StreamReader {
             return TextUtils.join("\n", Arrays.copyOfRange(lines, lines.length - limit, lines.length));
         }
         final String[] lines = text.split("\\r?\\n");
-        final List<String> buffer = limit == NO_LIMIT ? new LinkedList<String>() : new BoundedLinkedList<String>(limit);
+        final List<String> buffer = limit == NO_LIMIT ? new LinkedList<>() : new BoundedLinkedList<>(limit);
         for (String line : lines) {
             if (filter.apply(line)) {
                 buffer.add(line);
