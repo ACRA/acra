@@ -19,7 +19,6 @@ package org.acra.config;
 import android.content.Context;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
-
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 
@@ -39,7 +38,9 @@ public interface ReportingAdministrator {
      * @param reportBuilder the reportBuilder for the report about to be collected
      * @return if this report should be collected
      */
-    boolean shouldStartCollecting(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder);
+    default boolean shouldStartCollecting(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder) {
+        return true;
+    }
 
     /**
      * Determines if a collected report should be sent
@@ -49,7 +50,9 @@ public interface ReportingAdministrator {
      * @param crashReportData the collected report
      * @return if this report should be sent
      */
-    boolean shouldSendReport(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportData crashReportData);
+    default boolean shouldSendReport(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportData crashReportData) {
+        return true;
+    }
 
     /**
      * notifies the user about a dropped report
@@ -57,7 +60,18 @@ public interface ReportingAdministrator {
      * @param context a context
      * @param config  the current config
      */
-    void notifyReportDropped(@NonNull Context context, @NonNull CoreConfiguration config);
+    default void notifyReportDropped(@NonNull Context context, @NonNull CoreConfiguration config) {
+    }
+
+    /**
+     * Determines if the application should be killed
+     *
+     * @param context a context
+     * @param config  the current config
+     */
+    default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config) {
+        return true;
+    }
 
     /**
      * controls if this instance is active
@@ -65,5 +79,7 @@ public interface ReportingAdministrator {
      * @param config the current config
      * @return if this instance should be called
      */
-    boolean enabled(@NonNull CoreConfiguration config);
+    default boolean enabled(@NonNull CoreConfiguration config) {
+        return true;
+    }
 }

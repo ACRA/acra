@@ -145,7 +145,7 @@ public class ReportExecutor {
                     break;
                 }
             } catch (Throwable t) {
-                ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exeption", t);
+                ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
             }
         }
         final CrashReportData crashReportData;
@@ -158,7 +158,7 @@ public class ReportExecutor {
                         break;
                     }
                 } catch (Throwable t) {
-                    ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exeption", t);
+                    ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
                 }
             }
         } else {
@@ -193,6 +193,15 @@ public class ReportExecutor {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Interactions + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
         if (reportBuilder.isEndApplication()) {
+            for (ReportingAdministrator administrator : reportingAdministrators) {
+                try {
+                    if (!administrator.shouldKillApplication(context, config)) {
+                        return;
+                    }
+                } catch (Throwable t) {
+                    ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
+                }
+            }
             if (Debug.isDebuggerConnected()) {
                 //Killing a process with a debugger attached would kill the whole application including our service, so we can't do that.
                 final String warning = "Warning: Acra may behave differently with a debugger attached";
