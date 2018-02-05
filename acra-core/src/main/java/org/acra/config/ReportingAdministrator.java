@@ -19,6 +19,7 @@ package org.acra.config;
 import android.content.Context;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 
@@ -69,7 +70,7 @@ public interface ReportingAdministrator {
      * @param context a context
      * @param config  the current config
      */
-    default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config) {
+    default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @Nullable CrashReportData crashReportData) {
         return true;
     }
 

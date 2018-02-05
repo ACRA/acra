@@ -188,7 +188,7 @@ public class ReportExecutor {
             boolean endApplication = true;
             for (ReportingAdministrator administrator : reportingAdministrators) {
                 try {
-                    if (!administrator.shouldKillApplication(context, config)) {
+                    if (!administrator.shouldKillApplication(context, config, reportBuilder, crashReportData)) {
                         endApplication = false;
                     }
                 } catch (Throwable t) {
