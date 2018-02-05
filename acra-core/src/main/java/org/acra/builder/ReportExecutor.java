@@ -21,13 +21,12 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
-import org.acra.data.CrashReportData;
-import org.acra.data.CrashReportDataFactory;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ReportingAdministrator;
+import org.acra.data.CrashReportData;
+import org.acra.data.CrashReportDataFactory;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
@@ -36,12 +35,7 @@ import org.acra.util.ProcessFinisher;
 import org.acra.util.ToastSender;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
+import java.util.*;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
@@ -70,11 +64,11 @@ public class ReportExecutor {
     /**
      * Creates a new instance
      *
-     * @param context a context
-     * @param config the config
-     * @param crashReportDataFactory factory used to collect data
+     * @param context                 a context
+     * @param config                  the config
+     * @param crashReportDataFactory  factory used to collect data
      * @param defaultExceptionHandler pass-through handler
-     * @param processFinisher used to end process after reporting
+     * @param processFinisher         used to end process after reporting
      */
     public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportDataFactory crashReportDataFactory,
                           @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher) {
@@ -142,7 +136,6 @@ public class ReportExecutor {
             try {
                 if (!administrator.shouldStartCollecting(context, config, reportBuilder)) {
                     blockingAdministrator = administrator;
-                    break;
                 }
             } catch (Throwable t) {
                 ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
@@ -155,7 +148,6 @@ public class ReportExecutor {
                 try {
                     if (!administrator.shouldSendReport(context, config, crashReportData)) {
                         blockingAdministrator = administrator;
-                        break;
                     }
                 } catch (Throwable t) {
                     ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
@@ -193,29 +185,32 @@ public class ReportExecutor {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Wait for Interactions + worker ended. Kill Application ? " + reportBuilder.isEndApplication());
 
         if (reportBuilder.isEndApplication()) {
+            boolean endApplication = true;
             for (ReportingAdministrator administrator : reportingAdministrators) {
                 try {
                     if (!administrator.shouldKillApplication(context, config)) {
-                        return;
+                        endApplication = false;
                     }
                 } catch (Throwable t) {
                     ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
                 }
             }
-            if (Debug.isDebuggerConnected()) {
-                //Killing a process with a debugger attached would kill the whole application including our service, so we can't do that.
-                final String warning = "Warning: Acra may behave differently with a debugger attached";
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        ToastSender.sendToast(context, warning, Toast.LENGTH_LONG);
-                        Looper.loop();
-                    }
-                }).start();
-                ACRA.log.w(LOG_TAG, warning);
-            } else {
-                endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
+            if (endApplication) {
+                if (Debug.isDebuggerConnected()) {
+                    //Killing a process with a debugger attached would kill the whole application including our service, so we can't do that.
+                    final String warning = "Warning: Acra may behave differently with a debugger attached";
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Looper.prepare();
+                            ToastSender.sendToast(context, warning, Toast.LENGTH_LONG);
+                            Looper.loop();
+                        }
+                    }).start();
+                    ACRA.log.w(LOG_TAG, warning);
+                } else {
+                    endApplication(reportBuilder.getUncaughtExceptionThread(), reportBuilder.getException());
+                }
             }
         }
     }
