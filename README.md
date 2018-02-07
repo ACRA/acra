@@ -7,6 +7,8 @@
 |License|![license](https://img.shields.io/github/license/ACRA/acra.svg)|
 |Donations|[![Click here to lend your support to: ACRA - Application Crash Reports for Android and make a donation at www.pledgie.com !](https://pledgie.com/campaigns/18789.png?skin_name=chrome)](http://www.pledgie.com/campaigns/18789) [![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)|
 
+**Please take 5 Minutes to fill out our [User survey](https://goo.gl/forms/nyt9qkCk1GptRGlw2)!**
+
 What is ACRA ?
 ==============
 
@@ -33,10 +35,10 @@ The user is notified of an error only once, and you might enhance the perceived 
 
 Please do not hesitate to open defects/enhancements requests in [the issue tracker](http://github.com/ACRA/acra/issues).
 
-Latest version ACRA v5.0.1 - 8-JAN-2018
+Latest version
 ===========================================
 
-For a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
+For the latest version and a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
 
 For migrating from previous versions, please see our [Migration guide](http://github.com/ACRA/acra/wiki/Migrating) in the Wiki.
 
