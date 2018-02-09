@@ -49,7 +49,7 @@ public final class KeyStoreHelper {
     public static KeyStore getKeyStore(@NonNull Context context, @NonNull CoreConfiguration config) {
         final HttpSenderConfiguration senderConfiguration = ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class);
         final InstanceCreator instanceCreator = new InstanceCreator();
-        KeyStore keyStore = instanceCreator.create(senderConfiguration.keyStoreFactoryClass(), new NoKeyStoreFactory()).create(context);
+        KeyStore keyStore = instanceCreator.create(senderConfiguration.keyStoreFactoryClass(), NoKeyStoreFactory::new).create(context);
         if(keyStore == null) {
             //either users factory did not create a keystore, or the configuration is default {@link NoKeyStoreFactory}
             final int certificateRes = senderConfiguration.resCertificate();

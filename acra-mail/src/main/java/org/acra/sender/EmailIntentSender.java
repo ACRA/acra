@@ -226,7 +226,7 @@ public class EmailIntentSender implements ReportSender {
      */
     protected boolean fillAttachmentList(@NonNull Context context, @NonNull String body, @NonNull List<Uri> attachments) {
         final InstanceCreator instanceCreator = new InstanceCreator();
-        attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config));
+        attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config));
         if (mailConfig.reportAsFile()) {
             final Uri report = createAttachmentFromString(context, mailConfig.reportFileName(), body);
             if (report != null) {
