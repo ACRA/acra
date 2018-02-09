@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
@@ -49,17 +48,20 @@ public final class ApplicationStartupProcessor {
         reportLocator = new ReportLocator(context);
     }
 
-    public void checkReports(boolean enableAcra){
-        if (config.deleteOldUnsentReportsOnApplicationStart()) {
-            deleteUnsentReportsFromOldAppVersion();
-        }
-        if (config.deleteUnapprovedReportsOnApplicationStart()) {
-            reportDeleter.deleteReports(false, 1);
-        }
-        if (enableAcra) {
-            sendApprovedReports();
-            approveOneReport();
-        }
+    public void checkReports(boolean enableAcra) {
+        //application is not ready in onAttachBaseContext, so delay this
+        new Handler(context.getMainLooper()).post(() -> {
+            if (config.deleteOldUnsentReportsOnApplicationStart()) {
+                deleteUnsentReportsFromOldAppVersion();
+            }
+            if (config.deleteUnapprovedReportsOnApplicationStart()) {
+                reportDeleter.deleteReports(false, 1);
+            }
+            if (enableAcra) {
+                sendApprovedReports();
+                approveOneReport();
+            }
+        });
     }
 
     private void approveOneReport() {
@@ -68,10 +70,8 @@ public final class ApplicationStartupProcessor {
         if (reports.length == 0) {
             return; // There are no unapproved reports, so bail now.
         }
-        //cannot directly create stuff from onAttachBaseContext, so defer the call
-        new Handler(context.getMainLooper()).post(() ->
-                //only approve one report at a time to prevent overwhelming users
-                new ReportInteractionExecutor(context, config).performInteractions(reports[0]));
+        //only approve one report at a time to prevent overwhelming users
+        new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
     }
 
     /**
