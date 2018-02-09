@@ -21,7 +21,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.widget.Toast;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
@@ -52,7 +51,7 @@ public class SenderService extends JobIntentService {
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         if (!intent.hasExtra(EXTRA_ACRA_CONFIG)) {
-            if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SenderService was started but no valid intent was delivered, will now quit");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SenderService was started but no valid intent was delivered, will now quit");
             return;
         }
 
@@ -89,12 +88,13 @@ public class SenderService extends JobIntentService {
                     break; // send only a few reports to avoid overloading the network
                 }
 
-                reportDistributor.distribute(report);
-                reportsSentCount++;
+                if (reportDistributor.distribute(report)) {
+                    reportsSentCount++;
+                }
             }
             final String toast = reportsSentCount > 0 ? config.reportSendSuccessToast() : config.reportSendFailureToast();
             if (toast != null) {
-                new Handler(Looper.getMainLooper()).post(() -> ToastSender.sendToast(SenderService.this, toast, Toast.LENGTH_LONG));
+                new Handler(Looper.getMainLooper()).post(() -> ToastSender.sendToast(this, toast, Toast.LENGTH_LONG));
             }
         } catch (Exception e) {
             ACRA.log.e(LOG_TAG, "", e);
