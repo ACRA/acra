@@ -167,6 +167,7 @@ subprojects {
                     }
                 }
             }
+            dependsOn build
         }
 
         task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -273,6 +274,7 @@ task joinedJavadoc(type: Javadoc) {
             rootProject.joinedJavadoc {
                 source += files(tasks.collect { it.source })
                 classpath += files(tasks.collect { it.classpath })
+                dependsOn tasks.collect { it.dependsOn }
             }
             plugins.withType(LibraryPlugin) {
                 rootProject.joinedJavadoc {
