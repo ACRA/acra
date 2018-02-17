@@ -145,7 +145,7 @@ public class HttpSender implements ReportSender {
             final String password = mPassword != null ? mPassword : isNull(httpConfig.basicAuthPassword()) ? null : httpConfig.basicAuthPassword();
 
             final InstanceCreator instanceCreator = new InstanceCreator();
-            final List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), new DefaultAttachmentProvider()).getAttachments(context, config);
+            final List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config);
 
             // Generate report body depending on requested type
             final String reportAsString = convertToString(report, mType);

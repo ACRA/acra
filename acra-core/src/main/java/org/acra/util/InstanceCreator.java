@@ -18,7 +18,6 @@ package org.acra.util;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-
 import org.acra.ACRA;
 
 import java.util.ArrayList;
@@ -37,14 +36,14 @@ public final class InstanceCreator {
      * Create an instance of clazz
      *
      * @param clazz    the clazz to create an instance of
-     * @param fallback the value to return in case of a failure
+     * @param fallback a value provider which provides a fallback in case of a failure
      * @param <T>      the return type
      * @return a new instance of clazz or fallback
      */
     @NonNull
-    public <T> T create(@NonNull Class<? extends T> clazz, @NonNull T fallback) {
+    public <T> T create(@NonNull Class<? extends T> clazz, @NonNull Fallback<T> fallback) {
         T t = create(clazz);
-        return t != null ? t : fallback;
+        return t != null ? t : fallback.get();
     }
 
     @VisibleForTesting
@@ -77,5 +76,11 @@ public final class InstanceCreator {
             }
         }
         return result;
+    }
+
+    @FunctionalInterface
+    public interface Fallback<T> {
+        @NonNull
+        T get();
     }
 }
