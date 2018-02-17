@@ -16,6 +16,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.acra">
+    <uses-permission android:name="android.permission.WAKE_LOCK" android:maxSdkVersion="25"/>
     <application>
         <service
             android:name="org.acra.sender.SenderService"
