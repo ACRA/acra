@@ -19,12 +19,11 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
-import org.acra.data.CrashReportData;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
+import org.acra.data.CrashReportData;
 import org.acra.file.CrashReportPersister;
 import org.acra.util.IOUtils;
 import org.acra.util.InstanceCreator;
@@ -52,9 +51,9 @@ final class ReportDistributor {
     /**
      * Creates a new {@link ReportDistributor} to try sending pending reports.
      *
-     * @param context               ApplicationContext in which the reports are being sent.
-     * @param config                Configuration to use while sending.
-     * @param reportSenders         List of ReportSender to use to send the crash reports.
+     * @param context       ApplicationContext in which the reports are being sent.
+     * @param config        Configuration to use while sending.
+     * @param reportSenders List of ReportSender to use to send the crash reports.
      */
     ReportDistributor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull List<ReportSender> reportSenders) {
         this.context = context;
@@ -65,16 +64,18 @@ final class ReportDistributor {
     /**
      * Send report via all senders.
      *
-     * @param reportFile    Report to send.
+     * @param reportFile Report to send.
+     * @return if distributing was successful
      */
-    public void distribute(@NonNull File reportFile) {
+    public boolean distribute(@NonNull File reportFile) {
 
-        ACRA.log.i(LOG_TAG, "Sending report " + reportFile );
+        ACRA.log.i(LOG_TAG, "Sending report " + reportFile);
         try {
             final CrashReportPersister persister = new CrashReportPersister();
             final CrashReportData previousCrashReport = persister.load(reportFile);
             sendCrashReport(previousCrashReport);
             IOUtils.deleteFile(reportFile);
+            return true;
         } catch (RuntimeException e) {
             ACRA.log.e(LOG_TAG, "Failed to send crash reports for " + reportFile, e);
             IOUtils.deleteFile(reportFile);
@@ -84,12 +85,13 @@ final class ReportDistributor {
         } catch (JSONException e) {
             ACRA.log.e(LOG_TAG, "Failed to load crash report for " + reportFile, e);
             IOUtils.deleteFile(reportFile);
-        }catch (ReportSenderException e) {
+        } catch (ReportSenderException e) {
             ACRA.log.e(LOG_TAG, "Failed to send crash report for " + reportFile, e);
             // An issue occurred while sending this report but we can still try to
             // send other reports. Report sending is limited by ACRAConstants.MAX_SEND_REPORTS
             // so there's not much to fear about overloading a failing server.
         }
+        return false;
     }
 
     /**
@@ -97,7 +99,7 @@ final class ReportDistributor {
      * sender completed its job, the report is considered as sent and will not
      * be sent again for failing senders.
      *
-     * @param errorContent  Crash data.
+     * @param errorContent Crash data.
      * @throws ReportSenderException if unable to send the crash report.
      */
     private void sendCrashReport(@NonNull CrashReportData errorContent) throws ReportSenderException {
