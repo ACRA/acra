@@ -17,7 +17,6 @@
 package org.acra.processor.creator;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -35,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 
 /**
@@ -45,7 +43,7 @@ import javax.lang.model.element.ExecutableElement;
 
 public class BuildMethodCreator {
     private final MethodSpec.Builder methodBuilder;
-    private final Map<String, AnnotationValue> anyNonDefault;
+    private final Map<String, CodeBlock> anyNonDefault;
     private final ClassName config;
     private final List<CodeBlock> statements;
 
@@ -75,7 +73,7 @@ public class BuildMethodCreator {
         methodBuilder.addStatement("$T.check($L)", ClassValidator.class, name);
     }
 
-    public void addAnyNonDefault(@NonNull String name, @Nullable AnnotationValue defaultValue) {
+    public void addAnyNonDefault(@NonNull String name, @NonNull CodeBlock defaultValue) {
         anyNonDefault.put(name, defaultValue);
     }
 
@@ -110,7 +108,8 @@ public class BuildMethodCreator {
     @NonNull
     MethodSpec build() {
         if (anyNonDefault.size() > 0) {
-            methodBuilder.beginControlFlow("if ($L)", anyNonDefault.entrySet().stream().map(field -> field.getKey() + " == " + field.getValue()).collect(Collectors.joining(" && ")))
+            methodBuilder.beginControlFlow("if ($L)", anyNonDefault.entrySet().stream().map(field -> CodeBlock.builder().add(field.getKey()).add(" == ").add(field.getValue()).build())
+                    .reduce((c1, c2) -> CodeBlock.builder().add(c1).add(" && ").add(c2).build()).orElseGet(() -> CodeBlock.of("true")))
                     .addStatement("throw new $T(\"One of $L must not be default\")", ACRAConfigurationException.class,
                             anyNonDefault.keySet().stream().collect(Collectors.joining(", ")))
                     .endControlFlow();

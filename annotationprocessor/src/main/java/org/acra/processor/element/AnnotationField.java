@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.squareup.javapoet.*;
 import org.acra.processor.creator.BuildMethodCreator;
-import org.acra.processor.util.InitializerVisitor;
+import org.acra.processor.util.ToCodeBlockVisitor;
 import org.acra.processor.util.IsValidResourceVisitor;
 import org.acra.processor.util.Strings;
 import org.acra.processor.util.Types;
@@ -91,10 +91,7 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
         public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
             constructorWhenAnnotationPresent.addStatement("$1L = $2L.$1L()", getName(), Strings.VAR_ANNOTATION);
             if (getDefaultValue() != null) {
-                final List<Object> parameters = new ArrayList<>();
-                parameters.add(getName());
-                final String statement = getDefaultValue().accept(new InitializerVisitor(getType()), parameters);
-                constructorWhenAnnotationMissing.addStatement("$L = " + statement, parameters.toArray());
+                constructorWhenAnnotationMissing.addStatement("$L = $L", getName(), getDefaultValue().accept(new ToCodeBlockVisitor(getType()), null));
             }
         }
 
@@ -110,7 +107,7 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
                 method.addInstantiatable(getName());
             }
             if (hasMarker(Types.ANY_NON_DEFAULT)) {
-                method.addAnyNonDefault(getName(), getDefaultValue());
+                method.addAnyNonDefault(getName(), getDefaultValue().accept(new ToCodeBlockVisitor(getType()), null));
             }
         }
 
@@ -176,7 +173,7 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
                 method.addNotUnset(getName(), getType());
             }
             if (hasMarker(Types.ANY_NON_DEFAULT)) {
-                method.addAnyNonDefault(getName(), null);
+                method.addAnyNonDefault(getName(), CodeBlock.of("null"));
             }
         }
     }
