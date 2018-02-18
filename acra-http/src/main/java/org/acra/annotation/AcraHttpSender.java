@@ -70,7 +70,7 @@ public @interface AcraHttpSender {
 
     /**
      * <p>
-     * The {@link HttpSender.Method} to be used when posting with {@link #uri()} .
+     * The {@link HttpSender.Method} to be used when posting with {@link org.acra.annotation.AcraHttpSender#uri()} .
      * </p>
      *
      * @return HTTP method used when posting reports.

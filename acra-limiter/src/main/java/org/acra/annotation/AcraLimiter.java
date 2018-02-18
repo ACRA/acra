@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public @interface AcraLimiter {
     /**
-     * Unit of {@link #period()}
+     * Unit of {@link org.acra.annotation.AcraLimiter#period()}
      *
      * @return a time unit
      * @since 5.0.0
@@ -50,9 +50,9 @@ public @interface AcraLimiter {
     @NonNull TimeUnit periodUnit() default TimeUnit.DAYS;
 
     /**
-     * Reports which have been collected before this will not be considered for any limits except {@link #failedReportLimit()}
+     * Reports which have been collected before this will not be considered for any limits except {@link org.acra.annotation.AcraLimiter#failedReportLimit()}
      *
-     * @return number of {@link #periodUnit()}s in which to limit reports
+     * @return number of {@link org.acra.annotation.AcraLimiter#periodUnit()}s in which to limit reports
      * @since 5.0.0
      */
     long period() default 7;
