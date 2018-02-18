@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 /**
  * @author F43nd1r
@@ -107,11 +108,11 @@ public enum Directory {
         @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
-            String[] parts = fileName.split(File.separator, 2);
+            String[] parts = fileName.split(Pattern.quote(File.separator), 2);
             if (parts.length == 1) return new File(fileName);
             final File[] roots = File.listRoots();
             for (File root : roots) {
-                if (parts[0].equals(root.getName())) {
+                if (parts[0].equals(root.getPath().replace(File.separator, ""))) {
                     return new File(root, parts[1]);
                 }
             }
