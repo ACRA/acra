@@ -107,11 +107,14 @@ public class ClassCreator {
         }
         final CodeBlock.Builder always = CodeBlock.builder();
         final CodeBlock.Builder whenAnnotationPresent = CodeBlock.builder();
+        final CodeBlock.Builder whenAnnotationMissing = CodeBlock.builder();
         ClassName builder = ClassName.get(PACKAGE, builderName);
-        elements.stream().filter(BuilderElement.class::isInstance).map(BuilderElement.class::cast).forEach(m -> m.addToBuilder(classBuilder, builder, always, whenAnnotationPresent));
+        elements.stream().filter(BuilderElement.class::isInstance).map(BuilderElement.class::cast).forEach(m -> m.addToBuilder(classBuilder, builder, always, whenAnnotationPresent, whenAnnotationMissing));
         constructor.addCode(always.build())
                 .beginControlFlow("if ($L)", Strings.FIELD_ENABLED)
                 .addCode(whenAnnotationPresent.build())
+                .nextControlFlow("else")
+                .addCode(whenAnnotationMissing.build())
                 .endControlFlow();
         classBuilder.addMethod(constructor.build());
         final BuildMethodCreator build = new BuildMethodCreator(Types.getOnlyMethod(processingEnv, ConfigurationBuilder.class.getName()), ClassName.get(PACKAGE, configName));

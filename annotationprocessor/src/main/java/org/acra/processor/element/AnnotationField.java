@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import com.squareup.javapoet.*;
 import org.acra.processor.creator.BuildMethodCreator;
 import org.acra.processor.util.InitializerVisitor;
+import org.acra.processor.util.IsValidResourceVisitor;
 import org.acra.processor.util.Strings;
 import org.acra.processor.util.Types;
 import org.apache.commons.text.WordUtils;
@@ -28,6 +29,7 @@ import org.apache.commons.text.WordUtils;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,11 +41,13 @@ import java.util.List;
 abstract class AnnotationField extends AbstractElement implements TransformedField.Transformable {
     private final Collection<ClassName> markers;
     private final String javadoc;
+    private final AnnotationValue defaultValue;
 
-    AnnotationField(@NonNull String name, @NonNull TypeName type, @NonNull Collection<AnnotationSpec> annotations, @Nullable String javadoc, @NonNull Collection<ClassName> markers) {
+    AnnotationField(@NonNull String name, @NonNull TypeName type, @NonNull Collection<AnnotationSpec> annotations, @Nullable String javadoc, @NonNull Collection<ClassName> markers, AnnotationValue defaultValue) {
         super(name, type, annotations);
         this.javadoc = javadoc;
         this.markers = markers;
+        this.defaultValue = defaultValue;
     }
 
     boolean hasMarker(@NonNull ClassName marker) {
@@ -51,19 +55,23 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
     }
 
     @Override
-    public final void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways, @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
-        addWithoutGetter(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+    public final void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways, @NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
+        addWithoutGetter(builder, builderName, constructorAlways, constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
         addGetter(builder);
     }
 
     @Override
-    public final void addWithoutGetter(@NonNull TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent) {
-        TransformedField.Transformable.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+    public final void addWithoutGetter(@NonNull TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
+        TransformedField.Transformable.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
         addSetter(builder, builderName);
-        addInitializer(constructorWhenAnnotationPresent);
+        addInitializer(constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
     }
 
-    protected abstract void addInitializer(CodeBlock.Builder constructorWhenAnnotationPresent);
+    protected abstract void addInitializer(CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing);
+
+    AnnotationValue getDefaultValue() {
+        return defaultValue;
+    }
 
     @Override
     public void configureSetter(@NonNull MethodSpec.Builder builder) {
@@ -74,30 +82,25 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
     }
 
     static class Normal extends AnnotationField {
-        private final AnnotationValue defaultValue;
 
         Normal(String name, TypeName type, Collection<AnnotationSpec> annotations, Collection<ClassName> markers, AnnotationValue defaultValue, String javadoc) {
-            super(name, type, annotations, javadoc, markers);
-            this.defaultValue = defaultValue;
+            super(name, type, annotations, javadoc, markers, defaultValue);
         }
 
         @Override
-        public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
             constructorWhenAnnotationPresent.addStatement("$1L = $2L.$1L()", getName(), Strings.VAR_ANNOTATION);
-        }
-
-        @Override
-        public void configureField(@NonNull FieldSpec.Builder builder) {
-            if (defaultValue != null) {
+            if (getDefaultValue() != null) {
                 final List<Object> parameters = new ArrayList<>();
-                final String statement = defaultValue.accept(new InitializerVisitor(getType()), parameters);
-                builder.initializer(statement, parameters.toArray(new Object[parameters.size()]));
+                parameters.add(getName());
+                final String statement = getDefaultValue().accept(new InitializerVisitor(getType()), parameters);
+                constructorWhenAnnotationMissing.addStatement("$L = " + statement, parameters.toArray());
             }
         }
 
         @Override
         public void addToBuildMethod(@NonNull BuildMethodCreator method) {
-            if (defaultValue == null) {
+            if (getDefaultValue() == null) {
                 method.addNotUnset(getName(), getType());
             }
             if (hasMarker(Types.NON_EMPTY)) {
@@ -107,33 +110,34 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
                 method.addInstantiatable(getName());
             }
             if (hasMarker(Types.ANY_NON_DEFAULT)) {
-                method.addAnyNonDefault(getName(), defaultValue);
+                method.addAnyNonDefault(getName(), getDefaultValue());
             }
         }
 
     }
 
     static class StringResource extends AnnotationField {
-        @NonNull
         private final String originalName;
-        private final boolean allowNull;
+        private final boolean hasDefault;
 
         StringResource(String name, Collection<AnnotationSpec> annotations, Collection<ClassName> markers,
-                       boolean allowNull, String javadoc) {
-            super((name.startsWith(Strings.PREFIX_RES)) ? WordUtils.uncapitalize(name.substring(Strings.PREFIX_RES.length())) : name, Types.STRING, annotations, javadoc, markers);
+                       AnnotationValue defaultValue, String javadoc) {
+            super((name.startsWith(Strings.PREFIX_RES)) ? WordUtils.uncapitalize(name.substring(Strings.PREFIX_RES.length())) : name, Types.STRING, annotations, javadoc, markers, defaultValue);
             this.originalName = name;
-            this.allowNull = allowNull;
+            this.hasDefault = defaultValue != null && getDefaultValue().accept(new IsValidResourceVisitor(), null);
             getAnnotations().remove(Types.STRING_RES);
-            if (allowNull) {
-                getAnnotations().add(Types.NULLABLE);
-            }
+            getAnnotations().add(hasDefault ? Types.NON_NULL : Types.NULLABLE);
         }
 
         @Override
-        public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
+        public void addInitializer(@NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
             constructorWhenAnnotationPresent.beginControlFlow("if ($L.$L() != 0)", Strings.VAR_ANNOTATION, originalName)
                     .addStatement("$L = $L.getString($L.$L())", getName(), Strings.FIELD_CONTEXT, Strings.VAR_ANNOTATION, originalName)
                     .endControlFlow();
+            if (hasDefault) {
+                constructorWhenAnnotationMissing.addStatement("$L = $L.getString($L)", getName(), Strings.FIELD_CONTEXT, getDefaultValue());
+            }
+
         }
 
         @Override
@@ -146,10 +150,10 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
             builder.addMethod(setter.build());
         }
 
-        private MethodSpec.Builder baseResSetter(ClassName builderName){
+        private MethodSpec.Builder baseResSetter(ClassName builderName) {
             final String parameterName = Strings.PREFIX_RES + WordUtils.capitalize(getName());
             final List<AnnotationSpec> annotations = new ArrayList<>(getAnnotations());
-            annotations.removeIf(Types.NULLABLE::equals);
+            annotations.removeIf(Arrays.asList(Types.NULLABLE, Types.NON_NULL)::contains);
             annotations.add(Types.STRING_RES);
             return MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(parameterName))
                     .addParameter(ParameterSpec.builder(TypeName.INT, parameterName).addAnnotations(annotations).build())
@@ -168,7 +172,7 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
 
         @Override
         public void addToBuildMethod(@NonNull BuildMethodCreator method) {
-            if (!allowNull) {
+            if (getDefaultValue() == null) {
                 method.addNotUnset(getName(), getType());
             }
             if (hasMarker(Types.ANY_NON_DEFAULT)) {

@@ -33,7 +33,7 @@ import java.util.Collections;
 public interface BuilderElement extends Element {
 
     default void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
-                              @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
+                              @NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
         final FieldSpec.Builder field = FieldSpec.builder(getType(), getName(), Modifier.PRIVATE).addAnnotations(getAnnotations());
         configureField(field);
         builder.addField(field.build());
@@ -101,8 +101,8 @@ public interface BuilderElement extends Element {
 
         @Override
         public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
-                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
-            Final.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
+            Final.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
             constructorAlways.addStatement("$L = $L", getName(), Strings.PARAM_0);
         }
     }
@@ -117,8 +117,8 @@ public interface BuilderElement extends Element {
 
         @Override
         public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
-                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
-            Final.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
+            Final.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
             if (hasContextParameter) {
                 constructorAlways.addStatement("$L = new $T($L)", getName(), getType(), Strings.PARAM_0);
             } else {
@@ -134,8 +134,8 @@ public interface BuilderElement extends Element {
 
         @Override
         public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
-                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
-            Interface.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+                                 @NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
+            Interface.super.addToBuilder(builder, builderName, constructorAlways, constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
             addSetter(builder, builderName);
             addGetter(builder);
             constructorAlways.addStatement("$L = $L != null", getName(), Strings.VAR_ANNOTATION);
