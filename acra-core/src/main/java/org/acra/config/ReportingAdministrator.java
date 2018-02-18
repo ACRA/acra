@@ -20,6 +20,7 @@ import android.content.Context;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 
@@ -67,8 +68,11 @@ public interface ReportingAdministrator {
     /**
      * Determines if the application should be killed
      *
-     * @param context a context
-     * @param config  the current config
+     * @param context         a context
+     * @param config          the current config
+     * @param reportBuilder   the reportBuilder for the report about to be collected
+     * @param crashReportData the collected report
+     * @return if the application should be killed
      */
     default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @Nullable CrashReportData crashReportData) {
         return true;

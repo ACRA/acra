@@ -68,7 +68,8 @@ abstract class AnnotationField extends AbstractElement implements TransformedFie
     @Override
     public void configureSetter(@NonNull MethodSpec.Builder builder) {
         if (javadoc != null) {
-            builder.addJavadoc(javadoc.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + getName() + " $1@return this instance\n"));
+            final String name = builder.build().parameters.get(0).name;
+            builder.addJavadoc(javadoc.replaceAll("(\n|^) ", "$1").replaceAll("@return ((.|\n)*)$", "@param " + name + " $1@return this instance\n"));
         }
     }
 

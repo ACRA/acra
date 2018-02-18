@@ -53,7 +53,7 @@ public @interface AcraHttpSender {
     @NonNull String uri();
 
     /**
-     * you can set here and in {@link #basicAuthPassword()} the credentials for a BASIC HTTP authentication.
+     * you can set here and in {@link org.acra.annotation.AcraHttpSender#basicAuthPassword()} the credentials for a BASIC HTTP authentication.
      *
      * @return Login to use.
      * @since 5.0.0
@@ -61,7 +61,7 @@ public @interface AcraHttpSender {
     @NonNull String basicAuthLogin() default ACRAConstants.NULL_VALUE;
 
     /**
-     * you can set here and in {@link #basicAuthLogin()} the credentials for a BASIC HTTP authentication.
+     * you can set here and in {@link org.acra.annotation.AcraHttpSender#basicAuthLogin()} the credentials for a BASIC HTTP authentication.
      *
      * @return Password to use.
      * @since 5.0.0
@@ -132,7 +132,7 @@ public @interface AcraHttpSender {
     /**
      * type of the certificate used for ssl authentication
      *
-     * @return specify the type of the certificate set in either {@link #certificatePath()} or {@link #resCertificate()}
+     * @return specify the type of the certificate set in either {@link org.acra.annotation.AcraHttpSender#certificatePath()} or {@link org.acra.annotation.AcraHttpSender#resCertificate()}
      * @since 5.0.0
      */
     @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
