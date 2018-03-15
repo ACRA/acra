@@ -18,6 +18,7 @@ package org.acra.builder;
 import android.content.Context;
 import android.os.Debug;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
@@ -162,8 +163,10 @@ public class ReportExecutor {
             processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
         }
         if (blockingAdministrator == null) {
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
             final File reportFile = getReportFileName(crashReportData);
             saveCrashReportFile(reportFile, crashReportData);
+            StrictMode.setThreadPolicy(oldPolicy);
 
             final ReportInteractionExecutor executor = new ReportInteractionExecutor(context, config);
             if (reportBuilder.isSendSilently()) {
