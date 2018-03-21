@@ -248,7 +248,7 @@ subprojects {
                         name = project.version
                         desc = pom.description
                         mavenCentralSync {
-                            sync = false
+                            sync = true
                             if (hasProperty('ossrhUser')) {
                                 user = ossrhUser
                                 password = ossrhPassword
