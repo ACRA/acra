@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import org.acra.ACRA;
+import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.ReportLocator;
@@ -31,6 +32,10 @@ import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.sender.SenderServiceStarter;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Looks for any existing reports and starts sending them.
@@ -50,6 +55,7 @@ public final class ApplicationStartupProcessor {
     }
 
     public void checkReports(boolean enableAcra) {
+        final Calendar now = Calendar.getInstance();
         //application is not ready in onAttachBaseContext, so delay this. also run it on a background thread because we're doing disk I/O
         new Handler(context.getMainLooper()).post(() -> new Thread(() -> {
             if (config.deleteOldUnsentReportsOnApplicationStart()) {
@@ -60,19 +66,28 @@ public final class ApplicationStartupProcessor {
             }
             if (enableAcra) {
                 sendApprovedReports();
-                approveOneReport();
+                approveOneReport(now);
             }
         }).start());
     }
 
-    private void approveOneReport() {
+    private void approveOneReport(Calendar ignoreReportsAfter) {
         final File[] reports = reportLocator.getUnapprovedReports();
 
         if (reports.length == 0) {
             return; // There are no unapproved reports, so bail now.
         }
-        //only approve one report at a time to prevent overwhelming users
-        new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
+        //if a report was created after the application launch, it might be currently handled, so ignore it for now.
+        final String timestamp = reports[0].getName().replace(ACRAConstants.REPORTFILE_EXTENSION, "").replace(ACRAConstants.SILENT_SUFFIX, "");
+        final Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH).parse(timestamp));
+            if(calendar.before(ignoreReportsAfter)){
+                //only approve one report at a time to prevent overwhelming users
+                new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
+            }
+        } catch (ParseException ignored) {
+        }
     }
 
     /**
