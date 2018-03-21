@@ -48,8 +48,8 @@ class TransformedField implements ConfigElement, BuilderElement.Interface, Valid
 
     @Override
     public void addToBuilder(@NonNull TypeSpec.Builder builder, @NonNull ClassName builderName, @NonNull CodeBlock.Builder constructorAlways,
-                             @NonNull CodeBlock.Builder constructorWhenAnnotationPresent) {
-        transform.addWithoutGetter(builder, builderName, constructorAlways, constructorWhenAnnotationPresent);
+                             @NonNull CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing) {
+        transform.addWithoutGetter(builder, builderName, constructorAlways, constructorWhenAnnotationPresent, constructorWhenAnnotationMissing);
         addGetter(builder);
     }
 
@@ -84,6 +84,6 @@ class TransformedField implements ConfigElement, BuilderElement.Interface, Valid
     }
 
     public interface Transformable extends ConfigElement, Interface, ValidatedElement {
-        void addWithoutGetter(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent);
+        void addWithoutGetter(TypeSpec.Builder builder, ClassName builderName, CodeBlock.Builder constructorAlways, CodeBlock.Builder constructorWhenAnnotationPresent, CodeBlock.Builder constructorWhenAnnotationMissing);
     }
 }

@@ -17,65 +17,62 @@
 package org.acra.processor.util;
 
 import android.support.annotation.NonNull;
+
 import com.squareup.javapoet.ArrayTypeName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+
+import java.util.List;
 
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author F43nd1r
  * @since 12.01.2018
  */
-public class InitializerVisitor extends SimpleAnnotationValueVisitor8<String, List<Object>> {
+public class ToCodeBlockVisitor extends SimpleAnnotationValueVisitor8<CodeBlock, Void> {
     private final TypeName type;
 
-    public InitializerVisitor(TypeName type) {
+    public ToCodeBlockVisitor(TypeName type) {
         this.type = type;
     }
 
     @NonNull
     @Override
-    protected String defaultAction(Object o, @NonNull List<Object> objects) {
-        objects.add(o);
-        return "$L";
+    protected CodeBlock defaultAction(Object o, Void v) {
+        return CodeBlock.of("$L", o);
     }
 
     @NonNull
     @Override
-    public String visitString(String s, @NonNull List<Object> objects) {
-        objects.add(s);
-        return "$S";
+    public CodeBlock visitString(String s, Void v) {
+        return CodeBlock.of("$S", s);
     }
 
     @NonNull
     @Override
-    public String visitEnumConstant(@NonNull VariableElement c, @NonNull List<Object> objects) {
-        objects.add(c.asType());
-        objects.add(c.getSimpleName());
-        return "$T.$L";
+    public CodeBlock visitEnumConstant(@NonNull VariableElement c, Void v) {
+        return CodeBlock.of("$T.$L", c.asType(), c.getSimpleName());
     }
 
     @NonNull
     @Override
-    public String visitType(TypeMirror t, @NonNull List<Object> objects) {
-        objects.add(t);
-        return "$T.class";
+    public CodeBlock visitType(TypeMirror t, Void v) {
+        return CodeBlock.of("$T.class", t);
     }
 
     @NonNull
     @Override
-    public String visitArray(@NonNull List<? extends AnnotationValue> values, @NonNull List<Object> objects) {
+    public CodeBlock visitArray(@NonNull List<? extends AnnotationValue> values, Void v) {
         ArrayTypeName arrayTypeName = (ArrayTypeName) type;
         if (arrayTypeName.componentType instanceof ParameterizedTypeName) {
             arrayTypeName = ArrayTypeName.of(((ParameterizedTypeName) arrayTypeName.componentType).rawType);
         }
-        objects.add(arrayTypeName);
-        return "new $T" + values.stream().map(value -> value.accept(this, objects)).collect(Collectors.joining(", ", "{", "}"));
+        return CodeBlock.of("new $T{$L}", arrayTypeName, values.stream().map(value -> value.accept(this, null))
+                .reduce((c1, c2) -> CodeBlock.builder().add(c1).add(", ").add(c2).build()).orElseGet(() -> CodeBlock.builder().build()));
     }
 }
