@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
@@ -49,8 +50,8 @@ public final class ApplicationStartupProcessor {
     }
 
     public void checkReports(boolean enableAcra) {
-        //application is not ready in onAttachBaseContext, so delay this
-        new Handler(context.getMainLooper()).post(() -> {
+        //application is not ready in onAttachBaseContext, so delay this. also run it on a background thread because we're doing disk I/O
+        new Handler(context.getMainLooper()).post(() -> new Thread(() -> {
             if (config.deleteOldUnsentReportsOnApplicationStart()) {
                 deleteUnsentReportsFromOldAppVersion();
             }
@@ -61,7 +62,7 @@ public final class ApplicationStartupProcessor {
                 sendApprovedReports();
                 approveOneReport();
             }
-        });
+        }).start());
     }
 
     private void approveOneReport() {
