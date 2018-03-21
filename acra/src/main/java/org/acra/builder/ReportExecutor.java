@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Debug;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -125,10 +126,13 @@ public final class ReportExecutor {
         reportPrimer.primeReport(context, reportBuilder);
 
         boolean sendOnlySilentReports = false;
-        final ReportingInteractionMode reportingInteractionMode;
+        ReportingInteractionMode reportingInteractionMode;
         if (!reportBuilder.isSendSilently()) {
             // No interaction mode defined in the ReportBuilder, we assume it has been set during ACRA.initACRA()
             reportingInteractionMode = config.reportingInteractionMode();
+            if (reportingInteractionMode == ReportingInteractionMode.NOTIFICATION && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                reportingInteractionMode = ReportingInteractionMode.SILENT;
+            }
         } else {
             reportingInteractionMode = ReportingInteractionMode.SILENT;
 

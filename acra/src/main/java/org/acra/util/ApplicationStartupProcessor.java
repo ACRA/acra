@@ -3,6 +3,8 @@ package org.acra.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 import org.acra.ACRA;
@@ -79,7 +81,12 @@ public final class ApplicationStartupProcessor {
 
         // Send the approved reports.
         final SenderServiceStarter starter = new SenderServiceStarter(context, config);
-        starter.startService(false, false);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                starter.startService(false, false);
+            }
+        });
 
     }
 

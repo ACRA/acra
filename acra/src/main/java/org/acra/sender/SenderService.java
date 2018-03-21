@@ -19,6 +19,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.JobIntentService;
 
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -34,22 +35,21 @@ import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
 
-public class SenderService extends IntentService {
+public class SenderService extends JobIntentService {
 
     public static final String EXTRA_ONLY_SEND_SILENT_REPORTS = "onlySendSilentReports";
     public static final String EXTRA_APPROVE_REPORTS_FIRST = "approveReportsFirst";
     public static final String EXTRA_ACRA_CONFIG = "acraConfig";
 
-    private final ReportLocator locator = new ReportLocator(this);
+    private final ReportLocator locator;
 
     public SenderService() {
-        super("ACRA SenderService");
-        setIntentRedelivery(true);
+        locator = new ReportLocator(this);
     }
 
     @Override
-    protected void onHandleIntent(@Nullable final Intent intent) {
-        if (intent == null || !intent.hasExtra(EXTRA_ACRA_CONFIG)) {
+    protected void onHandleWork(@NonNull final Intent intent) {
+        if (!intent.hasExtra(EXTRA_ACRA_CONFIG)) {
             if(ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SenderService was started but no valid intent was delivered, will now quit");
             return;
         }

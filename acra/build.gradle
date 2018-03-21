@@ -6,14 +6,13 @@ apply plugin: 'com.jfrog.artifactory'
 
 android {
     compileSdkVersion Integer.parseInt(androidVersion)
-    buildToolsVersion '25.0.2'
 
     lintOptions {
         abortOnError false
     }
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 14
         targetSdkVersion androidVersion
         versionName version
         consumerProguardFile proguardFile
@@ -26,7 +25,8 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:support-compat:$supportVersion"
+    compile "com.android.support:support-fragment:$supportVersion"
     compile "com.android.support:support-annotations:$supportVersion"
     annotationProcessor project(':annotationprocessor')
     provided project(':annotations')
