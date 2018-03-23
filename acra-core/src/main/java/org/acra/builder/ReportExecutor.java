@@ -22,6 +22,7 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
@@ -249,9 +250,7 @@ public class ReportExecutor {
     private File getReportFileName(@NonNull CrashReportData crashData) {
         final String timestamp = crashData.getString(USER_CRASH_DATE);
         final String isSilent = crashData.getString(IS_SILENT);
-        final String fileName = (timestamp != null ? timestamp : new Date().getTime()) // Need to check for null because old version of ACRA did not always capture USER_CRASH_DATE
-                + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "")
-                + ACRAConstants.REPORTFILE_EXTENSION;
+        final String fileName = timestamp + (isSilent != null ? ACRAConstants.SILENT_SUFFIX : "") + ACRAConstants.REPORTFILE_EXTENSION;
         final ReportLocator reportLocator = new ReportLocator(context);
         return new File(reportLocator.getUnapprovedFolder(), fileName);
     }

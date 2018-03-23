@@ -26,6 +26,7 @@ import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
+import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.prefs.SharedPreferencesFactory;
@@ -78,15 +79,9 @@ public final class ApplicationStartupProcessor {
             return; // There are no unapproved reports, so bail now.
         }
         //if a report was created after the application launch, it might be currently handled, so ignore it for now.
-        final String timestamp = reports[0].getName().replace(ACRAConstants.REPORTFILE_EXTENSION, "").replace(ACRAConstants.SILENT_SUFFIX, "");
-        final Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setTime(new SimpleDateFormat(ACRAConstants.DATE_TIME_FORMAT_STRING, Locale.ENGLISH).parse(timestamp));
-            if(calendar.before(ignoreReportsAfter)){
-                //only approve one report at a time to prevent overwhelming users
-                new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
-            }
-        } catch (ParseException ignored) {
+        if (new CrashReportFileNameParser().getTimestamp(reports[0].getName()).before(ignoreReportsAfter)) {
+            //only approve one report at a time to prevent overwhelming users
+            new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
         }
     }
 
