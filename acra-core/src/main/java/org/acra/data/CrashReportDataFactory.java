@@ -50,7 +50,7 @@ public final class CrashReportDataFactory {
         this.config = config;
         collectors = new ArrayList<>();
         //noinspection ForLoopReplaceableByForEach need to catch exception in iterator.next()
-        for (final Iterator<Collector> iterator = ServiceLoader.load(Collector.class).iterator(); iterator.hasNext(); ) {
+        for (final Iterator<Collector> iterator = ServiceLoader.load(Collector.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
             try {
                 final Collector collector = iterator.next();
                 if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Loaded collector of class " + collector.getClass().getName());

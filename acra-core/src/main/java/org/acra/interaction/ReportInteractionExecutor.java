@@ -47,7 +47,7 @@ public class ReportInteractionExecutor {
         this.config = config;
         reportInteractions = new ArrayList<>();
         //noinspection ForLoopReplaceableByForEach
-        for (final Iterator<ReportInteraction> iterator = ServiceLoader.load(ReportInteraction.class).iterator(); iterator.hasNext(); ) {
+        for (final Iterator<ReportInteraction> iterator = ServiceLoader.load(ReportInteraction.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
             try {
                 final ReportInteraction reportInteraction = iterator.next();
                 if (reportInteraction.enabled(config)) {
