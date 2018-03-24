@@ -166,9 +166,9 @@ public class ReportExecutor {
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
             final File reportFile = getReportFileName(crashReportData);
             saveCrashReportFile(reportFile, crashReportData);
-            StrictMode.setThreadPolicy(oldPolicy);
 
             final ReportInteractionExecutor executor = new ReportInteractionExecutor(context, config);
+            StrictMode.setThreadPolicy(oldPolicy);
             if (reportBuilder.isSendSilently()) {
                 //if size == 0 we have no interaction and can send all reports
                 startSendingReports(executor.hasInteractions());
