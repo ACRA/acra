@@ -132,8 +132,8 @@ subprojects {
 
         dependencies {
             testImplementation "junit:junit:$junitVersion"
-            testImplementation "org.robolectric:robolectric:3.6.1"
-            testImplementation "org.ow2.asm:asm:6.0"
+            testImplementation "org.robolectric:robolectric:$roboelectricVersion"
+            testImplementation "org.ow2.asm:asm:$asmVersion"
         }
 
         task sourcesJar(type: Jar) {
