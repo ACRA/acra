@@ -43,7 +43,7 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
     public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
         final List<ReportSenderFactory> factoryList = new ArrayList<>();
         //noinspection ForLoopReplaceableByForEach
-        for (final Iterator<ReportSenderFactory> iterator = ServiceLoader.load(ReportSenderFactory.class).iterator(); iterator.hasNext(); ) {
+        for (final Iterator<ReportSenderFactory> iterator = ServiceLoader.load(ReportSenderFactory.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
             try {
                 final ReportSenderFactory reportSenderFactory = iterator.next();
                 if (reportSenderFactory.enabled(config)) {

@@ -80,7 +80,7 @@ public class ReportExecutor {
         this.processFinisher = processFinisher;
         reportingAdministrators = new ArrayList<>();
         //noinspection ForLoopReplaceableByForEach need to catch exception in iterator.next()
-        for (final Iterator<ReportingAdministrator> iterator = ServiceLoader.load(ReportingAdministrator.class).iterator(); iterator.hasNext(); ) {
+        for (final Iterator<ReportingAdministrator> iterator = ServiceLoader.load(ReportingAdministrator.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
             try {
                 final ReportingAdministrator reportingAdministrator = iterator.next();
                 if (reportingAdministrator.enabled(config)) {
