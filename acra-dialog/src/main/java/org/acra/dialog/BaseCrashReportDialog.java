@@ -110,7 +110,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
      * Cancel any pending crash reports.
      */
     protected final void cancelReports() {
-        new BulkReportDeleter(getApplicationContext()).deleteReports(false, 0);
+        new Thread(() -> new BulkReportDeleter(this).deleteReports(false, 0)).start();
     }
 
 
@@ -121,20 +121,22 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
      * @param userEmail Email address (may be null) provided by the client.
      */
     protected final void sendCrash(@Nullable String comment, @Nullable String userEmail) {
-        final CrashReportPersister persister = new CrashReportPersister();
-        try {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
-            final CrashReportData crashData = persister.load(reportFile);
-            crashData.put(USER_COMMENT, comment == null ? "" : comment);
-            crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
-            persister.store(crashData, reportFile);
-        } catch (IOException | JSONException e) {
-            ACRA.log.w(LOG_TAG, "User comment not added: ", e);
-        }
+        new Thread(() -> {
+            final CrashReportPersister persister = new CrashReportPersister();
+            try {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
+                final CrashReportData crashData = persister.load(reportFile);
+                crashData.put(USER_COMMENT, comment == null ? "" : comment);
+                crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
+                persister.store(crashData, reportFile);
+            } catch (IOException | JSONException e) {
+                ACRA.log.w(LOG_TAG, "User comment not added: ", e);
+            }
 
-        // Start the report sending task
-        final SenderServiceStarter starter = new SenderServiceStarter(getApplicationContext(), config);
-        starter.startService(false, true);
+            // Start the report sending task
+            final SenderServiceStarter starter = new SenderServiceStarter(this, config);
+            starter.startService(false, true);
+        }).start();
     }
 
     /**
