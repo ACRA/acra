@@ -79,10 +79,13 @@ public class SenderService extends JobIntentService {
             // Iterate over approved reports and send via all Senders.
             int reportsSentCount = 0; // Use to rate limit sending
             final CrashReportFileNameParser fileNameParser = new CrashReportFileNameParser();
+            boolean anyNonSilent = false;
             for (final File report : reports) {
-                if (onlySendSilentReports && !fileNameParser.isSilent(report.getName())) {
+                final boolean isNonSilent = !fileNameParser.isSilent(report.getName());
+                if (onlySendSilentReports && isNonSilent) {
                     continue;
                 }
+                anyNonSilent |= isNonSilent;
 
                 if (reportsSentCount >= ACRAConstants.MAX_SEND_REPORTS) {
                     break; // send only a few reports to avoid overloading the network
@@ -92,8 +95,8 @@ public class SenderService extends JobIntentService {
                     reportsSentCount++;
                 }
             }
-            final String toast = reportsSentCount > 0 ? config.reportSendSuccessToast() : config.reportSendFailureToast();
-            if (toast != null) {
+            final String toast;
+            if (anyNonSilent && (toast = reportsSentCount > 0 ? config.reportSendSuccessToast() : config.reportSendFailureToast()) != null) {
                 new Handler(Looper.getMainLooper()).post(() -> ToastSender.sendToast(this, toast, Toast.LENGTH_LONG));
             }
         } catch (Exception e) {
