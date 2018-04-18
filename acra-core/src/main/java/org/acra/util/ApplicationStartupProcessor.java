@@ -21,22 +21,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
-import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.prefs.SharedPreferencesFactory;
-import org.acra.sender.SenderServiceStarter;
+import org.acra.scheduler.SchedulerStarter;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Looks for any existing reports and starts sending them.
@@ -113,9 +108,7 @@ public final class ApplicationStartupProcessor {
         }
 
         // Send the approved reports.
-        final SenderServiceStarter starter = new SenderServiceStarter(context, config);
-        starter.startService(false, false);
-
+        new SchedulerStarter(context, config).scheduleReports(null, false);
     }
 
     /**

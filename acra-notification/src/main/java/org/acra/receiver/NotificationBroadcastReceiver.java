@@ -23,15 +23,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.RemoteInput;
-
 import org.acra.ACRA;
-import org.acra.data.CrashReportData;
 import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
 import org.acra.interaction.NotificationInteraction;
+import org.acra.scheduler.SchedulerStarter;
 import org.acra.sender.SenderService;
-import org.acra.sender.SenderServiceStarter;
 import org.acra.util.SystemServices;
 import org.json.JSONException;
 
@@ -76,7 +75,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
                                     }
                                 }
                             }
-                            new SenderServiceStarter(context, config).startService(false, true);
+                            new SchedulerStarter(context, config).scheduleReports(reportFile, false);
                         }
                         break;
                     case NotificationInteraction.INTENT_ACTION_DISCARD:

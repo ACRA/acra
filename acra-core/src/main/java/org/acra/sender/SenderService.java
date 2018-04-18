@@ -39,7 +39,6 @@ import static org.acra.ACRA.LOG_TAG;
 public class SenderService extends JobIntentService {
 
     public static final String EXTRA_ONLY_SEND_SILENT_REPORTS = "onlySendSilentReports";
-    public static final String EXTRA_APPROVE_REPORTS_FIRST = "approveReportsFirst";
     public static final String EXTRA_ACRA_CONFIG = "acraConfig";
 
     private final ReportLocator locator;
@@ -56,18 +55,12 @@ public class SenderService extends JobIntentService {
         }
 
         final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
-        final boolean approveReportsFirst = intent.getBooleanExtra(EXTRA_APPROVE_REPORTS_FIRST, false);
 
         final CoreConfiguration config = (CoreConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
             final List<ReportSender> senderInstances = getSenderInstances(config);
-
-            // Mark reports as approved
-            if (approveReportsFirst) {
-                markReportsAsApproved();
-            }
 
             // Get approved reports
             final File[] reports = locator.getApprovedReports();
@@ -114,19 +107,5 @@ public class SenderService extends JobIntentService {
         }
         if (reportSenders.isEmpty()) reportSenders.add(new NullSender());
         return reportSenders;
-    }
-
-    /**
-     * Flag all pending reports as "approved" by the user. These reports can be sent.
-     */
-    private void markReportsAsApproved() {
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Mark all pending reports as approved.");
-
-        for (File report : locator.getUnapprovedReports()) {
-            final File approvedReport = new File(locator.getApprovedFolder(), report.getName());
-            if (!report.renameTo(approvedReport)) {
-                ACRA.log.w(LOG_TAG, "Could not rename approved report from " + report + " to " + approvedReport);
-            }
-        }
     }
 }
