@@ -42,12 +42,14 @@ public final class ApplicationStartupProcessor {
     private final CoreConfiguration config;
     private final BulkReportDeleter reportDeleter;
     private final ReportLocator reportLocator;
+    private final SchedulerStarter schedulerStarter;
 
-    public ApplicationStartupProcessor(@NonNull Context context, @NonNull CoreConfiguration config) {
+    public ApplicationStartupProcessor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull SchedulerStarter schedulerStarter) {
         this.context = context;
         this.config = config;
         reportDeleter = new BulkReportDeleter(context);
         reportLocator = new ReportLocator(context);
+        this.schedulerStarter = schedulerStarter;
     }
 
     public void checkReports(boolean enableAcra) {
@@ -108,7 +110,7 @@ public final class ApplicationStartupProcessor {
         }
 
         // Send the approved reports.
-        new SchedulerStarter(context, config).scheduleReports(null, false);
+        schedulerStarter.scheduleReports(null, false);
     }
 
     /**

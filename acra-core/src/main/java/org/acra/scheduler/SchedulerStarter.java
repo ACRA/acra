@@ -51,6 +51,7 @@ public class SchedulerStarter {
             senderScheduler = schedulers.get(0);
             if (schedulers.size() > 1) ACRA.log.w(ACRA.LOG_TAG, "More than one SenderScheduler found. Will use only " + senderScheduler.getClass().getSimpleName());
         }
+        senderScheduler.setUp(context, config);
     }
 
     /**

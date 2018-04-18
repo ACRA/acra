@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package org.acra.scheduler;
+package org.acra.annotation;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import org.acra.config.CoreConfiguration;
-import org.acra.plugins.Plugin;
+import com.evernote.android.job.JobRequest;
+
+import java.lang.annotation.*;
 
 /**
  * @author F43nd1r
  * @since 18.04.18
  */
-public interface SenderScheduler extends Plugin {
-    default void setUp(@NonNull Context context, @NonNull CoreConfiguration configuration) {
-    }
-
-    void scheduleReportSending(@NonNull Context context, @NonNull CoreConfiguration config, boolean onlySendSilentReports);
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
+@Configuration
+public @interface AcraScheduler {
+    JobRequest.NetworkType requiresNetworkType() default JobRequest.NetworkType.ANY;
+    boolean requiresCharging() default false;
+    boolean requiresDeviceIdle() default false;
+    boolean requiresBatteryNotLow() default false;
 }

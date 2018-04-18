@@ -28,6 +28,7 @@ import org.acra.builder.ReportExecutor;
 import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportDataFactory;
 import org.acra.prefs.SharedPreferencesFactory;
+import org.acra.scheduler.SchedulerStarter;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
 
@@ -64,7 +65,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
      * @param enabled                 Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param supportedAndroidVersion the minimal supported version
      */
-    public ErrorReporterImpl(@NonNull Application context, @NonNull CoreConfiguration config,
+    public ErrorReporterImpl(@NonNull Application context, @NonNull CoreConfiguration config, @NonNull SchedulerStarter schedulerStarter,
                              boolean enabled, boolean supportedAndroidVersion) {
 
         this.context = context;
@@ -81,7 +82,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
         final InstanceCreator instanceCreator = new InstanceCreator();
         final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
-        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, processFinisher);
+        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, processFinisher, schedulerStarter);
         reportExecutor.setEnabled(enabled);
     }
 

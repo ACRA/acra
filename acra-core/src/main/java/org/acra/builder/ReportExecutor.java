@@ -54,6 +54,7 @@ public class ReportExecutor {
     private final CoreConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;
     private final List<ReportingAdministrator> reportingAdministrators;
+    private final SchedulerStarter schedulerStarter;
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending the report.
@@ -73,13 +74,14 @@ public class ReportExecutor {
      * @param processFinisher         used to end process after reporting
      */
     public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportDataFactory crashReportDataFactory,
-                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher) {
+                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher, @NonNull SchedulerStarter schedulerStarter) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.processFinisher = processFinisher;
         reportingAdministrators = new PluginLoader(config).load(ReportingAdministrator.class);
+        this.schedulerStarter = schedulerStarter;
     }
 
     /**
@@ -226,7 +228,7 @@ public class ReportExecutor {
      */
     private void sendReport(@NonNull File report, boolean onlySendSilentReports) {
         if (enabled) {
-            new SchedulerStarter(context, config).scheduleReports(report, onlySendSilentReports);
+            schedulerStarter.scheduleReports(report, onlySendSilentReports);
         } else {
             ACRA.log.w(LOG_TAG, "Would be sending reports, but ACRA is disabled");
         }
