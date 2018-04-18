@@ -35,6 +35,7 @@ import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.NotificationConfiguration;
 import org.acra.notification.R;
+import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.receiver.NotificationBroadcastReceiver;
 import org.acra.sender.SenderService;
@@ -47,7 +48,7 @@ import java.io.File;
  */
 
 @AutoService(ReportInteraction.class)
-public class NotificationInteraction extends BaseReportInteraction {
+public class NotificationInteraction extends ConfigBasedAllowsDisablePlugin implements ReportInteraction {
     public static final String INTENT_ACTION_SEND = "org.acra.intent.send";
     public static final String INTENT_ACTION_DISCARD = "org.acra.intent.discard";
     public static final String KEY_COMMENT = "comment";

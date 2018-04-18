@@ -17,8 +17,8 @@
 package org.acra.config;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
+import org.acra.plugins.Plugin;
 
 /**
  * A factory for configuration builders
@@ -26,8 +26,7 @@ import android.support.annotation.NonNull;
  * @author F43nd1r
  * @since 01.06.2017
  */
-@Keep
-public interface ConfigurationBuilderFactory {
+public interface ConfigurationBuilderFactory extends Plugin {
     /**
      * creates a new builder
      *

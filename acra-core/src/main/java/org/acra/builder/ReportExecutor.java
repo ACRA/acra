@@ -33,6 +33,7 @@ import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.sender.SenderServiceStarter;
+import org.acra.plugins.PluginLoader;
 import org.acra.util.ProcessFinisher;
 import org.acra.util.ToastSender;
 
@@ -79,20 +80,7 @@ public class ReportExecutor {
         this.crashReportDataFactory = crashReportDataFactory;
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.processFinisher = processFinisher;
-        reportingAdministrators = new ArrayList<>();
-        //noinspection ForLoopReplaceableByForEach need to catch exception in iterator.next()
-        for (final Iterator<ReportingAdministrator> iterator = ServiceLoader.load(ReportingAdministrator.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
-            try {
-                final ReportingAdministrator reportingAdministrator = iterator.next();
-                if (reportingAdministrator.enabled(config)) {
-                    if (ACRA.DEV_LOGGING)
-                        ACRA.log.d(ACRA.LOG_TAG, "Loaded ReportingAdministrator of class " + reportingAdministrator.getClass().getName());
-                    reportingAdministrators.add(reportingAdministrator);
-                }
-            } catch (ServiceConfigurationError e) {
-                ACRA.log.e(LOG_TAG, "Unable to load ReportingAdministrator", e);
-            }
-        }
+        reportingAdministrators = new PluginLoader(config).load(ReportingAdministrator.class);
     }
 
     /**

@@ -18,15 +18,11 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
+import org.acra.plugins.PluginLoader;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
 
 import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
@@ -41,20 +37,7 @@ public final class DefaultReportSenderFactory implements ReportSenderFactory {
     @NonNull
     @Override
     public ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config) {
-        final List<ReportSenderFactory> factoryList = new ArrayList<>();
-        //noinspection ForLoopReplaceableByForEach
-        for (final Iterator<ReportSenderFactory> iterator = ServiceLoader.load(ReportSenderFactory.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
-            try {
-                final ReportSenderFactory reportSenderFactory = iterator.next();
-                if (reportSenderFactory.enabled(config)) {
-                    factoryList.add(reportSenderFactory);
-                } else if (ACRA.DEV_LOGGING) {
-                    ACRA.log.d(LOG_TAG, "Ignoring disabled ReportSenderFactory of type " + reportSenderFactory.getClass().getSimpleName());
-                }
-            } catch (ServiceConfigurationError e) {
-                ACRA.log.e(ACRA.LOG_TAG, "Unable to load ReportSenderFactory", e);
-            }
-        }
+        final List<ReportSenderFactory> factoryList = new PluginLoader(config).load(ReportSenderFactory.class);
         if (factoryList.size() == 1) {
             if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Autodiscovered ReportSenderFactory of type " + factoryList.get(0).getClass().getSimpleName());
             return factoryList.get(0).create(context, config);

@@ -23,12 +23,13 @@ import com.google.auto.service.AutoService;
 
 import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
+import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 
 /**
  * Constructs a {@link HttpSender} with no report field mappings.
  */
 @AutoService(ReportSenderFactory.class)
-public final class HttpSenderFactory extends BaseReportSenderFactory {
+public final class HttpSenderFactory extends ConfigBasedAllowsDisablePlugin implements ReportSenderFactory {
     public HttpSenderFactory() {
         super(HttpSenderConfiguration.class);
     }

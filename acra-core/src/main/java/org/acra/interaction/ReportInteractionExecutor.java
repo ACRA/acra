@@ -20,15 +20,15 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
+import org.acra.plugins.PluginLoader;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static org.acra.ACRA.LOG_TAG;
 
 /**
  * Manages and executes all report interactions
@@ -45,20 +45,7 @@ public class ReportInteractionExecutor {
     public ReportInteractionExecutor(@NonNull final Context context, @NonNull final CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        reportInteractions = new ArrayList<>();
-        //noinspection ForLoopReplaceableByForEach
-        for (final Iterator<ReportInteraction> iterator = ServiceLoader.load(ReportInteraction.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
-            try {
-                final ReportInteraction reportInteraction = iterator.next();
-                if (reportInteraction.enabled(config)) {
-                    reportInteractions.add(reportInteraction);
-                }else if (ACRA.DEV_LOGGING) {
-                    ACRA.log.d(LOG_TAG, "Ignoring disabled ReportInteraction of type " + reportInteraction.getClass().getSimpleName());
-                }
-            } catch (ServiceConfigurationError e) {
-                ACRA.log.e(ACRA.LOG_TAG, "Unable to load ReportInteraction", e);
-            }
-        }
+        reportInteractions = new PluginLoader(config).load(ReportInteraction.class);
     }
 
     public boolean hasInteractions() {

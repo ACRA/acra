@@ -18,17 +18,16 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
 import com.google.auto.service.AutoService;
-
 import org.acra.config.CoreConfiguration;
 import org.acra.config.MailSenderConfiguration;
+import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 
 /**
  * Constructs an {@link EmailIntentSender}.
  */
 @AutoService(ReportSenderFactory.class)
-public final class EmailIntentSenderFactory extends BaseReportSenderFactory {
+public final class EmailIntentSenderFactory extends ConfigBasedAllowsDisablePlugin implements ReportSenderFactory {
     public EmailIntentSenderFactory() {
         super(MailSenderConfiguration.class);
     }

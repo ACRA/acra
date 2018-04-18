@@ -23,11 +23,11 @@ import org.acra.annotation.BuilderMethod;
 import org.acra.annotation.ConfigurationValue;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
+import org.acra.plugins.PluginLoader;
 import org.acra.util.StubCreator;
 
 import java.util.*;
 
-import static org.acra.ACRA.DEV_LOGGING;
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ACRAConstants.DEFAULT_REPORT_FIELDS;
 
@@ -45,16 +45,10 @@ public final class BaseCoreConfigurationBuilder {
 
     BaseCoreConfigurationBuilder(@NonNull Context app) {
         reportContentChanges = new EnumMap<>(ReportField.class);
-        configurationBuilders = new ArrayList<>();
-        //noinspection ForLoopReplaceableByForEach
-        for (final Iterator<ConfigurationBuilderFactory> iterator = ServiceLoader.load(ConfigurationBuilderFactory.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
-            try {
-                final ConfigurationBuilderFactory factory = iterator.next();
-                if (DEV_LOGGING) ACRA.log.d(LOG_TAG, "Discovered and loaded plugin of type " + factory.getClass().getSimpleName().replace("BuilderFactory", ""));
-                configurationBuilders.add(factory.create(app));
-            } catch (ServiceConfigurationError e) {
-                ACRA.log.e(ACRA.LOG_TAG, "Unable to load ConfigurationBuilderFactory", e);
-            }
+        List<ConfigurationBuilderFactory> factories = new PluginLoader(null).load(ConfigurationBuilderFactory.class);
+        configurationBuilders = new ArrayList<>(factories.size());
+        for (ConfigurationBuilderFactory factory : factories) {
+            configurationBuilders.add(factory.create(app));
         }
     }
 
