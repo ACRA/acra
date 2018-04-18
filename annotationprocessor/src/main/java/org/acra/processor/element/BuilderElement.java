@@ -23,6 +23,8 @@ import org.acra.processor.util.Types;
 import org.apache.commons.text.WordUtils;
 
 import javax.lang.model.element.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -63,8 +65,15 @@ public interface BuilderElement extends Element {
     }
 
     default MethodSpec.Builder baseSetter(ClassName builderName) {
-        return MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(getName()))
-                .addParameter(ParameterSpec.builder(getType(), getName()).addAnnotations(getAnnotations()).build())
+        MethodSpec.Builder builder = MethodSpec.methodBuilder(Strings.PREFIX_SETTER + WordUtils.capitalize(getName()));
+        Collection<AnnotationSpec> annotations = new ArrayList<>(getAnnotations());
+        boolean deprecated = annotations.contains(Types.DEPRECATED);
+        if (deprecated) {
+            annotations.remove(Types.DEPRECATED);
+            builder.addAnnotation(Types.DEPRECATED);
+        }
+        return builder
+                .addParameter(ParameterSpec.builder(getType(), getName()).addAnnotations(annotations).build())
                 .varargs(getType() instanceof ArrayTypeName)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Types.NON_NULL)
