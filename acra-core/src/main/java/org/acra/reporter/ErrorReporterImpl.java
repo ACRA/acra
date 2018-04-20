@@ -19,7 +19,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.builder.LastActivityManager;
@@ -29,6 +28,8 @@ import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportDataFactory;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.scheduler.SchedulerStarter;
+import org.acra.scheduler.SenderScheduler;
+import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
 
@@ -57,6 +58,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     private final Application context;
     private final ReportExecutor reportExecutor;
     private final Map<String, String> customData = new HashMap<>();
+    private final SchedulerStarter schedulerStarter;
 
 
     /**
@@ -65,8 +67,8 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
      * @param enabled                 Whether this ErrorReporter should capture Exceptions and forward their reports.
      * @param supportedAndroidVersion the minimal supported version
      */
-    public ErrorReporterImpl(@NonNull Application context, @NonNull CoreConfiguration config, @NonNull SchedulerStarter schedulerStarter,
-                             boolean enabled, boolean supportedAndroidVersion) {
+    public ErrorReporterImpl(@NonNull Application context, @NonNull CoreConfiguration config,
+                             boolean enabled, boolean supportedAndroidVersion, boolean checkReportsOnApplicationStart) {
 
         this.context = context;
         this.supportedAndroidVersion = supportedAndroidVersion;
@@ -82,8 +84,15 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
         final InstanceCreator instanceCreator = new InstanceCreator();
         final ProcessFinisher processFinisher = new ProcessFinisher(context, config, lastActivityManager);
 
+        schedulerStarter = new SchedulerStarter(context, config);
+
         reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, processFinisher, schedulerStarter);
         reportExecutor.setEnabled(enabled);
+
+        // Check for approved reports and send them (if enabled).
+        if (checkReportsOnApplicationStart) {
+            new ApplicationStartupProcessor(context, config, schedulerStarter).checkReports(enabled);
+        }
     }
 
     /**
@@ -176,7 +185,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
             ACRA.log.i(LOG_TAG, "ACRA is " + (enabled ? "enabled" : "disabled") + " for " + context.getPackageName());
             reportExecutor.setEnabled(enabled);
         } else {
-            ACRA.log.w(LOG_TAG, "ACRA 4.7.0+ requires Froyo or greater. ACRA is disabled and will NOT catch crashes or send messages.");
+            ACRA.log.w(LOG_TAG, "ACRA requires ICS or greater. ACRA is disabled and will NOT catch crashes or send messages.");
         }
     }
 
@@ -200,6 +209,11 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     @Override
     public void handleException(@Nullable Throwable e) {
         handleException(e, false);
+    }
+
+    @Override
+    public SenderScheduler getReportScheduler() {
+        return schedulerStarter.getSenderScheduler();
     }
 
     @Override

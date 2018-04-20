@@ -16,22 +16,23 @@
 
 package org.acra.scheduler;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import com.evernote.android.job.Job;
-import com.evernote.android.job.JobCreator;
+import org.acra.config.CoreConfiguration;
+import org.acra.plugins.Plugin;
 
 /**
  * @author F43nd1r
- * @since 18.04.18
+ * @since 20.04.18
  */
-public class ReportJobCreator implements JobCreator {
-    @Nullable
-    @Override
-    public Job create(@NonNull String tag) {
-        if (ReportJob.TAG.equals(tag)) {
-            return new ReportJob();
-        }
-        return null;
-    }
+public interface SenderSchedulerFactory extends Plugin {
+
+
+    /**
+     * @param context a context.
+     * @param config  Configuration to use when sending reports.
+     * @return Fully configured instance of the relevant SenderScheduler.
+     */
+    @NonNull
+    SenderScheduler create(@NonNull Context context, @NonNull CoreConfiguration config);
 }

@@ -35,23 +35,18 @@ import static org.acra.ACRA.LOG_TAG;
  */
 public class SchedulerStarter {
 
-    private final Context context;
-    private final CoreConfiguration config;
     private final ReportLocator locator;
     private final SenderScheduler senderScheduler;
 
     public SchedulerStarter(@NonNull Context context, @NonNull CoreConfiguration config) {
-        this.context = context;
-        this.config = config;
         locator = new ReportLocator(context);
-        List<SenderScheduler> schedulers = new PluginLoader(config).load(SenderScheduler.class);
-        if (schedulers.isEmpty()) {
-            senderScheduler = new DefaultSenderScheduler();
+        List<SenderSchedulerFactory> schedulerFactories = new PluginLoader(config).load(SenderSchedulerFactory.class);
+        if (schedulerFactories.isEmpty()) {
+            senderScheduler = new DefaultSenderScheduler(context, config);
         } else {
-            senderScheduler = schedulers.get(0);
-            if (schedulers.size() > 1) ACRA.log.w(ACRA.LOG_TAG, "More than one SenderScheduler found. Will use only " + senderScheduler.getClass().getSimpleName());
+            senderScheduler = schedulerFactories.get(0).create(context, config);
+            if (schedulerFactories.size() > 1) ACRA.log.w(ACRA.LOG_TAG, "More than one SenderScheduler found. Will use only " + senderScheduler.getClass().getSimpleName());
         }
-        senderScheduler.setUp(context, config);
     }
 
     /**
@@ -69,6 +64,10 @@ public class SchedulerStarter {
             }
         }
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Schedule report sending");
-        senderScheduler.scheduleReportSending(context, config, onlySendSilentReports);
+        senderScheduler.scheduleReportSending(onlySendSilentReports);
+    }
+
+    public SenderScheduler getSenderScheduler() {
+        return senderScheduler;
     }
 }

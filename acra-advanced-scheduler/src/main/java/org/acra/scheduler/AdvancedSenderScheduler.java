@@ -18,46 +18,45 @@ package org.acra.scheduler;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
 import com.google.auto.service.AutoService;
-import org.acra.ACRA;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.SchedulerConfiguration;
+import org.acra.file.ReportLocator;
 import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 import org.acra.sender.SenderService;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Utilizes evernotes android-job to delay report sending
+ *
  * @author F43nd1r
  * @since 18.04.18
  */
-@AutoService(SenderScheduler.class)
-public class AdvancedSenderScheduler extends ConfigBasedAllowsDisablePlugin implements SenderScheduler {
+public class AdvancedSenderScheduler implements SenderScheduler {
+    static final String TAG = "org.acra.report.Job";
+    private final Context context;
+    private final CoreConfiguration config;
 
-    public AdvancedSenderScheduler() {
-        super(SchedulerConfiguration.class);
+    private AdvancedSenderScheduler(@NonNull Context context, @NonNull CoreConfiguration config) {
+        this.context = context;
+        this.config = config;
     }
 
     @Override
-    public void scheduleReportSending(@NonNull Context context, @NonNull CoreConfiguration config, boolean onlySendSilentReports) {
+    public void scheduleReportSending(boolean onlySendSilentReports) {
+        if(new ReportLocator(context).getApprovedReports().length == 0) {
+            return;
+        }
         SchedulerConfiguration schedulerConfiguration = ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class);
         PersistableBundleCompat extras = new PersistableBundleCompat();
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        try(ObjectOutputStream out = new ObjectOutputStream(bytes)){
-            out.writeObject(config);
-        } catch (IOException e) {
-            ACRA.log.w("Failed to write config to string", e);
-        }
-        extras.putString(SenderService.EXTRA_ACRA_CONFIG, android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.DEFAULT));
         extras.putBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-        new JobRequest.Builder(ReportJob.TAG)
+        new JobRequest.Builder(TAG)
                 .setExecutionWindow(1, TimeUnit.MINUTES.toMillis(1))
                 .setExtras(extras)
                 .setRequirementsEnforced(true)
@@ -70,8 +69,26 @@ public class AdvancedSenderScheduler extends ConfigBasedAllowsDisablePlugin impl
                 .schedule();
     }
 
-    @Override
-    public void setUp(@NonNull Context context, @NonNull CoreConfiguration configuration) {
-        JobManager.create(context).addJobCreator(new ReportJobCreator());
+    @AutoService(SenderSchedulerFactory.class)
+    public static class Factory extends ConfigBasedAllowsDisablePlugin implements SenderSchedulerFactory {
+
+        public Factory() {
+            super(SchedulerConfiguration.class);
+        }
+
+        @NonNull
+        @Override
+        public SenderScheduler create(@NonNull Context context, @NonNull CoreConfiguration config) {
+            JobManager.create(context).addJobCreator(tag -> TAG.equals(tag) ? new Job() {
+                @NonNull
+                @Override
+                protected Result onRunJob(@NonNull Params params) {
+                    boolean sendOnlySilentReports = params.getExtras().getBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, false);
+                    new DefaultSenderScheduler(getContext(), config).scheduleReportSending(sendOnlySilentReports);
+                    return Result.SUCCESS;
+                }
+            } : null);
+            return new AdvancedSenderScheduler(context, config);
+        }
     }
 }

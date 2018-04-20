@@ -2,6 +2,7 @@ package org.acra;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import org.acra.scheduler.SenderScheduler;
 
 /**
  * This interface contains methods used to interact with ACRA after it has been initialized
@@ -79,4 +80,11 @@ public interface ErrorReporter {
      * @param e The {@link Throwable} to be reported. If null the report will contain a new Exception("Report requested by developer").
      */
     void handleException(@Nullable Throwable e);
+
+    /**
+     * Access point to manual report scheduling
+     *
+     * @return current SenderScheduler
+     */
+    SenderScheduler getReportScheduler();
 }

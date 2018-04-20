@@ -27,12 +27,22 @@ import org.acra.sender.SenderService;
 import static org.acra.ACRA.LOG_TAG;
 
 /**
+ * Simply schedules sending instantly
+ *
  * @author F43nd1r
  * @since 18.04.18
  */
 public class DefaultSenderScheduler implements SenderScheduler {
+    private final Context context;
+    private final CoreConfiguration config;
+
+    public DefaultSenderScheduler(@NonNull Context context, @NonNull CoreConfiguration config) {
+        this.context = context;
+        this.config = config;
+    }
+
     @Override
-    public void scheduleReportSending(@NonNull Context context, @NonNull CoreConfiguration config, boolean onlySendSilentReports) {
+    public void scheduleReportSending(boolean onlySendSilentReports) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start SenderService");
         final Intent intent = new Intent();
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
