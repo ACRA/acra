@@ -18,7 +18,6 @@ package org.acra.annotation;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.attachment.AttachmentUriProvider;
@@ -28,15 +27,9 @@ import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.data.StringFormat;
 import org.acra.file.Directory;
-import org.acra.sender.DefaultReportSenderFactory;
 import org.acra.sender.ReportSenderFactory;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Main ACRA configuration
@@ -221,11 +214,11 @@ public @interface AcraCore {
     @NonNull Class buildConfigClass() default Object.class;
 
     /**
-     * The default {@link org.acra.sender.ReportSenderFactory} automatically discovers other ReportSenderFactories.
-     *
      * @return {@link org.acra.sender.ReportSenderFactory}s with which to construct the {@link org.acra.sender.ReportSender}s that will send the crash reports.
+     * @deprecated register with plugin loading instead
      */
-    @NonEmpty @Instantiatable @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {DefaultReportSenderFactory.class};
+    @Deprecated
+    @Instantiatable @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {};
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the path/name of your application log file.

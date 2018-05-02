@@ -53,6 +53,7 @@ public final class Types {
     public static final AnnotationSpec NULLABLE = AnnotationSpec.builder(Nullable.class).build();
     public static final AnnotationSpec NON_NULL = AnnotationSpec.builder(NonNull.class).build();
     public static final AnnotationSpec STRING_RES = AnnotationSpec.builder(StringRes.class).build();
+    public static final AnnotationSpec DEPRECATED = AnnotationSpec.builder(Deprecated.class).build();
     public static final ClassName ANY_NON_DEFAULT = ClassName.get(AnyNonDefault.class);
     public static final ClassName BUILDER_METHOD = ClassName.get(BuilderMethod.class);
     public static final ClassName CONFIGURATION = ClassName.get(Configuration.class);

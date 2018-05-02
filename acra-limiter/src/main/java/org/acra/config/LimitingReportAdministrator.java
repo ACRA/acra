@@ -29,6 +29,7 @@ import org.acra.ACRA;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 import org.acra.file.ReportLocator;
+import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 import org.acra.util.IOUtils;
 import org.acra.util.StreamReader;
 import org.acra.util.ToastSender;
@@ -49,8 +50,12 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 26.10.2017
  */
 @AutoService(ReportingAdministrator.class)
-public class LimitingReportAdministrator implements ReportingAdministrator {
+public class LimitingReportAdministrator extends ConfigBasedAllowsDisablePlugin implements ReportingAdministrator {
     private static final String FILE_LIMITER_DATA = "ACRA-limiter.json";
+
+    public LimitingReportAdministrator() {
+        super(LimiterConfiguration.class);
+    }
 
     @Override
     public boolean shouldStartCollecting(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder) {
@@ -133,11 +138,6 @@ public class LimitingReportAdministrator implements ReportingAdministrator {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean enabled(@NonNull CoreConfiguration config) {
-        return ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class).enabled();
     }
 
     @NonNull

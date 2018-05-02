@@ -17,12 +17,11 @@
 package org.acra.config;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
+import org.acra.plugins.Plugin;
 
 /**
  * Controls if reports are sent
@@ -30,8 +29,7 @@ import org.acra.data.CrashReportData;
  * @author F43nd1r
  * @since 26.10.2017
  */
-@Keep
-public interface ReportingAdministrator {
+public interface ReportingAdministrator extends Plugin {
     /**
      * Determines if report collection should start
      *
@@ -75,16 +73,6 @@ public interface ReportingAdministrator {
      * @return if the application should be killed
      */
     default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @Nullable CrashReportData crashReportData) {
-        return true;
-    }
-
-    /**
-     * controls if this instance is active
-     *
-     * @param config the current config
-     * @return if this instance should be called
-     */
-    default boolean enabled(@NonNull CoreConfiguration config) {
         return true;
     }
 }

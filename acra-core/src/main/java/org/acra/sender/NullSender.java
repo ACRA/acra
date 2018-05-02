@@ -30,6 +30,6 @@ import static org.acra.ACRA.LOG_TAG;
 final class NullSender implements ReportSender {
     @Override
     public void send(@NonNull Context context, @NonNull CrashReportData errorContent) {
-        ACRA.log.w(LOG_TAG, context.getPackageName() + " reports will NOT be sent - no valid ReportSender is configured. Try setting 'formUri' or 'mailTo'");
+        ACRA.log.w(LOG_TAG, context.getPackageName() + " reports will NOT be sent - no valid ReportSender was found!");
     }
 }

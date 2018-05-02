@@ -28,6 +28,7 @@ import com.google.auto.service.AutoService;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ToastConfiguration;
+import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 import org.acra.util.ToastSender;
 
 import java.io.File;
@@ -37,7 +38,7 @@ import java.io.File;
  * @since 04.06.2017
  */
 @AutoService(ReportInteraction.class)
-public class ToastInteraction extends BaseReportInteraction {
+public class ToastInteraction extends ConfigBasedAllowsDisablePlugin implements ReportInteraction {
     /**
      * Number of milliseconds to wait after displaying a toast.
      */

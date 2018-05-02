@@ -24,6 +24,7 @@ import org.acra.collector.ApplicationStartupCollector;
 import org.acra.collector.Collector;
 import org.acra.collector.CollectorException;
 import org.acra.config.CoreConfiguration;
+import org.acra.plugins.PluginLoader;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -48,17 +49,7 @@ public final class CrashReportDataFactory {
     public CrashReportDataFactory(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        collectors = new ArrayList<>();
-        //noinspection ForLoopReplaceableByForEach need to catch exception in iterator.next()
-        for (final Iterator<Collector> iterator = ServiceLoader.load(Collector.class, getClass().getClassLoader()).iterator(); iterator.hasNext(); ) {
-            try {
-                final Collector collector = iterator.next();
-                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Loaded collector of class " + collector.getClass().getName());
-                collectors.add(collector);
-            }catch (ServiceConfigurationError e){
-                ACRA.log.e(LOG_TAG, "Unable to load collector", e);
-            }
-        }
+        collectors = new PluginLoader(config).load(Collector.class);
         Collections.sort(collectors, (c1, c2) -> {
             Collector.Order o1;
             Collector.Order o2;

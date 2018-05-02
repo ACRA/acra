@@ -27,6 +27,7 @@ import org.acra.ACRA;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.DialogConfiguration;
+import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
 import org.acra.prefs.SharedPreferencesFactory;
 
 import java.io.File;
@@ -38,7 +39,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 02.06.2017
  */
 @AutoService(ReportInteraction.class)
-public class DialogInteraction extends BaseReportInteraction {
+public class DialogInteraction extends ConfigBasedAllowsDisablePlugin implements ReportInteraction {
     /**
      * Used in the intent starting CrashReportDialog to provide the name of the
      * latest generated report file in order to be able to associate the user

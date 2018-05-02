@@ -17,10 +17,9 @@
 package org.acra.interaction;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
-
 import org.acra.config.CoreConfiguration;
+import org.acra.plugins.Plugin;
 
 import java.io.File;
 
@@ -30,8 +29,7 @@ import java.io.File;
  * @author F43nd1r
  * @since 02.06.2017
  */
-@Keep
-public interface ReportInteraction {
+public interface ReportInteraction extends Plugin {
 
     /**
      * Perform interaction synchronously
@@ -42,15 +40,4 @@ public interface ReportInteraction {
      * @return if reports should be sent instantly
      */
     boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile);
-
-
-    /**
-     * controls if this instance is active
-     *
-     * @param config the current config
-     * @return if this instance should be called
-     */
-    default boolean enabled(@NonNull CoreConfiguration config) {
-        return true;
-    }
 }

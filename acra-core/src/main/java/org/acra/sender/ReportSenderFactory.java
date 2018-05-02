@@ -17,10 +17,9 @@
 package org.acra.sender;
 
 import android.content.Context;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
-
 import org.acra.config.CoreConfiguration;
+import org.acra.plugins.Plugin;
 
 /**
  * Factory for creating and configuring a {@link ReportSender} instance.
@@ -31,8 +30,7 @@ import org.acra.config.CoreConfiguration;
  * <p>
  * Created by William on 4-JAN-2016.
  */
-@Keep
-public interface ReportSenderFactory {
+public interface ReportSenderFactory extends Plugin {
 
     /**
      * @param context a context.
@@ -41,14 +39,4 @@ public interface ReportSenderFactory {
      */
     @NonNull
     ReportSender create(@NonNull Context context, @NonNull CoreConfiguration config);
-
-    /**
-     * controls if this instance is active
-     *
-     * @param config the current config
-     * @return if this instance should be called
-     */
-    default boolean enabled(@NonNull CoreConfiguration config) {
-        return true;
-    }
 }

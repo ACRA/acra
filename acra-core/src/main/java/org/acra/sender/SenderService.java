@@ -26,12 +26,12 @@ import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
+import org.acra.plugins.PluginLoader;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ToastSender;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -60,11 +60,9 @@ public class SenderService extends JobIntentService {
 
         final CoreConfiguration config = (CoreConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
 
-        final Collection<Class<? extends ReportSenderFactory>> senderFactoryClasses = config.reportSenderFactoryClasses();
-
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
-            final List<ReportSender> senderInstances = getSenderInstances(config, senderFactoryClasses);
+            final List<ReportSender> senderInstances = getSenderInstances(config);
 
             // Mark reports as approved
             if (approveReportsFirst) {
@@ -107,12 +105,14 @@ public class SenderService extends JobIntentService {
     }
 
     @NonNull
-    private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config, @NonNull Collection<Class<? extends ReportSenderFactory>> factoryClasses) {
+    private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config) {
+        List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
+        List<ReportSenderFactory> factories = !factoryClasses.isEmpty() ? new InstanceCreator().create(factoryClasses) : new PluginLoader(config).load(ReportSenderFactory.class);
         final List<ReportSender> reportSenders = new ArrayList<>();
-        final InstanceCreator instanceCreator = new InstanceCreator();
-        for (ReportSenderFactory factory : instanceCreator.create(factoryClasses)) {
+        for (ReportSenderFactory factory : factories) {
             reportSenders.add(factory.create(this.getApplication(), config));
         }
+        if (reportSenders.isEmpty()) reportSenders.add(new NullSender());
         return reportSenders;
     }
 
