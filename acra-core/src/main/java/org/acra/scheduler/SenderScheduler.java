@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.acra.plugins;
+package org.acra.scheduler;
 
 /**
- * Marker interface for ACRA plugins
- *
  * @author F43nd1r
- * @since 18.04.2018
+ * @since 18.04.18
  */
-public interface Plugin {
+public interface SenderScheduler {
+
+    void scheduleReportSending(boolean onlySendSilentReports);
 }
