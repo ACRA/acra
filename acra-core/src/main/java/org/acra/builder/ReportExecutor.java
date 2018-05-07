@@ -22,7 +22,6 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
@@ -32,13 +31,13 @@ import org.acra.data.CrashReportDataFactory;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
-import org.acra.sender.SenderServiceStarter;
 import org.acra.plugins.PluginLoader;
+import org.acra.scheduler.SchedulerStarter;
 import org.acra.util.ProcessFinisher;
 import org.acra.util.ToastSender;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
 import static org.acra.ReportField.IS_SILENT;
@@ -55,6 +54,7 @@ public class ReportExecutor {
     private final CoreConfiguration config;
     private final CrashReportDataFactory crashReportDataFactory;
     private final List<ReportingAdministrator> reportingAdministrators;
+    private final SchedulerStarter schedulerStarter;
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending the report.
@@ -74,13 +74,14 @@ public class ReportExecutor {
      * @param processFinisher         used to end process after reporting
      */
     public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportDataFactory crashReportDataFactory,
-                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher) {
+                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher, @NonNull SchedulerStarter schedulerStarter) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.processFinisher = processFinisher;
         reportingAdministrators = new PluginLoader(config).load(ReportingAdministrator.class);
+        this.schedulerStarter = schedulerStarter;
     }
 
     /**
@@ -157,15 +158,15 @@ public class ReportExecutor {
             saveCrashReportFile(reportFile, crashReportData);
 
             final ReportInteractionExecutor executor = new ReportInteractionExecutor(context, config);
-            StrictMode.setThreadPolicy(oldPolicy);
             if (reportBuilder.isSendSilently()) {
-                //if size == 0 we have no interaction and can send all reports
-                startSendingReports(executor.hasInteractions());
+                //if no interactions are present we can send all reports
+                sendReport(reportFile, executor.hasInteractions());
             } else {
                 if (executor.performInteractions(reportFile)) {
-                    startSendingReports(false);
+                    sendReport(reportFile, false);
                 }
             }
+            StrictMode.setThreadPolicy(oldPolicy);
         } else {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Not sending crash report because of ReportingAdministrator " + blockingAdministrator.getClass().getName());
             try {
@@ -225,10 +226,9 @@ public class ReportExecutor {
      *
      * @param onlySendSilentReports If true then only send silent reports.
      */
-    private void startSendingReports(boolean onlySendSilentReports) {
+    private void sendReport(@NonNull File report, boolean onlySendSilentReports) {
         if (enabled) {
-            final SenderServiceStarter starter = new SenderServiceStarter(context, config);
-            starter.startService(onlySendSilentReports, true);
+            schedulerStarter.scheduleReports(report, onlySendSilentReports);
         } else {
             ACRA.log.w(LOG_TAG, "Would be sending reports, but ACRA is disabled");
         }

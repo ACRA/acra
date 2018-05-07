@@ -19,14 +19,13 @@ package org.acra.dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportData;
 import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
 import org.acra.interaction.DialogInteraction;
-import org.acra.sender.SenderServiceStarter;
+import org.acra.scheduler.SchedulerStarter;
 import org.json.JSONException;
 
 import java.io.File;
@@ -134,8 +133,7 @@ public abstract class BaseCrashReportDialog extends FragmentActivity {
             }
 
             // Start the report sending task
-            final SenderServiceStarter starter = new SenderServiceStarter(this, config);
-            starter.startService(false, true);
+            new SchedulerStarter(this, config).scheduleReports(reportFile, false);
         }).start();
     }
 

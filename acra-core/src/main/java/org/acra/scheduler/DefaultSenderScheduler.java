@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 the ACRA team
+ * Copyright (c) 2018
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,38 @@
  * limitations under the License.
  */
 
-package org.acra.sender;
+package org.acra.scheduler;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
-
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
+import org.acra.sender.SenderService;
 
 import static org.acra.ACRA.LOG_TAG;
 
 /**
- * Starts the Service(Intent)Service to process and send pending reports.
+ * Simply schedules sending instantly
+ *
+ * @author F43nd1r
+ * @since 18.04.18
  */
-public class SenderServiceStarter {
-
+public class DefaultSenderScheduler implements SenderScheduler {
     private final Context context;
     private final CoreConfiguration config;
 
-    public SenderServiceStarter(@NonNull Context context, @NonNull CoreConfiguration config) {
+    public DefaultSenderScheduler(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
     }
 
-    /**
-     * Starts a process to start sending outstanding error reports.
-     *
-     * @param onlySendSilentReports If true then only send silent reports.
-     * @param approveReportsFirst   If true then approve unapproved reports first.
-     */
-    public void startService(boolean onlySendSilentReports, boolean approveReportsFirst) {
+    @Override
+    public void scheduleReportSending(boolean onlySendSilentReports) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start SenderService");
         final Intent intent = new Intent();
         intent.putExtra(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-        intent.putExtra(SenderService.EXTRA_APPROVE_REPORTS_FIRST, approveReportsFirst);
         intent.putExtra(SenderService.EXTRA_ACRA_CONFIG, config);
         JobIntentService.enqueueWork(context, SenderService.class, 0, intent);
     }

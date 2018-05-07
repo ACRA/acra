@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package org.acra.plugins;
+package org.acra.scheduler;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+import org.acra.config.CoreConfiguration;
+import org.acra.plugins.Plugin;
 
 /**
- * Marker interface for ACRA plugins
- *
  * @author F43nd1r
- * @since 18.04.2018
+ * @since 20.04.18
  */
-public interface Plugin {
+public interface SenderSchedulerFactory extends Plugin {
+
+
+    /**
+     * @param context a context.
+     * @param config  Configuration to use when sending reports.
+     * @return Fully configured instance of the relevant SenderScheduler.
+     */
+    @NonNull
+    SenderScheduler create(@NonNull Context context, @NonNull CoreConfiguration config);
 }

@@ -22,7 +22,6 @@ import android.os.Build;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.CoreConfigurationBuilder;
@@ -31,7 +30,6 @@ import org.acra.log.ACRALog;
 import org.acra.log.AndroidLogDelegate;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.reporter.ErrorReporterImpl;
-import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.StreamReader;
 import org.acra.util.StubCreator;
 
@@ -225,14 +223,8 @@ public final class ACRA {
             final boolean enableAcra = supportedAndroidVersion && SharedPreferencesFactory.shouldEnableACRA(prefs);
             // Indicate that ACRA is or is not listening for crashes.
             log.i(LOG_TAG, "ACRA is " + (enableAcra ? "enabled" : "disabled") + " for " + app.getPackageName() + ", initializing...");
-            ErrorReporterImpl reporter = new ErrorReporterImpl(app, config, enableAcra, supportedAndroidVersion);
+            ErrorReporterImpl reporter = new ErrorReporterImpl(app, config, enableAcra, supportedAndroidVersion, checkReportsOnApplicationStart);
             errorReporterSingleton = reporter;
-
-            // Check for approved reports and send them (if enabled).
-            // NB don't check if senderServiceProcess as it will gather these reports itself.
-            if (checkReportsOnApplicationStart) {
-                new ApplicationStartupProcessor(app, config).checkReports(enableAcra);
-            }
 
             // register after initAcra is called to avoid a
             // NPE in ErrorReporter.disable() because

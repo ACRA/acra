@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.acra.plugins;
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
-/**
- * Marker interface for ACRA plugins
- *
- * @author F43nd1r
- * @since 18.04.2018
- */
-public interface Plugin {
+dependencies {
+    api project(':acra-core')
+    implementation "com.evernote:android-job:$jobVersion"
+    compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
+    annotationProcessor project(':annotationprocessor')
+    compileOnly project(':annotations')
 }
