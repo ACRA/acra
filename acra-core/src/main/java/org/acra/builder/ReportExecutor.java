@@ -148,9 +148,7 @@ public class ReportExecutor {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Not collecting crash report because of ReportingAdministrator " + blockingAdministrator.getClass().getName());
         }
         if (reportBuilder.isEndApplication()) {
-            if(config.restartAfterCrash()){
-                processFinisher.scheduleActivityRestart();
-            }
+            // Finish the last activity early to prevent restarts on android 7+
             processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
         }
         if (blockingAdministrator == null) {

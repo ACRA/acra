@@ -312,19 +312,8 @@ public @interface AcraCore {
 
     /**
      * Allow parallel collection. Increases performance but might pollute e.g. logcat output
-     *
      * @return if parallel collection should be active
      * @since 5.0.1
      */
     boolean parallel() default true;
-
-    /**
-     * Restarts the last activity immediately after a crash.
-     * If an activity is restarted, the {@link org.acra.ACRA#EXTRA_APP_RESTARTED} extra will contain a boolean true.
-     * Note that this might interact badly with the crash dialog.
-     *
-     * @return if acra should attempt to restart the app after a crash
-     * @since 5.2.0
-     */
-    boolean restartAfterCrash() default false;
 }

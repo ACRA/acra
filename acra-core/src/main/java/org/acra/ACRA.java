@@ -107,8 +107,6 @@ public final class ACRA {
      */
     public static final String PREF_LAST_VERSION_NR = "acra.lastVersionNr";
 
-    public static final String EXTRA_APP_RESTARTED = "acra.restarted";
-
     @NonNull
     private static ErrorReporter errorReporterSingleton = StubCreator.createErrorReporterStub();
 

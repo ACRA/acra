@@ -18,13 +18,12 @@ package org.acra.util;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.CoreConfiguration;
@@ -55,19 +54,6 @@ public final class ProcessFinisher {
     public void endApplication() {
         stopServices();
         killProcessAndExit();
-    }
-
-    public void scheduleActivityRestart() {
-        final Activity lastActivity = lastActivityManager.getLastActivity();
-        if (lastActivity != null) {
-            Intent restartIntent = new Intent(context, lastActivity.getClass());
-            restartIntent.putExtra(ACRA.EXTRA_APP_RESTARTED, true);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 1 << 30, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            if (alarmManager != null) {
-                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
-            }
-        }
     }
 
     public void finishLastActivity(@Nullable Thread uncaughtExceptionThread) {
