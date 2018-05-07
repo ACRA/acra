@@ -55,6 +55,7 @@ public class ReportExecutor {
     private final CrashReportDataFactory crashReportDataFactory;
     private final List<ReportingAdministrator> reportingAdministrators;
     private final SchedulerStarter schedulerStarter;
+    private final LastActivityManager lastActivityManager;
 
     // A reference to the system's previous default UncaughtExceptionHandler
     // kept in order to execute the default exception handling after sending the report.
@@ -74,7 +75,8 @@ public class ReportExecutor {
      * @param processFinisher         used to end process after reporting
      */
     public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportDataFactory crashReportDataFactory,
-                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher, @NonNull SchedulerStarter schedulerStarter) {
+                          @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher, @NonNull SchedulerStarter schedulerStarter,
+                          @NonNull LastActivityManager lastActivityManager) {
         this.context = context;
         this.config = config;
         this.crashReportDataFactory = crashReportDataFactory;
@@ -82,6 +84,7 @@ public class ReportExecutor {
         this.processFinisher = processFinisher;
         reportingAdministrators = new PluginLoader(config).load(ReportingAdministrator.class);
         this.schedulerStarter = schedulerStarter;
+        this.lastActivityManager = lastActivityManager;
     }
 
     /**
@@ -149,8 +152,20 @@ public class ReportExecutor {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Not collecting crash report because of ReportingAdministrator " + blockingAdministrator.getClass().getName());
         }
         if (reportBuilder.isEndApplication()) {
-            // Finish the last activity early to prevent restarts on android 7+
-            processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
+            boolean finishActivity = true;
+            for (ReportingAdministrator administrator : reportingAdministrators) {
+                try {
+                    if (!administrator.shouldFinishActivity(context, config, lastActivityManager)) {
+                        finishActivity = false;
+                    }
+                } catch (Throwable t) {
+                    ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
+                }
+            }
+            if (finishActivity) {
+                // Finish the last activity early to prevent restarts on android 7+
+                processFinisher.finishLastActivity(reportBuilder.getUncaughtExceptionThread());
+            }
         }
         if (blockingAdministrator == null) {
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
