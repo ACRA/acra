@@ -31,6 +31,7 @@ import java.lang.annotation.*;
 @Inherited
 @Configuration
 public @interface AcraScheduler {
+    String EXTRA_APP_RESTARTED = "acra.restarted";
     /**
      * Network constraint for report sending
      *
@@ -62,4 +63,14 @@ public @interface AcraScheduler {
      * @since 5.2.0
      */
     boolean requiresBatteryNotLow() default false;
+
+    /**
+     * Restarts the last activity immediately after a crash.
+     * If an activity is restarted, the {@link org.acra.annotation.AcraScheduler#EXTRA_APP_RESTARTED} extra will contain a boolean true.
+     * Note that this might interact badly with the crash dialog.
+     *
+     * @return if acra should attempt to restart the app after a crash
+     * @since 5.2.0
+     */
+    boolean restartAfterCrash() default false;
 }

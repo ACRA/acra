@@ -86,7 +86,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
 
         schedulerStarter = new SchedulerStarter(context, config);
 
-        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, processFinisher, schedulerStarter);
+        reportExecutor = new ReportExecutor(context, config, crashReportDataFactory, defaultExceptionHandler, processFinisher, schedulerStarter, lastActivityManager);
         reportExecutor.setEnabled(enabled);
 
         // Check for approved reports and send them (if enabled).

@@ -19,6 +19,7 @@ package org.acra.config;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import org.acra.builder.LastActivityManager;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 import org.acra.plugins.Plugin;
@@ -63,6 +64,10 @@ public interface ReportingAdministrator extends Plugin {
     default void notifyReportDropped(@NonNull Context context, @NonNull CoreConfiguration config) {
     }
 
+    default boolean shouldFinishActivity(@NonNull Context context, @NonNull CoreConfiguration config, LastActivityManager lastActivityManager) {
+        return true;
+    }
+
     /**
      * Determines if the application should be killed
      *
@@ -72,7 +77,8 @@ public interface ReportingAdministrator extends Plugin {
      * @param crashReportData the collected report
      * @return if the application should be killed
      */
-    default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @Nullable CrashReportData crashReportData) {
+    default boolean shouldKillApplication(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder,
+                                          @Nullable CrashReportData crashReportData) {
         return true;
     }
 }

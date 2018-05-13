@@ -18,7 +18,6 @@ package org.acra.scheduler;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
@@ -39,7 +38,6 @@ import java.util.concurrent.TimeUnit;
  * @since 18.04.18
  */
 public class AdvancedSenderScheduler implements SenderScheduler {
-    static final String TAG = "org.acra.report.Job";
     private final Context context;
     private final CoreConfiguration config;
 
@@ -56,7 +54,7 @@ public class AdvancedSenderScheduler implements SenderScheduler {
         SchedulerConfiguration schedulerConfiguration = ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class);
         PersistableBundleCompat extras = new PersistableBundleCompat();
         extras.putBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-        new JobRequest.Builder(TAG)
+        new JobRequest.Builder(AcraJobCreator.REPORT_TAG)
                 .setExecutionWindow(1, TimeUnit.MINUTES.toMillis(1))
                 .setExtras(extras)
                 .setRequirementsEnforced(true)
@@ -79,16 +77,10 @@ public class AdvancedSenderScheduler implements SenderScheduler {
         @NonNull
         @Override
         public SenderScheduler create(@NonNull Context context, @NonNull CoreConfiguration config) {
-            JobManager.create(context).addJobCreator(tag -> TAG.equals(tag) ? new Job() {
-                @NonNull
-                @Override
-                protected Result onRunJob(@NonNull Params params) {
-                    boolean sendOnlySilentReports = params.getExtras().getBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, false);
-                    new DefaultSenderScheduler(getContext(), config).scheduleReportSending(sendOnlySilentReports);
-                    return Result.SUCCESS;
-                }
-            } : null);
+            JobManager.create(context).addJobCreator(new AcraJobCreator(config));
             return new AdvancedSenderScheduler(context, config);
         }
+
     }
+
 }
