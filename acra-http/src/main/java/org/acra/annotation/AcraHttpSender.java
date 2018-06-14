@@ -18,19 +18,13 @@ package org.acra.annotation;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
-
 import org.acra.ACRAConstants;
 import org.acra.config.BaseHttpConfigurationBuilder;
 import org.acra.security.KeyStoreFactory;
 import org.acra.security.NoKeyStoreFactory;
 import org.acra.sender.HttpSender;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Http sender configuration
@@ -136,4 +130,11 @@ public @interface AcraHttpSender {
      * @since 5.0.0
      */
     @NonNull String certificateType() default ACRAConstants.DEFAULT_CERTIFICATE_TYPE;
+
+    /**
+     * if the server request should be compressed using gzip
+     *
+     * @return if compression should be active
+     */
+    boolean compress() default false;
 }

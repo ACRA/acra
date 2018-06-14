@@ -42,6 +42,7 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -60,6 +61,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
     private final int connectionTimeOut;
     private final int socketTimeOut;
     private final Map<String, String> headers;
+    private final HttpSenderConfiguration senderConfiguration;
 
     public BaseHttpRequest(@NonNull CoreConfiguration config, @NonNull Context context, @NonNull Method method,
                            @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers) {
@@ -71,6 +73,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         this.connectionTimeOut = connectionTimeOut;
         this.socketTimeOut = socketTimeOut;
         this.headers = headers;
+        senderConfiguration = ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class);
     }
 
 
@@ -104,7 +107,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             handleResponse(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
             urlConnection.disconnect();
         } catch (SocketTimeoutException e) {
-            if (ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class).dropReportsOnTimeout()) {
+            if (senderConfiguration.dropReportsOnTimeout()) {
                 Log.w(ACRA.LOG_TAG, "Dropped report due to timeout");
             } else {
                 throw e;
@@ -155,6 +158,10 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             connection.setRequestProperty("Authorization", "Basic " + encoded);
         }
 
+        if (senderConfiguration.compress()) {
+            connection.setRequestProperty("Content-Encoding", "gzip");
+        }
+
         if (customHeaders != null) {
             for (final Map.Entry<String, String> header : customHeaders.entrySet()) {
                 connection.setRequestProperty(header.getKey(), header.getValue());
@@ -171,14 +178,14 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         connection.setRequestMethod(method.name());
         connection.setDoOutput(true);
-        connection.setFixedLengthStreamingMode(contentAsBytes.length);
 
         // Disable ConnectionPooling because otherwise OkHttp ConnectionPool will try to start a Thread on #connect
         System.setProperty("http.keepAlive", "false");
 
         connection.connect();
 
-        final OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
+        final OutputStream outputStream = senderConfiguration.compress() ? new GZIPOutputStream(connection.getOutputStream(), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
+                : new BufferedOutputStream(connection.getOutputStream());
         try {
             outputStream.write(contentAsBytes);
             outputStream.flush();
