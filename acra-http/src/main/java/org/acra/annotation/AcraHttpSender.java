@@ -135,6 +135,7 @@ public @interface AcraHttpSender {
      * if the server request should be compressed using gzip
      *
      * @return if compression should be active
+     * @since 5.2.0
      */
     boolean compress() default false;
 }
