@@ -174,7 +174,6 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
     @SuppressWarnings("WeakerAccess")
     protected void writeContent(@NonNull HttpURLConnection connection, @NonNull Method method, @NonNull T content) throws IOException {
-        final byte[] contentAsBytes = asBytes(content);
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         connection.setRequestMethod(method.name());
         connection.setDoOutput(true);
@@ -187,15 +186,14 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         final OutputStream outputStream = senderConfiguration.compress() ? new GZIPOutputStream(connection.getOutputStream(), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
                 : new BufferedOutputStream(connection.getOutputStream());
         try {
-            outputStream.write(contentAsBytes);
+            write(outputStream, content);
             outputStream.flush();
         } finally {
             IOUtils.safeClose(outputStream);
         }
     }
 
-    @NonNull
-    protected abstract byte[] asBytes(@NonNull T content) throws IOException;
+    protected abstract void write(OutputStream outputStream, @NonNull T content) throws IOException;
 
     @SuppressWarnings("WeakerAccess")
     protected void handleResponse(int responseCode, String responseMessage) throws IOException {

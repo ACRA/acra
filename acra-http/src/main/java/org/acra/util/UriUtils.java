@@ -26,10 +26,7 @@ import android.support.annotation.NonNull;
 import org.acra.ACRAConstants;
 import org.acra.attachment.AcraContentProvider;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author F43nd1r
@@ -40,19 +37,17 @@ public final class UriUtils {
     private UriUtils() {
     }
 
-    @NonNull
-    public static byte[] uriToByteArray(@NonNull Context context, @NonNull Uri uri) throws IOException {
-        final InputStream inputStream = context.getContentResolver().openInputStream(uri);
-        if (inputStream == null) {
-            throw new FileNotFoundException("Could not open " + uri.toString());
+    public static void copyFromUri(@NonNull Context context, @NonNull OutputStream outputStream, @NonNull Uri uri) throws IOException {
+        try(final InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("Could not open " + uri.toString());
+            }
+            final byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
         }
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-        return outputStream.toByteArray();
     }
 
     @NonNull

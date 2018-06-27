@@ -21,16 +21,12 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
-
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 import org.acra.util.UriUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -63,28 +59,20 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
         return "multipart/mixed; boundary=" + BOUNDARY;
     }
 
-    @NonNull
     @Override
-    protected byte[] asBytes(@NonNull Pair<String, List<Uri>> content) throws IOException {
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    protected void write(OutputStream outputStream, @NonNull Pair<String, List<Uri>> content) throws IOException {
         final Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
-        //noinspection TryFinallyCanBeTryWithResources we do not target api 19
-        try {
+        writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
+        writer.append(CONTENT_TYPE).append(contentType).append(NEW_LINE).append(NEW_LINE);
+        writer.append(content.first);
+        for (Uri uri : content.second) {
             writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
-            writer.append(CONTENT_TYPE).append(contentType).append(NEW_LINE).append(NEW_LINE);
-            writer.append(content.first);
-            for (Uri uri : content.second) {
-                writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
-                writer.append("Content-Disposition: attachment; filename=\"").append(UriUtils.getFileNameFromUri(context, uri)).append('"').append(NEW_LINE);
-                writer.append(CONTENT_TYPE).append(UriUtils.getMimeType(context, uri)).append(NEW_LINE).append(NEW_LINE);
-                writer.flush();
-                outputStream.write(UriUtils.uriToByteArray(context, uri));
-            }
-            writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(BOUNDARY_FIX).append(NEW_LINE);
+            writer.append("Content-Disposition: attachment; filename=\"").append(UriUtils.getFileNameFromUri(context, uri)).append('"').append(NEW_LINE);
+            writer.append(CONTENT_TYPE).append(UriUtils.getMimeType(context, uri)).append(NEW_LINE).append(NEW_LINE);
             writer.flush();
-            return outputStream.toByteArray();
-        } finally {
-            writer.close();
+            UriUtils.copyFromUri(context, outputStream, uri);
         }
+        writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(BOUNDARY_FIX).append(NEW_LINE);
+        writer.flush();
     }
 }
