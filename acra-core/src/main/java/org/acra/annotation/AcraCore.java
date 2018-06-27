@@ -268,7 +268,7 @@ public @interface AcraCore {
      * </p>
      * Side effects:
      * <ul>
-     * <li>POST mode: requests will be sent with content-type multipart/mixed</li>
+     * <li>POST mode: requests will be sent with content-type multipart/form-data</li>
      * <li>PUT mode: There will be additional requests with the attachments. Naming scheme: [report-id]-[filename]</li>
      * <li>EMAIL mode: Some email clients do not support attachments, so some email may lack these attachments. Note that attachments might be readable to email clients when they are sent.</li>
      * </ul>
