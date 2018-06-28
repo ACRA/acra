@@ -21,15 +21,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 import org.acra.util.UriUtils;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -74,12 +72,17 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
                 .append(NEW_LINE)
                 .append(content.first);
         for (Uri uri : content.second) {
-            writer.append(SECTION_START)
-                    .format(CONTENT_DISPOSITION, "ACRA_ATTACHMENT", UriUtils.getFileNameFromUri(context, uri))
-                    .format(CONTENT_TYPE, UriUtils.getMimeType(context, uri))
-                    .append(NEW_LINE)
-                    .flush();
-            UriUtils.copyFromUri(context, outputStream, uri);
+            try {
+                String name = UriUtils.getFileNameFromUri(context, uri);
+                writer.append(SECTION_START)
+                        .format(CONTENT_DISPOSITION, "ACRA_ATTACHMENT", name)
+                        .format(CONTENT_TYPE, UriUtils.getMimeType(context, uri))
+                        .append(NEW_LINE)
+                        .flush();
+                UriUtils.copyFromUri(context, outputStream, uri);
+            } catch (FileNotFoundException e) {
+                ACRA.log.w("Not sending attachment", e);
+            }
         }
         writer.append(MESSAGE_END).flush();
     }

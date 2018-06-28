@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
@@ -36,6 +35,7 @@ import org.acra.http.MultipartHttpRequest;
 import org.acra.util.InstanceCreator;
 import org.acra.util.UriUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,30 +50,6 @@ import static org.acra.ACRA.LOG_TAG;
  * @author F43nd1r &amp; Various
  */
 public class HttpSender implements ReportSender {
-
-    /**
-     * Available HTTP methods to send data. Only POST and PUT are currently
-     * supported.
-     */
-    public enum Method {
-        POST {
-            @NonNull
-            @Override
-            URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException {
-                return new URL(baseUrl);
-            }
-        },
-        PUT {
-            @NonNull
-            @Override
-            URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException {
-                return new URL(baseUrl + '/' + report.getString(ReportField.REPORT_ID));
-            }
-        };
-
-        @NonNull
-        abstract URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException;
-    }
 
     private final CoreConfiguration config;
     private final HttpSenderConfiguration httpConfig;
@@ -201,8 +177,12 @@ public class HttpSender implements ReportSender {
     protected void putAttachment(@NonNull CoreConfiguration configuration, @NonNull Context context,
                                  @Nullable String login, @Nullable String password, int connectionTimeOut, int socketTimeOut, @Nullable Map<String, String> headers,
                                  @NonNull URL url, @NonNull Uri attachment) throws IOException {
-        final URL attachmentUrl = new URL(url.toString() + "-" + UriUtils.getFileNameFromUri(context, attachment));
-        new BinaryHttpRequest(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
+        try {
+            final URL attachmentUrl = new URL(url.toString() + "-" + UriUtils.getFileNameFromUri(context, attachment));
+            new BinaryHttpRequest(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment);
+        } catch (FileNotFoundException e) {
+            ACRA.log.w("Not sending attachment", e);
+        }
     }
 
     /**
@@ -221,6 +201,30 @@ public class HttpSender implements ReportSender {
 
     private boolean isNull(@Nullable String aString) {
         return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
+    }
+
+    /**
+     * Available HTTP methods to send data. Only POST and PUT are currently
+     * supported.
+     */
+    public enum Method {
+        POST {
+            @NonNull
+            @Override
+            URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException {
+                return new URL(baseUrl);
+            }
+        },
+        PUT {
+            @NonNull
+            @Override
+            URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException {
+                return new URL(baseUrl + '/' + report.getString(ReportField.REPORT_ID));
+            }
+        };
+
+        @NonNull
+        abstract URL createURL(@NonNull String baseUrl, @NonNull CrashReportData report) throws MalformedURLException;
     }
 
 }
