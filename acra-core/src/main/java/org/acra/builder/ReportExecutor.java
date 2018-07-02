@@ -31,7 +31,6 @@ import org.acra.data.CrashReportDataFactory;
 import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
-import org.acra.plugins.PluginLoader;
 import org.acra.scheduler.SchedulerStarter;
 import org.acra.util.ProcessFinisher;
 import org.acra.util.ToastSender;
@@ -82,7 +81,7 @@ public class ReportExecutor {
         this.crashReportDataFactory = crashReportDataFactory;
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.processFinisher = processFinisher;
-        reportingAdministrators = new PluginLoader(config).load(ReportingAdministrator.class);
+        reportingAdministrators = config.pluginLoader().loadEnabled(config, ReportingAdministrator.class);
         this.schedulerStarter = schedulerStarter;
         this.lastActivityManager = lastActivityManager;
     }

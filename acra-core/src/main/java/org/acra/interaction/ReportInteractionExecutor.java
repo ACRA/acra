@@ -20,7 +20,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
-import org.acra.plugins.PluginLoader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class ReportInteractionExecutor {
     public ReportInteractionExecutor(@NonNull final Context context, @NonNull final CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        reportInteractions = new PluginLoader(config).load(ReportInteraction.class);
+        reportInteractions = config.pluginLoader().loadEnabled(config, ReportInteraction.class);
     }
 
     public boolean hasInteractions() {

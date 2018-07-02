@@ -24,6 +24,7 @@ import org.acra.annotation.ConfigurationValue;
 import org.acra.annotation.PreBuild;
 import org.acra.annotation.Transform;
 import org.acra.plugins.PluginLoader;
+import org.acra.plugins.ServicePluginLoader;
 import org.acra.util.StubCreator;
 
 import java.util.*;
@@ -37,25 +38,52 @@ import static org.acra.ACRAConstants.DEFAULT_REPORT_FIELDS;
  *
  * @author F43nd1r
  */
+@SuppressWarnings("WeakerAccess")
 public final class BaseCoreConfigurationBuilder {
 
     private final Map<ReportField, Boolean> reportContentChanges;
-    private final List<ConfigurationBuilder> configurationBuilders;
+    private final Context app;
+    private List<ConfigurationBuilder> configurationBuilders;
     private List<Configuration> configurations;
+    private PluginLoader pluginLoader;
 
     BaseCoreConfigurationBuilder(@NonNull Context app) {
+        this.app = app;
         reportContentChanges = new EnumMap<>(ReportField.class);
-        List<ConfigurationBuilderFactory> factories = new PluginLoader(null).load(ConfigurationBuilderFactory.class);
-        configurationBuilders = new ArrayList<>(factories.size());
-        for (ConfigurationBuilderFactory factory : factories) {
-            configurationBuilders.add(factory.create(app));
+        pluginLoader = new ServicePluginLoader();
+    }
+
+    private List<ConfigurationBuilder> configurationBuilders() {
+        if (configurationBuilders == null) {
+            List<ConfigurationBuilderFactory> factories = pluginLoader.load(ConfigurationBuilderFactory.class);
+            configurationBuilders = new ArrayList<>(factories.size());
+            for (ConfigurationBuilderFactory factory : factories) {
+                configurationBuilders.add(factory.create(app));
+            }
         }
+        return configurationBuilders;
+    }
+
+    /**
+     * Set a custom plugin loader. Note: Call this before any call to {@link #getPluginConfigurationBuilder(Class)}
+     *
+     * @param pluginLoader the custom implementation
+     */
+    @BuilderMethod
+    public void setPluginLoader(@NonNull PluginLoader pluginLoader) {
+        this.pluginLoader = pluginLoader;
+    }
+
+    @NonNull
+    @ConfigurationValue
+    PluginLoader pluginLoader() {
+        return pluginLoader;
     }
 
     @PreBuild
     void preBuild() throws ACRAConfigurationException {
         configurations = new ArrayList<>();
-        for (ConfigurationBuilder builder : configurationBuilders) {
+        for (ConfigurationBuilder builder : configurationBuilders()) {
             configurations.add(builder.build());
         }
     }
@@ -103,14 +131,14 @@ public final class BaseCoreConfigurationBuilder {
     @NonNull
     @BuilderMethod
     public <R extends ConfigurationBuilder> R getPluginConfigurationBuilder(@NonNull Class<R> c) {
-        for (ConfigurationBuilder builder : configurationBuilders) {
+        for (ConfigurationBuilder builder : configurationBuilders()) {
             if (c.isAssignableFrom(builder.getClass())) {
                 //noinspection unchecked
                 return (R) builder;
             }
         }
         if (c.isInterface()) {
-            ACRA.log.w(ACRA.LOG_TAG, "Couldn't find ConfigurationBuilder " + c.getSimpleName() + ". ALL CALLS TO IT WILL BE IGNORED!");
+            ACRA.log.w(LOG_TAG, "Couldn't find ConfigurationBuilder " + c.getSimpleName() + ". ALL CALLS TO IT WILL BE IGNORED!");
             return StubCreator.createStub(c, (proxy, method, args) -> proxy);
         }
         throw new IllegalArgumentException("Class " + c.getName() + " is not a registered ConfigurationBuilder");

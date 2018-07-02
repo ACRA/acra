@@ -26,7 +26,7 @@ import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ReportingAdministrator;
 import org.acra.config.SchedulerConfiguration;
-import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
+import org.acra.plugins.HasConfigPlugin;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  * @since 07.05.18
  */
 @AutoService(ReportingAdministrator.class)
-public class RestartingAdministrator extends ConfigBasedAllowsDisablePlugin implements ReportingAdministrator {
+public class RestartingAdministrator extends HasConfigPlugin implements ReportingAdministrator {
     public static final String EXTRA_LAST_ACTIVITY = "lastActivity";
 
     public RestartingAdministrator() {

@@ -16,6 +16,9 @@
 
 package org.acra.plugins;
 
+import android.support.annotation.NonNull;
+import org.acra.config.CoreConfiguration;
+
 /**
  * Marker interface for ACRA plugins
  *
@@ -23,4 +26,13 @@ package org.acra.plugins;
  * @since 18.04.2018
  */
 public interface Plugin {
+    /**
+     * controls if this instance is active
+     *
+     * @param config the current config
+     * @return if this instance should be called
+     */
+    default boolean enabled(@NonNull CoreConfiguration config) {
+        return true;
+    }
 }

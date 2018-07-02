@@ -29,7 +29,7 @@ import org.acra.ACRA;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 import org.acra.file.ReportLocator;
-import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
+import org.acra.plugins.HasConfigPlugin;
 import org.acra.util.IOUtils;
 import org.acra.util.StreamReader;
 import org.acra.util.ToastSender;
@@ -50,7 +50,7 @@ import static org.acra.ACRA.LOG_TAG;
  * @since 26.10.2017
  */
 @AutoService(ReportingAdministrator.class)
-public class LimitingReportAdministrator extends ConfigBasedAllowsDisablePlugin implements ReportingAdministrator {
+public class LimitingReportAdministrator extends HasConfigPlugin implements ReportingAdministrator {
     private static final String FILE_LIMITER_DATA = "ACRA-limiter.json";
 
     public LimitingReportAdministrator() {

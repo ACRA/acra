@@ -24,9 +24,10 @@ import org.acra.collector.ApplicationStartupCollector;
 import org.acra.collector.Collector;
 import org.acra.collector.CollectorException;
 import org.acra.config.CoreConfiguration;
-import org.acra.plugins.PluginLoader;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,7 +50,8 @@ public final class CrashReportDataFactory {
     public CrashReportDataFactory(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        collectors = new PluginLoader(config).load(Collector.class);
+        collectors = config.pluginLoader().loadEnabled(config, Collector.class);
+        //noinspection Java8ListSort
         Collections.sort(collectors, (c1, c2) -> {
             Collector.Order o1;
             Collector.Order o2;
