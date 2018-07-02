@@ -78,12 +78,12 @@ class ReportConverter {
                     //reports without these keys are probably invalid
                     IOUtils.deleteFile(report);
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 try {
                     //If this succeeds the report has already been converted, happens e.g. on preference clear.
                     persister.load(report);
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Tried to convert already converted report file " + report.getPath() + ". Ignoring");
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     //File matches neither of the known formats, remove it.
                     ACRA.log.w(LOG_TAG, "Unable to read report file " + report.getPath() + ". Deleting", e);
                     IOUtils.deleteFile(report);

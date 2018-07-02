@@ -59,6 +59,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
     private final ReportExecutor reportExecutor;
     private final Map<String, String> customData = new HashMap<>();
     private final SchedulerStarter schedulerStarter;
+    private final UncaughtExceptionHandler defaultExceptionHandler;
 
 
     /**
@@ -76,7 +77,6 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
         final CrashReportDataFactory crashReportDataFactory = new CrashReportDataFactory(context, config);
         crashReportDataFactory.collectStartUp();
 
-        final Thread.UncaughtExceptionHandler defaultExceptionHandler;
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
 
@@ -157,7 +157,7 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
                     .endApplication()
                     .build(reportExecutor);
 
-        } catch (Throwable fatality) {
+        } catch (Exception fatality) {
             // ACRA failed. Prevent any recursive call to ACRA.uncaughtException(), let the native reporter do its job.
             ACRA.log.e(LOG_TAG, "ACRA failed to capture the error - handing off to native error reporter", fatality);
             reportExecutor.handReportToDefaultExceptionHandler(t, e);
@@ -221,5 +221,9 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
         if (ACRA.PREF_DISABLE_ACRA.equals(key) || ACRA.PREF_ENABLE_ACRA.equals(key)) {
             setEnabled(SharedPreferencesFactory.shouldEnableACRA(sharedPreferences));
         }
+    }
+
+    public void unregister() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
     }
 }

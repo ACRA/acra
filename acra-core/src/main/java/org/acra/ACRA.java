@@ -205,8 +205,10 @@ public final class ACRA {
         }
 
         if (isInitialised()) {
-            log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
-            return;
+            log.w(LOG_TAG, "ACRA#init called more than once. This might have unexpected side effects. Doing this outside of tests is discouraged.");
+            if(DEV_LOGGING) log.d(LOG_TAG, "Removing old ACRA config...");
+            ((ErrorReporterImpl) errorReporterSingleton).unregister();
+            errorReporterSingleton = StubCreator.createErrorReporterStub();
         }
 
         //noinspection ConstantConditions
@@ -236,7 +238,6 @@ public final class ACRA {
     /**
      * @return true is ACRA has been initialised.
      */
-    @SuppressWarnings("unused")
     public static boolean isInitialised() {
         return errorReporterSingleton instanceof ErrorReporterImpl;
     }
