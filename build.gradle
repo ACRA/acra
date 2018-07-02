@@ -26,9 +26,44 @@ buildscript {
         classpath "com.android.tools.build:gradle:$androidBuildPluginVersion"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion"
         classpath "net.researchgate:gradle-release:$releasePluginVersion"
+        classpath 'digital.wup:android-maven-publish:3.6.1'
     }
 }
 apply plugin: 'net.researchgate.release'
+
+def initPublication = { MavenPublication publication ->
+    publication.pom {
+        name = 'ACRA'
+        description = 'Publishes reports of Android application crashes to an end point.'
+        url = 'http://acra.ch'
+        scm {
+            connection = 'scm:git:https://github.com/F43nd1r/acra.git'
+            developerConnection = 'scm:git:git@github.com:F43nd1r/acra.git'
+            url = 'https://github.com/F43nd1r/acra.git'
+        }
+        licenses {
+            license {
+                name = 'Apache-2.0'
+                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution = 'repo'
+            }
+        }
+        developers {
+            developer {
+                id = 'kevin.gaudin'
+                name = 'Kevin Gaudin'
+            }
+            developer {
+                id = 'william.ferguson'
+                name = 'William Ferguson'
+            }
+            developer {
+                id = 'f43nd1r'
+                name = 'Lukas Morawietz'
+            }
+        }
+    }
+}
 
 release {
     tagTemplate = '$name-$version'
@@ -44,56 +79,6 @@ task build {
         dependsOn "${it.path}:build"
     }
 }
-
-apply from: 'pom.gradle'
-// allow pom content to be accessed directly
-class MapDelegate {
-    Map map
-    List list
-    String name
-
-    MapDelegate(String name) {
-        def mc = new ExpandoMetaClass(MapDelegate, false, true)
-        mc.initialize()
-        this.metaClass = mc
-        map = [:]
-        list = []
-        this.name = name
-    }
-
-    def methodMissing(String name, args) {
-        def value = args[0]
-        if (value instanceof Closure) {
-            value.delegate = new MapDelegate(name)
-            value.resolveStrategy = Closure.DELEGATE_ONLY
-            value.call()
-            if (this.name == "${name}s") {
-                list.add(value)
-                return
-            }
-        }
-        map.put(name, value)
-    }
-
-    def prepare() {
-        map.each { name, value ->
-            if (value instanceof Closure) {
-                if (value.list.empty) {
-                    value.prepare()
-                } else {
-                    value = value.list
-                    value.each { it -> it.prepare() }
-                }
-            }
-            this.metaClass.registerInstanceMethod("get${name.capitalize()}", { -> value })
-        }
-    }
-}
-
-pom.resolveStrategy = Closure.DELEGATE_ONLY
-pom.delegate = new MapDelegate('project')
-pom.call()
-pom.prepare()
 
 subprojects {
     repositories {
@@ -174,6 +159,19 @@ subprojects {
             from javadoc
             classifier = 'javadoc'
         }
+
+        plugins.withType(digital.wup.android_maven_publish.AndroidMavenPublishPlugin) {
+            publishing {
+                publications {
+                    maven(MavenPublication) {
+                        from components.android
+                        artifact sourcesJar
+                        artifact javadocJar
+                        initPublication(it)
+                    }
+                }
+            }
+        }
     }
     plugins.withType(JavaPlugin) {
         task sourcesJar(type: Jar) {
@@ -185,81 +183,53 @@ subprojects {
             from javadoc
             classifier = 'javadoc'
         }
-    }
-    plugins.withType(MavenPublishPlugin) {
-        publishing {
-            publications {
-                maven(MavenPublication) {
-                    groupId group
-                    version version
-                    artifact sourcesJar
-                    artifact javadocJar
-                    pom.withXml {
-                        asNode().children().last() + rootProject.ext.pom
-                    }
-                    if (tasks.findByName('bundleRelease')) {
-                        artifact bundleRelease
-                        pom.withXml {
-                            def dependenciesNode = asNode().appendNode('dependencies')
-                            // List all compile dependencies and write to POM
-                            configurations.implementation.getAllDependencies().each { dep ->
-                                if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified") return // ignore invalid dependencies
-                                def dependencyNode = dependenciesNode.appendNode('dependency')
-                                dependencyNode.appendNode('groupId', dep.group)
-                                dependencyNode.appendNode('artifactId', dep.name)
-                                dependencyNode.appendNode('version', dep.version)
-                                if (!dep.transitive) {
-                                    // If this dependency is transitive, we should force exclude all its dependencies them from the POM
-                                    def exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
-                                    exclusionNode.appendNode('groupId', '*')
-                                    exclusionNode.appendNode('artifactId', '*')
-                                } else if (!dep.properties.excludeRules.empty) {
-                                    // Otherwise add specified exclude rules
-                                    def exclusionsNode = dependencyNode.appendNode('exclusions')
-                                    dep.properties.excludeRules.each { rule ->
-                                        def exclusionNode = exclusionsNode.appendNode('exclusion')
-                                        exclusionNode.appendNode('groupId', rule.group ?: '*')
-                                        exclusionNode.appendNode('artifactId', rule.module ?: '*')
-                                    }
-                                }
-                            }
-                        }
-                    } else {
+
+        plugins.withType(MavenPublishPlugin) {
+            publishing {
+                publications {
+                    maven(MavenPublication) {
                         from components.java
+                        artifact sourcesJar
+                        artifact javadocJar
+                        initPublication(it)
                     }
                 }
             }
         }
-        plugins.withType(BintrayPlugin) {
-            bintray {
-                user = artifactoryUser
-                key = artifactoryApiKey
-                publications = ['maven']
-                publish = true
-                pkg {
-                    repo = 'maven'
-                    userOrg = 'acra'
-                    name = pom.name
-                    websiteUrl = pom.url
-                    vcsUrl = pom.scm.url
-                    licenses = pom.licenses*.name
-                    publicDownloadNumbers = true
-                    version {
-                        name = project.version
-                        desc = pom.description
+    }
+    plugins.withType(BintrayPlugin) {
+        bintray {
+            user = artifactoryUser
+            key = artifactoryApiKey
+            publications = 'maven'
+            publish = true
+            dryRun = true
+            pkg {
+                repo = 'maven'
+                userOrg = 'acra'
+                afterEvaluate {
+                    org.gradle.api.publish.maven.MavenPom pom = publishing.publications.maven.pom
+                    name = pom.name.get()
+                    websiteUrl = pom.url.get()
+                    vcsUrl = pom.scm.url.get()
+                    licenses = pom.licenses.collect { l -> l.name.get() }
+                    desc = pom.description.get()
+                }
+                publicDownloadNumbers = true
+                version {
+                    name = project.version
+                    if (hasProperty('ossrhUser')) {
                         mavenCentralSync {
                             sync = true
-                            if (hasProperty('ossrhUser')) {
-                                user = ossrhUser
-                                password = ossrhPassword
-                            }
+                            user = ossrhUser
+                            password = ossrhPassword
                         }
                     }
                 }
             }
-            bintrayUpload.dependsOn(build, javadocJar, sourcesJar, 'generatePomFileForMavenPublication')
-            rootProject.afterReleaseBuild.dependsOn bintrayUpload
         }
+        bintrayUpload.dependsOn(build, javadocJar, sourcesJar, 'generatePomFileForMavenPublication')
+        rootProject.afterReleaseBuild.dependsOn bintrayUpload
     }
 }
 
