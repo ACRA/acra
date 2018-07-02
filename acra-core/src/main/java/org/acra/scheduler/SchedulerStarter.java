@@ -22,7 +22,6 @@ import android.support.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.ReportLocator;
-import org.acra.plugins.PluginLoader;
 
 import java.io.File;
 import java.util.List;
@@ -40,7 +39,7 @@ public class SchedulerStarter {
 
     public SchedulerStarter(@NonNull Context context, @NonNull CoreConfiguration config) {
         locator = new ReportLocator(context);
-        List<SenderSchedulerFactory> schedulerFactories = new PluginLoader(config).load(SenderSchedulerFactory.class);
+        List<SenderSchedulerFactory> schedulerFactories = config.pluginLoader().loadEnabled(config, SenderSchedulerFactory.class);
         if (schedulerFactories.isEmpty()) {
             senderScheduler = new DefaultSenderScheduler(context, config);
         } else {

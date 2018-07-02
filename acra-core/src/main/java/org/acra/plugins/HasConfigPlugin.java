@@ -25,10 +25,10 @@ import org.acra.config.CoreConfiguration;
  * @author F43nd1r
  * @since 18.04.18
  */
-public abstract class ConfigBasedAllowsDisablePlugin implements AllowsDisablePlugin {
+public abstract class HasConfigPlugin implements Plugin {
     private final Class<? extends Configuration> configClass;
 
-    public ConfigBasedAllowsDisablePlugin(Class<? extends Configuration> configClass) {
+    public HasConfigPlugin(Class<? extends Configuration> configClass) {
         this.configClass = configClass;
     }
 

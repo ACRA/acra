@@ -26,7 +26,7 @@ import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.SchedulerConfiguration;
 import org.acra.file.ReportLocator;
-import org.acra.plugins.ConfigBasedAllowsDisablePlugin;
+import org.acra.plugins.HasConfigPlugin;
 import org.acra.sender.SenderService;
 
 import java.util.concurrent.TimeUnit;
@@ -68,7 +68,7 @@ public class AdvancedSenderScheduler implements SenderScheduler {
     }
 
     @AutoService(SenderSchedulerFactory.class)
-    public static class Factory extends ConfigBasedAllowsDisablePlugin implements SenderSchedulerFactory {
+    public static class Factory extends HasConfigPlugin implements SenderSchedulerFactory {
 
         public Factory() {
             super(SchedulerConfiguration.class);

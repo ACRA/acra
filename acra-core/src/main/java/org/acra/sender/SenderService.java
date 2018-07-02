@@ -26,7 +26,6 @@ import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
-import org.acra.plugins.PluginLoader;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ToastSender;
 
@@ -100,7 +99,8 @@ public class SenderService extends JobIntentService {
     @NonNull
     private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config) {
         List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
-        List<ReportSenderFactory> factories = !factoryClasses.isEmpty() ? new InstanceCreator().create(factoryClasses) : new PluginLoader(config).load(ReportSenderFactory.class);
+        List<ReportSenderFactory> factories = !factoryClasses.isEmpty() ? new InstanceCreator().create(factoryClasses) : config.pluginLoader()
+                .loadEnabled(config, ReportSenderFactory.class);
         final List<ReportSender> reportSenders = new ArrayList<>();
         for (ReportSenderFactory factory : factories) {
             reportSenders.add(factory.create(this.getApplication(), config));
