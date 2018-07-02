@@ -26,6 +26,7 @@ import org.acra.sender.HttpSender;
 import org.acra.util.UriUtils;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -48,9 +49,8 @@ public class BinaryHttpRequest extends BaseHttpRequest<Uri> {
         return UriUtils.getMimeType(context, uri);
     }
 
-    @NonNull
     @Override
-    protected byte[] asBytes(@NonNull Uri content) throws IOException {
-        return UriUtils.uriToByteArray(context, content);
+    protected void write(OutputStream outputStream, @NonNull Uri content) throws IOException {
+        UriUtils.copyFromUri(context, outputStream, content);
     }
 }

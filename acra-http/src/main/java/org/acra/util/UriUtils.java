@@ -22,14 +22,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
-
 import org.acra.ACRAConstants;
 import org.acra.attachment.AcraContentProvider;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author F43nd1r
@@ -40,44 +39,27 @@ public final class UriUtils {
     private UriUtils() {
     }
 
-    @NonNull
-    public static byte[] uriToByteArray(@NonNull Context context, @NonNull Uri uri) throws IOException {
-        final InputStream inputStream = context.getContentResolver().openInputStream(uri);
-        if (inputStream == null) {
-            throw new FileNotFoundException("Could not open " + uri.toString());
+    public static void copyFromUri(@NonNull Context context, @NonNull OutputStream outputStream, @NonNull Uri uri) throws IOException {
+        try (final InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("Could not open " + uri.toString());
+            }
+            final byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
         }
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-        return outputStream.toByteArray();
     }
 
     @NonNull
-    public static String getFileNameFromUri(@NonNull Context context, @NonNull Uri uri) {
-        String result = null;
-        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
-            final Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
+    public static String getFileNameFromUri(@NonNull Context context, @NonNull Uri uri) throws FileNotFoundException {
+        try (Cursor cursor = context.getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
             }
         }
-        if (result == null) {
-            result = uri.getPath();
-            final int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
-        }
-        return result;
+        throw new FileNotFoundException("Could not resolve filename of " + uri);
     }
 
     @NonNull

@@ -24,6 +24,7 @@ import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -46,9 +47,8 @@ public class DefaultHttpRequest extends BaseHttpRequest<String> {
         return contentType;
     }
 
-    @NonNull
     @Override
-    protected byte[] asBytes(@NonNull String content) throws IOException {
-        return content.getBytes(ACRAConstants.UTF8);
+    protected void write(OutputStream outputStream, @NonNull String content) throws IOException {
+        outputStream.write(content.getBytes(ACRAConstants.UTF8));
     }
 }

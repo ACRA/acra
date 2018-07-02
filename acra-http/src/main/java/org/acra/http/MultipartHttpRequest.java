@@ -21,21 +21,18 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
-
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.HttpSender;
 import org.acra.util.UriUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Produces <a href="https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html">RFC 1341</a> compliant requests
+ * Produces <a href="https://tools.ietf.org/html/rfc7578">RFC 7578</a> compliant requests
  *
  * @author F43nd1r
  * @since 11.03.2017
@@ -46,7 +43,10 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     private static final String BOUNDARY = "%&ACRA_REPORT_DIVIDER&%";
     private static final String BOUNDARY_FIX = "--";
     private static final String NEW_LINE = "\r\n";
-    private static final String CONTENT_TYPE = "Content-Type: ";
+    private static final String SECTION_START = NEW_LINE + BOUNDARY_FIX + BOUNDARY + NEW_LINE;
+    private static final String MESSAGE_END = NEW_LINE + BOUNDARY_FIX + BOUNDARY + BOUNDARY_FIX + NEW_LINE;
+    private static final String CONTENT_DISPOSITION = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" + NEW_LINE;
+    private static final String CONTENT_TYPE = "Content-Type: %s" + NEW_LINE;
     private final Context context;
     private final String contentType;
 
@@ -60,31 +60,30 @@ public class MultipartHttpRequest extends BaseHttpRequest<Pair<String, List<Uri>
     @NonNull
     @Override
     protected String getContentType(@NonNull Context context, @NonNull Pair<String, List<Uri>> stringListPair) {
-        return "multipart/mixed; boundary=" + BOUNDARY;
+        return "multipart/form-data; boundary=" + BOUNDARY;
     }
 
-    @NonNull
     @Override
-    protected byte[] asBytes(@NonNull Pair<String, List<Uri>> content) throws IOException {
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final Writer writer = new OutputStreamWriter(outputStream, ACRAConstants.UTF8);
-        //noinspection TryFinallyCanBeTryWithResources we do not target api 19
-        try {
-            writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
-            writer.append(CONTENT_TYPE).append(contentType).append(NEW_LINE).append(NEW_LINE);
-            writer.append(content.first);
-            for (Uri uri : content.second) {
-                writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(NEW_LINE);
-                writer.append("Content-Disposition: attachment; filename=\"").append(UriUtils.getFileNameFromUri(context, uri)).append('"').append(NEW_LINE);
-                writer.append(CONTENT_TYPE).append(UriUtils.getMimeType(context, uri)).append(NEW_LINE).append(NEW_LINE);
-                writer.flush();
-                outputStream.write(UriUtils.uriToByteArray(context, uri));
+    protected void write(OutputStream outputStream, @NonNull Pair<String, List<Uri>> content) throws IOException {
+        final PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, ACRAConstants.UTF8));
+        writer.append(SECTION_START)
+                .format(CONTENT_DISPOSITION, "ACRA_REPORT", "")
+                .format(CONTENT_TYPE, contentType)
+                .append(NEW_LINE)
+                .append(content.first);
+        for (Uri uri : content.second) {
+            try {
+                String name = UriUtils.getFileNameFromUri(context, uri);
+                writer.append(SECTION_START)
+                        .format(CONTENT_DISPOSITION, "ACRA_ATTACHMENT", name)
+                        .format(CONTENT_TYPE, UriUtils.getMimeType(context, uri))
+                        .append(NEW_LINE)
+                        .flush();
+                UriUtils.copyFromUri(context, outputStream, uri);
+            } catch (FileNotFoundException e) {
+                ACRA.log.w("Not sending attachment", e);
             }
-            writer.append(NEW_LINE).append(BOUNDARY_FIX).append(BOUNDARY).append(BOUNDARY_FIX).append(NEW_LINE);
-            writer.flush();
-            return outputStream.toByteArray();
-        } finally {
-            writer.close();
         }
+        writer.append(MESSAGE_END).flush();
     }
 }
