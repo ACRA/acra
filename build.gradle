@@ -201,7 +201,7 @@ subprojects {
         bintray {
             user = artifactoryUser
             key = artifactoryApiKey
-            publications = 'maven'
+            publications = ['maven']
             publish = true
             dryRun = true
             pkg {
