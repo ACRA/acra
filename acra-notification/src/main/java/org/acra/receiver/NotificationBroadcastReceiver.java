@@ -85,7 +85,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
                 }
             }
 
-        } catch (Throwable t) {
+        } catch (Exception t) {
             ACRA.log.e(LOG_TAG, "Failed to handle notification action", t);
         }
     }

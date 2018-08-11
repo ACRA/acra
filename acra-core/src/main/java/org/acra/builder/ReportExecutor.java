@@ -130,7 +130,7 @@ public class ReportExecutor {
                 if (!administrator.shouldStartCollecting(context, config, reportBuilder)) {
                     blockingAdministrator = administrator;
                 }
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
             }
         }
@@ -142,7 +142,7 @@ public class ReportExecutor {
                     if (!administrator.shouldSendReport(context, config, crashReportData)) {
                         blockingAdministrator = administrator;
                     }
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
                 }
             }
@@ -157,7 +157,7 @@ public class ReportExecutor {
                     if (!administrator.shouldFinishActivity(context, config, lastActivityManager)) {
                         finishActivity = false;
                     }
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
                 }
             }
@@ -185,7 +185,7 @@ public class ReportExecutor {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Not sending crash report because of ReportingAdministrator " + blockingAdministrator.getClass().getName());
             try {
                 blockingAdministrator.notifyReportDropped(context, config);
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 ACRA.log.w(LOG_TAG, "ReportingAdministrator " + blockingAdministrator.getClass().getName() + " threw exeption", t);
             }
         }
@@ -198,7 +198,7 @@ public class ReportExecutor {
                     if (!administrator.shouldKillApplication(context, config, reportBuilder, crashReportData)) {
                         endApplication = false;
                     }
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     ACRA.log.w(LOG_TAG, "ReportingAdministrator " + administrator.getClass().getName() + " threw exception", t);
                 }
             }

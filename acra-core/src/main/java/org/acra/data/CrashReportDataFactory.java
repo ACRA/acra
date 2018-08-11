@@ -57,12 +57,12 @@ public final class CrashReportDataFactory {
             Collector.Order o2;
             try {
                 o1 = c1.getOrder();
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 o1 = Collector.Order.NORMAL;
             }
             try {
                 o2 = c2.getOrder();
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 o2 = Collector.Order.NORMAL;
             }
             return o1.ordinal() - o2.ordinal();
@@ -89,7 +89,7 @@ public final class CrashReportDataFactory {
                     if(ACRA.DEV_LOGGING)ACRA.log.d(LOG_TAG, "Collector " + collector.getClass().getName() + " completed");
                 }catch (CollectorException e){
                     ACRA.log.w(LOG_TAG, e);
-                }catch (Throwable t) {
+                }catch (Exception t) {
                     ACRA.log.e(LOG_TAG, "Error in collector " + collector.getClass().getSimpleName(), t);
                 }
             }));
@@ -113,7 +113,7 @@ public final class CrashReportDataFactory {
                 //catch absolutely everything possible here so no collector obstructs the others
                 try {
                     ((ApplicationStartupCollector) collector).collectApplicationStartUp(context, config);
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     ACRA.log.w(ACRA.LOG_TAG, collector.getClass().getSimpleName() + " failed to collect its startup data", t);
                 }
             }

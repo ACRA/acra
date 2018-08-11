@@ -62,7 +62,7 @@ public final class PackageManagerWrapper {
 
         try {
             return pm.checkPermission(permission, context.getPackageName()) == PackageManager.PERMISSION_GRANTED;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // To catch RuntimeException("Package manager has died") that can occur on some version of Android,
             // when the remote PackageManager is unavailable. I suspect this sometimes occurs when the App is being reinstalled.
             return false;
@@ -84,7 +84,7 @@ public final class PackageManagerWrapper {
         } catch (PackageManager.NameNotFoundException e) {
             ACRA.log.w(LOG_TAG, "Failed to find PackageInfo for current App : " + context.getPackageName());
             return null;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // To catch RuntimeException("Package manager has died") that can occur on some version of Android,
             // when the remote PackageManager is unavailable. I suspect this sometimes occurs when the App is being reinstalled.
             return null;
