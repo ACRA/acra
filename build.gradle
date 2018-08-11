@@ -199,8 +199,10 @@ subprojects {
     }
     plugins.withType(BintrayPlugin) {
         bintray {
-            user = artifactoryUser
-            key = artifactoryApiKey
+            if (hasProperty('artifactoryUser')) {
+                user = artifactoryUser
+                key = artifactoryApiKey
+            }
             publications = ['maven']
             publish = true
             dryRun = true
