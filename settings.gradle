@@ -1,1 +1,1 @@
-include ':acratest', ':annotationprocessor', ':annotations', ':acra-http', ':acra-core', ':acra-mail', ':acra-dialog', ':acra-toast', ':acra-javacore', ':acra-notification', ':acra-limiter', ':acra-advanced-scheduler'
+include ':annotationprocessor', ':annotations', ':acra-http', ':acra-core', ':acra-mail', ':acra-dialog', ':acra-toast', ':acra-javacore', ':acra-notification', ':acra-limiter', ':acra-advanced-scheduler'
