@@ -20,10 +20,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import com.android.internal.util.Predicate;
 import com.google.auto.service.AutoService;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -31,6 +28,7 @@ import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportData;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.PackageManagerWrapper;
+import org.acra.util.Predicate;
 import org.acra.util.StreamReader;
 
 import java.io.IOException;

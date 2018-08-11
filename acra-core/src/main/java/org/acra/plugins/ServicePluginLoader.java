@@ -17,9 +17,9 @@
 package org.acra.plugins;
 
 import android.support.annotation.NonNull;
-import com.android.internal.util.Predicate;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
+import org.acra.util.Predicate;
 
 import java.util.*;
 
