@@ -199,13 +199,12 @@ subprojects {
     }
     plugins.withType(BintrayPlugin) {
         bintray {
-            if (hasProperty('artifactoryUser')) {
+            if (project.hasProperty('artifactoryUser')) {
                 user = artifactoryUser
                 key = artifactoryApiKey
             }
             publications = ['maven']
             publish = true
-            dryRun = true
             pkg {
                 repo = 'maven'
                 userOrg = 'acra'
