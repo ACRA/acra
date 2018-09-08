@@ -15,11 +15,14 @@
  */
 package org.acra.sender;
 
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
+import android.content.ServiceConnection;
+import android.os.*;
 import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -30,33 +33,97 @@ import org.acra.util.InstanceCreator;
 import org.acra.util.ToastSender;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.acra.ACRA.LOG_TAG;
 
-public class SenderService extends JobIntentService {
+public class SenderService extends Service {
 
     public static final String EXTRA_ONLY_SEND_SILENT_REPORTS = "onlySendSilentReports";
     public static final String EXTRA_ACRA_CONFIG = "acraConfig";
+    private static final int KEY_SEND_REPORTS = 1;
+    private static final int KEY_REPORTS_SENT = 2;
 
     private final ReportLocator locator;
+    private final Messenger messenger;
+
+    public static boolean sendReports(Context context, CoreConfiguration config, boolean onlySendSilentReports) {
+        final AtomicBoolean lock = new AtomicBoolean(false);
+        context.bindService(new Intent(context, SenderService.class), new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Messenger messenger = new Messenger(service);
+                Messenger replyTo = new Messenger(new Handler(msg -> {
+                    if (msg.what == KEY_REPORTS_SENT) {
+                        synchronized (lock) {
+                            lock.set(true);
+                            lock.notifyAll();
+                        }
+                        context.unbindService(this);
+                        return true;
+                    }
+                    return false;
+                }));
+                Message message = new Message();
+                message.what = KEY_SEND_REPORTS;
+                Bundle data = new Bundle();
+                data.putSerializable(EXTRA_ACRA_CONFIG, config);
+                data.putBoolean(EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+                message.setData(data);
+                message.replyTo = replyTo;
+                try {
+                    messenger.send(message);
+                } catch (RemoteException ignored) {
+                }
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                synchronized (lock) {
+                    lock.notifyAll();
+                }
+            }
+        }, Context.BIND_AUTO_CREATE);
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException ignored) {
+            }
+        }
+        return lock.get();
+    }
 
     public SenderService() {
         locator = new ReportLocator(this);
+        messenger = new Messenger(new Handler(msg -> {
+            if (msg.what == KEY_SEND_REPORTS) {
+                Bundle data = msg.getData();
+                Serializable config = data.getSerializable(EXTRA_ACRA_CONFIG);
+                if (config instanceof CoreConfiguration) {
+                    sendReports((CoreConfiguration) config, data.getBoolean(EXTRA_ONLY_SEND_SILENT_REPORTS));
+                    Message response = new Message();
+                    response.what = KEY_REPORTS_SENT;
+                    try {
+                        msg.replyTo.send(response);
+                    } catch (RemoteException ignored) {
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }));
     }
 
+    @Nullable
     @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-        if (!intent.hasExtra(EXTRA_ACRA_CONFIG)) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SenderService was started but no valid intent was delivered, will now quit");
-            return;
-        }
+    public IBinder onBind(Intent intent) {
+        return messenger.getBinder();
+    }
 
-        final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
-
-        final CoreConfiguration config = (CoreConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
-
+    private void sendReports(@NonNull CoreConfiguration config, boolean onlySendSilentReports) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
             final List<ReportSender> senderInstances = getSenderInstances(config);

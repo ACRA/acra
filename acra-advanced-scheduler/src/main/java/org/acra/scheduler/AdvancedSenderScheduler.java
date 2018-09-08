@@ -17,19 +17,15 @@
 package org.acra.scheduler;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
-import com.evernote.android.job.JobManager;
-import com.evernote.android.job.JobRequest;
-import com.evernote.android.job.util.support.PersistableBundleCompat;
+import androidx.work.Constraints;
+import androidx.work.OneTimeWorkRequest;
 import com.google.auto.service.AutoService;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.SchedulerConfiguration;
-import org.acra.file.ReportLocator;
 import org.acra.plugins.HasConfigPlugin;
-import org.acra.sender.SenderService;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Utilizes evernotes android-job to delay report sending
@@ -37,34 +33,24 @@ import java.util.concurrent.TimeUnit;
  * @author F43nd1r
  * @since 18.04.18
  */
-public class AdvancedSenderScheduler implements SenderScheduler {
-    private final Context context;
-    private final CoreConfiguration config;
+public class AdvancedSenderScheduler extends DefaultSenderScheduler {
+    private final SchedulerConfiguration schedulerConfiguration;
 
     private AdvancedSenderScheduler(@NonNull Context context, @NonNull CoreConfiguration config) {
-        this.context = context;
-        this.config = config;
+        super(context, config);
+        schedulerConfiguration = ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class);
     }
 
     @Override
-    public void scheduleReportSending(boolean onlySendSilentReports) {
-        if(new ReportLocator(context).getApprovedReports().length == 0) {
-            return;
-        }
-        SchedulerConfiguration schedulerConfiguration = ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class);
-        PersistableBundleCompat extras = new PersistableBundleCompat();
-        extras.putBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-        new JobRequest.Builder(AcraJobCreator.REPORT_TAG)
-                .setExecutionWindow(1, TimeUnit.MINUTES.toMillis(1))
-                .setExtras(extras)
-                .setRequirementsEnforced(true)
+    protected void configureWorkRequest(@NonNull OneTimeWorkRequest.Builder builder) {
+        Constraints.Builder constraints = new Constraints.Builder()
                 .setRequiredNetworkType(schedulerConfiguration.requiresNetworkType())
                 .setRequiresCharging(schedulerConfiguration.requiresCharging())
-                .setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle())
-                .setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow())
-                .setUpdateCurrent(true)
-                .build()
-                .schedule();
+                .setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            constraints.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle());
+        }
+        builder.setConstraints(constraints.build());
     }
 
     @AutoService(SenderSchedulerFactory.class)
@@ -77,7 +63,6 @@ public class AdvancedSenderScheduler implements SenderScheduler {
         @NonNull
         @Override
         public SenderScheduler create(@NonNull Context context, @NonNull CoreConfiguration config) {
-            JobManager.create(context).addJobCreator(new AcraJobCreator(config));
             return new AdvancedSenderScheduler(context, config);
         }
 
