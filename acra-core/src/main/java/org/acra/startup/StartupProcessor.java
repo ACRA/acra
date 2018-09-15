@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 the ACRA team
+ * Copyright (c) 2018
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package org.acra.file;
+package org.acra.startup;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import org.acra.config.CoreConfiguration;
+import org.acra.plugins.Plugin;
 
-import java.io.File;
-import java.util.Comparator;
+import java.util.List;
 
 /**
- * Orders files from oldest to newest based on their last modified date.
+ * @author lukas
+ * @since 15.09.18
  */
-public final class LastModifiedComparator implements Comparator<File> {
-    @Override
-    public int compare(@NonNull File lhs, @NonNull File rhs) {
-        final long l = lhs.lastModified();
-        final long r = rhs.lastModified();
-        return l < r ? -1 : (l == r ? 0 : 1);
-    }
+public interface StartupProcessor extends Plugin {
+    void processReports(@NonNull Context context, @NonNull CoreConfiguration config, List<Report> reports);
 }

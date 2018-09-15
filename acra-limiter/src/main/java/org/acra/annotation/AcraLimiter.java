@@ -96,4 +96,20 @@ public @interface AcraLimiter {
      * @since 5.0.0
      */
     @StringRes int resIgnoredCrashToast() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * This property can be used to determine whether old (out of date) reports should be sent or not.
+     *
+     * @return if ACRA should delete any unsent reports on startup if the application has been updated.
+     * @since 5.3.0
+     */
+    boolean deleteReportsOnAppUpdate() default true;
+
+    /**
+     * Resetting limits after an app update allows you to see if a bug still exists.
+     *
+     * @return if ACRA should reset all limits on startup if the application has been updated.
+     * @since 5.3.0
+     */
+    boolean resetLimitsOnAppUpdate() default true;
 }

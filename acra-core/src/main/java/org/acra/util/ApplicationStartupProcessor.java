@@ -19,67 +19,35 @@ package org.acra.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.BulkReportDeleter;
-import org.acra.file.CrashReportFileNameParser;
-import org.acra.file.ReportLocator;
-import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.prefs.SharedPreferencesFactory;
-import org.acra.scheduler.SchedulerStarter;
-
-import java.io.File;
-import java.util.Calendar;
 
 /**
  * Looks for any existing reports and starts sending them.
  */
+@Deprecated
 public final class ApplicationStartupProcessor {
 
     private final Context context;
     private final CoreConfiguration config;
     private final BulkReportDeleter reportDeleter;
-    private final ReportLocator reportLocator;
-    private final SchedulerStarter schedulerStarter;
 
-    public ApplicationStartupProcessor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull SchedulerStarter schedulerStarter) {
+    public ApplicationStartupProcessor(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
         reportDeleter = new BulkReportDeleter(context);
-        reportLocator = new ReportLocator(context);
-        this.schedulerStarter = schedulerStarter;
     }
 
-    public void checkReports(boolean enableAcra) {
-        final Calendar now = Calendar.getInstance();
-        //application is not ready in onAttachBaseContext, so delay this. also run it on a background thread because we're doing disk I/O
-        new Handler(context.getMainLooper()).post(() -> new Thread(() -> {
+    public void checkReports() {
+        //run it on a background thread because we're doing disk I/O
+        new Thread(() -> {
             if (config.deleteOldUnsentReportsOnApplicationStart()) {
                 deleteUnsentReportsFromOldAppVersion();
             }
-            if (config.deleteUnapprovedReportsOnApplicationStart()) {
-                reportDeleter.deleteReports(false, 1);
-            }
-            if (enableAcra) {
-                sendApprovedReports();
-                approveOneReport(now);
-            }
-        }).start());
-    }
-
-    private void approveOneReport(Calendar ignoreReportsAfter) {
-        final File[] reports = reportLocator.getUnapprovedReports();
-
-        if (reports.length == 0) {
-            return; // There are no unapproved reports, so bail now.
-        }
-        //if a report was created after the application launch, it might be currently handled, so ignore it for now.
-        if (new CrashReportFileNameParser().getTimestamp(reports[0].getName()).before(ignoreReportsAfter)) {
-            //only approve one report at a time to prevent overwhelming users
-            new ReportInteractionExecutor(context, config).performInteractions(reports[0]);
-        }
+        }).start();
     }
 
     /**
@@ -96,21 +64,6 @@ public final class ApplicationStartupProcessor {
 
             prefs.edit().putInt(ACRA.PREF_LAST_VERSION_NR, appVersion).apply();
         }
-    }
-
-    /**
-     * If ReportingInteractionMode == Toast and at least one non silent report then show a Toast.
-     * All approved reports will be sent.
-     */
-    private void sendApprovedReports() {
-        final File[] reportFiles = reportLocator.getApprovedReports();
-
-        if (reportFiles.length == 0) {
-            return; // There are no approved reports, so bail now.
-        }
-
-        // Send the approved reports.
-        schedulerStarter.scheduleReports(null, false);
     }
 
     /**

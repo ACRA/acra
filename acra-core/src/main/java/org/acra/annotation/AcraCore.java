@@ -150,7 +150,9 @@ public @interface AcraCore {
      * This property can be used to determine whether old (out of date) reports should be sent or not.
      *
      * @return if ACRA should delete any unsent reports on startup if the application has been updated since the last time the application was started.
+     * @deprecated use @AcraLimiter.deleteReportsOnAppUpdate() instead
      */
+    @Deprecated
     boolean deleteOldUnsentReportsOnApplicationStart() default true;
 
     /**

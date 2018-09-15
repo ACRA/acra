@@ -16,34 +16,53 @@
 
 package org.acra.config;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
+import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
 import org.acra.data.CrashReportData;
+import org.acra.util.IOUtils;
+import org.acra.util.StreamReader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * @author F43nd1r
  * @since 26.10.2017
  */
 
-class LimiterData {
+public class LimiterData {
+    private static final String FILE_LIMITER_DATA = "ACRA-limiter.json";
     private final List<ReportMetadata> list;
 
-    LimiterData(@Nullable String json) throws JSONException {
+    public static LimiterData load(@NonNull Context context) {
+        try {
+            return new LimiterData(new StreamReader(context.openFileInput(FILE_LIMITER_DATA)).read());
+        } catch (FileNotFoundException e){
+            return new LimiterData();
+        }catch (IOException | JSONException e) {
+            ACRA.log.w(LOG_TAG, "Failed to load LimiterData", e);
+            return new LimiterData();
+        }
+    }
+
+    public LimiterData() {
         list = new ArrayList<>();
+    }
+
+    private LimiterData(@Nullable String json) throws JSONException {
+        this();
         if (json != null && !json.isEmpty()) {
             final JSONArray array = new JSONArray(json);
             final int length = array.length();
@@ -53,8 +72,12 @@ class LimiterData {
         }
     }
 
+    public void store(@NonNull Context context) throws IOException {
+        IOUtils.writeStringToFile(context.getFileStreamPath(FILE_LIMITER_DATA), toJSON());
+    }
+
     @NonNull
-    public List<ReportMetadata> getReportMetadata() {
+    List<ReportMetadata> getReportMetadata() {
         return list;
     }
 
@@ -66,7 +89,7 @@ class LimiterData {
         }
     }
 
-    public String toJSON() {
+    String toJSON() {
         return new JSONArray(list).toString();
     }
 

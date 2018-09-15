@@ -29,6 +29,7 @@ import org.acra.data.CrashReportDataFactory;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.scheduler.SchedulerStarter;
 import org.acra.scheduler.SenderScheduler;
+import org.acra.startup.StartupProcessorExecutor;
 import org.acra.util.ApplicationStartupProcessor;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ProcessFinisher;
@@ -91,7 +92,8 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
 
         // Check for approved reports and send them (if enabled).
         if (checkReportsOnApplicationStart) {
-            new ApplicationStartupProcessor(context, config, schedulerStarter).checkReports(enabled);
+            new StartupProcessorExecutor(context, config, schedulerStarter).processReports(enabled);
+            new ApplicationStartupProcessor(context, config).checkReports();
         }
     }
 
