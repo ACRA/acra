@@ -25,8 +25,10 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:support-compat:$supportVersion"
-    api "android.arch.work:work-runtime:$workVersion"
+    implementation "com.android.support:support-core-utils:$supportVersion"
+    api("android.arch.work:work-runtime:$workVersion") {
+        exclude group: 'com.android.support', module: 'support-fragment'
+    }
     api project(':acra-javacore')
     compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
     annotationProcessor project(':annotationprocessor')
