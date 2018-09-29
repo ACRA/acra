@@ -72,23 +72,15 @@ public final class StacktraceCollector extends BaseReportFieldCollector {
     @NonNull
     private String getStackTrace(@Nullable String msg, @Nullable Throwable th) {
         final Writer result = new StringWriter();
-        final PrintWriter printWriter = new PrintWriter(result);
-
-        if (msg != null && !TextUtils.isEmpty(msg)) {
-            printWriter.println(msg);
+        try (final PrintWriter printWriter = new PrintWriter(result)) {
+            if (msg != null && !TextUtils.isEmpty(msg)) {
+                printWriter.println(msg);
+            }
+            if (th != null) {
+                th.printStackTrace(printWriter);
+            }
+            return result.toString();
         }
-
-        // If the exception was thrown in a background thread inside
-        // AsyncTask, then the actual exception can be found with getCause
-        Throwable cause = th;
-        while (cause != null) {
-            cause.printStackTrace(printWriter);
-            cause = cause.getCause();
-        }
-        final String stacktraceAsString = result.toString();
-        printWriter.close();
-
-        return stacktraceAsString;
     }
 
     @NonNull
