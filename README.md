@@ -25,7 +25,7 @@ A crash reporting feature for android apps is native since Android 2.2 (FroYo) b
   * usable with ALL versions of Android supported by the official support libraries.
   * more [detailed crash reports](http://github.com/ACRA/acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
   * you can [add your own variables content or debug traces](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
-  * you can send [error reports even if the application doesn't crash](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Sending_reports_for_caught_exceptions)
+  * you can send [error reports even if the application doesn't crash](https://github.com/ACRA/acra/wiki/AdvancedUsage#sending-reports-for-caught-exceptions-or-for-unexpected-application-state-without-any-exception)
   * works for any application even if not delivered through Google PLay => great for devices/regions where the Google Play is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
   * can be used with [your own self-hosted report receiver script](https://github.com/ACRA/acra/wiki/Report-Destinations)
