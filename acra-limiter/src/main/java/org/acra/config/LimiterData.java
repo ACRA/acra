@@ -80,7 +80,7 @@ class LimiterData {
             put(KEY_STACK_TRACE, stacktrace);
             final int index = stacktrace.indexOf('\n');
             final String firstLine = index == -1 ? stacktrace : stacktrace.substring(0, index);
-            final int index2 = stacktrace.indexOf(':');
+            final int index2 = firstLine.indexOf(':');
             final String className = index2 == -1 ? firstLine : firstLine.substring(0, index2);
             try {
                 Class.forName(className);
