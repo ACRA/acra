@@ -17,11 +17,14 @@
 package org.acra.plugins;
 
 import android.support.annotation.NonNull;
+import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.acra.ACRA.LOG_TAG;
 
 /**
  * @author lukas
@@ -39,13 +42,15 @@ public class SimplePluginLoader implements PluginLoader {
     @Override
     public <T extends Plugin> List<T> load(@NonNull Class<T> clazz) {
         List<T> list = new ArrayList<>();
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SimplePluginLoader loading services from plugin classes : " + plugins);
         for (Class<? extends Plugin> plugin : plugins) {
             if (clazz.isAssignableFrom(plugin)) {
                 try {
                     //noinspection unchecked
                     list.add((T) plugin.newInstance());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Loaded plugin from class : " + plugin);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if (ACRA.DEV_LOGGING) ACRA.log.w(LOG_TAG, "Could not load plugin from class : " + plugin, e);
                 }
             }
         }
@@ -57,7 +62,9 @@ public class SimplePluginLoader implements PluginLoader {
         List<T> list = load(clazz);
         //noinspection Java8CollectionRemoveIf
         for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
-            if (!iterator.next().enabled(config)) {
+            T plugin = iterator.next();
+            if (!plugin.enabled(config)) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Removing non-enabled plugin : " + plugin);
                 iterator.remove();
             }
         }

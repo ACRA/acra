@@ -26,6 +26,7 @@ import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
+import org.acra.plugins.PluginLoader;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ToastSender;
 
@@ -99,13 +100,32 @@ public class SenderService extends JobIntentService {
     @NonNull
     private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config) {
         List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
-        List<ReportSenderFactory> factories = !factoryClasses.isEmpty() ? new InstanceCreator().create(factoryClasses) : config.pluginLoader()
-                .loadEnabled(config, ReportSenderFactory.class);
+
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "config#reportSenderFactoryClasses : " + factoryClasses);
+
+        final List<ReportSenderFactory> factories;
+        if (factoryClasses.isEmpty()) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "No reportSenderFactoryClasses - loading using PluginLoader to find ReportSenders");
+            final PluginLoader loader = config.pluginLoader();
+            factories = loader.loadEnabled(config, ReportSenderFactory.class);
+        } else {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating reportSenderFactories for reportSenderFactory config");
+            factories = new InstanceCreator().create(factoryClasses);
+        }
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "reportSenderFactories : " + factories);
+
+
         final List<ReportSender> reportSenders = new ArrayList<>();
         for (ReportSenderFactory factory : factories) {
-            reportSenders.add(factory.create(this.getApplication(), config));
+            final ReportSender sender = factory.create(this.getApplication(), config);
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Adding reportSender : " + sender);
+            reportSenders.add(sender);
         }
-        if (reportSenders.isEmpty()) reportSenders.add(new NullSender());
+
+        if (reportSenders.isEmpty()) {
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "No ReportSenders configured - adding NullSender");
+            reportSenders.add(new NullSender());
+        }
         return reportSenders;
     }
 }
