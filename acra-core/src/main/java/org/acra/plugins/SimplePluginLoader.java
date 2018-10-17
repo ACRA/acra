@@ -64,7 +64,7 @@ public class SimplePluginLoader implements PluginLoader {
         for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
             T plugin = iterator.next();
             if (!plugin.enabled(config)) {
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Removing non-enabled plugin : " + plugin);
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Removing disabled plugin : " + plugin);
                 iterator.remove();
             }
         }

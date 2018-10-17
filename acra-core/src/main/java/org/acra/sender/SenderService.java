@@ -105,7 +105,7 @@ public class SenderService extends JobIntentService {
 
         final List<ReportSenderFactory> factories;
         if (factoryClasses.isEmpty()) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "No reportSenderFactoryClasses - loading using PluginLoader to find ReportSenders");
+            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using PluginLoader to find ReportSender factories");
             final PluginLoader loader = config.pluginLoader();
             factories = loader.loadEnabled(config, ReportSenderFactory.class);
         } else {

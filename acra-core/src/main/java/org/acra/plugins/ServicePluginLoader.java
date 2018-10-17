@@ -52,7 +52,6 @@ public class ServicePluginLoader implements PluginLoader {
         for (final Iterator<T> iterator = serviceLoader.iterator(); iterator.hasNext(); ) {
             try {
                 final T plugin = iterator.next();
-                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Found plugin : " + plugin);
                 if (shouldLoadPredicate.apply(plugin)) {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Loaded " + clazz.getSimpleName() + " of type " + plugin.getClass().getName());
                     plugins.add(plugin);
