@@ -27,7 +27,7 @@ android {
 dependencies {
     implementation("com.android.support:support-compat:$supportVersion@aar") { transitive = true }
     api project(':acra-javacore')
-    implementation "com.faendir.asl:serviceloader:1.0"
+    implementation "com.faendir.asl:serviceloader:$aslVersion"
     annotationProcessor project(':annotationprocessor')
     compileOnly project(':annotations')
 }
