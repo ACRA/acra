@@ -55,7 +55,7 @@ public final class BaseCoreConfigurationBuilder {
 
     private List<ConfigurationBuilder> configurationBuilders() {
         if (configurationBuilders == null) {
-            List<ConfigurationBuilderFactory> factories = pluginLoader.load(ConfigurationBuilderFactory.class);
+            List<ConfigurationBuilderFactory> factories = pluginLoader.load(app, ConfigurationBuilderFactory.class);
             configurationBuilders = new ArrayList<>(factories.size());
             for (ConfigurationBuilderFactory factory : factories) {
                 configurationBuilders.add(factory.create(app));

@@ -20,7 +20,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;

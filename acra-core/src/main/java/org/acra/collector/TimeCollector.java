@@ -18,7 +18,7 @@ package org.acra.collector;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRAConstants;
 import org.acra.ReportField;

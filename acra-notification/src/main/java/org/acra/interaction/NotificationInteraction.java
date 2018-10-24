@@ -28,7 +28,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 import android.widget.RemoteViews;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRA;
 import org.acra.config.ConfigUtils;

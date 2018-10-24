@@ -23,7 +23,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRA;
 import org.acra.builder.ReportBuilder;

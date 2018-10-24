@@ -100,7 +100,7 @@ public class SenderService extends JobIntentService {
     private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config) {
         List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
         List<ReportSenderFactory> factories = !factoryClasses.isEmpty() ? new InstanceCreator().create(factoryClasses) : config.pluginLoader()
-                .loadEnabled(config, ReportSenderFactory.class);
+                .loadEnabled(this, config, ReportSenderFactory.class);
         final List<ReportSender> reportSenders = new ArrayList<>();
         for (ReportSenderFactory factory : factories) {
             reportSenders.add(factory.create(this.getApplication(), config));
