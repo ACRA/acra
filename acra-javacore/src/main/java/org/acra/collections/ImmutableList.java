@@ -165,4 +165,8 @@ public final class ImmutableList<E> implements List<E>, Serializable {
         return mList.toArray(array);
     }
 
+    @Override
+    public String toString() {
+        return "ImmutableList{" + mList.toString() + "}";
+    }
 }
