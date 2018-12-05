@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 import com.android.build.gradle.LibraryPlugin
 import com.jfrog.bintray.gradle.BintrayPlugin
 
@@ -26,7 +27,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:$androidBuildPluginVersion"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion"
         classpath "net.researchgate:gradle-release:$releasePluginVersion"
-        classpath 'digital.wup:android-maven-publish:3.6.1'
+        classpath 'digital.wup:android-maven-publish:3.6.2'
     }
 }
 apply plugin: 'net.researchgate.release'
@@ -161,13 +162,48 @@ subprojects {
         }
 
         plugins.withType(digital.wup.android_maven_publish.AndroidMavenPublishPlugin) {
+            def collectDependenciesForConfiguration = { Set<ProjectDependency> projectDependencies, Project project, String name ->
+                Configuration config = project.configurations.findByName(name)
+                if (config != null) {
+                    config.dependencies.withType(ProjectDependency.class).forEach {
+                        dep -> projectDependencies.add(dep)
+                    }
+                }
+            }
+            def isAndroidProject = { String groupId, String artifactId, Set<ProjectDependency> deps ->
+                for (dep in deps) {
+                    if (dep.group == groupId && dep.name == artifactId) {
+                        return dep.getDependencyProject().plugins.hasPlugin(LibraryPlugin.class)
+                    }
+                }
+                return false
+            }
             publishing {
                 publications {
-                    maven(MavenPublication) {
+                    maven(MavenPublication) { MavenPublication publication ->
                         from components.android
                         artifact sourcesJar
                         artifact javadocJar
-                        initPublication(it)
+                        initPublication(publication)
+                        afterEvaluate {
+                            Set<ProjectDependency> allDeps = new HashSet<>()
+                            collectDependenciesForConfiguration(allDeps, project, "api")
+                            collectDependenciesForConfiguration(allDeps, project, "implementation")
+                            collectDependenciesForConfiguration(allDeps, project, "compile")
+                            generatePomFileForMavenPublication.doFirst {
+                                List<org.gradle.api.publish.maven.internal.dependencies.MavenDependencyInternal> dependencies = new ArrayList<>()
+                                dependencies.addAll(publication.apiDependencies)
+                                dependencies.addAll(publication.runtimeDependencies)
+                                dependencies.forEach { org.gradle.api.publish.maven.internal.dependencies.MavenDependencyInternal dep ->
+                                    if (dep == null) {
+                                        return
+                                    }
+                                    if (isAndroidProject(dep.groupId, dep.artifactId, allDeps)) {
+                                        dep.artifacts.add(new org.gradle.api.internal.artifacts.dependencies.DefaultDependencyArtifact(dep.artifactId, "aar", null, null, null))
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -187,11 +223,11 @@ subprojects {
         plugins.withType(MavenPublishPlugin) {
             publishing {
                 publications {
-                    maven(MavenPublication) {
+                    maven(MavenPublication) { MavenPublication publication ->
                         from components.java
                         artifact sourcesJar
                         artifact javadocJar
-                        initPublication(it)
+                        initPublication(publication)
                     }
                 }
             }

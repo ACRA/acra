@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:support-core-utils:$supportVersion"
+    implementation ("com.android.support:support-core-utils:$supportVersion@aar") { transitive = true }
     api("android.arch.work:work-runtime:$workVersion") {
         exclude group: 'com.android.support', module: 'support-fragment'
     }
