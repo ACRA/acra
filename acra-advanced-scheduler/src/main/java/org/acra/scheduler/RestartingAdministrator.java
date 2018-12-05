@@ -20,10 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.Worker;
+import androidx.work.*;
 import com.google.auto.service.AutoService;
 import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
@@ -50,10 +47,16 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
     @Override
     public boolean shouldFinishActivity(@NonNull Context context, @NonNull CoreConfiguration config, LastActivityManager lastActivityManager) {
         if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).restartAfterCrash() && lastActivityManager.getLastActivity() != null) {
-            Thread thread = new Thread(() -> WorkManager.getInstance().synchronous().enqueueSync(new OneTimeWorkRequest.Builder(RestartJob.class)
-                    .setInputData(new Data.Builder().putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName()).build())
-                    .setInitialDelay(1, TimeUnit.MILLISECONDS)
-                    .build()));
+            Thread thread = new Thread(() -> {
+                try {
+                    WorkManager.getInstance().enqueue(new OneTimeWorkRequest.Builder(RestartJob.class)
+                            .setInputData(new Data.Builder().putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName()).build())
+                            .setInitialDelay(1, TimeUnit.MILLISECONDS)
+                            .build()).getResult().get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             thread.start();
             try {
                 thread.join();
@@ -64,6 +67,9 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
     }
 
     public static class RestartJob extends Worker {
+        public RestartJob(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+            super(context, workerParams);
+        }
 
         @NonNull
         @Override
@@ -80,7 +86,7 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
                     ACRA.log.w(ACRA.LOG_TAG, "Unable to find activity class" + className);
                 }
             }
-            return Result.SUCCESS;
+            return Result.success();
         }
     }
 }
