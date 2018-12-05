@@ -16,13 +16,13 @@
 
 package org.acra.scheduler;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Base64;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.Worker;
+import androidx.work.*;
+import androidx.work.impl.utils.futures.SettableFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.SenderService;
@@ -53,6 +53,7 @@ public class DefaultSenderScheduler implements SenderScheduler {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (ObjectOutputStream outputStream = new ObjectOutputStream(out)) {
             outputStream.writeObject(config);
+
             OneTimeWorkRequest.Builder builder = new OneTimeWorkRequest.Builder(ReportSenderJob.class)
                     .setInputData(new Data.Builder()
                             .putString(SenderService.EXTRA_ACRA_CONFIG, Base64.encodeToString(out.toByteArray(), Base64.DEFAULT))
@@ -62,7 +63,13 @@ public class DefaultSenderScheduler implements SenderScheduler {
                     .setInitialDelay(1, TimeUnit.MILLISECONDS);
             configureWorkRequest(builder);
             //run in a new thread to suppress WorkManager main thread errors
-            Thread thread = new Thread(() -> WorkManager.getInstance().synchronous().enqueueSync(builder.build()));
+            Thread thread = new Thread(() -> {
+                try {
+                    WorkManager.getInstance().enqueue(builder.build()).getResult().get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             thread.start();
             thread.join();
         } catch (IOException e) {
@@ -75,27 +82,36 @@ public class DefaultSenderScheduler implements SenderScheduler {
     protected void configureWorkRequest(@NonNull OneTimeWorkRequest.Builder builder) {
     }
 
-    public static class ReportSenderJob extends Worker {
+    public static class ReportSenderJob extends ListenableWorker {
 
+        public ReportSenderJob(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+            super(context, workerParams);
+        }
+
+        @SuppressLint("RestrictedApi")
         @NonNull
         @Override
-        public Result doWork() {
+        public ListenableFuture<Result> startWork() {
+            SettableFuture<Result> future = SettableFuture.create();
+            getBackgroundExecutor().execute(() -> {
             String s = getInputData().getString(SenderService.EXTRA_ACRA_CONFIG);
             if (s != null) {
                 try (ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(Base64.decode(s, Base64.DEFAULT)))) {
                     Object o = inputStream.readObject();
                     if (o instanceof CoreConfiguration) {
-                        if (SenderService.sendReports(getApplicationContext(), (CoreConfiguration) o, getInputData().getBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, false))) {
-                            return Result.SUCCESS;
-                        }
+                        future.setFuture(SenderService.sendReports(getApplicationContext(), (CoreConfiguration) o, getInputData().getBoolean(SenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, false)));
+                        return;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+                future.set(Result.failure());
             }
-            return Result.FAILURE;
+
+            });
+            return future;
         }
     }
 }

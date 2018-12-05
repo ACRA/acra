@@ -15,6 +15,7 @@
  */
 package org.acra.sender;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,6 +25,9 @@ import android.os.*;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
+import androidx.work.Result;
+import androidx.work.impl.utils.futures.SettableFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
@@ -37,7 +41,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -51,18 +54,16 @@ public class SenderService extends Service {
     private final ReportLocator locator;
     private final Messenger messenger;
 
-    public static boolean sendReports(Context context, CoreConfiguration config, boolean onlySendSilentReports) {
-        final AtomicBoolean lock = new AtomicBoolean(false);
+    @SuppressLint("RestrictedApi")
+    public static ListenableFuture<Result> sendReports(Context context, CoreConfiguration config, boolean onlySendSilentReports) {
+        SettableFuture<Result> future = SettableFuture.create();
         context.bindService(new Intent(context, SenderService.class), new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 Messenger messenger = new Messenger(service);
                 Messenger replyTo = new Messenger(new Handler(msg -> {
                     if (msg.what == KEY_REPORTS_SENT) {
-                        synchronized (lock) {
-                            lock.set(true);
-                            lock.notifyAll();
-                        }
+                        future.set(Result.success());
                         context.unbindService(this);
                         return true;
                     }
@@ -83,18 +84,12 @@ public class SenderService extends Service {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                synchronized (lock) {
-                    lock.notifyAll();
+                if(!future.isDone()) {
+                    future.set(Result.failure());
                 }
             }
         }, Context.BIND_AUTO_CREATE);
-        synchronized (lock) {
-            try {
-                lock.wait();
-            } catch (InterruptedException ignored) {
-            }
-        }
-        return lock.get();
+        return future;
     }
 
     public SenderService() {
