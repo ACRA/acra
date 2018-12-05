@@ -126,7 +126,7 @@ subprojects {
             annotationProcessor "com.faendir.asl:processor:$aslVersion"
             testImplementation "junit:junit:$junitVersion"
             testImplementation "org.robolectric:robolectric:$roboelectricVersion"
-            testImplementation "org.ow2.asm:asm:$asmVersion"
+            testImplementation "androidx.test:core:$androidTestVersion"
         }
 
         task sourcesJar(type: Jar) {
