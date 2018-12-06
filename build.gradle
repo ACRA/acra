@@ -114,12 +114,19 @@ subprojects {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
+            sourceSets {
+                main {
+                    assets.srcDirs += "build/generated/assets/serviceloader/release"
+                }
+            }
         }
 
         dependencies {
+            compileOnly "com.faendir.asl:annotation:$aslVersion"
+            annotationProcessor "com.faendir.asl:processor:$aslVersion"
             testImplementation "junit:junit:$junitVersion"
             testImplementation "org.robolectric:robolectric:$roboelectricVersion"
-            testImplementation "org.ow2.asm:asm:$asmVersion"
+            testImplementation "androidx.test:core:$androidTestVersion"
         }
 
         task sourcesJar(type: Jar) {

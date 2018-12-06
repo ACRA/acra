@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRA;
 import org.acra.config.ConfigUtils;

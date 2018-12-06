@@ -16,6 +16,7 @@
 
 package org.acra.plugins;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
@@ -40,7 +41,7 @@ public class SimplePluginLoader implements PluginLoader {
     }
 
     @Override
-    public <T extends Plugin> List<T> load(@NonNull Class<T> clazz) {
+    public <T extends Plugin> List<T> load(@NonNull Context context, @NonNull Class<T> clazz) {
         List<T> list = new ArrayList<>();
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SimplePluginLoader loading services from plugin classes : " + plugins);
         for (Class<? extends Plugin> plugin : plugins) {
@@ -58,8 +59,8 @@ public class SimplePluginLoader implements PluginLoader {
     }
 
     @Override
-    public <T extends Plugin> List<T> loadEnabled(@NonNull CoreConfiguration config, @NonNull Class<T> clazz) {
-        List<T> list = load(clazz);
+    public <T extends Plugin> List<T> loadEnabled(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<T> clazz) {
+        List<T> list = load(context, clazz);
         //noinspection Java8CollectionRemoveIf
         for (Iterator<T> iterator = list.iterator(); iterator.hasNext(); ) {
             T plugin = iterator.next();

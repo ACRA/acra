@@ -22,7 +22,7 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

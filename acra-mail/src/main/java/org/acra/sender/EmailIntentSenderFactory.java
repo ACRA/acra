@@ -18,7 +18,7 @@ package org.acra.sender;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.MailSenderConfiguration;
 import org.acra.plugins.HasConfigPlugin;

@@ -100,21 +100,9 @@ public class SenderService extends JobIntentService {
     @NonNull
     private List<ReportSender> getSenderInstances(@NonNull CoreConfiguration config) {
         List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
-
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "config#reportSenderFactoryClasses : " + factoryClasses);
-
-        final List<ReportSenderFactory> factories;
-        if (factoryClasses.isEmpty()) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using PluginLoader to find ReportSender factories");
-            final PluginLoader loader = config.pluginLoader();
-            factories = loader.loadEnabled(config, ReportSenderFactory.class);
-        } else {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating reportSenderFactories for reportSenderFactory config");
-            factories = new InstanceCreator().create(factoryClasses);
-        }
+        List<ReportSenderFactory> factories = !factoryClasses.isEmpty() ? new InstanceCreator().create(factoryClasses) : config.pluginLoader()
+                .loadEnabled(this, config, ReportSenderFactory.class);
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "reportSenderFactories : " + factories);
-
-
         final List<ReportSender> reportSenders = new ArrayList<>();
         for (ReportSenderFactory factory : factories) {
             final ReportSender sender = factory.create(this.getApplication(), config);

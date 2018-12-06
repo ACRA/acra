@@ -26,7 +26,7 @@ import android.util.SparseArray;
 import android.view.Display;
 import android.view.Surface;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

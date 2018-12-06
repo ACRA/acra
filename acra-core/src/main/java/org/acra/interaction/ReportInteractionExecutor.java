@@ -44,7 +44,7 @@ public class ReportInteractionExecutor {
     public ReportInteractionExecutor(@NonNull final Context context, @NonNull final CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        reportInteractions = config.pluginLoader().loadEnabled(config, ReportInteraction.class);
+        reportInteractions = config.pluginLoader().loadEnabled(context, config, ReportInteraction.class);
     }
 
     public boolean hasInteractions() {

@@ -21,7 +21,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresPermission;
 
-import com.google.auto.service.AutoService;
+import com.faendir.asl.annotation.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

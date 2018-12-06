@@ -16,6 +16,7 @@
 
 package org.acra.plugins;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
@@ -34,19 +35,26 @@ import static org.acra.ACRA.LOG_TAG;
 public class ServicePluginLoader implements PluginLoader {
 
     @Override
-    public <T extends Plugin> List<T> load(@NonNull Class<T> clazz) {
-        return loadInternal(clazz, plugin -> true);
+    public <T extends Plugin> List<T> load(@NonNull Context context, @NonNull Class<T> clazz) {
+        return loadInternal(context, clazz, plugin -> true);
     }
 
     @Override
-    public <T extends Plugin> List<T> loadEnabled(@NonNull CoreConfiguration config, @NonNull Class<T> clazz) {
-        return loadInternal(clazz, plugin -> plugin.enabled(config));
+    public <T extends Plugin> List<T> loadEnabled(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<T> clazz) {
+        return loadInternal(context, clazz, plugin -> plugin.enabled(config));
     }
 
-    private <T extends Plugin> List<T> loadInternal(@NonNull Class<T> clazz, Predicate<T> shouldLoadPredicate) {
-        List<T> plugins = new ArrayList<>();
+    private <T extends Plugin> List<T> loadInternal(@NonNull Context context, @NonNull Class<T> clazz, Predicate<T> shouldLoadPredicate) {
+        List<T> plugins = new ArrayList<>(new com.faendir.asl.serviceloader.ServiceLoader(context).load(clazz));
+        for (Iterator<T> iterator = plugins.iterator(); iterator.hasNext(); ) {
+            T plugin = iterator.next();
+            if (!shouldLoadPredicate.apply(plugin)) {
+                iterator.remove();
+            } else if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Loaded " + clazz.getSimpleName() + " of type " + plugin.getClass().getName());
+        }
+        //legacy
         //noinspection ForLoopReplaceableByForEach
-        final ServiceLoader<T> serviceLoader = ServiceLoader.load(clazz, getClass().getClassLoader());
+        final ServiceLoader<T> serviceLoader = ServiceLoader.load(clazz, context.getClassLoader());
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "ServicePluginLoader loading services from ServiceLoader : " + serviceLoader);
 
         for (final Iterator<T> iterator = serviceLoader.iterator(); iterator.hasNext(); ) {
