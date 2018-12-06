@@ -19,9 +19,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Process;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import androidx.work.Configuration;
+import androidx.work.WorkManager;
 import org.acra.config.ACRAConfigurationException;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.CoreConfigurationBuilder;
@@ -209,6 +213,12 @@ public final class ACRA {
             if(DEV_LOGGING) log.d(LOG_TAG, "Removing old ACRA config...");
             ((ErrorReporterImpl) errorReporterSingleton).unregister();
             errorReporterSingleton = StubCreator.createErrorReporterStub();
+        } else {
+            new Handler(app.getMainLooper()).postAtFrontOfQueue(() -> {
+                //make sure workmanager is initialized as soon as possible
+                WorkManager.initialize(app, new Configuration.Builder().build());
+                if(ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Initialized WorkManager for process "+ Process.myPid());
+            });
         }
 
         //noinspection ConstantConditions
