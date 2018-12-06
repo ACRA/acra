@@ -22,20 +22,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
-
 import com.google.auto.service.AutoService;
-
 import org.acra.ACRA;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;
 import org.acra.file.ReportLocator;
 import org.acra.plugins.HasConfigPlugin;
-import org.acra.util.IOUtils;
-import org.acra.util.StreamReader;
 import org.acra.util.ToastSender;
 import org.json.JSONException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
@@ -51,7 +46,6 @@ import static org.acra.ACRA.LOG_TAG;
  */
 @AutoService(ReportingAdministrator.class)
 public class LimitingReportAdministrator extends HasConfigPlugin implements ReportingAdministrator {
-    private static final String FILE_LIMITER_DATA = "ACRA-limiter.json";
 
     public LimitingReportAdministrator() {
         super(LimiterConfiguration.class);
@@ -71,7 +65,7 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Reached overallLimit, not collecting");
                 return false;
             }
-        } catch (IOException | JSONException e) {
+        } catch (IOException e) {
             ACRA.log.w(LOG_TAG, "Failed to load LimiterData", e);
         }
         return true;
@@ -102,7 +96,7 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
                 return false;
             }
             limiterData.getReportMetadata().add(m);
-            saveLimiterData(context, limiterData);
+            limiterData.store(context);
         } catch (IOException | JSONException e) {
             ACRA.log.w(LOG_TAG, "Failed to load LimiterData", e);
         }
@@ -141,23 +135,13 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
     }
 
     @NonNull
-    private LimiterData loadLimiterData(@NonNull Context context, @NonNull LimiterConfiguration limiterConfiguration) throws IOException, JSONException {
-        String data = null;
-        try {
-            data = new StreamReader(context.openFileInput(FILE_LIMITER_DATA)).read();
-        } catch (FileNotFoundException ignored) {
-            //file does not exist, we will create it
-        }
-        final LimiterData limiterData = new LimiterData(data);
+    private LimiterData loadLimiterData(@NonNull Context context, @NonNull LimiterConfiguration limiterConfiguration) throws IOException {
+        final LimiterData limiterData = LimiterData.load(context);
         final Calendar keepAfter = Calendar.getInstance();
         keepAfter.add(Calendar.MINUTE, (int) -limiterConfiguration.periodUnit().toMinutes(limiterConfiguration.period()));
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "purging reports older than " + keepAfter.getTime().toString());
         limiterData.purgeOldData(keepAfter);
-        saveLimiterData(context, limiterData);
+        limiterData.store(context);
         return limiterData;
-    }
-
-    private void saveLimiterData(@NonNull Context context, LimiterData limiterData) throws IOException {
-        IOUtils.writeStringToFile(context.getFileStreamPath(FILE_LIMITER_DATA), limiterData.toJSON());
     }
 }
