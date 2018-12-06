@@ -63,7 +63,7 @@ public class StartupProcessorExecutor {
             for (File r : reportLocator.getApprovedReports()) {
                 reports.add(new Report(r, true));
             }
-            final List<StartupProcessor> startupProcessors = config.pluginLoader().loadEnabled(config, StartupProcessor.class);
+            final List<StartupProcessor> startupProcessors = config.pluginLoader().loadEnabled(context, config, StartupProcessor.class);
             for (StartupProcessor processor : startupProcessors) {
                 processor.processReports(context, config, reports);
             }
