@@ -16,11 +16,13 @@
 
 package org.acra.scheduler;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
-import com.evernote.android.job.JobRequest;
-import com.evernote.android.job.util.support.PersistableBundleCompat;
+import androidx.work.*;
 import com.faendir.asl.annotation.AutoService;
+import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
@@ -45,16 +47,46 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
     @Override
     public boolean shouldFinishActivity(@NonNull Context context, @NonNull CoreConfiguration config, LastActivityManager lastActivityManager) {
         if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).restartAfterCrash() && lastActivityManager.getLastActivity() != null) {
-            PersistableBundleCompat extras = new PersistableBundleCompat();
-            extras.putString(EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName());
-            new JobRequest.Builder(AcraJobCreator.RESTART_TAG)
-                    .setExact(TimeUnit.SECONDS.toMillis(1))
-                    //.setExecutionWindow(TimeUnit.SECONDS.toMillis(10), TimeUnit.MINUTES.toMillis(1))
-                    .setExtras(extras)
-                    .setUpdateCurrent(true)
-                    .build()
-                    .schedule();
+            Thread thread = new Thread(() -> {
+                try {
+                    WorkManager.getInstance().enqueue(new OneTimeWorkRequest.Builder(RestartJob.class)
+                            .setInputData(new Data.Builder().putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName()).build())
+                            .setInitialDelay(1, TimeUnit.MILLISECONDS)
+                            .build()).getResult().get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            thread.start();
+            try {
+                thread.join();
+            } catch (InterruptedException ignored) {
+            }
         }
         return true;
+    }
+
+    public static class RestartJob extends Worker {
+        public RestartJob(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+            super(context, workerParams);
+        }
+
+        @NonNull
+        @Override
+        public Result doWork() {
+            String className = getInputData().getString(RestartingAdministrator.EXTRA_LAST_ACTIVITY);
+            if (className != null) {
+                try {
+                    //noinspection unchecked
+                    Class<? extends Activity> activityClass = (Class<? extends Activity>) Class.forName(className);
+                    final Intent intent = new Intent(getApplicationContext(), activityClass);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                } catch (ClassNotFoundException e) {
+                    ACRA.log.w(ACRA.LOG_TAG, "Unable to find activity class" + className);
+                }
+            }
+            return Result.success();
+        }
     }
 }
