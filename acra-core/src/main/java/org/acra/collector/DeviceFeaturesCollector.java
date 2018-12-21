@@ -20,7 +20,7 @@ import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;

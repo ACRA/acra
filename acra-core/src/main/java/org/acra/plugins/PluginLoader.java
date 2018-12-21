@@ -16,7 +16,6 @@
 
 package org.acra.plugins;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 
@@ -28,7 +27,7 @@ import java.util.List;
  * @since 01.07.18
  */
 public interface PluginLoader extends Serializable {
-    <T extends Plugin> List<T> load(@NonNull Context context, @NonNull Class<T> clazz);
+    <T extends Plugin> List<T> load(@NonNull Class<T> clazz);
 
-    <T extends Plugin> List<T> loadEnabled(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull Class<T> clazz);
+    <T extends Plugin> List<T> loadEnabled(@NonNull CoreConfiguration config, @NonNull Class<T> clazz);
 }

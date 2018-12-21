@@ -81,7 +81,7 @@ public class ReportExecutor {
         this.crashReportDataFactory = crashReportDataFactory;
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.processFinisher = processFinisher;
-        reportingAdministrators = config.pluginLoader().loadEnabled(context, config, ReportingAdministrator.class);
+        reportingAdministrators = config.pluginLoader().loadEnabled(config, ReportingAdministrator.class);
         this.schedulerStarter = schedulerStarter;
         this.lastActivityManager = lastActivityManager;
     }

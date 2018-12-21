@@ -21,7 +21,7 @@ import android.os.Build;
 import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
 
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

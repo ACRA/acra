@@ -30,7 +30,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-fragment'
     }
     api project(':acra-javacore')
-    implementation "com.faendir.asl:serviceloader:$aslVersion"
+    compileOnly "com.google.auto.service:auto-service:$autoServiceVersion"
     annotationProcessor project(':annotationprocessor')
     compileOnly project(':annotations')
 }

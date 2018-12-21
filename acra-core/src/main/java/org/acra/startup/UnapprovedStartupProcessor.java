@@ -18,7 +18,7 @@ package org.acra.startup;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.LastModifiedComparator;
 

@@ -50,7 +50,7 @@ public final class CrashReportDataFactory {
     public CrashReportDataFactory(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        collectors = config.pluginLoader().loadEnabled(context, config, Collector.class);
+        collectors = config.pluginLoader().loadEnabled(config, Collector.class);
         //noinspection Java8ListSort
         Collections.sort(collectors, (c1, c2) -> {
             Collector.Order o1;

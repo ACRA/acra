@@ -21,7 +21,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.OneTimeWorkRequest;
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.SchedulerConfiguration;

@@ -19,7 +19,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;

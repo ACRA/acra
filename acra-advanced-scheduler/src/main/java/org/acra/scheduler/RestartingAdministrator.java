@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import androidx.work.*;
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.ConfigUtils;

@@ -18,11 +18,12 @@ package org.acra.attachment;
 
 import android.app.Application;
 import android.net.Uri;
-import androidx.test.core.app.ApplicationProvider;
+
 import org.acra.config.CoreConfigurationBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.List;
 
@@ -39,8 +40,7 @@ public class DefaultAttachmentProviderTest {
     @Test
     public void getAttachments() throws Exception {
         Uri uri = Uri.parse("content://not-a-valid-content-uri");
-        Application application = ApplicationProvider.getApplicationContext();
-        List<Uri> result = new DefaultAttachmentProvider().getAttachments(application, new CoreConfigurationBuilder(application).setAttachmentUris(uri.toString()).build());
+        List<Uri> result = new DefaultAttachmentProvider().getAttachments(RuntimeEnvironment.application, new CoreConfigurationBuilder(new Application()).setAttachmentUris(uri.toString()).build());
         assertThat(result, hasSize(1));
         assertEquals(uri, result.get(0));
     }

@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
-import com.faendir.asl.annotation.AutoService;
+import com.google.auto.service.AutoService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

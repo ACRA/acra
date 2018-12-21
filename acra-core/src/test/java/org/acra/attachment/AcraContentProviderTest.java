@@ -21,8 +21,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
-import androidx.test.core.app.ApplicationProvider;
+
 import com.google.common.net.MediaType;
+
 import org.acra.ACRA;
 import org.acra.log.RobolectricLog;
 import org.junit.Before;
@@ -30,11 +31,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
 import java.io.File;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * @author F43nd1r
@@ -52,15 +57,15 @@ public class AcraContentProviderTest {
     public void setUp() throws Exception {
         ACRA.log = new RobolectricLog();
         ACRA.DEV_LOGGING = true;
-        Robolectric.setupContentProvider(AcraContentProvider.class, ApplicationProvider.getApplicationContext().getPackageName() + ".acra");
-        resolver = ApplicationProvider.getApplicationContext().getContentResolver();
+        Robolectric.setupContentProvider(AcraContentProvider.class, RuntimeEnvironment.application.getPackageName() + ".acra");
+        resolver = RuntimeEnvironment.application.getContentResolver();
         file = File.createTempFile("test", "." + JSON_EXTENSION);
         Shadows.shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping(JSON_EXTENSION, JSON_MIMETYPE);
     }
 
     @Test
     public void query() {
-        final Cursor cursor = resolver.query(AcraContentProvider.getUriForFile(ApplicationProvider.getApplicationContext(), file), new String[]{OpenableColumns.SIZE, OpenableColumns.DISPLAY_NAME}, null, null, null);
+        final Cursor cursor = resolver.query(AcraContentProvider.getUriForFile(RuntimeEnvironment.application, file), new String[]{OpenableColumns.SIZE, OpenableColumns.DISPLAY_NAME}, null, null, null);
         assertNotNull(cursor);
         assertTrue(cursor.moveToFirst());
         assertEquals(file.length(), cursor.getInt(0));
@@ -71,14 +76,14 @@ public class AcraContentProviderTest {
 
     @Test
     public void openFile() throws Exception {
-        final Uri uri = AcraContentProvider.getUriForFile(ApplicationProvider.getApplicationContext(), file);
+        final Uri uri = AcraContentProvider.getUriForFile(RuntimeEnvironment.application, file);
         assertNotNull(resolver.openFileDescriptor(uri, "r"));
 
     }
 
     @Test
     public void guessMimeType() {
-        assertEquals(JSON_MIMETYPE, AcraContentProvider.guessMimeType(AcraContentProvider.getUriForFile(ApplicationProvider.getApplicationContext(), file)));
+        assertEquals(JSON_MIMETYPE, AcraContentProvider.guessMimeType(AcraContentProvider.getUriForFile(RuntimeEnvironment.application, file)));
     }
 
 }
