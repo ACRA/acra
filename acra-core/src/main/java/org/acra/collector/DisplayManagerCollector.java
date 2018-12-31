@@ -18,16 +18,15 @@ package org.acra.collector;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v4.hardware.display.DisplayManagerCompat;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.Surface;
-
+import android.view.WindowManager;
 import com.google.auto.service.AutoService;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.builder.ReportBuilder;
@@ -55,7 +54,7 @@ public final class DisplayManagerCollector extends BaseReportFieldCollector {
     @Override
     void collect(@NonNull ReportField reportField, @NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportBuilder reportBuilder, @NonNull CrashReportData target) {
         final JSONObject result = new JSONObject();
-        for (Display display : DisplayManagerCompat.getInstance(context).getDisplays()) {
+        for (Display display : getDisplays(context)) {
             try {
                 result.put(String.valueOf(display.getDisplayId()), collectDisplayData(display));
             } catch (JSONException e) {
@@ -63,6 +62,16 @@ public final class DisplayManagerCollector extends BaseReportFieldCollector {
             }
         }
         target.put(ReportField.DISPLAY, result);
+    }
+
+    @NonNull
+    private Display[] getDisplays(@NonNull Context context) {
+        if (Build.VERSION.SDK_INT >= 17) {
+            return ((DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE)).getDisplays();
+        } else {
+            Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            return new Display[]{display};
+        }
     }
 
     @NonNull
