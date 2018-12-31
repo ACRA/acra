@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.CoreConfiguration;
+import org.acra.sender.JobSenderService;
 import org.acra.sender.LegacySenderService;
 
 import java.util.List;

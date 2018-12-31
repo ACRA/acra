@@ -17,8 +17,6 @@
 package org.acra.annotation;
 
 import android.app.job.JobInfo;
-import android.support.annotation.NonNull;
-import androidx.work.NetworkType;
 
 import java.lang.annotation.*;
 

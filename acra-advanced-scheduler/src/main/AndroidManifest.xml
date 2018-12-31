@@ -14,4 +14,12 @@
   ~ limitations under the License.
   -->
 
-<manifest package="org.acra.scheduler"/>
+<manifest package="org.acra.scheduler" xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <service
+                android:name="org.acra.scheduler.RestartingService"
+                android:exported="false"
+                android:permission="android.permission.BIND_JOB_SERVICE"
+                android:process=":acra"/>
+    </application>
+</manifest>
