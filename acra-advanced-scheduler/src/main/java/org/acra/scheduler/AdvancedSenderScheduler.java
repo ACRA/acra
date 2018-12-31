@@ -16,11 +16,10 @@
 
 package org.acra.scheduler;
 
+import android.app.job.JobInfo;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import androidx.work.Constraints;
-import androidx.work.OneTimeWorkRequest;
 import com.google.auto.service.AutoService;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
@@ -28,7 +27,7 @@ import org.acra.config.SchedulerConfiguration;
 import org.acra.plugins.HasConfigPlugin;
 
 /**
- * Utilizes evernotes android-job to delay report sending
+ * Utilizes jobservice to delay report sending
  *
  * @author F43nd1r
  * @since 18.04.18
@@ -42,15 +41,13 @@ public class AdvancedSenderScheduler extends DefaultSenderScheduler {
     }
 
     @Override
-    protected void configureWorkRequest(@NonNull OneTimeWorkRequest.Builder builder) {
-        Constraints.Builder constraints = new Constraints.Builder()
-                .setRequiredNetworkType(schedulerConfiguration.requiresNetworkType())
-                .setRequiresCharging(schedulerConfiguration.requiresCharging())
-                .setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            constraints.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle());
+    protected void configureJob(JobInfo.Builder job) {
+        job.setRequiredNetworkType(schedulerConfiguration.requiresNetworkType());
+        job.setRequiresCharging(schedulerConfiguration.requiresCharging());
+        job.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            job.setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow());
         }
-        builder.setConstraints(constraints.build());
     }
 
     @AutoService(SenderSchedulerFactory.class)

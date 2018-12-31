@@ -18,14 +18,11 @@ package org.acra.util;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import android.util.Base64;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -69,5 +66,34 @@ public final class IOUtils {
         } finally {
             safeClose(writer);
         }
+    }
+
+    @Nullable
+    public static String serialize(@NonNull Serializable serializable) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(out)) {
+            outputStream.writeObject(serializable);
+            return Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static <T extends Serializable> T deserialize(@NonNull Class<T> clazz, @Nullable String s) {
+        if (s != null) {
+            try (ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(Base64.decode(s, Base64.DEFAULT)))) {
+                Object o = inputStream.readObject();
+                if (clazz.isInstance(o)) {
+                    return clazz.cast(o);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

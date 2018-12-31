@@ -27,7 +27,7 @@ import android.support.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.CoreConfiguration;
-import org.acra.sender.SenderService;
+import org.acra.sender.LegacySenderService;
 
 import java.util.List;
 
@@ -89,7 +89,7 @@ public final class ProcessFinisher {
                 final List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
                 final int pid = Process.myPid();
                 for (ActivityManager.RunningServiceInfo serviceInfo : runningServices) {
-                    if (serviceInfo.pid == pid && !SenderService.class.getName().equals(serviceInfo.service.getClassName())) {
+                    if (serviceInfo.pid == pid && !LegacySenderService.class.getName().equals(serviceInfo.service.getClassName()) && !JobSenderService.class.getName().equals(serviceInfo.service.getClassName())) {
                         try {
                             final Intent intent = new Intent();
                             intent.setComponent(serviceInfo.service);
