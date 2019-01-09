@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.attachment.AcraContentProvider;
@@ -67,14 +66,16 @@ public class EmailIntentSender implements ReportSender {
         final PackageManager pm = context.getPackageManager();
 
         final String subject = buildSubject(context);
-        final String body;
+        final String reportText;
         try {
-            body = config.reportFormat().toFormattedString(errorContent, config.reportContent(), "\n", "\n\t", false);
+            reportText = config.reportFormat().toFormattedString(errorContent, config.reportContent(), "\n", "\n\t", false);
         } catch (Exception e) {
             throw new ReportSenderException("Failed to convert Report to text", e);
         }
+        final String bodyPrefix = mailConfig.body();
+        final String body = bodyPrefix != null ? bodyPrefix + "\n" + reportText : reportText;
         final ArrayList<Uri> attachments = new ArrayList<>();
-        final boolean contentAttached = fillAttachmentList(context, body, attachments);
+        final boolean contentAttached = fillAttachmentList(context, reportText, attachments);
 
         //we have to resolve with sendto, because send is supported by non-email apps
         final Intent resolveIntent = buildResolveIntent(subject, body);
@@ -84,7 +85,7 @@ public class EmailIntentSender implements ReportSender {
                 //no attachments, send directly
                 context.startActivity(resolveIntent);
             } else {
-                final Intent attachmentIntent = buildAttachmentIntent(subject, body, attachments, contentAttached);
+                final Intent attachmentIntent = buildAttachmentIntent(subject, contentAttached ? bodyPrefix : body, attachments);
                 final List<Intent> initialIntents = buildInitialIntents(pm, resolveIntent, attachmentIntent);
                 final String packageName = getPackageName(resolveActivity, initialIntents);
                 attachmentIntent.setPackage(packageName);
@@ -136,18 +137,17 @@ public class EmailIntentSender implements ReportSender {
      * @param subject         the message subject
      * @param body            the message body
      * @param attachments     the attachments
-     * @param contentAttached if the body is already contained in the attachments
      * @return email intent
      */
     @NonNull
-    protected Intent buildAttachmentIntent(@NonNull String subject, @NonNull String body, @NonNull ArrayList<Uri> attachments, boolean contentAttached) {
+    protected Intent buildAttachmentIntent(@NonNull String subject, @Nullable String body, @NonNull ArrayList<Uri> attachments) {
         final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).mailTo()});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mailConfig.mailTo()});
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.setType("message/rfc822");
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
-        if (!contentAttached) intent.putExtra(Intent.EXTRA_TEXT, body);
+        intent.putExtra(Intent.EXTRA_TEXT, body);
         return intent;
     }
 
@@ -161,7 +161,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     protected Intent buildResolveIntent(@NonNull String subject, @NonNull String body) {
         final Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.fromParts("mailto", ConfigUtils.getPluginConfiguration(config, MailSenderConfiguration.class).mailTo(), null));
+        intent.setData(Uri.fromParts("mailto", mailConfig.mailTo(), null));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, body);
@@ -220,15 +220,15 @@ public class EmailIntentSender implements ReportSender {
      * Adds all attachment uris into the given list
      *
      * @param context     a context
-     * @param body        the report content
+     * @param reportText        the report content
      * @param attachments the target list
      * @return if the attachments contain the content
      */
-    protected boolean fillAttachmentList(@NonNull Context context, @NonNull String body, @NonNull List<Uri> attachments) {
+    protected boolean fillAttachmentList(@NonNull Context context, @NonNull String reportText, @NonNull List<Uri> attachments) {
         final InstanceCreator instanceCreator = new InstanceCreator();
         attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config));
         if (mailConfig.reportAsFile()) {
-            final Uri report = createAttachmentFromString(context, mailConfig.reportFileName(), body);
+            final Uri report = createAttachmentFromString(context, mailConfig.reportFileName(), reportText);
             if (report != null) {
                 attachments.add(report);
                 return true;

@@ -72,4 +72,12 @@ public @interface AcraMailSender {
      * @since 5.0.1
      */
     @StringRes int resSubject() default ACRAConstants.DEFAULT_RES_VALUE;
+
+    /**
+     * custom email body.
+     *
+     * @return resource id of the custom email body
+     * @since 5.3.0
+     */
+    @StringRes int resBody() default ACRAConstants.DEFAULT_RES_VALUE;
 }
