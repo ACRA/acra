@@ -25,7 +25,7 @@ import org.acra.plugins.Plugin;
  * Factory for creating and configuring a {@link ReportSender} instance.
  * Implementations must have a no argument constructor.
  * <p>
- * Each configured ReportSenderFactory is created within the {@link SenderService}
+ * Each configured ReportSenderFactory is created within the {@link LegacySenderService}
  * and is used to construct and configure a single {@link ReportSender}.
  * <p>
  * Created by William on 4-JAN-2016.

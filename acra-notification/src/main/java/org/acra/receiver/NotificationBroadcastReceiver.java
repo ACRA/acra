@@ -30,7 +30,7 @@ import org.acra.file.BulkReportDeleter;
 import org.acra.file.CrashReportPersister;
 import org.acra.interaction.NotificationInteraction;
 import org.acra.scheduler.SchedulerStarter;
-import org.acra.sender.SenderService;
+import org.acra.sender.LegacySenderService;
 import org.acra.util.SystemServices;
 import org.json.JSONException;
 
@@ -55,7 +55,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
                 switch (intent.getAction()) {
                     case NotificationInteraction.INTENT_ACTION_SEND:
                         final Object reportFileObject = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE);
-                        final Object configObject = intent.getSerializableExtra(SenderService.EXTRA_ACRA_CONFIG);
+                        final Object configObject = intent.getSerializableExtra(LegacySenderService.EXTRA_ACRA_CONFIG);
                         if (configObject instanceof CoreConfiguration && reportFileObject instanceof File) {
                             final CoreConfiguration config = (CoreConfiguration) configObject;
                             final File reportFile = (File) reportFileObject;

@@ -32,6 +32,7 @@ import org.acra.file.CrashReportPersister;
 import org.acra.file.ReportLocator;
 import org.acra.interaction.ReportInteractionExecutor;
 import org.acra.scheduler.SchedulerStarter;
+import org.acra.sender.LegacySenderService;
 import org.acra.util.ProcessFinisher;
 import org.acra.util.ToastSender;
 
@@ -113,7 +114,7 @@ public class ReportExecutor {
     }
 
     /**
-     * Try to create a report. Also starts {@link org.acra.sender.SenderService}
+     * Try to create a report. Also starts {@link LegacySenderService}
      *
      * @param reportBuilder The report builder used to assemble the report
      */

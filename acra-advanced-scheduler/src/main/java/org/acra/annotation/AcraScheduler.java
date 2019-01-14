@@ -16,8 +16,7 @@
 
 package org.acra.annotation;
 
-import android.support.annotation.NonNull;
-import androidx.work.NetworkType;
+import android.app.job.JobInfo;
 
 import java.lang.annotation.*;
 
@@ -38,7 +37,7 @@ public @interface AcraScheduler {
      * @return networkType required to allow report sending
      * @since 5.2.0
      */
-    @NonNull NetworkType requiresNetworkType() default NetworkType.NOT_REQUIRED;
+    int requiresNetworkType() default JobInfo.NETWORK_TYPE_NONE;
 
     /**
      * Charging constraint for report sending

@@ -30,7 +30,7 @@ public interface ReportSender {
     /**
      * Send crash report data.
      * <p>
-     * Method will be called from the {@link SenderService}.
+     * Method will be called from the {@link LegacySenderService}.
      *
      * @param context      Android Context in which to send the crash report.
      * @param errorContent Stores key/value pairs for each report field.

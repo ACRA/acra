@@ -19,7 +19,13 @@
           package="org.acra">
     <application>
         <service
-                android:name="org.acra.sender.SenderService"
+                android:name="org.acra.sender.LegacySenderService"
+                android:enabled="@bool/acra_enable_legacy_service"
+                android:exported="false"
+                android:process=":acra"/>
+        <service
+                android:name="org.acra.sender.JobSenderService"
+                android:enabled="@bool/acra_enable_job_service"
                 android:exported="false"
                 android:permission="android.permission.BIND_JOB_SERVICE"
                 android:process=":acra"/>
@@ -31,11 +37,5 @@
                 android:exported="false"
                 android:process=":acra"
                 android:grantUriPermissions="true"/>
-        <provider
-                tools:replace="android:authorities"
-                android:name="androidx.work.impl.WorkManagerInitializer"
-                android:authorities="${applicationId}.workmanager-init"
-                android:enabled="false"
-                android:exported="false"/>
     </application>
 </manifest>

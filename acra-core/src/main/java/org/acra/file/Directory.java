@@ -16,9 +16,9 @@
 package org.acra.file;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -88,7 +88,13 @@ public enum Directory {
         @NonNull
         @Override
         public File getFile(@NonNull Context context, @NonNull String fileName) {
-            return new File(ContextCompat.getNoBackupFilesDir(context), fileName);
+            File dir;
+            if (Build.VERSION.SDK_INT >= 21) {
+                dir = context.getNoBackupFilesDir();
+            } else {
+                dir = new File(context.getApplicationInfo().dataDir, "no_backup");
+            }
+            return new File(dir, fileName);
         }
     },
     /**

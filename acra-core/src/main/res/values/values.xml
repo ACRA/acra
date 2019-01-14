@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018
+  ~ Copyright (c) 2019
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,12 +15,7 @@
   ~ limitations under the License.
   -->
 
-<manifest package="org.acra.scheduler" xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
-        <service
-                android:name="org.acra.scheduler.RestartingService"
-                android:exported="false"
-                android:permission="android.permission.BIND_JOB_SERVICE"
-                android:process=":acra"/>
-    </application>
-</manifest>
+<resources>
+    <bool name="acra_enable_legacy_service">true</bool>
+    <bool name="acra_enable_job_service">false</bool>
+</resources>

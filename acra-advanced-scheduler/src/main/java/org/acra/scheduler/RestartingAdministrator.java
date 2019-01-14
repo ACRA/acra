@@ -16,21 +16,19 @@
 
 package org.acra.scheduler;
 
-import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import androidx.work.*;
 import com.google.auto.service.AutoService;
-import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ReportingAdministrator;
 import org.acra.config.SchedulerConfiguration;
 import org.acra.plugins.HasConfigPlugin;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author F43nd1r
@@ -49,10 +47,11 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
         if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).restartAfterCrash() && lastActivityManager.getLastActivity() != null) {
             Thread thread = new Thread(() -> {
                 try {
-                    WorkManager.getInstance().enqueue(new OneTimeWorkRequest.Builder(RestartJob.class)
-                            .setInputData(new Data.Builder().putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName()).build())
-                            .setInitialDelay(1, TimeUnit.MILLISECONDS)
-                            .build()).getResult().get();
+                    JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                    assert scheduler != null;
+                    PersistableBundle extras = new PersistableBundle();
+                    extras.putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName());
+                    scheduler.schedule(new JobInfo.Builder(0, new ComponentName(context, RestartingService.class)).setExtras(extras).build());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -64,29 +63,5 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
             }
         }
         return true;
-    }
-
-    public static class RestartJob extends Worker {
-        public RestartJob(@NonNull Context context, @NonNull WorkerParameters workerParams) {
-            super(context, workerParams);
-        }
-
-        @NonNull
-        @Override
-        public Result doWork() {
-            String className = getInputData().getString(RestartingAdministrator.EXTRA_LAST_ACTIVITY);
-            if (className != null) {
-                try {
-                    //noinspection unchecked
-                    Class<? extends Activity> activityClass = (Class<? extends Activity>) Class.forName(className);
-                    final Intent intent = new Intent(getApplicationContext(), activityClass);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
-                } catch (ClassNotFoundException e) {
-                    ACRA.log.w(ACRA.LOG_TAG, "Unable to find activity class" + className);
-                }
-            }
-            return Result.success();
-        }
     }
 }
