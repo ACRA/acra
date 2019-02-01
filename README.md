@@ -13,15 +13,15 @@
 What is ACRA ?
 ==============
 
-ACRA is a library enabling Android Application to automatically post their crash reports to a report server. It is targeted to android applications developers to help them get data from their applications when they crash or behave erroneously.
+ACRA is a library enabling Android applications to automatically post their crash reports to a report server. It is targeted to android applications developers to help them get data from their applications when they crash or behave erroneously.
 
-ACRA is used in 2.68% ([See AppBrain/stats](http://www.appbrain.com/stats/libraries/details/acra/acra)) of all apps on Google Play as of Feb 2016. That's over 53K **apps** using ACRA. And since the average US user has 41 apps installed on their phone that means there is a 70% chance that ACRA is running on any phone. That means ACRA is running on over a **billion devices**.
+ACRA is used in 1.87% ([See AppBrain/stats](http://www.appbrain.com/stats/libraries/details/acra/acra)) of all apps on Google Play as of Feb 2019. That's over 48K **apps** using ACRA.
 
 See [BasicSetup](http://github.com/ACRA/acra/wiki/BasicSetup) for a step-by-step installation and usage guide.
 
 A crash reporting feature for android apps is native since Android 2.2 (FroYo) but only available through the official Android Market (and with limited data). ACRA is a great help for Android developers :
 
-  * [developer configurable user interaction](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification + dialog or direct dialog
+  * [developer configurable user interaction](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-User_Interaction): silent reports, Toast notification, status bar notification or dialog
   * usable with ALL versions of Android supported by the official support libraries.
   * more [detailed crash reports](http://github.com/ACRA/acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
   * you can [add your own variables content or debug traces](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
@@ -39,17 +39,14 @@ Please do not hesitate to open defects/enhancements requests in [the issue track
 Latest version
 ===========================================
 
-For the latest version and a complete changelog, please see the [ChangeLog page](http://github.com/ACRA/acra/wiki/ChangeLog) in the Wiki.
+For the latest version and a complete changelog, please see the [Release page](https://github.com/ACRA/acra/releases).
 
-For migrating from previous versions, please see our [Migration guide](http://github.com/ACRA/acra/wiki/Migrating) in the Wiki.
+For migrating from 4.x, please see our [Migration guide](http://github.com/ACRA/acra/wiki/Migrating) in the Wiki.
 
-And after that?
-===============
+Backends
+========
+[Acralyzer](https://github.com/ACRA/acralyzer) is the official backend for report storage and analysis. It runs on CouchDB, for which free hosting solutions exist. It is feature complete, but currently unmaintained. Anybody picking this project up is very welcome.
 
-Now that ACRA is stabilized on the device side (there shouldn't be much more data required...), the effort should be placed on crash data analysis and reports management tools for developers.
+[Acrarium](https://github.com/F43nd1r/Acrarium) is the recommended alternative, if you do not want to rely on an unmaintained project. Acrarium is in active development and has not reached stable phase yet.
 
-You can look at [some contributions](https://github.com/ACRA/acra/wiki/Backends) that have already been published.
-
-[Acralyzer](http://github.com/ACRA/acralyzer) is the official backend for reports storage and analysis. It is a free and open source modern web app, based on a full open stack and using advanced
-technology like CouchDB (JSON document storage with a RESTful API and Map/Reduce querying), AngularJS (one of the most advanced client-side JS frameworks), D3JS (for data visualisation)... If you are interested
-in webapps development, this project can become your playground too ;-)
+[A lot of other solutions](https://github.com/ACRA/acra/wiki/Backends) have been provided by the community, just check which one you like most.
