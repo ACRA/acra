@@ -73,6 +73,8 @@ public class ReportExecutor {
      * @param crashReportDataFactory  factory used to collect data
      * @param defaultExceptionHandler pass-through handler
      * @param processFinisher         used to end process after reporting
+     * @param schedulerStarter        used to start report sending
+     * @param lastActivityManager     used to finish activities after reporting
      */
     public ReportExecutor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull CrashReportDataFactory crashReportDataFactory,
                           @Nullable Thread.UncaughtExceptionHandler defaultExceptionHandler, @NonNull ProcessFinisher processFinisher, @NonNull SchedulerStarter schedulerStarter,

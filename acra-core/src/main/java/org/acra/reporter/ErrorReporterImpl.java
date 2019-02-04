@@ -64,10 +64,11 @@ public class ErrorReporterImpl implements Thread.UncaughtExceptionHandler, Share
 
 
     /**
-     * @param context                 Context for the application in which ACRA is running.
-     * @param config                  AcraConfig to use when reporting and sending errors.
-     * @param enabled                 Whether this ErrorReporter should capture Exceptions and forward their reports.
-     * @param supportedAndroidVersion the minimal supported version
+     * @param context                        Context for the application in which ACRA is running.
+     * @param config                         AcraConfig to use when reporting and sending errors.
+     * @param enabled                        Whether this ErrorReporter should capture Exceptions and forward their reports.
+     * @param supportedAndroidVersion        the minimal supported version
+     * @param checkReportsOnApplicationStart If reports should be checked on startup
      */
     public ErrorReporterImpl(@NonNull Application context, @NonNull CoreConfiguration config,
                              boolean enabled, boolean supportedAndroidVersion, boolean checkReportsOnApplicationStart) {
