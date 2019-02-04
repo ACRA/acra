@@ -21,8 +21,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import org.acra.ACRA;
+import org.acra.collections.WeakStack;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
 
@@ -34,7 +36,7 @@ import static org.acra.ACRA.LOG_TAG;
 public final class LastActivityManager {
 
     @NonNull
-    private WeakReference<Activity> lastActivityCreated = new WeakReference<>(null);
+    private final WeakStack<Activity> activityStack = new WeakStack<>();
 
     /**
      * Create and register a new instance
@@ -46,7 +48,7 @@ public final class LastActivityManager {
             @Override
             public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityCreated " + activity.getClass());
-                lastActivityCreated = new WeakReference<>(activity);
+                activityStack.add(activity);
             }
 
             @Override
@@ -67,9 +69,6 @@ public final class LastActivityManager {
             @Override
             public void onActivityStopped(@NonNull Activity activity) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityStopped " + activity.getClass());
-                synchronized (this) {
-                    notify();
-                }
             }
 
             @Override
@@ -80,6 +79,10 @@ public final class LastActivityManager {
             @Override
             public void onActivityDestroyed(@NonNull Activity activity) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "onActivityDestroyed " + activity.getClass());
+                synchronized (activityStack) {
+                    activityStack.remove(activity);
+                    activityStack.notify();
+                }
             }
         });
     }
@@ -89,14 +92,22 @@ public final class LastActivityManager {
      */
     @Nullable
     public Activity getLastActivity() {
-        return lastActivityCreated.get();
+        return activityStack.peek();
     }
 
     /**
-     * clear saved activity
+     * @return a list of activities in the current process
      */
-    public void clearLastActivity() {
-        lastActivityCreated.clear();
+    @NonNull
+    public List<Activity> getLastActivities() {
+        return new ArrayList<>(activityStack);
+    }
+
+    /**
+     * clear saved activities
+     */
+    public void clearLastActivities() {
+        activityStack.clear();
     }
 
     /**
@@ -104,11 +115,16 @@ public final class LastActivityManager {
      *
      * @param timeOutInMillis timeout for wait
      */
-    public void waitForActivityStop(int timeOutInMillis) {
-        synchronized (this) {
-            try {
-                wait(timeOutInMillis);
-            } catch (InterruptedException ignored) {
+    public void waitForAllActivitiesDestroy(int timeOutInMillis) {
+        synchronized (activityStack) {
+            long start = System.currentTimeMillis();
+            long now = start;
+            while (!activityStack.isEmpty() && start + timeOutInMillis > now) {
+                try {
+                    activityStack.wait(start - now + timeOutInMillis);
+                } catch (InterruptedException ignored) {
+                }
+                now = System.currentTimeMillis();
             }
         }
     }

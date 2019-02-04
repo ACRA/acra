@@ -58,29 +58,26 @@ public final class ProcessFinisher {
     }
 
     public void finishLastActivity(@Nullable Thread uncaughtExceptionThread) {
-        // Trying to solve https://github.com/ACRA/acra/issues/42#issuecomment-12134144
-        // Determine the current/last Activity that was started and close
-        // it. Activity#finish (and maybe it's parent too).
-        final Activity lastActivity = lastActivityManager.getLastActivity();
-        if (lastActivity != null) {
-            final boolean isMainThread = uncaughtExceptionThread == lastActivity.getMainLooper().getThread();
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing the last Activity prior to killing the Process");
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finishing activities prior to killing the Process");
+        boolean wait = false;
+        for(Activity activity : lastActivityManager.getLastActivities()) {
+            final boolean isMainThread = uncaughtExceptionThread == activity.getMainLooper().getThread();
             final Runnable finisher = () -> {
-                lastActivity.finish();
-                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + lastActivity.getClass());
+                activity.finish();
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Finished " + activity.getClass());
             };
             if (isMainThread) {
                 finisher.run();
             } else {
-                lastActivity.runOnUiThread(finisher);
+                // A crashed activity won't continue its lifecycle. So we only wait if something else crashed
+                wait = true;
+                activity.runOnUiThread(finisher);
             }
-
-            // A crashed activity won't continue its lifecycle. So we only wait if something else crashed
-            if (!isMainThread) {
-                lastActivityManager.waitForActivityStop(100);
-            }
-            lastActivityManager.clearLastActivity();
         }
+        if (wait) {
+            lastActivityManager.waitForAllActivitiesDestroy(100);
+        }
+        lastActivityManager.clearLastActivities();
     }
 
     private void stopServices() {
