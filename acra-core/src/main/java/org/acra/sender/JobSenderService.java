@@ -20,9 +20,12 @@ public class JobSenderService extends JobService {
         CoreConfiguration config = IOUtils.deserialize(CoreConfiguration.class, extras.getString(LegacySenderService.EXTRA_ACRA_CONFIG));
         boolean onlySilent = extras.getBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS);
         if (config != null) {
-            new SendingConductor(this, config).sendReports(onlySilent);
+            new Thread(() -> {
+                new SendingConductor(this, config).sendReports(onlySilent);
+                jobFinished(params, false);
+            }).start();
         }
-        return false;
+        return true;
     }
 
     @Override
