@@ -34,7 +34,10 @@ public class LegacySenderService extends Service {
         if (intent.hasExtra(EXTRA_ACRA_CONFIG)) {
             final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
             final CoreConfiguration config = (CoreConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
-            new SendingConductor(this, config).sendReports(onlySendSilentReports);
+            new Thread(() -> {
+                new SendingConductor(this, config).sendReports(onlySendSilentReports);
+                stopSelf();
+            }).start();
         } else {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "SenderService was started but no valid intent was delivered, will now quit");
         }
