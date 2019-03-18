@@ -43,7 +43,7 @@ public @interface AcraDialog {
     /**
      * Custom CrashReportDialog class
      *
-     * @return Class for the CrashReportDialog used when prompting the user for crash details.
+     * @return The activity to use to prompt the user for crash details. Inside the activity, use {@link org.acra.dialog.CrashReportDialogHelper} to integrate it ACRA.
      * @since 5.0.0
      */
     @Instantiatable @AnyNonDefault @NonNull Class<? extends Activity> reportDialogClass() default CrashReportDialog.class;

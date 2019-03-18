@@ -40,6 +40,7 @@ import static org.acra.ReportField.USER_COMMENT;
 import static org.acra.ReportField.USER_EMAIL;
 
 /**
+ * Use this class to integrate your custom crash report dialog with ACRA.
  * @author f43nd1r
  * @since 5.4.0
  */
