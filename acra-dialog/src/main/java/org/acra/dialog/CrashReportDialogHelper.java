@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.data.CrashReportData;
@@ -47,6 +48,7 @@ public class CrashReportDialogHelper {
     private final File reportFile;
     private final CoreConfiguration config;
     private final Context context;
+    private CrashReportData reportData;
 
     /**
      * Call this in your {@link android.app.Activity#onCreate(Bundle)}.
@@ -74,6 +76,25 @@ public class CrashReportDialogHelper {
         }
     }
 
+    /**
+     * loads the current report data
+     *
+     * @return report data
+     * @throws IOException if there was a problem with the report file
+     */
+    @WorkerThread
+    @NonNull
+    public CrashReportData getReportData() throws IOException {
+        if (reportData == null) {
+            try {
+                reportData = new CrashReportPersister().load(reportFile);
+            } catch (JSONException e) {
+                throw new IOException(e);
+            }
+        }
+        return reportData;
+    }
+
 
     /**
      * Cancel any pending crash reports.
@@ -91,13 +112,12 @@ public class CrashReportDialogHelper {
      */
     public void sendCrash(@Nullable String comment, @Nullable String userEmail) {
         new Thread(() -> {
-            final CrashReportPersister persister = new CrashReportPersister();
             try {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Add user comment to " + reportFile);
-                final CrashReportData crashData = persister.load(reportFile);
+                final CrashReportData crashData = getReportData();
                 crashData.put(USER_COMMENT, comment == null ? "" : comment);
                 crashData.put(USER_EMAIL, userEmail == null ? "" : userEmail);
-                persister.store(crashData, reportFile);
+                new CrashReportPersister().store(crashData, reportFile);
             } catch (IOException | JSONException e) {
                 ACRA.log.w(LOG_TAG, "User comment not added: ", e);
             }
