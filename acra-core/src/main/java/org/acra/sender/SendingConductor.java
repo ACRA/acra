@@ -35,10 +35,15 @@ public class SendingConductor {
         locator = new ReportLocator(context);
     }
 
-    public void sendReports(boolean onlySendSilentReports) {
+    public void sendReports(boolean onlySendSilentReports, boolean foreground) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
-            final List<ReportSender> senderInstances = getSenderInstances();
+            final List<ReportSender> senderInstances = getSenderInstances(foreground);
+
+            if (senderInstances.isEmpty()) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "No ReportSenders configured - adding NullSender");
+                senderInstances.add(new NullSender());
+            }
 
             // Get approved reports
             final File[] reports = locator.getApprovedReports();
@@ -77,7 +82,7 @@ public class SendingConductor {
     }
 
     @NonNull
-    private List<ReportSender> getSenderInstances() {
+    public List<ReportSender> getSenderInstances(boolean foreground) {
         List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
 
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "config#reportSenderFactoryClasses : " + factoryClasses);
@@ -98,12 +103,9 @@ public class SendingConductor {
         for (ReportSenderFactory factory : factories) {
             final ReportSender sender = factory.create(context, config);
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Adding reportSender : " + sender);
-            reportSenders.add(sender);
-        }
-
-        if (reportSenders.isEmpty()) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "No ReportSenders configured - adding NullSender");
-            reportSenders.add(new NullSender());
+            if(foreground == sender.requiresForeground()) {
+                reportSenders.add(sender);
+            }
         }
         return reportSenders;
     }

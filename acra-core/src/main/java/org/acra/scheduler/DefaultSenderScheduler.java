@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.JobSenderService;
 import org.acra.sender.LegacySenderService;
+import org.acra.sender.SendingConductor;
 import org.acra.util.IOUtils;
 
 /**
@@ -46,21 +47,27 @@ public class DefaultSenderScheduler implements SenderScheduler {
 
     @Override
     public void scheduleReportSending(boolean onlySendSilentReports) {
-        final Intent intent = new Intent();
-        intent.putExtra(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-        intent.putExtra(LegacySenderService.EXTRA_ACRA_CONFIG, config);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            PersistableBundle extras = new PersistableBundle();
-            extras.putString(LegacySenderService.EXTRA_ACRA_CONFIG, IOUtils.serialize(config));
-            extras.putBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-            assert scheduler != null;
-            JobInfo.Builder builder = new JobInfo.Builder(0, new ComponentName(context, JobSenderService.class)).setOverrideDeadline(0L).setExtras(extras);
-            configureJob(builder);
-            scheduler.schedule(builder.build());
-        } else {
-            intent.setComponent(new ComponentName(context, LegacySenderService.class));
-            context.startService(intent);
+        SendingConductor conductor = new SendingConductor(context, config);
+        if(!conductor.getSenderInstances(false).isEmpty()) {
+            final Intent intent = new Intent();
+            intent.putExtra(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+            intent.putExtra(LegacySenderService.EXTRA_ACRA_CONFIG, config);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                PersistableBundle extras = new PersistableBundle();
+                extras.putString(LegacySenderService.EXTRA_ACRA_CONFIG, IOUtils.serialize(config));
+                extras.putBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+                assert scheduler != null;
+                JobInfo.Builder builder = new JobInfo.Builder(0, new ComponentName(context, JobSenderService.class)).setOverrideDeadline(0L).setExtras(extras);
+                configureJob(builder);
+                scheduler.schedule(builder.build());
+            } else {
+                intent.setComponent(new ComponentName(context, LegacySenderService.class));
+                context.startService(intent);
+            }
+        }
+        if(!conductor.getSenderInstances(true).isEmpty()) {
+            conductor.sendReports(onlySendSilentReports, true);
         }
     }
 

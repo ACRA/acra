@@ -17,7 +17,9 @@
 apply plugin: 'java'
 
 dependencies {
+    annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
     compile "com.google.auto.service:auto-service:$autoServiceVersion"
+    compile "com.google.auto.service:auto-service-annotations:$autoServiceVersion"
     compile 'com.squareup:javapoet:1.11.1'
     compile 'org.apache.commons:commons-lang3:3.8.1'
     compile 'org.apache.commons:commons-text:1.6'

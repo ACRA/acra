@@ -37,4 +37,8 @@ public interface ReportSender {
      * @throws ReportSenderException If anything goes fatally wrong during the handling of crash data, you can (should) throw a {@link ReportSenderException} with a custom message.
      */
     void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException;
+
+    default boolean requiresForeground() {
+        return false;
+    }
 }

@@ -21,7 +21,7 @@ public class JobSenderService extends JobService {
         boolean onlySilent = extras.getBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS);
         if (config != null) {
             new Thread(() -> {
-                new SendingConductor(this, config).sendReports(onlySilent);
+                new SendingConductor(this, config).sendReports(onlySilent, false);
                 jobFinished(params, false);
             }).start();
         }
