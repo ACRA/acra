@@ -51,7 +51,7 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
                     assert scheduler != null;
                     PersistableBundle extras = new PersistableBundle();
                     extras.putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName());
-                    scheduler.schedule(new JobInfo.Builder(0, new ComponentName(context, RestartingService.class)).setExtras(extras).build());
+                    scheduler.schedule(new JobInfo.Builder(0, new ComponentName(context, RestartingService.class)).setExtras(extras).setOverrideDeadline(100).build());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
