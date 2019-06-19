@@ -1,7 +1,7 @@
 language: android
 android:
   components:
-    - build-tools-29.0.1
+    - build-tools-29.0.0
     - android-29
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

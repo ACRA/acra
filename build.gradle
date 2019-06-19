@@ -89,6 +89,7 @@ subprojects {
     plugins.withType(LibraryPlugin) {
         android {
             compileSdkVersion "android-$androidVersion"
+            buildToolsVersion "$buildToolsVersion"
             defaultConfig {
                 minSdkVersion androidMinVersion
                 targetSdkVersion androidVersion
