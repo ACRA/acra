@@ -16,22 +16,16 @@
 
 package org.acra.annotation;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
-
 import org.acra.ACRAConstants;
-import org.acra.dialog.BaseCrashReportDialog;
 import org.acra.dialog.CrashReportDialog;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * CrashReportDialog configuration
@@ -49,10 +43,10 @@ public @interface AcraDialog {
     /**
      * Custom CrashReportDialog class
      *
-     * @return Class for the CrashReportDialog used when prompting the user for crash details.
+     * @return The activity to use to prompt the user for crash details. Inside the activity, use {@link org.acra.dialog.CrashReportDialogHelper} to integrate it ACRA.
      * @since 5.0.0
      */
-    @Instantiatable @AnyNonDefault @NonNull Class<? extends BaseCrashReportDialog> reportDialogClass() default CrashReportDialog.class;
+    @Instantiatable @AnyNonDefault @NonNull Class<? extends Activity> reportDialogClass() default CrashReportDialog.class;
 
     /**
      * label of the positive button

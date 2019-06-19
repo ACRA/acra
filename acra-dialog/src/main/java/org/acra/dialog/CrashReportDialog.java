@@ -16,6 +16,7 @@
 
 package org.acra.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -30,7 +31,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.ConfigUtils;
@@ -45,7 +45,7 @@ import org.acra.prefs.SharedPreferencesFactory;
  * @author F43nd1r &amp; Various
  **/
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class CrashReportDialog extends BaseCrashReportDialog implements DialogInterface.OnClickListener {
+public class CrashReportDialog extends Activity implements DialogInterface.OnClickListener {
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
@@ -56,20 +56,26 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
     private EditText userEmailView;
     private SharedPreferencesFactory sharedPreferencesFactory;
     private DialogConfiguration dialogConfiguration;
+    private CrashReportDialogHelper helper;
 
     private AlertDialog mDialog;
 
-    @CallSuper
     @Override
-    protected void init(@Nullable Bundle savedInstanceState) {
-        scrollable = new LinearLayout(this);
-        scrollable.setOrientation(LinearLayout.VERTICAL);
-        sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), getConfig());
-        dialogConfiguration = ConfigUtils.getPluginConfiguration(getConfig(), DialogConfiguration.class);
-        final int themeResourceId = dialogConfiguration.resTheme();
-        if (themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        try {
+            helper = new CrashReportDialogHelper(this, getIntent());
+            scrollable = new LinearLayout(this);
+            scrollable.setOrientation(LinearLayout.VERTICAL);
+            sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), helper.getConfig());
+            dialogConfiguration = ConfigUtils.getPluginConfiguration(helper.getConfig(), DialogConfiguration.class);
+            final int themeResourceId = dialogConfiguration.resTheme();
+            if (themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
 
-        buildAndShowDialog(savedInstanceState);
+            buildAndShowDialog(savedInstanceState);
+        } catch (IllegalArgumentException e) {
+            finish();
+        }
     }
 
     /**
@@ -243,9 +249,9 @@ public class CrashReportDialog extends BaseCrashReportDialog implements DialogIn
             } else {
                 userEmail = prefs.getString(ACRA.PREF_USER_EMAIL_ADDRESS, "");
             }
-            sendCrash(comment, userEmail);
+            helper.sendCrash(comment, userEmail);
         } else {
-            cancelReports();
+            helper.cancelReports();
         }
 
         finish();

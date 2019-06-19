@@ -19,8 +19,6 @@ apply plugin: 'digital.wup.android-maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 dependencies {
-    //noinspection GradleDependency
-    implementation("com.android.support:support-fragment:$supportVersion@aar") { transitive = true }
     api project(':acra-core')
     annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
     compileOnly "com.google.auto.service:auto-service-annotations:$autoServiceVersion"
