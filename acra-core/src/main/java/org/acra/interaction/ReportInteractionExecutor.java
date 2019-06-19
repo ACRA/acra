@@ -62,7 +62,7 @@ public class ReportInteractionExecutor {
         }
         boolean sendReports = true;
         for (Future<Boolean> future : futures) {
-            while (!future.isDone()) {
+            do {
                 try {
                     sendReports &= future.get();
                 } catch (InterruptedException ignored) {
@@ -70,7 +70,7 @@ public class ReportInteractionExecutor {
                     //ReportInteraction crashed, so ignore it
                     break;
                 }
-            }
+            } while (!future.isDone());
         }
         return sendReports;
     }

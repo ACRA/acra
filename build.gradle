@@ -89,6 +89,7 @@ subprojects {
     plugins.withType(LibraryPlugin) {
         android {
             compileSdkVersion Integer.parseInt(androidVersion)
+            buildToolsVersion "$buildToolsVersion"
             defaultConfig {
                 minSdkVersion androidMinVersion
                 targetSdkVersion androidVersion
@@ -118,7 +119,7 @@ subprojects {
 
         dependencies {
             testImplementation "junit:junit:$junitVersion"
-            testImplementation "org.robolectric:robolectric:$roboelectricVersion"
+            testImplementation "org.robolectric:robolectric:$robolectricVersion"
             testImplementation "androidx.test:core:$androidTestVersion"
         }
 
