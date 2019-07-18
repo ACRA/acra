@@ -75,7 +75,6 @@ public interface ErrorReporter {
 
     /**
      * Send a normal report for the given exception.
-     * The application is then killed and restarted by the system.
      *
      * @param e The {@link Throwable} to be reported. If null the report will contain a new Exception("Report requested by developer").
      */
