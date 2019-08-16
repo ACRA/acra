@@ -19,6 +19,9 @@ package org.acra;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import org.acra.builder.ReportBuilder;
 import org.acra.collector.StacktraceCollector;
 import org.acra.config.CoreConfiguration;
@@ -29,7 +32,6 @@ import org.acra.plugins.SimplePluginLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
@@ -43,7 +45,7 @@ public class ACRATest {
 
     @Test
     public void init() {
-        Application application = RuntimeEnvironment.application;
+        Application application = ApplicationProvider.getApplicationContext();
         CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application).setPluginLoader(new SimplePluginLoader(StacktraceCollector.class, TestAdministrator.class));
         ACRA.init(application, builder);
         ACRA.getErrorReporter().handleException(new RuntimeException());
@@ -51,7 +53,7 @@ public class ACRATest {
 
     @Test(expected = AssertionError.class)
     public void failing() {
-        Application application = RuntimeEnvironment.application;
+        Application application = ApplicationProvider.getApplicationContext();
         CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application).setPluginLoader(new SimplePluginLoader(FailingTestAdministrator.class));
         ACRA.init(application, builder);
         ACRA.getErrorReporter().handleException(new RuntimeException());
