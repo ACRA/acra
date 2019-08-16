@@ -17,6 +17,8 @@
 package org.acra.data;
 
 
+import android.os.Build;
+
 import com.google.common.net.MediaType;
 
 import org.acra.ReportField;
@@ -26,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -33,6 +36,7 @@ import static junit.framework.Assert.assertEquals;
  * @author F43nd1r
  * @since 29.11.2017
  */
+@Config(sdk = Build.VERSION_CODES.P)
 @RunWith(RobolectricTestRunner.class)
 public class StringFormatTest {
     private CrashReportData reportData;

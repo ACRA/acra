@@ -18,6 +18,7 @@ package org.acra.attachment;
 
 import android.app.Application;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -25,6 +26,7 @@ import org.acra.config.CoreConfigurationBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
@@ -36,6 +38,7 @@ import static org.hamcrest.Matchers.hasSize;
  * @author F43nd1r
  * @since 30.11.2017
  */
+@Config(sdk = Build.VERSION_CODES.P)
 @RunWith(RobolectricTestRunner.class)
 public class DefaultAttachmentProviderTest {
     @Test

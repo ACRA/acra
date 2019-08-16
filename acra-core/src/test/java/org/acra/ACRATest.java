@@ -18,6 +18,7 @@ package org.acra;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -32,6 +33,7 @@ import org.acra.plugins.SimplePluginLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
@@ -40,6 +42,7 @@ import static org.junit.Assert.*;
  * @author lukas
  * @since 02.07.18
  */
+@Config(sdk = Build.VERSION_CODES.P)
 @RunWith(RobolectricTestRunner.class)
 public class ACRATest {
 

@@ -19,6 +19,7 @@ package org.acra.attachment;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
@@ -34,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import java.io.File;
 
@@ -46,6 +48,7 @@ import static junit.framework.Assert.assertTrue;
  * @author F43nd1r
  * @since 04.12.2017
  */
+@Config(sdk = Build.VERSION_CODES.P)
 @RunWith(RobolectricTestRunner.class)
 public class AcraContentProviderTest {
     private static final String JSON_EXTENSION = "json";
