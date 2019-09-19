@@ -16,10 +16,12 @@
 
 package org.acra.data;
 
+import android.os.Build;
 import org.acra.ReportField;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import static junit.framework.Assert.assertTrue;
  * @since 29.11.2017
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class CrashReportDataTest {
     @Test
     public void put() {

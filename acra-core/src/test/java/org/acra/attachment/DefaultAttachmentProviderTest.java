@@ -18,12 +18,13 @@ package org.acra.attachment;
 
 import android.app.Application;
 import android.net.Uri;
-
+import android.os.Build;
+import androidx.test.core.app.ApplicationProvider;
 import org.acra.config.CoreConfigurationBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
@@ -36,11 +37,12 @@ import static org.hamcrest.Matchers.hasSize;
  * @since 30.11.2017
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class DefaultAttachmentProviderTest {
     @Test
     public void getAttachments() throws Exception {
         Uri uri = Uri.parse("content://not-a-valid-content-uri");
-        List<Uri> result = new DefaultAttachmentProvider().getAttachments(RuntimeEnvironment.application, new CoreConfigurationBuilder(new Application()).setAttachmentUris(uri.toString()).build());
+        List<Uri> result = new DefaultAttachmentProvider().getAttachments(ApplicationProvider.getApplicationContext(), new CoreConfigurationBuilder(new Application()).setAttachmentUris(uri.toString()).build());
         assertThat(result, hasSize(1));
         assertEquals(uri, result.get(0));
     }

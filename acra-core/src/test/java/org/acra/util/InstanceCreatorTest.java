@@ -1,9 +1,11 @@
 package org.acra.util;
 
+import android.os.Build;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
@@ -11,6 +13,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class InstanceCreatorTest {
     private InstanceCreator instanceCreator;
 

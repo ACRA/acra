@@ -16,10 +16,12 @@
 
 package org.acra.util;
 
+import android.os.Build;
+import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import java.io.File;
 
@@ -32,15 +34,16 @@ import static org.junit.Assert.assertThat;
  * @since 29.11.2017
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class InstallationTest {
     @Test
     public void id() {
-        final String id = Installation.id(RuntimeEnvironment.application);
-        assertEquals(id, Installation.id(RuntimeEnvironment.application));
-        for(File child : RuntimeEnvironment.application.getFilesDir().listFiles()){
+        final String id = Installation.id(ApplicationProvider.getApplicationContext());
+        assertEquals(id, Installation.id(ApplicationProvider.getApplicationContext()));
+        for(File child : ApplicationProvider.getApplicationContext().getFilesDir().listFiles()){
             if(child.isFile()) child.delete();
         }
-        assertThat(Installation.id(RuntimeEnvironment.application), not(id));
+        assertThat(Installation.id(ApplicationProvider.getApplicationContext()), not(id));
     }
 
 }
