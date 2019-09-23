@@ -15,7 +15,7 @@
  */
 package org.acra.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.net.URL;

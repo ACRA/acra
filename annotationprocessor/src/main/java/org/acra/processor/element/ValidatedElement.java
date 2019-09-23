@@ -16,7 +16,7 @@
 
 package org.acra.processor.element;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.acra.processor.creator.BuildMethodCreator;
 
 /**

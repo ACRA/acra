@@ -1,6 +1,6 @@
 package org.acra.util;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 

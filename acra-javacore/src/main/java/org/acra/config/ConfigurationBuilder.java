@@ -16,7 +16,7 @@
 
 package org.acra.config;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A {@link Configuration} builder

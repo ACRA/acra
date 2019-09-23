@@ -16,8 +16,8 @@
 
 package org.acra.processor;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.auto.common.MoreElements;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;

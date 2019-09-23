@@ -18,7 +18,7 @@ package org.acra.sender;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.DefaultRetryPolicy;

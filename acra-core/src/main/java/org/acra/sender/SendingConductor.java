@@ -3,7 +3,7 @@ package org.acra.sender;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;

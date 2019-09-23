@@ -16,7 +16,7 @@
 
 package org.acra.log;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Responsible for providing ACRA classes with a platform neutral way of logging.

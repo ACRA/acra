@@ -17,7 +17,7 @@
 package org.acra.sender;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.data.CrashReportData;

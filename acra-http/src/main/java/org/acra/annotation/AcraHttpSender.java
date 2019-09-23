@@ -16,8 +16,8 @@
 
 package org.acra.annotation;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
 import org.acra.ACRAConstants;
 import org.acra.config.BaseHttpConfigurationBuilder;
 import org.acra.security.KeyStoreFactory;

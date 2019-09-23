@@ -18,7 +18,7 @@ package org.acra.startup;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;

@@ -4,7 +4,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.os.Build;
 import android.os.PersistableBundle;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import org.acra.config.CoreConfiguration;
 import org.acra.util.IOUtils;
 
