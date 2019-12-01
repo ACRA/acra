@@ -111,8 +111,7 @@ public class EmailIntentSender implements ReportSender {
 
     @Override
     public boolean requiresForeground() {
-        //TODO make this code Q after Android Q release
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
 
     /**

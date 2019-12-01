@@ -22,12 +22,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.PersistableBundle;
 import androidx.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.JobSenderService;
 import org.acra.sender.LegacySenderService;
 import org.acra.sender.SendingConductor;
+import org.acra.util.BundleWrapper;
 import org.acra.util.IOUtils;
 
 /**
@@ -48,20 +48,20 @@ public class DefaultSenderScheduler implements SenderScheduler {
     @Override
     public void scheduleReportSending(boolean onlySendSilentReports) {
         SendingConductor conductor = new SendingConductor(context, config);
+        BundleWrapper extras = BundleWrapper.create();
+        extras.putString(LegacySenderService.EXTRA_ACRA_CONFIG, IOUtils.serialize(config));
+        extras.putBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
+        configureExtras(extras);
         if(!conductor.getSenderInstances(false).isEmpty()) {
-            final Intent intent = new Intent();
-            intent.putExtra(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
-            intent.putExtra(LegacySenderService.EXTRA_ACRA_CONFIG, config);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-                PersistableBundle extras = new PersistableBundle();
-                extras.putString(LegacySenderService.EXTRA_ACRA_CONFIG, IOUtils.serialize(config));
-                extras.putBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
                 assert scheduler != null;
-                JobInfo.Builder builder = new JobInfo.Builder(0, new ComponentName(context, JobSenderService.class)).setOverrideDeadline(0L).setExtras(extras);
+                JobInfo.Builder builder = new JobInfo.Builder(0, new ComponentName(context, JobSenderService.class)).setOverrideDeadline(0L).setExtras(extras.asPersistableBundle());
                 configureJob(builder);
                 scheduler.schedule(builder.build());
             } else {
+                final Intent intent = new Intent();
+                intent.putExtras(extras.asBundle());
                 intent.setComponent(new ComponentName(context, LegacySenderService.class));
                 context.startService(intent);
             }
@@ -72,5 +72,8 @@ public class DefaultSenderScheduler implements SenderScheduler {
     }
 
     protected void configureJob(JobInfo.Builder job) {
+    }
+
+    protected void configureExtras(BundleWrapper extras) {
     }
 }
