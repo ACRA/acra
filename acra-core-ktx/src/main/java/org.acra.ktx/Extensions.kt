@@ -17,6 +17,7 @@
 
 package org.acra.ktx
 
+import android.app.Application
 import org.acra.ACRA
 import org.acra.config.CoreConfigurationBuilder
 import org.acra.config.ConfigurationBuilder
@@ -25,7 +26,7 @@ inline fun <reified T : ConfigurationBuilder> CoreConfigurationBuilder.getPlugin
     return this.getPluginConfigurationBuilder(T::class.java)
 }
 
-fun android.app.Application.initAcra() {
+fun Application.initAcra() {
     ACRA.init(this)
 }
 
