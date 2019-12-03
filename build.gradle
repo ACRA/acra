@@ -28,6 +28,7 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion"
         classpath "net.researchgate:gradle-release:$releasePluginVersion"
         classpath 'digital.wup:android-maven-publish:3.6.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 apply plugin: 'net.researchgate.release'
