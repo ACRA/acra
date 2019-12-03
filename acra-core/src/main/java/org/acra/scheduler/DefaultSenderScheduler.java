@@ -47,12 +47,12 @@ public class DefaultSenderScheduler implements SenderScheduler {
 
     @Override
     public void scheduleReportSending(boolean onlySendSilentReports) {
-        SendingConductor conductor = new SendingConductor(context, config);
-        BundleWrapper extras = BundleWrapper.create();
+        BundleWrapper.Internal extras = BundleWrapper.create();
         extras.putString(LegacySenderService.EXTRA_ACRA_CONFIG, IOUtils.serialize(config));
         extras.putBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports);
         configureExtras(extras);
-        if(!conductor.getSenderInstances(false).isEmpty()) {
+        SendingConductor conductor = new SendingConductor(context, config);
+        if (!conductor.getSenderInstances(false).isEmpty()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
                 assert scheduler != null;
@@ -66,14 +66,24 @@ public class DefaultSenderScheduler implements SenderScheduler {
                 context.startService(intent);
             }
         }
-        if(!conductor.getSenderInstances(true).isEmpty()) {
-            conductor.sendReports(onlySendSilentReports, true);
+        if (!conductor.getSenderInstances(true).isEmpty()) {
+            conductor.sendReports(true, extras);
         }
     }
 
-    protected void configureJob(JobInfo.Builder job) {
+    /**
+     * allows to perform additional configuration in subclasses
+     *
+     * @param job the job builder
+     */
+    protected void configureJob(@NonNull JobInfo.Builder job) {
     }
 
-    protected void configureExtras(BundleWrapper extras) {
+    /**
+     * allows to provide additional extras to senders
+     *
+     * @param extras the extras bundle
+     */
+    protected void configureExtras(@NonNull BundleWrapper extras) {
     }
 }

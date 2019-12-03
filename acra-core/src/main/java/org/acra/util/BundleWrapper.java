@@ -19,16 +19,20 @@ package org.acra.util;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.lang.reflect.Proxy;
 import java.util.Set;
 
 /**
+ * Works like a {@link PersistableBundle}, but falls back to {@link Bundle} on older versions
+ *
  * @author lukas
  * @since 29.11.19
  */
+@Keep
 public interface BundleWrapper {
 
     int size();
@@ -112,19 +116,63 @@ public interface BundleWrapper {
     @Nullable
     String[] getStringArray(@Nullable String key);
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
-    PersistableBundle asPersistableBundle();
+    @Keep
+    interface Internal extends BundleWrapper {
 
-    /**
-     * Only works on API < 22
-     *
-     * @return this as bundle
-     */
-    Bundle asBundle();
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+        PersistableBundle asPersistableBundle();
 
-    static BundleWrapper create() {
-        Object wrap = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 ? new PersistableBundle() : new Bundle();
-        return (BundleWrapper) Proxy.newProxyInstance(BundleWrapper.class.getClassLoader(), new Class[]{BundleWrapper.class}, (proxy, method, args) -> {
+        /**
+         * Only works on API < 22
+         *
+         * @return this as bundle
+         */
+        Bundle asBundle();
+    }
+
+    static BundleWrapper wrap(@Nullable Bundle bundle) {
+        BundleWrapper wrapper = create();
+        if (bundle != null) {
+            for (String key : bundle.keySet()) {
+                Object o = bundle.get(key);
+                if (o instanceof Integer) {
+                    wrapper.putInt(key, (Integer) o);
+                } else if (o instanceof int[]) {
+                    wrapper.putIntArray(key, (int[]) o);
+                } else if (o instanceof Long) {
+                    wrapper.putLong(key, (Long) o);
+                } else if (o instanceof long[]) {
+                    wrapper.putLongArray(key, (long[]) o);
+                } else if (o instanceof Double) {
+                    wrapper.putDouble(key, (Double) o);
+                } else if (o instanceof double[]) {
+                    wrapper.putDoubleArray(key, (double[]) o);
+                } else if (o instanceof String) {
+                    wrapper.putString(key, (String) o);
+                } else if (o instanceof String[]) {
+                    wrapper.putStringArray(key, (String[]) o);
+                } else if (o instanceof Boolean) {
+                    wrapper.putBoolean(key, (Boolean) o);
+                } else if (o instanceof boolean[]) {
+                    wrapper.putBooleanArray(key, (boolean[]) o);
+                }
+            }
+        }
+        return wrapper;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    static BundleWrapper wrap(@Nullable PersistableBundle bundle) {
+        BundleWrapper wrapper = create();
+        if (bundle != null) {
+            wrapper.putAll(bundle);
+        }
+        return wrapper;
+    }
+
+    static BundleWrapper.Internal create() {
+        final Object wrap = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 ? new PersistableBundle() : new Bundle();
+        return (BundleWrapper.Internal) Proxy.newProxyInstance(BundleWrapper.class.getClassLoader(), new Class[]{BundleWrapper.Internal.class}, (proxy, method, args) -> {
             if (method.getName().equals("asPersistableBundle")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     return wrap;
@@ -137,7 +185,7 @@ public interface BundleWrapper {
                 }
                 return null;
             }
-            return method.invoke(wrap, args);
+            return wrap.getClass().getMethod(method.getName(), method.getParameterTypes()).invoke(wrap, args);
         });
     }
 }

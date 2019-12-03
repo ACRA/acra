@@ -25,6 +25,7 @@ import org.acra.config.DefaultRetryPolicy;
 import org.acra.config.RetryPolicy;
 import org.acra.data.CrashReportData;
 import org.acra.file.CrashReportPersister;
+import org.acra.util.BundleWrapper;
 import org.acra.util.IOUtils;
 import org.acra.util.InstanceCreator;
 import org.json.JSONException;
@@ -47,6 +48,7 @@ final class ReportDistributor {
     private final Context context;
     private final CoreConfiguration config;
     private final List<ReportSender> reportSenders;
+    private final BundleWrapper extras;
 
     /**
      * Creates a new {@link ReportDistributor} to try sending pending reports.
@@ -54,11 +56,13 @@ final class ReportDistributor {
      * @param context       ApplicationContext in which the reports are being sent.
      * @param config        Configuration to use while sending.
      * @param reportSenders List of ReportSender to use to send the crash reports.
+     * @param extras        additional information set in a {@link org.acra.scheduler.DefaultSenderScheduler}
      */
-    ReportDistributor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull List<ReportSender> reportSenders) {
+    ReportDistributor(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull List<ReportSender> reportSenders, BundleWrapper extras) {
         this.context = context;
         this.config = config;
         this.reportSenders = reportSenders;
+        this.extras = extras;
     }
 
     /**
@@ -108,7 +112,7 @@ final class ReportDistributor {
             for (ReportSender sender : reportSenders) {
                 try {
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sending report using " + sender.getClass().getName());
-                    sender.send(context, errorContent);
+                    sender.send(context, errorContent, extras);
                     if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Sent report using " + sender.getClass().getName());
                 } catch (ReportSenderException e) {
                     failedSenders.add(new RetryPolicy.FailedSender(sender, e));

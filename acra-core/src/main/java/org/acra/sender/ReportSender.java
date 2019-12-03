@@ -19,6 +19,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.acra.data.CrashReportData;
+import org.acra.util.BundleWrapper;
 
 /**
  * A simple interface for defining various crash report senders.
@@ -36,7 +37,22 @@ public interface ReportSender {
      * @param errorContent Stores key/value pairs for each report field.
      * @throws ReportSenderException If anything goes fatally wrong during the handling of crash data, you can (should) throw a {@link ReportSenderException} with a custom message.
      */
-    void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException;
+    default void send(@NonNull Context context, @NonNull CrashReportData errorContent) throws ReportSenderException {
+    }
+
+    /**
+     * Send crash report data.
+     * <p>
+     * Method will be called from the {@link LegacySenderService}.
+     *
+     * @param context      Android Context in which to send the crash report.
+     * @param errorContent Stores key/value pairs for each report field.
+     * @param extras       additional information set in a {@link org.acra.scheduler.DefaultSenderScheduler}
+     * @throws ReportSenderException If anything goes fatally wrong during the handling of crash data, you can (should) throw a {@link ReportSenderException} with a custom message.
+     */
+    default void send(@NonNull Context context, @NonNull CrashReportData errorContent, @NonNull BundleWrapper extras) throws ReportSenderException {
+        send(context, errorContent);
+    }
 
     default boolean requiresForeground() {
         return false;
