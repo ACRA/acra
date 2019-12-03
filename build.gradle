@@ -130,7 +130,11 @@ subprojects {
         }
 
         task javadoc(type: Javadoc) {
-            source = android.sourceSets.main.java.srcDirs + files("${project.buildDir}/generated/source/aidl/release") + files("${project.buildDir}/generated/source/apt/release")
+            println android.sourceSets.main.java.srcDirs.getClass()
+            source = (fileTree(android.sourceSets.main.java.srcDirs.iterator().next()) + files("${project.buildDir}/generated/source/aidl/release") +
+                    files("${project.buildDir}/generated/ap_generated_sources/release/out")).filter {
+                exclude "*.kt"
+            }
             classpath += files(android.getBootClasspath().join(File.pathSeparator)) + files("${project.buildDir}/generated/source/r/release")
             options.with {
                 linksOffline "http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference"

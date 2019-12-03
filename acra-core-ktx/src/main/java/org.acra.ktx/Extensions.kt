@@ -26,8 +26,14 @@ inline fun <reified T : ConfigurationBuilder> CoreConfigurationBuilder.getPlugin
     return this.getPluginConfigurationBuilder(T::class.java)
 }
 
-fun Application.initAcra() {
-    ACRA.init(this)
+fun Application.initAcra(initializer: CoreConfigurationBuilder.() -> Unit = { }) {
+    val builder = CoreConfigurationBuilder(this)
+    builder.initializer()
+    ACRA.init(this, builder)
+}
+
+inline fun <reified T : ConfigurationBuilder> CoreConfigurationBuilder.plugin(initializer: T.() -> Unit) {
+    this.getPluginConfigurationBuilder<T>().initializer()
 }
 
 fun Throwable.sendWithAcra() {
