@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.JobSenderService;
 import org.acra.sender.LegacySenderService;

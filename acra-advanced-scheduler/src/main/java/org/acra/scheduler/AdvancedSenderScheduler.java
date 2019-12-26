@@ -19,7 +19,7 @@ package org.acra.scheduler;
 import android.app.job.JobInfo;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.auto.service.AutoService;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;

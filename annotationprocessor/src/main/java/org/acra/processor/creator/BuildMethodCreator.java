@@ -16,7 +16,7 @@
 
 package org.acra.processor.creator;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;

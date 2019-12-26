@@ -16,7 +16,7 @@
 
 package org.acra.log;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Stub implementation of {@link org.acra.log.ACRALog}, quenches all logging.

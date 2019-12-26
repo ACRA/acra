@@ -15,7 +15,7 @@
  */
 package org.acra.file;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.acra.ACRAConstants;
 import org.acra.ErrorReporter;

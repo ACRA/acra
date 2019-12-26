@@ -17,8 +17,8 @@
 package org.acra.annotation;
 
 import android.content.Context;
-import android.support.annotation.IntRange;
-import android.support.annotation.StringRes;
+import androidx.annotation.IntRange;
+import androidx.annotation.StringRes;
 import android.widget.Toast;
 
 import java.lang.annotation.Documented;

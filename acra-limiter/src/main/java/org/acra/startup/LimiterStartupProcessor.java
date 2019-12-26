@@ -19,7 +19,7 @@ package org.acra.startup;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.auto.service.AutoService;
 import org.acra.ACRA;
 import org.acra.config.ConfigUtils;

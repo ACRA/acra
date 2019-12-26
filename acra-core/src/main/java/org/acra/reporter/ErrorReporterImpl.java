@@ -17,8 +17,8 @@ package org.acra.reporter;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.builder.LastActivityManager;
