@@ -6,9 +6,12 @@ import android.os.Build;
 import android.os.PersistableBundle;
 import androidx.annotation.RequiresApi;
 import org.acra.config.CoreConfiguration;
+import org.acra.util.BundleWrapper;
 import org.acra.util.IOUtils;
 
 /**
+ * Job service sending reports. has to run in the :acra process
+ *
  * @author Lukas
  * @since 31.12.2018
  */
@@ -18,10 +21,9 @@ public class JobSenderService extends JobService {
     public boolean onStartJob(JobParameters params) {
         PersistableBundle extras = params.getExtras();
         CoreConfiguration config = IOUtils.deserialize(CoreConfiguration.class, extras.getString(LegacySenderService.EXTRA_ACRA_CONFIG));
-        boolean onlySilent = extras.getBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS);
         if (config != null) {
             new Thread(() -> {
-                new SendingConductor(this, config).sendReports(onlySilent, false);
+                new SendingConductor(this, config).sendReports(false, BundleWrapper.wrap(extras));
                 jobFinished(params, false);
             }).start();
         }

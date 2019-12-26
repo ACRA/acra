@@ -41,7 +41,7 @@ public class AdvancedSenderScheduler extends DefaultSenderScheduler {
     }
 
     @Override
-    protected void configureJob(JobInfo.Builder job) {
+    protected void configureJob(@NonNull JobInfo.Builder job) {
         job.setRequiredNetworkType(schedulerConfiguration.requiresNetworkType());
         job.setRequiresCharging(schedulerConfiguration.requiresCharging());
         job.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle());
