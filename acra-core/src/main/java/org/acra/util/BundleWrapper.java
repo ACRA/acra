@@ -123,7 +123,7 @@ public interface BundleWrapper {
         PersistableBundle asPersistableBundle();
 
         /**
-         * Only works on API < 22
+         * Only works on API &lt; 22
          *
          * @return this as bundle
          */

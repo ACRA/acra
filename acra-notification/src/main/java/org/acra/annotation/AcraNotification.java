@@ -44,7 +44,7 @@ public @interface AcraNotification {
      * icon of the notification
      *
      * @return Resource id for the icon in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#setSmallIcon(int)
+     * @see androidx.core.app.NotificationCompat.Builder#setSmallIcon(int)
      * @since 5.0.0
      */
     @DrawableRes int resIcon() default android.R.drawable.stat_sys_warning;
@@ -53,7 +53,7 @@ public @interface AcraNotification {
      * title of the notification
      *
      * @return Resource id for the title in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#setContentTitle(CharSequence)
+     * @see androidx.core.app.NotificationCompat.Builder#setContentTitle(CharSequence)
      * @since 5.0.0
      */
     @StringRes int resTitle();
@@ -62,7 +62,7 @@ public @interface AcraNotification {
      * text in the notification
      *
      * @return Resource id for the text in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#setContentText(CharSequence)
+     * @see androidx.core.app.NotificationCompat.Builder#setContentText(CharSequence)
      * @since 5.0.0
      */
     @StringRes int resText();
@@ -71,7 +71,7 @@ public @interface AcraNotification {
      * ticker text for the notification
      *
      * @return Resource id for the ticker text in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#setTicker(CharSequence)
+     * @see androidx.core.app.NotificationCompat.Builder#setTicker(CharSequence)
      * @since 5.0.0
      */
     @StringRes int resTickerText() default ACRAConstants.DEFAULT_RES_VALUE;
@@ -80,7 +80,7 @@ public @interface AcraNotification {
      * send button text shown in expanded view
      *
      * @return Resource id for the send button text in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
+     * @see androidx.core.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
      * @since 5.0.0
      */
     @StringRes int resSendButtonText() default android.R.string.ok;
@@ -89,7 +89,7 @@ public @interface AcraNotification {
      * send button icon shown in collapsed and sometimes expanded view
      *
      * @return Resource id for the send button icon in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
+     * @see androidx.core.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
      * @since 5.0.0
      */
     @DrawableRes int resSendButtonIcon() default android.R.drawable.ic_menu_send;
@@ -98,7 +98,7 @@ public @interface AcraNotification {
      * discard button text shown in expanded view
      *
      * @return Resource id for the discard button text in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
+     * @see androidx.core.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
      * @since 5.0.0
      */
     @StringRes int resDiscardButtonText() default android.R.string.cancel;
@@ -107,7 +107,7 @@ public @interface AcraNotification {
      * discard button icon shown in collapsed and sometimes expanded view
      *
      * @return Resource id for the discard button icon in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
+     * @see androidx.core.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
      * @since 5.0.0
      */
     @DrawableRes int resDiscardButtonIcon() default android.R.drawable.ic_menu_delete;
@@ -152,7 +152,7 @@ public @interface AcraNotification {
      * No effect on pre-nougat devices.
      *
      * @return Resource id for the send with comment button text in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
+     * @see androidx.core.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
      * @since 5.0.0
      */
     @StringRes int resSendWithCommentButtonText() default ACRAConstants.DEFAULT_RES_VALUE;
@@ -162,7 +162,7 @@ public @interface AcraNotification {
      * No effect on pre-nougat devices.
      *
      * @return Resource id for the send with comment button icon in the status bar notification.
-     * @see android.support.v4.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
+     * @see androidx.core.app.NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)
      * @since 5.0.0
      */
     @DrawableRes int resSendWithCommentButtonIcon() default android.R.drawable.ic_menu_send;
@@ -172,7 +172,7 @@ public @interface AcraNotification {
      * No effect on pre-nougat devices.
      *
      * @return Resource id for the user comment input label in the notification action.
-     * @see android.support.v4.app.RemoteInput.Builder#setLabel(CharSequence)
+     * @see androidx.core.app.RemoteInput.Builder#setLabel(CharSequence)
      * @since 5.0.0
      */
     @StringRes int resCommentPrompt() default ACRAConstants.DEFAULT_RES_VALUE;
