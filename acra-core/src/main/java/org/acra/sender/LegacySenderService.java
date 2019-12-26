@@ -18,12 +18,20 @@ package org.acra.sender;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
+import org.acra.util.BundleWrapper;
+import org.acra.util.IOUtils;
 
 import static org.acra.ACRA.LOG_TAG;
 
+/**
+ * Plain service sending reports. has to run in the :acra process.
+ * Only used when no JobScheduler is available.
+ *
+ * @author Lukas
+ */
 public class LegacySenderService extends Service {
 
     public static final String EXTRA_ONLY_SEND_SILENT_REPORTS = "onlySendSilentReports";
@@ -32,11 +40,10 @@ public class LegacySenderService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.hasExtra(EXTRA_ACRA_CONFIG)) {
-            final boolean onlySendSilentReports = intent.getBooleanExtra(EXTRA_ONLY_SEND_SILENT_REPORTS, false);
-            final CoreConfiguration config = (CoreConfiguration) intent.getSerializableExtra(EXTRA_ACRA_CONFIG);
+            final CoreConfiguration config = IOUtils.deserialize(CoreConfiguration.class, intent.getStringExtra(LegacySenderService.EXTRA_ACRA_CONFIG));
             if (config != null) {
                 new Thread(() -> {
-                    new SendingConductor(this, config).sendReports(onlySendSilentReports, false);
+                    new SendingConductor(this, config).sendReports( false, BundleWrapper.wrap(intent.getExtras()));
                     stopSelf();
                 }).start();
             }

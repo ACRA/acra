@@ -22,8 +22,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.attachment.AcraContentProvider;
@@ -111,8 +111,7 @@ public class EmailIntentSender implements ReportSender {
 
     @Override
     public boolean requiresForeground() {
-        //TODO make this code Q after Android Q release
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
 
     /**

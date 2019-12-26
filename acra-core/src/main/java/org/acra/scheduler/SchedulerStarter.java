@@ -17,8 +17,8 @@
 package org.acra.scheduler;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.config.CoreConfiguration;
 import org.acra.file.ReportLocator;

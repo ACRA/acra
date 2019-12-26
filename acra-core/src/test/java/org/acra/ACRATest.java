@@ -19,7 +19,7 @@ package org.acra;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
 import org.acra.builder.ReportBuilder;
 import org.acra.collector.StacktraceCollector;

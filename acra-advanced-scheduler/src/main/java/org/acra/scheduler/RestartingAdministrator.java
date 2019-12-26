@@ -21,7 +21,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.auto.service.AutoService;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.ConfigUtils;

@@ -17,7 +17,7 @@
 package org.acra.config;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.acra.plugins.Plugin;
 
 /**

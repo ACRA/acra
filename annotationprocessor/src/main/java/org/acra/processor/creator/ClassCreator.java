@@ -16,7 +16,7 @@
 
 package org.acra.processor.creator;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.auto.common.MoreTypes;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;

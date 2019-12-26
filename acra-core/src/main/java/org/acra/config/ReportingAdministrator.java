@@ -17,8 +17,8 @@
 package org.acra.config;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.acra.builder.LastActivityManager;
 import org.acra.builder.ReportBuilder;
 import org.acra.data.CrashReportData;

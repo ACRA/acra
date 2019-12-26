@@ -18,7 +18,7 @@ package org.acra.collector;
 import android.content.Context;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.auto.service.AutoService;
 

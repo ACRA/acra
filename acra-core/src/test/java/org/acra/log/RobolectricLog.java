@@ -1,6 +1,6 @@
 package org.acra.log;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.robolectric.util.Logger;
 

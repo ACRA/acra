@@ -1,9 +1,10 @@
 package org.acra.sender;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.Toast;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
@@ -11,6 +12,7 @@ import org.acra.config.CoreConfiguration;
 import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.plugins.PluginLoader;
+import org.acra.util.BundleWrapper;
 import org.acra.util.InstanceCreator;
 import org.acra.util.ToastSender;
 
@@ -35,7 +37,7 @@ public class SendingConductor {
         locator = new ReportLocator(context);
     }
 
-    public void sendReports(boolean onlySendSilentReports, boolean foreground) {
+    public void sendReports(boolean foreground, BundleWrapper extras) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to start sending reports from SenderService");
         try {
             final List<ReportSender> senderInstances = getSenderInstances(foreground);
@@ -48,7 +50,7 @@ public class SendingConductor {
             // Get approved reports
             final File[] reports = locator.getApprovedReports();
 
-            final ReportDistributor reportDistributor = new ReportDistributor(context, config, senderInstances);
+            final ReportDistributor reportDistributor = new ReportDistributor(context, config, senderInstances, extras);
 
             // Iterate over approved reports and send via all Senders.
             int reportsSentCount = 0; // Use to rate limit sending
@@ -56,7 +58,7 @@ public class SendingConductor {
             boolean anyNonSilent = false;
             for (final File report : reports) {
                 final boolean isNonSilent = !fileNameParser.isSilent(report.getName());
-                if (onlySendSilentReports && isNonSilent) {
+                if (extras.getBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS) && isNonSilent) {
                     continue;
                 }
                 anyNonSilent |= isNonSilent;

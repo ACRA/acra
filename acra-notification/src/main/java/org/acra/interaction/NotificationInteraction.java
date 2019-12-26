@@ -23,13 +23,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
 import android.widget.RemoteViews;
-
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 import com.google.auto.service.AutoService;
-
 import org.acra.ACRA;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;

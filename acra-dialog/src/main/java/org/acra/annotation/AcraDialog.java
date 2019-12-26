@@ -18,10 +18,10 @@ package org.acra.annotation;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 import org.acra.ACRAConstants;
 import org.acra.dialog.CrashReportDialog;
 

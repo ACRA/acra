@@ -19,7 +19,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 dependencies {
-    compile "com.android.support:support-annotations:$supportVersion"
+    compile "androidx.annotation:annotation:$androidxAnnotationVersion"
 }
 
 sourceCompatibility = "1.7"

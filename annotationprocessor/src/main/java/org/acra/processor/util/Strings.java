@@ -16,7 +16,7 @@
 
 package org.acra.processor.util;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
