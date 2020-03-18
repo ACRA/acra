@@ -68,7 +68,7 @@ def initPublication = { MavenPublication publication ->
 }
 
 release {
-    tagTemplate = '$name-$version'
+    tagTemplate = 'acra-$version'
     git {
         pushToRemote = 'ACRA'
         requireBranch = 'master'
@@ -130,7 +130,6 @@ subprojects {
         }
 
         task javadoc(type: Javadoc) {
-            println android.sourceSets.main.java.srcDirs.getClass()
             source = (fileTree(android.sourceSets.main.java.srcDirs.iterator().next()) + files("${project.buildDir}/generated/source/aidl/release") +
                     files("${project.buildDir}/generated/ap_generated_sources/release/out")).filter {
                 exclude "*.kt"
@@ -302,4 +301,10 @@ task joinedJavadoc(type: Javadoc) {
         }
     }
     destinationDir = file("${project.buildDir}/javadoc")
+}
+
+task printVersion {
+    doLast {
+        println "$version"
+    }
 }

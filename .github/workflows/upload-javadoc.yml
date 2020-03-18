@@ -1,0 +1,50 @@
+name: upload-javadoc
+
+on:
+  push:
+    tags:
+      - 'acra-*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '1.8'
+      - name: Checkout acra
+        uses: actions/checkout@v2
+        with:
+          path: 'main'
+      - name: Checkout github pages
+        uses: actions/checkout@v2
+        with:
+          repository: 'ACRA/acra.github.com'
+          path: 'web'
+      - name: Generate Javadoc
+        run: ./gradlew joinedJavadoc --no-daemon
+        working-directory: ./main
+      - name: Extract version
+        id: version
+        run: echo ::set-output name=value::$(./gradlew printVersion --no-daemon --quiet)
+      - name: Update Javadoc
+        run: |
+          mkdir ./web/javadoc/${{ steps.version.outputs.value }}
+          cp -a ./main/build/javadoc/. ./web/javadoc/${{ steps.version.outputs.value }}/
+          echo  "- [${{ steps.version.outputs.value }}](${{ steps.version.outputs.value }})" >> ./web/javadoc/index.md
+          ln -sfn "${{ steps.version.outputs.value }}/" ./web/javadoc/latest
+      - name: Commit files
+        run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -m "Add javadoc for version ${{ steps.version.outputs.value }}" -a
+        working-directory: ./web
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          repository: 'ACRA/acra.github.com'
+          directory: ./web
