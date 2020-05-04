@@ -29,7 +29,8 @@ jobs:
         working-directory: ./main
       - name: Extract version
         id: version
-        run: echo ::set-output name=value::$(./gradlew printVersion --no-daemon --quiet)
+        run: echo "::set-output name=value::$(./gradlew printVersion --no-daemon --quiet --console=plain)"
+        working-directory: ./main
       - name: Update Javadoc
         run: |
           mkdir ./web/javadoc/${{ steps.version.outputs.value }}
