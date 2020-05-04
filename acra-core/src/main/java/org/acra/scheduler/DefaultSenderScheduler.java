@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import org.acra.config.CoreConfiguration;
 import org.acra.sender.JobSenderService;
 import org.acra.sender.LegacySenderService;
@@ -56,7 +57,7 @@ public class DefaultSenderScheduler implements SenderScheduler {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
                 assert scheduler != null;
-                JobInfo.Builder builder = new JobInfo.Builder(0, new ComponentName(context, JobSenderService.class)).setOverrideDeadline(0L).setExtras(extras.asPersistableBundle());
+                JobInfo.Builder builder = new JobInfo.Builder(0, new ComponentName(context, JobSenderService.class)).setExtras(extras.asPersistableBundle());
                 configureJob(builder);
                 scheduler.schedule(builder.build());
             } else {
@@ -76,7 +77,9 @@ public class DefaultSenderScheduler implements SenderScheduler {
      *
      * @param job the job builder
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void configureJob(@NonNull JobInfo.Builder job) {
+        job.setOverrideDeadline(0L);
     }
 
     /**
