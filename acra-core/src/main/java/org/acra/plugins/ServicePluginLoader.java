@@ -45,11 +45,18 @@ public class ServicePluginLoader implements PluginLoader {
 
     private <T extends Plugin> List<T> loadInternal(@NonNull Class<T> clazz, Predicate<T> shouldLoadPredicate) {
         List<T> plugins = new ArrayList<>();
-        //noinspection ForLoopReplaceableByForEach
         final ServiceLoader<T> serviceLoader = ServiceLoader.load(clazz, getClass().getClassLoader());
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "ServicePluginLoader loading services from ServiceLoader : " + serviceLoader);
-
-        for (final Iterator<T> iterator = serviceLoader.iterator(); iterator.hasNext(); ) {
+        final Iterator<T> iterator = serviceLoader.iterator();
+        while (true) {
+            try {
+                if (!iterator.hasNext()) {
+                    break;
+                }
+            } catch (ServiceConfigurationError e) {
+                ACRA.log.e(ACRA.LOG_TAG, "Broken ServiceLoader for " + clazz.getSimpleName(), e);
+                break;
+            }
             try {
                 final T plugin = iterator.next();
                 if (shouldLoadPredicate.apply(plugin)) {
@@ -62,7 +69,6 @@ public class ServicePluginLoader implements PluginLoader {
                 ACRA.log.e(ACRA.LOG_TAG, "Unable to load " + clazz.getSimpleName(), e);
             }
         }
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Found services (" + plugins + ") for class : " + clazz);
         return plugins;
     }
 }
