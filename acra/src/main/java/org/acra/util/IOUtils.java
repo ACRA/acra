@@ -19,8 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.android.internal.util.Predicate;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.collections.BoundedLinkedList;

@@ -20,8 +20,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.android.internal.util.Predicate;
-
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.ReportField;
@@ -32,6 +30,7 @@ import org.acra.model.Element;
 import org.acra.model.StringElement;
 import org.acra.util.IOUtils;
 import org.acra.util.PackageManagerWrapper;
+import org.acra.util.Predicate;
 
 import java.io.IOException;
 import java.io.InputStream;

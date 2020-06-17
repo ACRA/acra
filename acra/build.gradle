@@ -1,8 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'net.researchgate.release'
-apply plugin: 'com.jfrog.artifactory'
 
 android {
     compileSdkVersion Integer.parseInt(androidVersion)
@@ -25,170 +23,102 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:support-compat:$supportVersion"
-    compile "com.android.support:support-fragment:$supportVersion"
-    compile "com.android.support:support-annotations:$supportVersion"
+    implementation "com.android.support:support-compat:$supportVersion"
+    implementation "com.android.support:support-fragment:$supportVersion"
+    implementation "com.android.support:support-annotations:$supportVersion"
     annotationProcessor project(':annotationprocessor')
-    provided project(':annotations')
+    compileOnly project(':annotations')
 }
 
-/*
-*   How to oss upload:
-*
-*   Edit or create the file at ~/.gradle/gradle.properties and add
-* signing.keyId=<short ID of your key>
-* signing.password=<passphrase for your key>
-* signing.secretKeyRingFile=<path to your key ring>
-*   Optional, depending on upload destination
-* ossrhUser=<OSSRH user>
-* ossrhPassword=<OSSRH password>
-* artifactoryApiKey=<artifactory key>
-* artifactoryUser=<jfrog artifactory user>
-
-*   Then run for ossrh upload
-* gradlew release
-*
-*   Or for jfrog oss artifactory
-* gradlew artifactoryPublish
-*/
-
-release {
-    failOnUnversionedFiles = false
-    failOnCommitNeeded = true
-    tagTemplate = '$name-$version'
-    git {
-        requireBranch = "master"
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs + files('build/generated/source/buildConfig/release') + files('build/generated/ap_generated_sources/release/out')
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    android.libraryVariants.all { variant ->
+        if (variant.name == 'release') {
+            owner.classpath += variant.javaCompileProvider.get().classpath
+        }
+    }
+    exclude '**/R.html', '**/R.*.html', '**/index.html'
+    afterEvaluate {
+        dependsOn assembleRelease
     }
 }
 
-afterReleaseBuild {
-    dependsOn rootProject.closeAndPromoteRepository
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    archiveClassifier.set('javadoc')
+    from androidJavadocs.destinationDir
 }
 
-rootProject.closeRepository {
-    dependsOn uploadArchives
-}
-
-task sourcesJar(type: Jar) {
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
 }
 
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    source += files('build/generated/source/aidl/release') + files('build/generated/source/buildConfig/release') + files('build/generated/source/apt/release')
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
 
 afterEvaluate {
-    javadoc.classpath += files(android.libraryVariants.collect { variant ->
-        variant.javaCompile.classpath.files
-    })
-    javadoc.dependsOn generateReleaseSources
-}
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.release
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc
-}
+                artifact androidJavadocsJar
+                artifact androidSourcesJar
 
-artifacts {
-    archives javadocJar, sourcesJar
-}
+                groupId = project.group
+                artifactId = project.archivesBaseName
+                version = project.version
 
-signing {
-    required { signing.hasProperty('keyId') }
-    sign configurations.archives
-}
+                pom {
+                    name = 'Application Crash Report for Android'
+                    description = 'Publishes a report of an Android application crash to an end point.'
+                    packaging = 'aar'
+                    url = 'http://acra.ch'
 
-ext.createPom = { pom ->
-    pom.project {
-        name 'Application Crash Report for Android'
-        description 'Publishes a report of an Android application crash to an end point.'
-        packaging 'aar'
-        url 'http://acra.ch'
+                    scm {
+                        connection = 'scm:git:https://github.com/ACRA/acra.git'
+                        developerConnection = 'scm:git:git@github.com:ACRA/acra.git'
+                        url = 'https://github.com/ACRA/acra.git'
+                    }
 
-        scm {
-            connection 'scm:git:https://github.com/ACRA/acra.git'
-            developerConnection 'scm:git:git@github.com:ACRA/acra.git'
-            url 'https://github.com/ACRA/acra.git'
-        }
+                    licenses {
+                        license {
+                            name = 'Apache 2'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
 
-        licenses {
-            license {
-                name 'Apache 2'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
+                    developers {
+                        developer {
+                            id = 'kevin.gaudin'
+                            name = 'Kevin Gaudin'
+                        }
+                        developer {
+                            id = 'william.ferguson'
+                            name = 'William Ferguson'
+                        }
+                        developer {
+                            id = 'f43nd1r'
+                            name = 'Lukas Morawietz'
+                        }
+                    }
+                }
             }
         }
 
-        developers {
-            developer {
-                id = 'kevin.gaudin'
-                name = 'Kevin Gaudin'
-            }
-            developer {
-                id = 'william.ferguson'
-                name = 'William Ferguson'
-            }
-            developer {
-                id = 'f43nd1r'
-                name = 'Lukas Morawietz'
+        repositories {
+            maven {
+                name = "MavenCentral"
+                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                credentials {
+                    username = ossrhUser
+                    password = ossrhPassword
+                }
             }
         }
     }
-}
 
-install {
-    repositories.mavenInstaller {
-        createPom(pom)
+    signing {
+        sign publishing.publications.maven
     }
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { deployment -> signing.signPom(deployment) }
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
-            createPom(pom)
-        }
-    }
-}
-
-nexusStaging {
-    username = ossrhUser
-    password = ossrhPassword
-    packageGroup = group
-}
-
-artifactory {
-    contextUrl = 'https://oss.jfrog.org/artifactory'
-    publish {
-        repository {
-            repoKey = version.endsWith('SNAPSHOT') ? 'oss-snapshot-local' : 'oss-release-local'
-            username = artifactoryUser
-            password = artifactoryApiKey
-            maven = true
-        }
-        defaults {
-            publishConfigs('archives')
-            publishPom = true
-            publishIvy = false
-        }
-    }
-    resolve {
-        repository {
-            repoKey = 'jcenter'
-            username = artifactoryUser
-            password = artifactoryApiKey
-        }
-    }
-}
-
-artifactoryPublish {
-    dependsOn javadocJar
-    dependsOn sourcesJar
-    dependsOn install
 }

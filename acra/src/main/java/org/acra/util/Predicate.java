@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package org.acra.util;
 
-dependencies {
-    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6'
-    compileOnly 'com.google.auto.service:auto-service-annotations:1.0-rc6'
-    implementation 'com.squareup:javapoet:1.11.1'
-    implementation project(':annotations')
+/**
+ * @author f43nd1r
+ * @since 19.07.18
+ */
+public interface Predicate<T> {
+
+    boolean apply(T t);
 }
-
-sourceCompatibility = "1.8"
-targetCompatibility = "1.8"
-version = '1.0.0'
