@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018
+ * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-apply plugin: 'com.android.library'
-apply plugin: 'digital.wup.android-maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-android {
-    defaultConfig {
-        minSdkVersion 22
-    }
+plugins {
+    id("com.android.library")
+    kotlin("android") apply false
+    `maven-publish`
 }
+//late apply is necessary because android plugin can't be detected otherwise
+apply(plugin = "kotlin-android")
 
 dependencies {
-    api project(':acra-core')
-    annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
-    compileOnly "com.google.auto.service:auto-service-annotations:$autoServiceVersion"
-    annotationProcessor project(':annotationprocessor')
-    compileOnly project(':annotations')
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    api(project(":acra-core"))
 }

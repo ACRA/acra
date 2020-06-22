@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-apply plugin: 'com.android.library'
-apply plugin: 'digital.wup.android-maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-android {
-    defaultConfig {
-        consumerProguardFile 'proguard.cfg'
-    }
+plugins {
+    id("com.android.library")
+    `maven-publish`
 }
 
 dependencies {
-    api project(':acra-javacore')
-    annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
-    compileOnly "com.google.auto.service:auto-service-annotations:$autoServiceVersion"
-    annotationProcessor project(':annotationprocessor')
-    compileOnly project(':annotations')
+    api(platform(project(":platform")))
+    api(project(":acra-core"))
+    annotationProcessor("com.google.auto.service:auto-service")
+    compileOnly("com.google.auto.service:auto-service-annotations")
+    annotationProcessor(project(":annotationprocessor"))
+    compileOnly(project(":annotations"))
 }

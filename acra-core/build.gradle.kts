@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019
+ * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'digital.wup.android-maven-publish'
-    id 'com.jfrog.bintray'
+    id("com.android.library")
+    `maven-publish`
+}
+
+android {
+    defaultConfig {
+        consumerProguardFile("proguard.cfg")
+    }
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    api project(':acra-core')
+    api(platform(project(":platform")))
+    api(project(mapOf("path" to  ":acra-javacore", "configuration" to "default")))
+    annotationProcessor("com.google.auto.service:auto-service")
+    compileOnly("com.google.auto.service:auto-service-annotations")
+    annotationProcessor(project(":annotationprocessor"))
+    compileOnly(project(":annotations"))
 }
