@@ -16,6 +16,7 @@
 
 package org.acra.scheduler;
 
+import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -23,6 +24,7 @@ import android.content.Context;
 import android.os.PersistableBundle;
 import androidx.annotation.NonNull;
 import com.google.auto.service.AutoService;
+import org.acra.ACRA;
 import org.acra.builder.LastActivityManager;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
@@ -37,6 +39,7 @@ import org.acra.plugins.HasConfigPlugin;
 @AutoService(ReportingAdministrator.class)
 public class RestartingAdministrator extends HasConfigPlugin implements ReportingAdministrator {
     public static final String EXTRA_LAST_ACTIVITY = "lastActivity";
+    public static final String EXTRA_ACTIVITY_RESTART_AFTER_CRASH = "restartAfterCrash";
 
     public RestartingAdministrator() {
         super(SchedulerConfiguration.class);
@@ -44,22 +47,26 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
 
     @Override
     public boolean shouldFinishActivity(@NonNull Context context, @NonNull CoreConfiguration config, LastActivityManager lastActivityManager) {
-        if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).restartAfterCrash() && lastActivityManager.getLastActivity() != null) {
-            Thread thread = new Thread(() -> {
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "RestartingAdministrator entry");
+        if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).restartAfterCrash()) {
+            Activity activity = lastActivityManager.getLastActivity();
+            if (activity != null) {
+                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Try to schedule last activity (" + activity.getClass().getName() + ") for restart");
                 try {
                     JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
                     assert scheduler != null;
                     PersistableBundle extras = new PersistableBundle();
-                    extras.putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, lastActivityManager.getLastActivity().getClass().getName());
-                    scheduler.schedule(new JobInfo.Builder(0, new ComponentName(context, RestartingService.class)).setExtras(extras).setOverrideDeadline(100).build());
+                    extras.putString(RestartingAdministrator.EXTRA_LAST_ACTIVITY, activity.getClass().getName());
+                    scheduler.schedule(new JobInfo.Builder(0, new ComponentName(context, RestartingService.class))
+                            .setExtras(extras)
+                            .setOverrideDeadline(100)
+                            .build());
+                    if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Successfully scheduled last activity (" + activity.getClass().getName() + ") for restart");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ACRA.log.w(ACRA.LOG_TAG, "Failed to schedule last activity for restart", e);
                 }
-            });
-            thread.start();
-            try {
-                thread.join();
-            } catch (InterruptedException ignored) {
+            } else {
+                ACRA.log.i(ACRA.LOG_TAG, "Activity restart is enabled but no activity was found. Nothing to do.");
             }
         }
         return true;
