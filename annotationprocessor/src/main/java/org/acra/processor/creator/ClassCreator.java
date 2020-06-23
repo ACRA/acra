@@ -79,6 +79,7 @@ public class ClassCreator {
 
     private void createBuilderInterface(@NonNull List<Element> elements) throws IOException {
         final TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(builderVisibleName)
+                .addOriginatingElement(baseAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(ConfigurationBuilder.class);
         final TypeName baseAnnotation = TypeName.get(this.baseAnnotation.asType());
@@ -91,6 +92,7 @@ public class ClassCreator {
 
     private void createBuilderClass(@NonNull List<Element> elements) throws IOException {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(builderName)
+                .addOriginatingElement(baseAnnotation)
                 .addModifiers(Modifier.FINAL);
         final TypeName baseAnnotation = TypeName.get(this.baseAnnotation.asType());
         Strings.addClassJavadoc(classBuilder, baseAnnotation);
@@ -126,6 +128,7 @@ public class ClassCreator {
 
     private void createConfigClass(@NonNull List<Element> elements) throws IOException {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(configName)
+                .addOriginatingElement(baseAnnotation)
                 .addSuperinterface(Serializable.class)
                 .addSuperinterface(org.acra.config.Configuration.class)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
@@ -140,6 +143,7 @@ public class ClassCreator {
     private void createFactoryClass() throws IOException {
         final TypeName configurationBuilderFactory = Types.CONFIGURATION_BUILDER_FACTORY;
         Strings.writeClass(processingEnv.getFiler(), TypeSpec.classBuilder(factoryName)
+                .addOriginatingElement(baseAnnotation)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(configurationBuilderFactory)
                 .addAnnotation(AnnotationSpec.builder(AutoService.class).addMember("value", "$T.class", configurationBuilderFactory).build())

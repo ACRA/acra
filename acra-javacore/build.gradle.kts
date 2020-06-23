@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019
+ * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'digital.wup.android-maven-publish'
-    id 'com.jfrog.bintray'
+    java
+    `maven-publish`
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    api project(':acra-core')
+    implementation(platform(project(":platform")))
+    implementation("androidx.annotation:annotation")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
 }
