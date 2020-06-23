@@ -14,5 +14,19 @@
   ~ limitations under the License.
   -->
 
-<manifest package="org.acra.mail">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.acra.mail">
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND"/>
+            <data android:mimeType="message/rfc822"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND_MULTIPLE"/>
+            <data android:mimeType="message/rfc822"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+        </intent>
+    </queries>
 </manifest>
