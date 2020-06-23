@@ -57,7 +57,7 @@ subprojects {
             defaultConfig {
                 minSdkVersion(androidMinVersion)
                 targetSdkVersion(androidVersion)
-                buildConfigField("String", "VERSION_NAME", version.toString())
+                versionNameSuffix = "$version"
             }
             buildTypes {
                 getByName("release") {
