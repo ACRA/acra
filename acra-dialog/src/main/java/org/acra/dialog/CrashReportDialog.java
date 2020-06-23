@@ -21,16 +21,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.ConfigUtils;
@@ -49,7 +50,6 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
 
     private static final String STATE_EMAIL = "email";
     private static final String STATE_COMMENT = "comment";
-    private static final int PADDING = 10;
 
     private LinearLayout scrollable;
     private EditText userCommentView;
@@ -57,6 +57,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     private SharedPreferencesFactory sharedPreferencesFactory;
     private DialogConfiguration dialogConfiguration;
     private CrashReportDialogHelper helper;
+    private int padding;
 
     private AlertDialog mDialog;
 
@@ -71,6 +72,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
             dialogConfiguration = ConfigUtils.getPluginConfiguration(helper.getConfig(), DialogConfiguration.class);
             final int themeResourceId = dialogConfiguration.resTheme();
             if (themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
+            padding = loadPaddingFromTheme();
 
             buildAndShowDialog(savedInstanceState);
         } catch (IllegalArgumentException e) {
@@ -105,7 +107,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     @NonNull
     protected View buildCustomView(@Nullable Bundle savedInstanceState) {
         final ScrollView root = new ScrollView(this);
-        root.setPadding(PADDING, PADDING, PADDING, PADDING);
+        root.setPadding(padding, padding, padding, padding);
         root.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         root.setFocusable(true);
         root.setFocusableInTouchMode(true);
@@ -116,7 +118,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         // Add an optional prompt for user comments
         final View comment = getCommentLabel();
         if (comment != null) {
-            comment.setPadding(comment.getPaddingLeft(), PADDING, comment.getPaddingRight(), comment.getPaddingBottom());
+            comment.setPadding(comment.getPaddingLeft(), padding, comment.getPaddingRight(), comment.getPaddingBottom());
             addViewToDialog(comment);
             String savedComment = null;
             if (savedInstanceState != null) {
@@ -129,7 +131,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
         // Add an optional user email field
         final View email = getEmailLabel();
         if (email != null) {
-            email.setPadding(email.getPaddingLeft(), PADDING, email.getPaddingRight(), email.getPaddingBottom());
+            email.setPadding(email.getPaddingLeft(), padding, email.getPaddingRight(), email.getPaddingBottom());
             addViewToDialog(email);
             String savedEmail = null;
             if (savedInstanceState != null) {
@@ -259,7 +261,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
      */
     @CallSuper
@@ -279,5 +281,17 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
      */
     protected AlertDialog getDialog() {
         return mDialog;
+    }
+
+    /**
+     * @return value of ?dialogPreferredPadding from theme or 10 if not set.
+     */
+    protected int loadPaddingFromTheme() {
+        TypedValue value = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.dialogPreferredPadding, value, true)) {
+            return TypedValue.complexToDimensionPixelSize(value.data, getResources().getDisplayMetrics());
+        }
+        //attribute not set, fall back to a default value
+        return 10;
     }
 }
