@@ -184,7 +184,11 @@ subprojects {
 
 tasks.register("build") {}
 
-tasks.register("publish") {}
+tasks.register("publish") {
+    subprojects {
+        tasks.findByName("publish")?.let { dependsOn(it) }
+    }
+}
 
 tasks.register<Delete>("clean") {
     delete = setOf(buildDir)
