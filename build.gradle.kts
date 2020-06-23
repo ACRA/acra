@@ -184,6 +184,8 @@ subprojects {
 
 tasks.register("build") {}
 
+tasks.register("publish") {}
+
 tasks.register<Delete>("clean") {
     delete = setOf(buildDir)
 }
