@@ -22,7 +22,7 @@ dependencies {
     implementation(platform(project(":platform")))
     implementation("androidx.annotation:annotation")
 }
-sourceSets["main"].allJava
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
