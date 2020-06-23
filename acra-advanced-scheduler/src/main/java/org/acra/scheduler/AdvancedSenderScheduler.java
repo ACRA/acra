@@ -45,8 +45,15 @@ public class AdvancedSenderScheduler extends DefaultSenderScheduler {
         job.setRequiredNetworkType(schedulerConfiguration.requiresNetworkType());
         job.setRequiresCharging(schedulerConfiguration.requiresCharging());
         job.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle());
+        boolean constrained = schedulerConfiguration.requiresNetworkType() != JobInfo.NETWORK_TYPE_NONE ||
+                schedulerConfiguration.requiresCharging() ||
+                schedulerConfiguration.requiresDeviceIdle();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             job.setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow());
+            constrained |= schedulerConfiguration.requiresBatteryNotLow();
+        }
+        if (!constrained) {
+            job.setOverrideDeadline(0);
         }
     }
 

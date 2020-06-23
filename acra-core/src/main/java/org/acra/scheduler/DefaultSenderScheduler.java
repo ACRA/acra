@@ -79,7 +79,7 @@ public class DefaultSenderScheduler implements SenderScheduler {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void configureJob(@NonNull JobInfo.Builder job) {
-        job.setOverrideDeadline(0L);
+        job.setOverrideDeadline(0);
     }
 
     /**
