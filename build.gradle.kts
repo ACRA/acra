@@ -15,8 +15,10 @@
  */
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
+import com.jfrog.bintray.gradle.BintrayExtension
 import net.researchgate.release.GitAdapter.GitConfig
 import net.researchgate.release.ReleaseExtension
+import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
 
 buildscript {
     repositories {
@@ -29,6 +31,7 @@ buildscript {
 }
 plugins {
     id("net.researchgate.release")
+    id("com.jfrog.bintray") apply false
 }
 
 release {
@@ -126,10 +129,10 @@ subprojects {
             publishing {
                 publications {
                     create<MavenPublication>("maven") {
-                        from(components.findByName("release") ?: components.findByName("java"))
+                        from(components.findByName("release") ?: components.findByName("java") ?: components.findByName("javaPlatform"))
 
-                        artifact(tasks["sourcesJar"])
-                        artifact(tasks["javadocJar"])
+                        tasks.findByName("sourcesJar")?.let {artifact(it) }
+                        tasks.findByName("javadocJar")?.let {artifact(it) }
 
                         pom {
                             name.set("ACRA")
@@ -164,19 +167,44 @@ subprojects {
                         }
                     }
                 }
-                repositories {
-                    mavenLocal()
-                    maven {
-                        setUrl("https://api.bintray.com/maven/acra/maven/ACRA/;publish=1")
-                        name = "bintray"
-                        credentials {
-                            username = findProperty("bintrayUser") as String?
-                            password = findProperty("bintrayPassword") as String?
+            }
+        }
+
+        apply(plugin = "com.jfrog.bintray")
+        bintray {
+            val bintrayUser: String? by project
+            val bintrayPassword: String? by project
+            user = bintrayUser
+            key = bintrayPassword
+            setPublications("maven")
+            publish = true
+            pkg {
+                repo = "maven"
+                userOrg = "acra"
+                afterEvaluate {
+                    val pom = (publishing.publications["maven"] as MavenPublication).pom as DefaultMavenPom
+                    this@pkg.name = pom.name.get()
+                    websiteUrl = pom.url.get()
+                    vcsUrl = pom.scm.url.get()
+                    setLicenses(*pom.licenses.map { it.name.get() }.toTypedArray())
+                    desc = pom.description.get()
+                }
+                publicDownloadNumbers = true
+                version {
+                    name = project.version.toString()
+                    val ossrhUser: String? by project
+                    val ossrhPassword: String? by project
+                    if(ossrhUser != null && ossrhPassword != null) {
+                        mavenCentralSync {
+                            sync = true
+                            user = ossrhUser
+                            password = ossrhPassword
                         }
                     }
                 }
             }
         }
+        tasks["publish"].dependsOn("bintrayPublish")
     }
 }
 
@@ -229,9 +257,19 @@ fun subprojects(action: Project.() -> Unit) = subprojects(object : Action<Projec
 
 val Project.android: LibraryExtension get() = this.extensions.getByType(LibraryExtension::class.java)
 
-fun Project.android(block: LibraryExtension.() -> Unit) = android.apply(block)
+fun Project.android(block: LibraryExtension.() -> Unit) = android.block()
 
-fun Project.publishing(block: PublishingExtension.() -> Unit) = this.extensions.getByType(PublishingExtension::class.java).apply(block)
+val Project.publishing: PublishingExtension get() = this.extensions.getByType(PublishingExtension::class.java)
+
+fun Project.publishing(block: PublishingExtension.() -> Unit) = publishing.block()
+
+fun Project.bintray(block: BintrayExtension.() -> Unit) = this.extensions.getByType(BintrayExtension::class.java).block()
+
+fun BintrayExtension.pkg(block: BintrayExtension.PackageConfig.() -> Unit) = this.pkg.block()
+
+fun BintrayExtension.PackageConfig.version(block: BintrayExtension.VersionConfig.() -> Unit) = this.version.block()
+
+fun BintrayExtension.VersionConfig.mavenCentralSync(block: BintrayExtension.MavenCentralSyncConfig.() -> Unit) = this.mavenCentralSync.block()
 
 val Project.sourceSets: SourceSetContainer get() = this.extensions.getByType(SourceSetContainer::class.java)
 
