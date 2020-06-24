@@ -31,7 +31,7 @@ buildscript {
 }
 plugins {
     id("net.researchgate.release")
-    id("com.jfrog.bintray") apply false
+    id("com.jfrog.bintray")
 }
 
 release {
@@ -167,6 +167,9 @@ subprojects {
                         }
                     }
                 }
+                repositories {
+                    mavenLocal()
+                }
             }
         }
 
@@ -204,7 +207,7 @@ subprojects {
                 }
             }
         }
-        tasks["publish"].dependsOn("bintrayPublish")
+        tasks["publish"].dependsOn("bintrayUpload")
     }
 }
 
@@ -213,6 +216,7 @@ subprojects {
 tasks.register("build") {}
 
 tasks.register("publish") {
+    dependsOn(tasks["bintrayPublish"])
     subprojects {
         tasks.findByName("publish")?.let { dependsOn(it) }
     }
