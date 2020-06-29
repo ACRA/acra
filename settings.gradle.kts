@@ -31,6 +31,7 @@ pluginManagement {
     val androidBuildPluginVersion: String by settings
     val releasePluginVersion: String by settings
     val kotlinVersion: String by settings
+    val bintrayPluginVersion: String by settings
     repositories {
         gradlePluginPortal()
         jcenter()
@@ -39,6 +40,7 @@ pluginManagement {
     plugins {
         id("net.researchgate.release") version releasePluginVersion
         kotlin("android") version kotlinVersion
+        id("com.jfrog.bintray") version bintrayPluginVersion
     }
     resolutionStrategy {
         eachPlugin {
@@ -48,3 +50,4 @@ pluginManagement {
         }
     }
 }
+if(file("acratest").exists()) include("acratest")

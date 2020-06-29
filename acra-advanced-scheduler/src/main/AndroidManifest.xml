@@ -20,6 +20,6 @@
                 android:name="org.acra.scheduler.RestartingService"
                 android:exported="false"
                 android:permission="android.permission.BIND_JOB_SERVICE"
-                android:process=":acra"/>
+                android:process=":restart"/>
     </application>
 </manifest>
