@@ -26,7 +26,7 @@ android {
 
 dependencies {
     api(platform(project(":platform")))
-    api(project(mapOf("path" to  ":acra-javacore", "configuration" to "default")))
+    api(project(":acra-javacore"))
     annotationProcessor("com.google.auto.service:auto-service")
     compileOnly("com.google.auto.service:auto-service-annotations")
     annotationProcessor(project(":annotationprocessor"))

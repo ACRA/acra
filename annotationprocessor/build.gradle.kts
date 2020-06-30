@@ -27,7 +27,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.8.1")
     implementation("org.apache.commons:commons-text:1.6")
     implementation(project(":annotations"))
-    implementation(project(mapOf("path" to  ":acra-javacore", "configuration" to "default")))
+    implementation(project(":acra-javacore"))
 }
 
 java {

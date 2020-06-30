@@ -213,7 +213,7 @@ public @interface AcraCore {
      *
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
-    @NonNull Class buildConfigClass() default Object.class;
+    @NonNull Class<?> buildConfigClass() default Object.class;
 
     /**
      * @return {@link org.acra.sender.ReportSenderFactory}s with which to construct the {@link org.acra.sender.ReportSender}s that will send the crash reports.

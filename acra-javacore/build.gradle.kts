@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 plugins {
-    java
+    `java-library`
     `maven-publish`
 }
 
 dependencies {
     implementation(platform(project(":platform")))
-    implementation("androidx.annotation:annotation")
+    api("androidx.annotation:annotation")
 }
 
 java {

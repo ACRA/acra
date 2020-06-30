@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 plugins {
-    java
+    `java-library`
 }
 
 java {
