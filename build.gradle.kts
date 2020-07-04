@@ -41,7 +41,6 @@ release {
         requireBranch = "master"
     }
 }
-tasks["afterReleaseBuild"].dependsOn("publish")
 
 subprojects {
     repositories {
@@ -221,6 +220,7 @@ tasks.register("publish") {
         tasks.findByName("publish")?.let { dependsOn(it) }
     }
 }
+tasks["afterReleaseBuild"].dependsOn(tasks["publish"])
 
 tasks.register<Delete>("clean") {
     delete = setOf(buildDir)

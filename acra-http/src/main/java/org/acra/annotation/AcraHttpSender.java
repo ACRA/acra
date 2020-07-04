@@ -26,6 +26,8 @@ import org.acra.sender.HttpSender;
 
 import java.lang.annotation.*;
 
+import static org.acra.security.ProtocolSocketFactoryWrapper.*;
+
 /**
  * Http sender configuration
  *
@@ -138,4 +140,15 @@ public @interface AcraHttpSender {
      * @since 5.2.0
      */
     boolean compress() default false;
+
+    /**
+     * Note: Older Android versions do not support all tls versions.
+     * This array has to contain at least one option supported on all android versions this runs on!
+     * ACRA will automatically remove unsupported versions on older devices.
+     *
+     * @return accepted tls protocols
+     * @since 5.7.0
+     * @see javax.net.ssl.SSLContext
+     */
+    @NonNull String[] tlsProtocols() default {TLS_v1_3, TLS_v1_2, TLS_v1_1, TLS_v1};
 }
