@@ -27,8 +27,6 @@ import org.acra.sender.HttpSender;
 
 import java.lang.annotation.*;
 
-import static org.acra.security.ProtocolSocketFactoryWrapper.*;
-
 /**
  * Http sender configuration
  *
