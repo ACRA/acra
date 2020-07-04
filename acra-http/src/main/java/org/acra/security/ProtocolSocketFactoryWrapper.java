@@ -28,22 +28,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProtocolSocketFactoryWrapper extends SSLSocketFactory {
-    public static final String TLS_v1 = "TLSv1";
-    public static final String TLS_v1_1 = "TLSv1.1";
-    public static final String TLS_v1_2 = "TLSv1.2";
-    public static final String TLS_v1_3 = "TLSv1.3";
     private final SSLSocketFactory delegate;
     private final List<String> protocols;
 
-    public ProtocolSocketFactoryWrapper(SSLSocketFactory delegate, List<String> protocols) {
+    public ProtocolSocketFactoryWrapper(SSLSocketFactory delegate, List<TLS> protocols) {
         this.delegate = delegate;
-        this.protocols = new ArrayList<>(protocols);
+        ArrayList<TLS> list = new ArrayList<>(protocols);
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            this.protocols.remove(TLS_v1_3);
+            list.remove(TLS.V1_3);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                this.protocols.remove(TLS_v1_2);
-                this.protocols.remove(TLS_v1_1);
+                list.remove(TLS.V1_2);
+                list.remove(TLS.V1_1);
             }
+        }
+        this.protocols = new ArrayList<>(list.size());
+        for (TLS tls : list) {
+            this.protocols.add(tls.getId());
         }
     }
 
