@@ -18,7 +18,6 @@ plugins {
 }
 
 dependencies {
-    implementation(platform(project(":platform")))
     annotationProcessor(platform(project(":platform")))
     implementation("com.google.auto.service:auto-service")
     annotationProcessor("com.google.auto.service:auto-service")

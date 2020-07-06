@@ -1,0 +1,25 @@
+name: test
+
+on: [push]
+
+jobs:
+  test:
+
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        android: ['14', '16', '19', '21', '24', '28']
+
+    steps:
+      steps:
+        - name: Setup Java
+          uses: actions/setup-java@v1
+          with:
+            java-version: '1.8'
+        - name: Checkout ACRA
+          uses: actions/checkout@v2
+      - name: run tests on API ${{ matrix.android }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.android }}
+          script: ./gradlew connectedCheck --no-daemon

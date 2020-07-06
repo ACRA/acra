@@ -25,10 +25,12 @@ android {
 }
 
 dependencies {
-    api(platform(project(":platform")))
+    testAnnotationProcessor(platform(project(":platform")))
     api(project(":acra-javacore"))
     annotationProcessor("com.google.auto.service:auto-service")
     compileOnly("com.google.auto.service:auto-service-annotations")
+    testAnnotationProcessor("com.google.auto.service:auto-service")
+    testCompileOnly("com.google.auto.service:auto-service-annotations")
     annotationProcessor(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
 }

@@ -19,7 +19,6 @@ plugins {
 }
 
 dependencies {
-    implementation(platform(project(":platform")))
     api("androidx.annotation:annotation")
 }
 

@@ -61,6 +61,7 @@ subprojects {
                 minSdkVersion(androidMinVersion)
                 targetSdkVersion(androidVersion)
                 versionNameSuffix = "$version"
+                testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
             buildTypes {
                 getByName("release") {
@@ -74,6 +75,9 @@ subprojects {
                 sourceCompatibility = JavaVersion.VERSION_1_8
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
+            useLibrary("android.test.runner")
+            useLibrary("android.test.base")
+            useLibrary("android.test.mock")
         }
 
         tasks.withType<Test> {
@@ -81,14 +85,21 @@ subprojects {
         }
 
         dependencies {
-            val junitVersion: String by project
-            val robolectricVersion: String by project
-            val androidTestVersion: String by project
+            "api"(platform(project(":platform")))
+            val androidXTestVersion: String by project
+            val androidXJunitVersion: String by project
             val hamcrestVersion: String by project
-            "testImplementation"("junit:junit:$junitVersion")
-            "testImplementation"("org.hamcrest:hamcrest:$hamcrestVersion")
-            "testImplementation"("org.robolectric:robolectric:$robolectricVersion")
-            "testImplementation"("androidx.test:core:$androidTestVersion")
+            "androidTestImplementation"("androidx.test:core:$androidXTestVersion")
+            "androidTestImplementation"("androidx.test:runner:$androidXTestVersion"){
+                exclude(group = "org.hamcrest")
+            }
+            "androidTestImplementation"("androidx.test:rules:$androidXTestVersion"){
+                exclude(group = "org.hamcrest")
+            }
+            "androidTestImplementation"("androidx.test.ext:junit:$androidXJunitVersion"){
+                exclude(group = "org.hamcrest")
+            }
+            "androidTestImplementation"("org.hamcrest:hamcrest:$hamcrestVersion")
         }
 
         tasks.register<Jar>("sourcesJar") {
@@ -114,6 +125,10 @@ subprojects {
         }
     }
     plugins.withType<JavaPlugin> {
+        dependencies {
+            "implementation"(platform(project(":platform")))
+        }
+
         tasks.register<Jar>("sourcesJar") {
             from(sourceSets["main"].allSource)
             archiveClassifier.set("sources")
@@ -131,8 +146,8 @@ subprojects {
                     create<MavenPublication>("maven") {
                         from(components.findByName("release") ?: components.findByName("java") ?: components.findByName("javaPlatform"))
 
-                        tasks.findByName("sourcesJar")?.let {artifact(it) }
-                        tasks.findByName("javadocJar")?.let {artifact(it) }
+                        tasks.findByName("sourcesJar")?.let { artifact(it) }
+                        tasks.findByName("javadocJar")?.let { artifact(it) }
 
                         pom {
                             name.set("ACRA")
@@ -197,7 +212,7 @@ subprojects {
                     name = project.version.toString()
                     val ossrhUser: String? by project
                     val ossrhPassword: String? by project
-                    if(ossrhUser != null && ossrhPassword != null) {
+                    if (ossrhUser != null && ossrhPassword != null) {
                         mavenCentralSync {
                             sync = true
                             user = ossrhUser

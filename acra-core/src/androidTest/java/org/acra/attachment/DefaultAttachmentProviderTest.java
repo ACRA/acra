@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2017 the ACRA team
+ * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *  you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -18,13 +18,11 @@ package org.acra.attachment;
 
 import android.app.Application;
 import android.net.Uri;
-import android.os.Build;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.acra.config.CoreConfigurationBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.List;
 
@@ -36,8 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
  * @author F43nd1r
  * @since 30.11.2017
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.P)
+@RunWith(AndroidJUnit4.class)
 public class DefaultAttachmentProviderTest {
     @Test
     public void getAttachments() throws Exception {

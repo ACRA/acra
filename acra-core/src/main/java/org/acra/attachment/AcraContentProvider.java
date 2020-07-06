@@ -59,7 +59,6 @@ public class AcraContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        //noinspection ConstantConditions
         authority = getAuthority(getContext());
         if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Registered content provider for authority " + authority);
         return true;
@@ -94,7 +93,7 @@ public class AcraContentProvider extends ContentProvider {
                 columnValueMap.put(OpenableColumns.SIZE, file.length());
             }
         }
-        final MatrixCursor cursor = new MatrixCursor(columnValueMap.keySet().toArray(new String[columnValueMap.size()]), 1);
+        final MatrixCursor cursor = new MatrixCursor(columnValueMap.keySet().toArray(new String[0]), 1);
         cursor.addRow(columnValueMap.values());
         return cursor;
     }
@@ -113,7 +112,6 @@ public class AcraContentProvider extends ContentProvider {
         final String dir = segments.remove(0).toUpperCase();
         try {
             final Directory directory = Directory.valueOf(dir);
-            //noinspection ConstantConditions
             return directory.getFile(getContext(), TextUtils.join(File.separator, segments));
         } catch (IllegalArgumentException e) {
             return null;
@@ -249,6 +247,9 @@ public class AcraContentProvider extends ContentProvider {
         if (fileExtension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                     fileExtension.toLowerCase());
+            if(type == null && "json".equals(fileExtension)) {
+                type = "application/json";
+            }
         }
         if (type == null) {
             type = MIME_TYPE_OCTET_STREAM;
