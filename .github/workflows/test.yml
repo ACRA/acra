@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        android: ['15', '16', '19', '21', '24', '28']
+        android: ['16', '19', '21', '26', '29']
 
     steps:
       - name: Setup Java
