@@ -30,7 +30,7 @@ buildscript {
     }
 }
 plugins {
-    id("net.researchgate.release")
+    id("com.faendir.gradle.release")
     id("com.jfrog.bintray")
 }
 
@@ -266,8 +266,6 @@ tasks.register("printVersion") {
 }
 
 // UTILS
-
-fun ReleaseExtension.git(configure: GitConfig.() -> Unit) = (getProperty("git") as GitConfig).configure()
 
 @Suppress("ObjectLiteralToLambda")
 fun subprojects(action: Project.() -> Unit) = subprojects(object : Action<Project> {

@@ -38,7 +38,7 @@ pluginManagement {
         google()
     }
     plugins {
-        id("net.researchgate.release") version releasePluginVersion
+        id("com.faendir.gradle.release") version releasePluginVersion
         kotlin("android") version kotlinVersion
         id("com.jfrog.bintray") version bintrayPluginVersion
     }
