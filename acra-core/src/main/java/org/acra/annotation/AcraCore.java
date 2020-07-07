@@ -196,7 +196,7 @@ public @interface AcraCore {
      * This allows you to exclude sensitive user data like passwords from being collected.
      *
      * If you only want to include some keys, you may use regular expressions to do so:
-     * <table>
+     * <table summary="examples">
      *    <tr><td>only keys foo and bar</td><td><pre>"^(?!foo|bar).*$"</pre></td></tr>
      *    <tr><td>only keys <i>containing</i> foo and bar</td><td><pre>"^((?!foo|bar).)*$"</pre></td></tr>
      * </table>
@@ -210,7 +210,7 @@ public @interface AcraCore {
      * This allows you to exclude sensitive data from being collected.
      *
      * If you only want to include some keys, you may use regular expressions to do so:
-     * <table>
+     * <table summary="examples">
      *    <tr><td>only keys foo and bar</td><td><pre>"^(?!foo|bar).*$"</pre></td></tr>
      *    <tr><td>only keys <i>containing</i> foo and bar</td><td><pre>"^((?!foo|bar).)*$"</pre></td></tr>
      * </table>
