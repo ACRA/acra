@@ -16,8 +16,6 @@
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.jfrog.bintray.gradle.BintrayExtension
-import net.researchgate.release.GitAdapter.GitConfig
-import net.researchgate.release.ReleaseExtension
 import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
 
 buildscript {
@@ -90,24 +88,26 @@ subprojects {
             val androidXJunitVersion: String by project
             val hamcrestVersion: String by project
             "androidTestImplementation"("androidx.test:core:$androidXTestVersion")
-            "androidTestImplementation"("androidx.test:runner:$androidXTestVersion"){
+            "androidTestImplementation"("androidx.test:runner:$androidXTestVersion") {
                 exclude(group = "org.hamcrest")
             }
-            "androidTestImplementation"("androidx.test:rules:$androidXTestVersion"){
+            "androidTestImplementation"("androidx.test:rules:$androidXTestVersion") {
                 exclude(group = "org.hamcrest")
             }
-            "androidTestImplementation"("androidx.test.ext:junit:$androidXJunitVersion"){
+            "androidTestImplementation"("androidx.test.ext:junit:$androidXJunitVersion") {
                 exclude(group = "org.hamcrest")
             }
             "androidTestImplementation"("org.hamcrest:hamcrest:$hamcrestVersion")
         }
 
         tasks.register<Jar>("sourcesJar") {
+            group = DOCUMENTATION
             from(android.sourceSets["main"].java.srcDirs)
             archiveClassifier.set("sources")
         }
 
         tasks.register<Javadoc>("javadoc") {
+            group = DOCUMENTATION
             source = (android.sourceSets["main"].java.srcDirs.map { fileTree(it) }.reduce(FileTree::plus) +
                     files("$buildDir/generated/source/buildConfig/release") +
                     files("$buildDir/generated/ap_generated_sources/release/out")).filter { it.extension != "kt" }.asFileTree
@@ -120,6 +120,7 @@ subprojects {
         }
 
         tasks.register<Jar>("javadocJar") {
+            group = DOCUMENTATION
             from(tasks["javadoc"])
             archiveClassifier.set("javadoc")
         }
@@ -130,11 +131,13 @@ subprojects {
         }
 
         tasks.register<Jar>("sourcesJar") {
+            group = DOCUMENTATION
             from(sourceSets["main"].allSource)
             archiveClassifier.set("sources")
         }
 
         tasks.register<Jar>("javadocJar") {
+            group = DOCUMENTATION
             from(tasks["javadoc"])
             archiveClassifier.set("javadoc")
         }
@@ -228,9 +231,12 @@ subprojects {
 
 // TASKS
 
-tasks.register("build") {}
+tasks.register("build") {
+    group = BUILD
+}
 
 tasks.register("publish") {
+    group = "publishing"
     dependsOn(tasks["bintrayPublish"])
     subprojects {
         tasks.findByName("publish")?.let { dependsOn(it) }
@@ -238,22 +244,23 @@ tasks.register("publish") {
 }
 
 tasks.register<Delete>("clean") {
+    group = BUILD
     delete = setOf(buildDir)
 }
 
 tasks.register<Javadoc>("joinedJavadoc") {
+    group = DOCUMENTATION
     setDestinationDir(file("$buildDir/javadoc"))
     subprojects {
-        afterEvaluate {
-            val tasks = tasks.withType(Javadoc::class.java)
-            source += files(*tasks.map { it.source }.toTypedArray()).asFileTree
-            classpath += files(*tasks.map { it.classpath }.toTypedArray())
-            dependsOn(*tasks.map { it.dependsOn }.toTypedArray())
-            plugins.withType(LibraryPlugin::class.java) {
-                linksOffline("http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference")
-                android.libraryVariants.find { it.name == "release" }?.apply {
-                    classpath += javaCompileProvider.get().classpath
-                }
+        val tasks = tasks.withType(Javadoc::class.java)
+        source += files(*tasks.map { it.source }.toTypedArray()).asFileTree
+        classpath += files(*tasks.map { it.classpath }.toTypedArray())
+        val path = project.path.let { if (!it.endsWith(Project.PATH_SEPARATOR)) it + Project.PATH_SEPARATOR else it }
+        dependsOn(*tasks.flatMap { task -> task.dependsOn.map { "$path$it"}  }.toTypedArray())
+        plugins.withType(LibraryPlugin::class.java) {
+            linksOffline("http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference")
+            android.libraryVariants.find { it.name == "release" }?.apply {
+                classpath += javaCompileProvider.get().classpath
             }
         }
     }
@@ -266,6 +273,8 @@ tasks.register("printVersion") {
 }
 
 // UTILS
+val DOCUMENTATION = "documentation"
+val BUILD = "build"
 
 @Suppress("ObjectLiteralToLambda")
 fun subprojects(action: Project.() -> Unit) = subprojects(object : Action<Project> {
