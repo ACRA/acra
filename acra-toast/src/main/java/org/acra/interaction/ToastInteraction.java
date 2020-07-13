@@ -20,11 +20,9 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
 import com.google.auto.service.AutoService;
-
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.ToastConfiguration;
@@ -39,10 +37,6 @@ import java.io.File;
  */
 @AutoService(ReportInteraction.class)
 public class ToastInteraction extends HasConfigPlugin implements ReportInteraction {
-    /**
-     * Number of milliseconds to wait after displaying a toast.
-     */
-    private static final int TOAST_WAIT_DURATION = 2000;
 
     public ToastInteraction() {
         super(ToastConfiguration.class);
@@ -51,18 +45,30 @@ public class ToastInteraction extends HasConfigPlugin implements ReportInteracti
     @Override
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         Looper.prepare();
-        ToastSender.sendToast(context, ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class).text(), Toast.LENGTH_LONG);
+        ToastConfiguration pluginConfig = ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class);
+        ToastSender.sendToast(context, pluginConfig.text(), pluginConfig.length());
         final Looper looper = Looper.myLooper();
-        if(looper != null) {
+        if (looper != null) {
             new Handler(looper).postDelayed(() -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                     looper.quitSafely();
                 } else {
                     looper.quit();
                 }
-            }, TOAST_WAIT_DURATION);
+            }, getLengthInMs(pluginConfig.length()) + 100);
             Looper.loop();
         }
         return true;
+    }
+
+    private int getLengthInMs(int toastDuration) {
+        switch (toastDuration) {
+            case Toast.LENGTH_LONG:
+                return 3500;
+            case Toast.LENGTH_SHORT:
+                return 2000;
+            default:
+                return 0;
+        }
     }
 }
