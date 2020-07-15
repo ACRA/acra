@@ -2,7 +2,7 @@
  * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *  you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 plugins {
-    `acra-java-library`
+    `java-library`
+    id("acra-base")
+}
+
+tasks.register<Jar>("sourcesJar") {
+    group = "documentation"
+    from(sourceSets["main"].allSource)
+    archiveClassifier.set("sources")
+}
+
+tasks.register<Jar>("javadocJar") {
+    group = "documentation"
+    from(tasks["javadoc"])
+    archiveClassifier.set("javadoc")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

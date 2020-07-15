@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 plugins {
-    `java-library`
-    `maven-publish`
+    `acra-java-library`
+    `acra-publish`
 }
 
 dependencies {
-    api("androidx.annotation:annotation")
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    val androidxAnnotationVersion: String by project
+    api("androidx.annotation:annotation:$androidxAnnotationVersion")
 }

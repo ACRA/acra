@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 plugins {
-    id("com.android.library")
     kotlin("android") apply false
-    `maven-publish`
+    `acra-android-library`
+    `acra-publish`
 }
 //late apply is necessary because android plugin can't be detected otherwise
 apply(plugin = "kotlin-android")
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    api(project(":acra-core"))
+    implementation(kotlin("stdlib-jdk8"))
+    acraCore()
 }
