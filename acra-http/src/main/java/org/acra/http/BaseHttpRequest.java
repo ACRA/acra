@@ -27,6 +27,7 @@ import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
 import org.acra.config.HttpSenderConfiguration;
 import org.acra.security.KeyStoreHelper;
+import org.acra.security.ProtocolSocketFactoryWrapper;
 import org.acra.sender.HttpSender.Method;
 import org.acra.util.IOUtils;
 
@@ -133,7 +134,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         final SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, tmf.getTrustManagers(), null);
 
-        connection.setSSLSocketFactory(sslContext.getSocketFactory());
+        connection.setSSLSocketFactory(new ProtocolSocketFactoryWrapper(sslContext.getSocketFactory(), senderConfiguration.tlsProtocols()));
     }
 
     @SuppressWarnings("WeakerAccess")
