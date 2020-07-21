@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2017 the ACRA team
+ * Copyright (c) 2020
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ *  you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -17,16 +17,14 @@
 package org.acra.data;
 
 
-import android.os.Build;
-import com.google.common.net.MediaType;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import junit.framework.Assert;
 import org.acra.ReportField;
 import org.acra.collections.ImmutableSet;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -34,8 +32,7 @@ import static junit.framework.Assert.assertEquals;
  * @author F43nd1r
  * @since 29.11.2017
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.P)
+@RunWith(AndroidJUnit4.class)
 public class StringFormatTest {
     private CrashReportData reportData;
 
@@ -57,7 +54,7 @@ public class StringFormatTest {
 
 
     public void testJson() throws Exception {
-        assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
+        Assert.assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
                 StringFormat.JSON.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "\n", " ", false));
         assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
                 StringFormat.JSON.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "&", "\n", true));
@@ -72,8 +69,8 @@ public class StringFormatTest {
 
     @Test
     public void getMatchingHttpContentType() {
-        assertEquals(MediaType.JSON_UTF_8.type() + "/" + MediaType.JSON_UTF_8.subtype(), StringFormat.JSON.getMatchingHttpContentType());
-        assertEquals(MediaType.FORM_DATA.type() + "/" + MediaType.FORM_DATA.subtype(), StringFormat.KEY_VALUE_LIST.getMatchingHttpContentType());
+        assertEquals("application/json", StringFormat.JSON.getMatchingHttpContentType());
+        assertEquals("application/x-www-form-urlencoded", StringFormat.KEY_VALUE_LIST.getMatchingHttpContentType());
     }
 
     @Test

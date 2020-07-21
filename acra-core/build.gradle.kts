@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 plugins {
-    id("com.android.library")
-    `maven-publish`
+    `acra-android-library`
+    `acra-publish`
 }
 
 android {
@@ -25,10 +25,5 @@ android {
 }
 
 dependencies {
-    api(platform(project(":platform")))
     api(project(":acra-javacore"))
-    annotationProcessor("com.google.auto.service:auto-service")
-    compileOnly("com.google.auto.service:auto-service-annotations")
-    annotationProcessor(project(":annotationprocessor"))
-    compileOnly(project(":annotations"))
 }

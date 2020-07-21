@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 plugins {
-    java
+    `acra-java-library`
 }
 
 dependencies {
-    implementation(platform(project(":platform")))
-    annotationProcessor(platform(project(":platform")))
-    implementation("com.google.auto.service:auto-service")
-    annotationProcessor("com.google.auto.service:auto-service")
-    compileOnly("com.google.auto.service:auto-service-annotations")
+    implementation("com.google.auto:auto-common:0.10")
     implementation("com.squareup:javapoet:1.11.1")
-    implementation("org.apache.commons:commons-lang3:3.8.1")
     implementation("org.apache.commons:commons-text:1.6")
     implementation(project(":annotations"))
     implementation(project(":acra-javacore"))
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }

@@ -195,6 +195,12 @@ public @interface AcraCore {
      * Provide here regex patterns to be evaluated on each {@link android.content.SharedPreferences} key to exclude KV pairs from the collected SharedPreferences.
      * This allows you to exclude sensitive user data like passwords from being collected.
      *
+     * If you only want to include some keys, you may use regular expressions to do so:
+     * <table summary="examples">
+     *    <tr><td>only keys foo and bar</td><td><pre>"^(?!foo|bar).*$"</pre></td></tr>
+     *    <tr><td>only keys <i>containing</i> foo and bar</td><td><pre>"^((?!foo|bar).)*$"</pre></td></tr>
+     * </table>
+     *
      * @return regex patterns, every matching key is not collected.
      */
     @NonNull String[] excludeMatchingSharedPreferencesKeys() default {};
@@ -202,6 +208,12 @@ public @interface AcraCore {
     /**
      * Provide here regex patterns to be evaluated on each {@link android.provider.Settings.System}, {@link android.provider.Settings.Secure} and {@link android.provider.Settings.Global} key to exclude KV pairs from being collected.
      * This allows you to exclude sensitive data from being collected.
+     *
+     * If you only want to include some keys, you may use regular expressions to do so:
+     * <table summary="examples">
+     *    <tr><td>only keys foo and bar</td><td><pre>"^(?!foo|bar).*$"</pre></td></tr>
+     *    <tr><td>only keys <i>containing</i> foo and bar</td><td><pre>"^((?!foo|bar).)*$"</pre></td></tr>
+     * </table>
      *
      * @return regex patterns, every matching key is not collected.
      */

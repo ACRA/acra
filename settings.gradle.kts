@@ -25,29 +25,14 @@ include("acra-notification")
 include("acra-limiter")
 include("acra-advanced-scheduler")
 include("acra-core-ktx")
-include("platform")
 
 pluginManagement {
-    val androidBuildPluginVersion: String by settings
-    val releasePluginVersion: String by settings
-    val kotlinVersion: String by settings
-    val bintrayPluginVersion: String by settings
     repositories {
         gradlePluginPortal()
-        jcenter()
-        google()
     }
     plugins {
-        id("net.researchgate.release") version releasePluginVersion
+        val kotlinVersion: String by settings
         kotlin("android") version kotlinVersion
-        id("com.jfrog.bintray") version bintrayPluginVersion
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {
-                useModule("com.android.tools.build:gradle:${androidBuildPluginVersion}")
-            }
-        }
     }
 }
 if(file("acratest").exists()) include("acratest")

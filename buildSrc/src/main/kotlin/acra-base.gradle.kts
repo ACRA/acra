@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `java-platform`
-    `maven-publish`
+repositories {
+    jcenter()
+    google()
 }
 
 dependencies {
     val autoServiceVersion: String by project
-    val androidxAnnotationVersion: String by project
-    val androidxCoreVersion: String by project
-    constraints {
-        api("com.google.auto.service:auto-service:$autoServiceVersion")
-        runtime("com.google.auto.service:auto-service:$autoServiceVersion")
-        api("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
-        runtime("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
-        api("androidx.annotation:annotation:$androidxAnnotationVersion")
-        runtime("androidx.core:core:$androidxCoreVersion")
-    }
+    "annotationProcessor"("com.google.auto.service:auto-service:$autoServiceVersion")
+    "compileOnly"("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
 }

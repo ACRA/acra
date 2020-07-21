@@ -1,7 +1,7 @@
 
 ||Current Status|
 |---|---|
-|Build|[![Build Status](https://travis-ci.org/ACRA/acra.svg?branch=master)](https://travis-ci.org/ACRA/acra)|
+|Build|[ ![test](https://github.com/ACRA/acra/workflows/test/badge.svg?branch=master) ](https://github.com/ACRA/acra/actions?query=workflow%3Atest)|
 |Bintray|[ ![Bintray](https://api.bintray.com/packages/acra/maven/ACRA/images/download.svg) ](https://bintray.com/acra/maven/ACRA/_latestVersion)|
 |Maven Central|[![Maven Central](https://img.shields.io/maven-central/v/ch.acra/acra-core.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22ch.acra%22)|
 |Android Versions|![minVersion](https://img.shields.io/badge/dynamic/json.svg?label=Minimal%20Android%20Version&colorB=FF6F00&query=version&uri=https%3A%2F%2Ffaendir.com%2Fandroid%2Facra.php%3Fversion%3DandroidMinVersion) ![targetVersion](https://img.shields.io/badge/dynamic/json.svg?label=Target%20Android%20Version&colorB=64DD17&query=version&uri=https%3A%2F%2Ffaendir.com%2Fandroid%2Facra.php%3Fversion%3DandroidVersion)|
@@ -27,7 +27,7 @@ A crash reporting feature for android apps is native since Android 2.2 (FroYo) b
   * more [detailed crash reports](http://github.com/ACRA/acra/wiki/ReportContent) about the device running the app than what is displayed in the Android Market developer console error reports
   * you can [add your own variables content or debug traces](http://github.com/ACRA/acra/wiki/AdvancedUsage#wiki-Adding_your_own_variables_content_or_traces_in_crash_reports) to the reports
   * you can send [error reports even if the application doesn't crash](https://github.com/ACRA/acra/wiki/AdvancedUsage#sending-reports-for-caught-exceptions-or-for-unexpected-application-state-without-any-exception)
-  * works for any application even if not delivered through Google PLay => great for devices/regions where the Google Play is not available, beta releases or for enterprise private apps
+  * works for any application even if not delivered through Google Play => great for devices/regions where the Google Play is not available, beta releases or for enterprise private apps
   * if there is no network coverage, reports are kept and sent on a later application restart
   * can be used with [your own self-hosted report receiver script](https://github.com/ACRA/acra/wiki/Report-Destinations)
 
