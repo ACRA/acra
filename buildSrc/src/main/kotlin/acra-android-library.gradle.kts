@@ -98,4 +98,10 @@ tasks.register<Jar>("javadocJar") {
     archiveClassifier.set("javadoc")
 }
 
+afterEvaluate {
+    val assembleRelease = tasks["assembleRelease"]
+    rootProject.tasks["afterReleaseBuild"].dependsOn(assembleRelease)
+    tasks.findByName("publish")?.mustRunAfter(assembleRelease)
+}
+
 fun Javadoc.linksOffline(extDocUrl: String, packageListLoc: String) = (options as StandardJavadocDocletOptions).linksOffline(extDocUrl, packageListLoc)
