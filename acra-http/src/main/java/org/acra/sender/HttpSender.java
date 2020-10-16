@@ -90,9 +90,9 @@ public class HttpSender implements ReportSender {
     public HttpSender(@NonNull CoreConfiguration config, @Nullable Method method, @Nullable StringFormat type, @Nullable String formUri) {
         this.config = config;
         this.httpConfig = ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class);
-        mMethod = (method == null) ? httpConfig.httpMethod() : method;
-        mFormUri = Uri.parse((formUri == null) ? httpConfig.uri() : formUri);
-        mType = (type == null) ? config.reportFormat() : type;
+        mMethod = (method == null) ? httpConfig.getHttpMethod() : method;
+        mFormUri = Uri.parse((formUri == null) ? httpConfig.getUri() : formUri);
+        mType = (type == null) ? config.getReportFormat() : type;
         mUsername = null;
         mPassword = null;
     }
@@ -117,11 +117,11 @@ public class HttpSender implements ReportSender {
             final String baseUrl = mFormUri.toString();
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Connect to " + baseUrl);
 
-            final String login = mUsername != null ? mUsername : isNull(httpConfig.basicAuthLogin()) ? null : httpConfig.basicAuthLogin();
-            final String password = mPassword != null ? mPassword : isNull(httpConfig.basicAuthPassword()) ? null : httpConfig.basicAuthPassword();
+            final String login = mUsername != null ? mUsername : isNull(httpConfig.getBasicAuthLogin()) ? null : httpConfig.getBasicAuthLogin();
+            final String password = mPassword != null ? mPassword : isNull(httpConfig.getBasicAuthPassword()) ? null : httpConfig.getBasicAuthPassword();
 
             final InstanceCreator instanceCreator = new InstanceCreator();
-            final List<Uri> uris = instanceCreator.create(config.attachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config);
+            final List<Uri> uris = instanceCreator.create(config.getAttachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config);
 
             // Generate report body depending on requested type
             final String reportAsString = convertToString(report, mType);
@@ -129,11 +129,11 @@ public class HttpSender implements ReportSender {
             // Adjust URL depending on method
             final URL reportUrl = mMethod.createURL(baseUrl, report);
 
-            sendHttpRequests(config, context, mMethod, mType.getMatchingHttpContentType(), login, password, httpConfig.connectionTimeout(),
-                    httpConfig.socketTimeout(), httpConfig.httpHeaders(), reportAsString, reportUrl, uris);
+            sendHttpRequests(config, context, mMethod, mType.getMatchingHttpContentType(), login, password, httpConfig.getConnectionTimeout(),
+                    httpConfig.getSocketTimeout(), httpConfig.getHttpHeaders(), reportAsString, reportUrl, uris);
 
         } catch (@NonNull Exception e) {
-            throw new ReportSenderException("Error while sending " + config.reportFormat()
+            throw new ReportSenderException("Error while sending " + config.getReportFormat()
                     + " report via Http " + mMethod.name(), e);
         }
     }
@@ -196,11 +196,11 @@ public class HttpSender implements ReportSender {
     @NonNull
     @SuppressWarnings("WeakerAccess")
     protected String convertToString(CrashReportData report, @NonNull StringFormat format) throws Exception {
-        return format.toFormattedString(report, config.reportContent(), "&", "\n", true);
+        return format.toFormattedString(report, config.getReportContent(), "&", "\n", true);
     }
 
     private boolean isNull(@Nullable String aString) {
-        return aString == null || ACRAConstants.NULL_VALUE.equals(aString);
+        return aString == null || aString.length() == 0 || ACRAConstants.NULL_VALUE.equals(aString);
     }
 
     /**

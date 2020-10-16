@@ -81,7 +81,7 @@ public final class ProcessFinisher {
     }
 
     private void stopServices() {
-        if (config.stopServicesOnCrash()) {
+        if (config.getStopServicesOnCrash()) {
             try {
                 final ActivityManager activityManager = SystemServices.getActivityManager(context);
                 final List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);

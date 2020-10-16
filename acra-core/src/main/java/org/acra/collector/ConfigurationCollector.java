@@ -89,7 +89,7 @@ public final class ConfigurationCollector extends BaseReportFieldCollector imple
      */
     @Override
     public void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config) {
-        if(config.reportContent().contains(ReportField.INITIAL_CONFIGURATION)) {
+        if(config.getReportContent().contains(ReportField.INITIAL_CONFIGURATION)) {
             initialConfiguration = collectConfiguration(context);
         }
     }

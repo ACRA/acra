@@ -39,7 +39,7 @@ public class SchedulerStarter {
 
     public SchedulerStarter(@NonNull Context context, @NonNull CoreConfiguration config) {
         locator = new ReportLocator(context);
-        List<SenderSchedulerFactory> schedulerFactories = config.pluginLoader().loadEnabled(config, SenderSchedulerFactory.class);
+        List<SenderSchedulerFactory> schedulerFactories = config.getPluginLoader().loadEnabled(config, SenderSchedulerFactory.class);
         if (schedulerFactories.isEmpty()) {
             senderScheduler = new DefaultSenderScheduler(context, config);
         } else {

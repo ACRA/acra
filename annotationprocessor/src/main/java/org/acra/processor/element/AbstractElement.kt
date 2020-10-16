@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.acra.processor.element
 
-package org.acra.processor.element;
-
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeName;
-
-import java.util.Collection;
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.TypeName
 
 /**
  * @author F43nd1r
  * @since 12.01.2018
  */
-
-public interface Element {
-    String getName();
-
-    TypeName getType();
-
-    Collection<AnnotationSpec> getAnnotations();
+open class AbstractElement(override val name: String, override val type: TypeName, override val annotations: Collection<AnnotationSpec>) : Element {
 }

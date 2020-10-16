@@ -15,19 +15,19 @@
  */
 plugins {
     id("com.android.library")
-    id("acra-base")
 }
+apply(plugin = "kotlin-android")
+apply(plugin = "kotlin-kapt")
+apply(plugin = "acra-base")
 
 android {
     val androidVersion: String by project
-    val buildToolsVersion: String by project
     val androidMinVersion: String by project
     compileSdkVersion(Integer.parseInt(androidVersion))
-    buildToolsVersion(buildToolsVersion)
     defaultConfig {
         minSdkVersion(androidMinVersion)
         targetSdkVersion(androidVersion)
-        versionNameSuffix = "$version"
+        buildConfigField("String", "VERSION_NAME", "\"$version\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -67,9 +67,9 @@ dependencies {
     val hamcrestVersion: String by project
     androidTestImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
     val autoServiceVersion: String by project
-    testAnnotationProcessor("com.google.auto.service:auto-service:$autoServiceVersion")
+    "kaptTest"("com.google.auto.service:auto-service:$autoServiceVersion")
     testCompileOnly("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
-    annotationProcessor(project(":annotationprocessor"))
+    "kapt"(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
 }
 

@@ -68,12 +68,12 @@ public class EmailIntentSender implements ReportSender {
         final String subject = buildSubject(context);
         final String reportText;
         try {
-            reportText = config.reportFormat().toFormattedString(errorContent, config.reportContent(), "\n", "\n\t", false);
+            reportText = config.getReportFormat().toFormattedString(errorContent, config.getReportContent(), "\n", "\n\t", false);
         } catch (Exception e) {
             throw new ReportSenderException("Failed to convert Report to text", e);
         }
-        final String bodyPrefix = mailConfig.body();
-        final String body = bodyPrefix != null ? bodyPrefix + "\n" + reportText : reportText;
+        final String bodyPrefix = mailConfig.getBody();
+        final String body = !bodyPrefix.isEmpty() ? bodyPrefix + "\n" + reportText : reportText;
         final ArrayList<Uri> attachments = new ArrayList<>();
         final boolean contentAttached = fillAttachmentList(context, reportText, attachments);
 
@@ -147,7 +147,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     protected Intent buildAttachmentIntent(@NonNull String subject, @Nullable String body, @NonNull ArrayList<Uri> attachments) {
         final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mailConfig.mailTo()});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{mailConfig.getMailTo()});
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.setType("message/rfc822");
@@ -166,7 +166,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     protected Intent buildResolveIntent(@NonNull String subject, @NonNull String body) {
         final Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.fromParts("mailto", mailConfig.mailTo(), null));
+        intent.setData(Uri.fromParts("mailto", mailConfig.getMailTo(), null));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, body);
@@ -190,7 +190,7 @@ public class EmailIntentSender implements ReportSender {
     private void showChooser(@NonNull Context context, @NonNull List<Intent> initialIntents) {
         final Intent chooser = new Intent(Intent.ACTION_CHOOSER);
         chooser.putExtra(Intent.EXTRA_INTENT, initialIntents.remove(0));
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, initialIntents.toArray(new Intent[initialIntents.size()]));
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, initialIntents.toArray(new Intent[0]));
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(chooser);
     }
@@ -214,8 +214,8 @@ public class EmailIntentSender implements ReportSender {
      */
     @NonNull
     protected String buildSubject(@NonNull Context context) {
-        final String subject = mailConfig.subject();
-        if (subject != null) {
+        final String subject = mailConfig.getSubject();
+        if (!subject.isEmpty()) {
             return subject;
         }
         return context.getPackageName() + " Crash Report";
@@ -231,9 +231,9 @@ public class EmailIntentSender implements ReportSender {
      */
     protected boolean fillAttachmentList(@NonNull Context context, @NonNull String reportText, @NonNull List<Uri> attachments) {
         final InstanceCreator instanceCreator = new InstanceCreator();
-        attachments.addAll(instanceCreator.create(config.attachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config));
-        if (mailConfig.reportAsFile()) {
-            final Uri report = createAttachmentFromString(context, mailConfig.reportFileName(), reportText);
+        attachments.addAll(instanceCreator.create(config.getAttachmentUriProvider(), DefaultAttachmentProvider::new).getAttachments(context, config));
+        if (mailConfig.getReportAsFile()) {
+            final Uri report = createAttachmentFromString(context, mailConfig.getReportFileName(), reportText);
             if (report != null) {
                 attachments.add(report);
                 return true;

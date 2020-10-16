@@ -58,7 +58,7 @@ abstract class BaseReportFieldCollector implements Collector {
      * @return if this field should be collected now
      */
     boolean shouldCollect(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull ReportField collect, @NonNull ReportBuilder reportBuilder) {
-        return config.reportContent().contains(collect);
+        return config.getReportContent().contains(collect);
     }
 
     /**

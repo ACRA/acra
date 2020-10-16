@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.acra.processor.element
 
-package org.acra.processor.element;
-
-import androidx.annotation.NonNull;
-import org.acra.processor.creator.BuildMethodCreator;
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.TypeName
 
 /**
  * @author F43nd1r
- * @since 11.01.2018
+ * @since 12.01.2018
  */
-
-public interface ValidatedElement extends Element {
-    void addToBuildMethod(@NonNull BuildMethodCreator method);
+interface Element {
+    val name: String
+    val type: TypeName
+    val annotations: Collection<AnnotationSpec>
 }

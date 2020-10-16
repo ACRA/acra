@@ -29,8 +29,8 @@ public final class ConfigUtils {
 
     @NonNull
     public static <T extends Configuration> T getPluginConfiguration(@NonNull CoreConfiguration config, @NonNull Class<T> c) {
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Checking plugin Configurations : " + config.pluginConfigurations() + " for class : " + c);
-        for (Configuration configuration : config.pluginConfigurations()) {
+        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Checking plugin Configurations : " + config.getPluginConfigurations() + " for class : " + c);
+        for (Configuration configuration : config.getPluginConfigurations()) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Checking plugin Configuration : " + configuration + " against plugin class : " + c);
             if (c.isAssignableFrom(configuration.getClass())) {
                 //noinspection unchecked

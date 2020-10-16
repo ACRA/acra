@@ -42,6 +42,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
@@ -108,7 +109,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             handleResponse(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
             urlConnection.disconnect();
         } catch (SocketTimeoutException e) {
-            if (senderConfiguration.dropReportsOnTimeout()) {
+            if (senderConfiguration.getDropReportsOnTimeout()) {
                 Log.w(ACRA.LOG_TAG, "Dropped report due to timeout");
             } else {
                 throw e;
@@ -134,7 +135,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
         final SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, tmf.getTrustManagers(), null);
 
-        connection.setSSLSocketFactory(new ProtocolSocketFactoryWrapper(sslContext.getSocketFactory(), senderConfiguration.tlsProtocols()));
+        connection.setSSLSocketFactory(new ProtocolSocketFactoryWrapper(sslContext.getSocketFactory(), Arrays.asList(senderConfiguration.getTlsProtocols())));
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -159,7 +160,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
             connection.setRequestProperty("Authorization", "Basic " + encoded);
         }
 
-        if (senderConfiguration.compress()) {
+        if (senderConfiguration.getCompress()) {
             connection.setRequestProperty("Content-Encoding", "gzip");
         }
 
@@ -184,7 +185,7 @@ public abstract class BaseHttpRequest<T> implements HttpRequest<T> {
 
         connection.connect();
 
-        final OutputStream outputStream = senderConfiguration.compress() ? new GZIPOutputStream(connection.getOutputStream(), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
+        final OutputStream outputStream = senderConfiguration.getCompress() ? new GZIPOutputStream(connection.getOutputStream(), ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
                 : new BufferedOutputStream(connection.getOutputStream());
         try {
             write(outputStream, content);

@@ -17,8 +17,11 @@
 package org.acra.startup;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
+
 import com.google.auto.service.AutoService;
+
 import org.acra.config.CoreConfiguration;
 import org.acra.file.LastModifiedComparator;
 
@@ -34,7 +37,7 @@ import java.util.List;
 public class UnapprovedStartupProcessor implements StartupProcessor {
     @Override
     public void processReports(@NonNull Context context, @NonNull CoreConfiguration config, List<Report> reports) {
-        if (config.deleteUnapprovedReportsOnApplicationStart()) {
+        if (config.getDeleteUnapprovedReportsOnApplicationStart()) {
             final List<Report> sort = new ArrayList<>();
             for (Report report : reports) {
                 if (!report.isApproved()) {
@@ -44,10 +47,8 @@ public class UnapprovedStartupProcessor implements StartupProcessor {
             if (!sort.isEmpty()) {
                 final LastModifiedComparator comparator = new LastModifiedComparator();
                 Collections.sort(sort, (r1, r2) -> comparator.compare(r1.getFile(), r2.getFile()));
-                if(config.deleteUnapprovedReportsOnApplicationStart()) {
-                    for (int i = 0; i < sort.size() - 1; i++) {
-                        sort.get(i).delete();
-                    }
+                for (int i = 0; i < sort.size() - 1; i++) {
+                    sort.get(i).delete();
                 }
                 sort.get(sort.size() - 1).approve();
             }

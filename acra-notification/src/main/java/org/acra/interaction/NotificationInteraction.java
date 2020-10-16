@@ -24,10 +24,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.widget.RemoteViews;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
+
 import com.google.auto.service.AutoService;
+
 import org.acra.ACRA;
 import org.acra.config.ConfigUtils;
 import org.acra.config.CoreConfiguration;
@@ -74,45 +77,45 @@ public class NotificationInteraction extends HasConfigPlugin implements ReportIn
         final NotificationConfiguration notificationConfig = ConfigUtils.getPluginConfiguration(config, NotificationConfiguration.class);
         //We have to create a channel on Oreo+, because notifications without one aren't allowed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            final NotificationChannel channel = new NotificationChannel(CHANNEL, notificationConfig.channelName(), notificationConfig.resChannelImportance());
+            final NotificationChannel channel = new NotificationChannel(CHANNEL, notificationConfig.getChannelName(), notificationConfig.getResChannelImportance());
             channel.setSound(null, null);
-            if (notificationConfig.channelDescription() != null) {
-                channel.setDescription(notificationConfig.channelDescription());
+            if (!notificationConfig.getChannelDescription().isEmpty()) {
+                channel.setDescription(notificationConfig.getChannelDescription());
             }
             notificationManager.createNotificationChannel(channel);
         }
         //configure base notification
         final NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL)
                 .setWhen(System.currentTimeMillis())
-                .setContentTitle(notificationConfig.title())
-                .setContentText(notificationConfig.text())
-                .setSmallIcon(notificationConfig.resIcon())
+                .setContentTitle(notificationConfig.getTitle())
+                .setContentText(notificationConfig.getText())
+                .setSmallIcon(notificationConfig.getResIcon())
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
         //add ticker if set
-        if (notificationConfig.tickerText() != null) {
-            notification.setTicker(notificationConfig.tickerText());
+        if (!notificationConfig.getTickerText().isEmpty()) {
+            notification.setTicker(notificationConfig.getTickerText());
         }
         final PendingIntent sendIntent = getSendIntent(context, config, reportFile);
         final PendingIntent discardIntent = getDiscardIntent(context);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationConfig.sendWithCommentButtonText() != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !notificationConfig.getSendWithCommentButtonText().isEmpty()) {
             final RemoteInput.Builder remoteInput = new RemoteInput.Builder(KEY_COMMENT);
-            if (notificationConfig.commentPrompt() != null) {
-                remoteInput.setLabel(notificationConfig.commentPrompt());
+            if (!notificationConfig.getCommentPrompt().isEmpty()) {
+                remoteInput.setLabel(notificationConfig.getCommentPrompt());
             }
-            notification.addAction(new NotificationCompat.Action.Builder(notificationConfig.resSendWithCommentButtonIcon(), notificationConfig.sendWithCommentButtonText(), sendIntent)
+            notification.addAction(new NotificationCompat.Action.Builder(notificationConfig.getResSendWithCommentButtonIcon(), notificationConfig.getSendWithCommentButtonText(), sendIntent)
                     .addRemoteInput(remoteInput.build()).build());
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final RemoteViews bigView = getBigView(context, notificationConfig);
-            notification.addAction(notificationConfig.resSendButtonIcon(), notificationConfig.sendButtonText(), sendIntent)
-                    .addAction(notificationConfig.resDiscardButtonIcon(), notificationConfig.discardButtonText(), discardIntent)
+            notification.addAction(notificationConfig.getResSendButtonIcon(), notificationConfig.getSendButtonText(), sendIntent)
+                    .addAction(notificationConfig.getResDiscardButtonIcon(), notificationConfig.getDiscardButtonText(), discardIntent)
                     .setCustomContentView(getSmallView(context, notificationConfig, sendIntent, discardIntent))
                     .setCustomBigContentView(bigView)
                     .setCustomHeadsUpContentView(bigView)
                     .setStyle(new NotificationCompat.DecoratedCustomViewStyle());
         }
         //On old devices we have no notification buttons, so we have to set the intent to the only possible interaction: click
-        if (notificationConfig.sendOnClick() || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        if (notificationConfig.getSendOnClick() || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             notification.setContentIntent(sendIntent);
         }
         notification.setDeleteIntent(discardIntent);
@@ -137,10 +140,10 @@ public class NotificationInteraction extends HasConfigPlugin implements ReportIn
     @NonNull
     private RemoteViews getSmallView(@NonNull Context context, @NonNull NotificationConfiguration notificationConfig, @NonNull PendingIntent sendIntent, @NonNull PendingIntent discardIntent) {
         final RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.notification_small);
-        view.setTextViewText(R.id.text, notificationConfig.text());
-        view.setTextViewText(R.id.title, notificationConfig.title());
-        view.setImageViewResource(R.id.button_send, notificationConfig.resSendButtonIcon());
-        view.setImageViewResource(R.id.button_discard, notificationConfig.resDiscardButtonIcon());
+        view.setTextViewText(R.id.text, notificationConfig.getText());
+        view.setTextViewText(R.id.title, notificationConfig.getTitle());
+        view.setImageViewResource(R.id.button_send, notificationConfig.getResSendButtonIcon());
+        view.setImageViewResource(R.id.button_discard, notificationConfig.getResDiscardButtonIcon());
         view.setOnClickPendingIntent(R.id.button_send, sendIntent);
         view.setOnClickPendingIntent(R.id.button_discard, discardIntent);
         return view;
@@ -149,8 +152,8 @@ public class NotificationInteraction extends HasConfigPlugin implements ReportIn
     @NonNull
     private RemoteViews getBigView(@NonNull Context context, @NonNull NotificationConfiguration notificationConfig) {
         final RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.notification_big);
-        view.setTextViewText(R.id.text, notificationConfig.text());
-        view.setTextViewText(R.id.title, notificationConfig.title());
+        view.setTextViewText(R.id.text, notificationConfig.getText());
+        view.setTextViewText(R.id.title, notificationConfig.getTitle());
         return view;
     }
 }

@@ -24,6 +24,7 @@ import java.lang.annotation.*;
  * @author F43nd1r
  * @since 18.04.18
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -107,7 +107,7 @@ final class ReportDistributor {
      * @throws ReportSenderException if unable to send the crash report.
      */
     private void sendCrashReport(@NonNull CrashReportData errorContent) throws ReportSenderException {
-        if (!isDebuggable() || config.sendReportsInDevMode()) {
+        if (!isDebuggable() || config.getSendReportsInDevMode()) {
             final List<RetryPolicy.FailedSender> failedSenders = new LinkedList<>();
             for (ReportSender sender : reportSenders) {
                 try {
@@ -122,7 +122,7 @@ final class ReportDistributor {
             final InstanceCreator instanceCreator = new InstanceCreator();
             if (failedSenders.isEmpty()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Report was sent by all senders");
-            } else if (instanceCreator.create(config.retryPolicyClass(), DefaultRetryPolicy::new).shouldRetrySend(reportSenders, failedSenders)) {
+            } else if (instanceCreator.create(config.getRetryPolicyClass(), DefaultRetryPolicy::new).shouldRetrySend(reportSenders, failedSenders)) {
                 final Throwable firstFailure = failedSenders.get(0).getException();
                 throw new ReportSenderException("Policy marked this task as incomplete. ACRA will try to send this report again.", firstFailure);
             } else {

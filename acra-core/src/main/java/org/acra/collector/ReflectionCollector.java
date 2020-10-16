@@ -131,7 +131,7 @@ public final class ReflectionCollector extends BaseReportFieldCollector {
      */
     @NonNull
     private Class<?> getBuildConfigClass(@NonNull Context context, @NonNull CoreConfiguration config) throws ClassNotFoundException {
-        final Class configuredBuildConfig = config.buildConfigClass();
+        final Class<?> configuredBuildConfig = config.getBuildConfigClass();
         if (!configuredBuildConfig.equals(Object.class)) {
             // If set via annotations or programmatically then it will have a real value,
             // otherwise it will be Object.class (default).

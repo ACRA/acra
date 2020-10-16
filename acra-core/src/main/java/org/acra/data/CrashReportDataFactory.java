@@ -50,7 +50,7 @@ public final class CrashReportDataFactory {
     public CrashReportDataFactory(@NonNull Context context, @NonNull CoreConfiguration config) {
         this.context = context;
         this.config = config;
-        collectors = config.pluginLoader().loadEnabled(config, Collector.class);
+        collectors = config.getPluginLoader().loadEnabled(config, Collector.class);
         //noinspection Java8ListSort
         Collections.sort(collectors, (c1, c2) -> {
             Collector.Order o1;
@@ -77,7 +77,7 @@ public final class CrashReportDataFactory {
      */
     @NonNull
     public CrashReportData createCrashData(@NonNull final ReportBuilder builder) {
-        final ExecutorService executorService = config.parallel() ? Executors.newCachedThreadPool() : Executors.newSingleThreadExecutor();
+        final ExecutorService executorService = config.getParallel() ? Executors.newCachedThreadPool() : Executors.newSingleThreadExecutor();
         final CrashReportData crashReportData = new CrashReportData();
         final List<Future<?>> futures = new ArrayList<>();
         for (final Collector collector : collectors) {

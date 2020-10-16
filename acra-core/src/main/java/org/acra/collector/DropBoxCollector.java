@@ -75,15 +75,15 @@ public final class DropBoxCollector extends BaseReportFieldCollector {
         final DropBoxManager dropbox = SystemServices.getDropBoxManager(context);
 
         final Calendar calendar = Calendar.getInstance();
-        calendar.roll(Calendar.MINUTE, -config.dropboxCollectionMinutes());
+        calendar.roll(Calendar.MINUTE, -config.getDropboxCollectionMinutes());
         final long time = calendar.getTimeInMillis();
         dateFormat.format(calendar.getTime());
 
         final List<String> tags = new ArrayList<>();
-        if (config.includeDropBoxSystemTags()) {
+        if (config.getIncludeDropBoxSystemTags()) {
             tags.addAll(Arrays.asList(SYSTEM_TAGS));
         }
-        final List<String> additionalTags = config.additionalDropBoxTags();
+        final List<String> additionalTags = Arrays.asList(config.getAdditionalDropBoxTags());
         if (!additionalTags.isEmpty()) {
             tags.addAll(additionalTags);
         }

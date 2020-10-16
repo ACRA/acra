@@ -49,12 +49,12 @@ public final class KeyStoreHelper {
     public static KeyStore getKeyStore(@NonNull Context context, @NonNull CoreConfiguration config) {
         final HttpSenderConfiguration senderConfiguration = ConfigUtils.getPluginConfiguration(config, HttpSenderConfiguration.class);
         final InstanceCreator instanceCreator = new InstanceCreator();
-        KeyStore keyStore = instanceCreator.create(senderConfiguration.keyStoreFactoryClass(), NoKeyStoreFactory::new).create(context);
+        KeyStore keyStore = instanceCreator.create(senderConfiguration.getKeyStoreFactoryClass(), NoKeyStoreFactory::new).create(context);
         if(keyStore == null) {
             //either users factory did not create a keystore, or the configuration is default {@link NoKeyStoreFactory}
-            final int certificateRes = senderConfiguration.resCertificate();
-            final String certificatePath = senderConfiguration.certificatePath();
-            final String certificateType = senderConfiguration.certificateType();
+            final int certificateRes = senderConfiguration.getResCertificate();
+            final String certificatePath = senderConfiguration.getCertificatePath();
+            final String certificateType = senderConfiguration.getCertificateType();
             if(certificateRes != ACRAConstants.DEFAULT_RES_VALUE){
                 keyStore = new ResourceKeyStoreFactory(certificateType, certificateRes).create(context);
             }else if(!certificatePath.equals(ACRAConstants.DEFAULT_STRING_VALUE)){

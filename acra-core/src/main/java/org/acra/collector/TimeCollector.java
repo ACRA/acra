@@ -66,7 +66,7 @@ public final class TimeCollector extends BaseReportFieldCollector implements App
 
     @Override
     public void collectApplicationStartUp(@NonNull Context context, @NonNull CoreConfiguration config) {
-        if (config.reportContent().contains(ReportField.USER_APP_START_DATE)) {
+        if (config.getReportContent().contains(ReportField.USER_APP_START_DATE)) {
             appStartDate = new GregorianCalendar();
         }
     }

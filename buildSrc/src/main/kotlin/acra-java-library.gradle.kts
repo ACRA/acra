@@ -15,6 +15,8 @@
  */
 plugins {
     `java-library`
+    kotlin("jvm")
+    id("kotlin-kapt")
     id("acra-base")
 }
 

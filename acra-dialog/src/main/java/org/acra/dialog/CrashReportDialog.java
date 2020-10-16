@@ -70,7 +70,7 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
             scrollable.setOrientation(LinearLayout.VERTICAL);
             sharedPreferencesFactory = new SharedPreferencesFactory(getApplicationContext(), helper.getConfig());
             dialogConfiguration = ConfigUtils.getPluginConfiguration(helper.getConfig(), DialogConfiguration.class);
-            final int themeResourceId = dialogConfiguration.resTheme();
+            final int themeResourceId = dialogConfiguration.getResTheme();
             if (themeResourceId != ACRAConstants.DEFAULT_RES_VALUE) setTheme(themeResourceId);
             padding = loadPaddingFromTheme();
 
@@ -87,17 +87,17 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
      */
     protected void buildAndShowDialog(@Nullable Bundle savedInstanceState) {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final String title = dialogConfiguration.title();
-        if (title != null) {
+        final String title = dialogConfiguration.getTitle();
+        if (!title.isEmpty()) {
             dialogBuilder.setTitle(title);
         }
-        final int iconResourceId = dialogConfiguration.resIcon();
+        final int iconResourceId = dialogConfiguration.getResIcon();
         if (iconResourceId != ACRAConstants.DEFAULT_RES_VALUE) {
             dialogBuilder.setIcon(iconResourceId);
         }
         dialogBuilder.setView(buildCustomView(savedInstanceState))
-                .setPositiveButton(dialogConfiguration.positiveButtonText(), this)
-                .setNegativeButton(dialogConfiguration.negativeButtonText(), this);
+                .setPositiveButton(dialogConfiguration.getPositiveButtonText(), this)
+                .setNegativeButton(dialogConfiguration.getNegativeButtonText(), this);
 
         mDialog = dialogBuilder.create();
         mDialog.setCanceledOnTouchOutside(false);
@@ -160,8 +160,8 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
     @NonNull
     protected View getMainView() {
         final TextView text = new TextView(this);
-        final String dialogText = dialogConfiguration.text();
-        if (dialogText != null) {
+        final String dialogText = dialogConfiguration.getText();
+        if (!dialogText.isEmpty()) {
             text.setText(dialogText);
         }
         return text;
@@ -174,8 +174,8 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
      */
     @Nullable
     protected View getCommentLabel() {
-        final String commentPrompt = dialogConfiguration.commentPrompt();
-        if (commentPrompt != null) {
+        final String commentPrompt = dialogConfiguration.getCommentPrompt();
+        if (!commentPrompt.isEmpty()) {
             final TextView labelView = new TextView(this);
             labelView.setText(commentPrompt);
             return labelView;
@@ -206,8 +206,8 @@ public class CrashReportDialog extends Activity implements DialogInterface.OnCli
      */
     @Nullable
     protected View getEmailLabel() {
-        final String emailPrompt = dialogConfiguration.emailPrompt();
-        if (emailPrompt != null) {
+        final String emailPrompt = dialogConfiguration.getEmailPrompt();
+        if (!emailPrompt.isEmpty()) {
             final TextView labelView = new TextView(this);
             labelView.setText(emailPrompt);
             return labelView;

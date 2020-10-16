@@ -84,7 +84,7 @@ public class ReportExecutor {
         this.crashReportDataFactory = crashReportDataFactory;
         this.defaultExceptionHandler = defaultExceptionHandler;
         this.processFinisher = processFinisher;
-        reportingAdministrators = config.pluginLoader().loadEnabled(config, ReportingAdministrator.class);
+        reportingAdministrators = config.getPluginLoader().loadEnabled(config, ReportingAdministrator.class);
         this.schedulerStarter = schedulerStarter;
         this.lastActivityManager = lastActivityManager;
     }
@@ -226,7 +226,7 @@ public class ReportExecutor {
      * End the application.
      */
     private void endApplication(@Nullable Thread uncaughtExceptionThread, Throwable th) {
-        final boolean letDefaultHandlerEndApplication = config.alsoReportToAndroidFramework();
+        final boolean letDefaultHandlerEndApplication = config.getAlsoReportToAndroidFramework();
 
         final boolean handlingUncaughtException = uncaughtExceptionThread != null;
         if (handlingUncaughtException && letDefaultHandlerEndApplication && defaultExceptionHandler != null) {

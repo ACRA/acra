@@ -1,11 +1,12 @@
 package org.acra.sender;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
 import org.acra.ACRA;
 import org.acra.ACRAConstants;
 import org.acra.config.CoreConfiguration;
@@ -13,7 +14,6 @@ import org.acra.file.CrashReportFileNameParser;
 import org.acra.file.ReportLocator;
 import org.acra.plugins.PluginLoader;
 import org.acra.util.BundleWrapper;
-import org.acra.util.InstanceCreator;
 import org.acra.util.ToastSender;
 
 import java.io.File;
@@ -72,7 +72,7 @@ public class SendingConductor {
                 }
             }
             final String toast;
-            if (anyNonSilent && (toast = reportsSentCount > 0 ? config.reportSendSuccessToast() : config.reportSendFailureToast()) != null) {
+            if (anyNonSilent && !(toast = reportsSentCount > 0 ? config.getReportSendSuccessToast() : config.getReportSendFailureToast()).isEmpty()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "About to show " + (reportsSentCount > 0 ? "success" : "failure") + " toast");
                 new Handler(Looper.getMainLooper()).post(() -> ToastSender.sendToast(context, toast, Toast.LENGTH_LONG));
             }
@@ -85,19 +85,10 @@ public class SendingConductor {
 
     @NonNull
     public List<ReportSender> getSenderInstances(boolean foreground) {
-        List<Class<? extends ReportSenderFactory>> factoryClasses = config.reportSenderFactoryClasses();
-
-        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "config#reportSenderFactoryClasses : " + factoryClasses);
-
         final List<ReportSenderFactory> factories;
-        if (factoryClasses.isEmpty()) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using PluginLoader to find ReportSender factories");
-            final PluginLoader loader = config.pluginLoader();
-            factories = loader.loadEnabled(config, ReportSenderFactory.class);
-        } else {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Creating reportSenderFactories for reportSenderFactory config");
-            factories = new InstanceCreator().create(factoryClasses);
-        }
+        if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using PluginLoader to find ReportSender factories");
+        final PluginLoader loader = config.getPluginLoader();
+        factories = loader.loadEnabled(config, ReportSenderFactory.class);
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "reportSenderFactories : " + factories);
 
 
@@ -105,7 +96,7 @@ public class SendingConductor {
         for (ReportSenderFactory factory : factories) {
             final ReportSender sender = factory.create(context, config);
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Adding reportSender : " + sender);
-            if(foreground == sender.requiresForeground()) {
+            if (foreground == sender.requiresForeground()) {
                 reportSenders.add(sender);
             }
         }

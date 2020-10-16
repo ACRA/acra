@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -173,7 +174,7 @@ public final class CrashReportData {
     @NonNull
     public String toJSON() throws JSONException {
         try {
-            return StringFormat.JSON.toFormattedString(this, ImmutableSet.empty(), "", "", false);
+            return StringFormat.JSON.toFormattedString(this, Collections.emptyList(), "", "", false);
         } catch (JSONException e) {
             throw e;
         } catch (Exception e) {

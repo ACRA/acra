@@ -93,8 +93,8 @@ public final class BaseCoreConfigurationBuilder {
 
     @NonNull
     @Transform(methodName = "reportContent")
-    Set<ReportField> transformReportContent(@NonNull ReportField[] reportFields) {
-        final Set<ReportField> reportContent = new LinkedHashSet<>();
+    List<ReportField> transformReportContent(@NonNull ReportField[] reportFields) {
+        final List<ReportField> reportContent = new ArrayList<>();
         if (reportFields.length != 0) {
             if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Using custom Report Fields");
             reportContent.addAll(Arrays.asList(reportFields));

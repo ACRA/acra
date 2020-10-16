@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents possible report formats
@@ -45,7 +46,7 @@ public enum StringFormat {
     JSON("application/json") {
         @NonNull
         @Override
-        public String toFormattedString(@NonNull CrashReportData data, @NonNull ImmutableSet<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws JSONException {
+        public String toFormattedString(@NonNull CrashReportData data, @NonNull List<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws JSONException {
             final Map<String, Object> map = data.toMap();
             final JSONStringer stringer = new JSONStringer().object();
             for (ReportField field : order) {
@@ -60,7 +61,7 @@ public enum StringFormat {
     KEY_VALUE_LIST("application/x-www-form-urlencoded") {
         @NonNull
         @Override
-        public String toFormattedString(@NonNull CrashReportData data, @NonNull ImmutableSet<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws UnsupportedEncodingException {
+        public String toFormattedString(@NonNull CrashReportData data, @NonNull List<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws UnsupportedEncodingException {
             final Map<String, String> map = toStringMap(data.toMap(), subJoiner);
             final StringBuilder builder = new StringBuilder();
             for (ReportField field : order) {
@@ -130,7 +131,7 @@ public enum StringFormat {
     }
 
     @NonNull
-    public abstract String toFormattedString(@NonNull CrashReportData data, @NonNull ImmutableSet<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws Exception;
+    public abstract String toFormattedString(@NonNull CrashReportData data, @NonNull List<ReportField> order, @NonNull String mainJoiner, @NonNull String subJoiner, boolean urlEncode) throws Exception;
 
     @NonNull
     public String getMatchingHttpContentType() {

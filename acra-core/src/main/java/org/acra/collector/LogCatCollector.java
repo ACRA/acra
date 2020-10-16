@@ -34,6 +34,7 @@ import org.acra.util.StreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.acra.ACRA.LOG_TAG;
@@ -69,7 +70,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
     private String collectLogCat(@NonNull CoreConfiguration config, @Nullable String bufferName) throws IOException {
         final int myPid = android.os.Process.myPid();
         // no need to filter on jellybean onwards, android does that anyway
-        final String myPidStr = Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN && config.logcatFilterByPid() && myPid > 0 ? Integer.toString(myPid) + "):" : null;
+        final String myPidStr = Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN && config.getLogcatFilterByPid() && myPid > 0 ? myPid + "):" : null;
 
         final List<String> commandLine = new ArrayList<>();
         commandLine.add("logcat");
@@ -79,7 +80,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
         }
 
         final int tailCount;
-        final List<String> logcatArgumentsList = config.logcatArguments();
+        final List<String> logcatArgumentsList = Arrays.asList(config.getLogcatArguments());
 
         final int tailIndex = logcatArgumentsList.indexOf("-t");
         if (tailIndex > -1 && tailIndex < logcatArgumentsList.size()) {
@@ -135,7 +136,7 @@ public final class LogCatCollector extends BaseReportFieldCollector {
     @NonNull
     private String streamToString(@NonNull CoreConfiguration config, @NonNull InputStream input, @Nullable Predicate<String> filter, int limit) throws IOException {
         final StreamReader reader = new StreamReader(input).setFilter(filter).setLimit(limit);
-        if (config.logcatReadNonBlocking()) {
+        if (config.getLogcatReadNonBlocking()) {
             reader.setTimeout(READ_TIMEOUT);
         }
         return reader.read();

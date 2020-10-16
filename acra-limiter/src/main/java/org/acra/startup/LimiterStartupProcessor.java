@@ -48,19 +48,19 @@ public class LimiterStartupProcessor extends HasConfigPlugin implements StartupP
     @Override
     public void processReports(@NonNull Context context, @NonNull CoreConfiguration config, List<Report> reports) {
         final LimiterConfiguration limiterConfiguration = ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class);
-        if(limiterConfiguration.deleteReportsOnAppUpdate() || limiterConfiguration.resetLimitsOnAppUpdate()) {
+        if(limiterConfiguration.getDeleteReportsOnAppUpdate() || limiterConfiguration.getResetLimitsOnAppUpdate()) {
             final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();
             final long lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0);
             final int appVersion = getAppVersion(context);
 
             if (appVersion > lastVersionNr) {
-                if(limiterConfiguration.deleteReportsOnAppUpdate()) {
+                if(limiterConfiguration.getDeleteReportsOnAppUpdate()) {
                     prefs.edit().putInt(ACRA.PREF_LAST_VERSION_NR, appVersion).apply();
                     for (Report report : reports) {
                         report.delete();
                     }
                 }
-                if(limiterConfiguration.resetLimitsOnAppUpdate()) {
+                if(limiterConfiguration.getResetLimitsOnAppUpdate()) {
                     try {
                         new LimiterData().store(context);
                     } catch (IOException e) {

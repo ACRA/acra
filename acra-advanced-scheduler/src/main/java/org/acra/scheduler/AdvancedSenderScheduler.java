@@ -42,15 +42,15 @@ public class AdvancedSenderScheduler extends DefaultSenderScheduler {
 
     @Override
     protected void configureJob(@NonNull JobInfo.Builder job) {
-        job.setRequiredNetworkType(schedulerConfiguration.requiresNetworkType());
-        job.setRequiresCharging(schedulerConfiguration.requiresCharging());
-        job.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle());
-        boolean constrained = schedulerConfiguration.requiresNetworkType() != JobInfo.NETWORK_TYPE_NONE ||
-                schedulerConfiguration.requiresCharging() ||
-                schedulerConfiguration.requiresDeviceIdle();
+        job.setRequiredNetworkType(schedulerConfiguration.getRequiresNetworkType());
+        job.setRequiresCharging(schedulerConfiguration.getRequiresCharging());
+        job.setRequiresDeviceIdle(schedulerConfiguration.getRequiresDeviceIdle());
+        boolean constrained = schedulerConfiguration.getRequiresNetworkType() != JobInfo.NETWORK_TYPE_NONE ||
+                schedulerConfiguration.getRequiresCharging() ||
+                schedulerConfiguration.getRequiresDeviceIdle();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            job.setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow());
-            constrained |= schedulerConfiguration.requiresBatteryNotLow();
+            job.setRequiresBatteryNotLow(schedulerConfiguration.getRequiresBatteryNotLow());
+            constrained |= schedulerConfiguration.getRequiresBatteryNotLow();
         }
         if (!constrained) {
             job.setOverrideDeadline(0);

@@ -80,7 +80,7 @@ public final class SharedPreferencesCollector extends BaseReportFieldCollector {
         sharedPrefs.put("default", PreferenceManager.getDefaultSharedPreferences(context));
 
         // Add in any additional SharedPreferences
-        for (final String sharedPrefId : config.additionalSharedPreferences()) {
+        for (final String sharedPrefId : config.getAdditionalSharedPreferences()) {
             sharedPrefs.put(sharedPrefId, context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE));
         }
 
@@ -115,7 +115,7 @@ public final class SharedPreferencesCollector extends BaseReportFieldCollector {
      * @return true if the key has to be excluded from reports.
      */
     private boolean filteredKey(@NonNull CoreConfiguration config, @NonNull String key) {
-        for (String regex : config.excludeMatchingSharedPreferencesKeys()) {
+        for (String regex : config.getExcludeMatchingSharedPreferencesKeys()) {
             if (key.matches(regex)) {
                 return true;
             }

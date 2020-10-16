@@ -46,7 +46,7 @@ public class ToastInteraction extends HasConfigPlugin implements ReportInteracti
     public boolean performInteraction(@NonNull Context context, @NonNull CoreConfiguration config, @NonNull File reportFile) {
         Looper.prepare();
         ToastConfiguration pluginConfig = ConfigUtils.getPluginConfiguration(config, ToastConfiguration.class);
-        ToastSender.sendToast(context, pluginConfig.text(), pluginConfig.length());
+        ToastSender.sendToast(context, pluginConfig.getText(), pluginConfig.getLength());
         final Looper looper = Looper.myLooper();
         if (looper != null) {
             new Handler(looper).postDelayed(() -> {
@@ -55,7 +55,7 @@ public class ToastInteraction extends HasConfigPlugin implements ReportInteracti
                 } else {
                     looper.quit();
                 }
-            }, getLengthInMs(pluginConfig.length()) + 100);
+            }, getLengthInMs(pluginConfig.getLength()) + 100);
             Looper.loop();
         }
         return true;

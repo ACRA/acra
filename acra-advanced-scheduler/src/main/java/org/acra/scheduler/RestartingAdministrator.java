@@ -48,7 +48,7 @@ public class RestartingAdministrator extends HasConfigPlugin implements Reportin
     @Override
     public boolean shouldFinishActivity(@NonNull Context context, @NonNull CoreConfiguration config, LastActivityManager lastActivityManager) {
         if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "RestartingAdministrator entry");
-        if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).restartAfterCrash()) {
+        if (ConfigUtils.getPluginConfiguration(config, SchedulerConfiguration.class).getRestartAfterCrash()) {
             Activity activity = lastActivityManager.getLastActivity();
             if (activity != null) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Try to schedule last activity (" + activity.getClass().getName() + ") for restart");

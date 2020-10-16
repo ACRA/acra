@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020
+ * Copyright (c) 2018 the ACRA team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    kotlin("android") apply false
-    `acra-android-library`
-    `acra-publish`
-}
-//late apply is necessary because android plugin can't be detected otherwise
-apply(plugin = "kotlin-android")
+package org.acra.processor.element
 
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    acraCore()
+import org.acra.processor.creator.BuildMethodCreator
+
+/**
+ * @author F43nd1r
+ * @since 11.01.2018
+ */
+interface ValidatedElement : Element {
+    fun addToBuildMethod(method: BuildMethodCreator)
 }

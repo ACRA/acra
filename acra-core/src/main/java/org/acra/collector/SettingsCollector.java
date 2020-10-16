@@ -96,7 +96,7 @@ public final class SettingsCollector extends BaseReportFieldCollector {
         if (key == null || key.getName().startsWith("WIFI_AP")) {
             return false;
         }
-        for (String regex : config.excludeMatchingSettingsKeys()) {
+        for (String regex : config.getExcludeMatchingSettingsKeys()) {
             if (key.getName().matches(regex)) {
                 return false;
             }

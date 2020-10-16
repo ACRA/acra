@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.acra.processor.element
 
-package org.acra.processor.element;
-
-import androidx.annotation.NonNull;
-
-import org.acra.processor.creator.BuildMethodCreator;
-
-import java.util.Collections;
+import com.squareup.kotlinpoet.asTypeName
+import org.acra.processor.creator.BuildMethodCreator
 
 /**
  * @author F43nd1r
  * @since 11.01.2018
  */
-
-class PreBuildMethod extends AbstractElement implements ValidatedElement {
-    PreBuildMethod(@NonNull String name) {
-        super(name, null, Collections.emptyList());
-    }
-
-    @Override
-    public void addToBuildMethod(@NonNull BuildMethodCreator method) {
-        method.addDelegateCall(getName());
+internal class PreBuildMethod(name: String) : AbstractElement(name, Unit::class.asTypeName(), emptyList()), ValidatedElement {
+    override fun addToBuildMethod(method: BuildMethodCreator) {
+        method.addDelegateCall(name)
     }
 }

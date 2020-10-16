@@ -56,12 +56,12 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
         try {
             final LimiterConfiguration limiterConfiguration = ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class);
             final ReportLocator reportLocator = new ReportLocator(context);
-            if (reportLocator.getApprovedReports().length + reportLocator.getUnapprovedReports().length >= limiterConfiguration.failedReportLimit()) {
+            if (reportLocator.getApprovedReports().length + reportLocator.getUnapprovedReports().length >= limiterConfiguration.getFailedReportLimit()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Reached failedReportLimit, not collecting");
                 return false;
             }
             final List<LimiterData.ReportMetadata> reportMetadata = loadLimiterData(context, limiterConfiguration).getReportMetadata();
-            if (reportMetadata.size() >= limiterConfiguration.overallLimit()) {
+            if (reportMetadata.size() >= limiterConfiguration.getOverallLimit()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Reached overallLimit, not collecting");
                 return false;
             }
@@ -87,11 +87,11 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
                     sameClass++;
                 }
             }
-            if (sameTrace >= limiterConfiguration.stacktraceLimit()) {
+            if (sameTrace >= limiterConfiguration.getStacktraceLimit()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Reached stacktraceLimit, not sending");
                 return false;
             }
-            if (sameClass >= limiterConfiguration.exceptionClassLimit()) {
+            if (sameClass >= limiterConfiguration.getExceptionClassLimit()) {
                 if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "Reached exceptionClassLimit, not sending");
                 return false;
             }
@@ -106,10 +106,10 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
     @Override
     public void notifyReportDropped(@NonNull final Context context, @NonNull final CoreConfiguration config) {
         final LimiterConfiguration limiterConfiguration = ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class);
-        if (limiterConfiguration.ignoredCrashToast() != null) {
+        if (!limiterConfiguration.getIgnoredCrashToast().isEmpty()) {
             final Future<?> future = Executors.newSingleThreadExecutor().submit(() -> {
                 Looper.prepare();
-                ToastSender.sendToast(context, limiterConfiguration.ignoredCrashToast(), Toast.LENGTH_LONG);
+                ToastSender.sendToast(context, limiterConfiguration.getIgnoredCrashToast(), Toast.LENGTH_LONG);
                 final Looper looper = Looper.myLooper();
                 if (looper != null) {
                     new Handler(looper).postDelayed(() -> {
@@ -138,7 +138,7 @@ public class LimitingReportAdministrator extends HasConfigPlugin implements Repo
     private LimiterData loadLimiterData(@NonNull Context context, @NonNull LimiterConfiguration limiterConfiguration) throws IOException {
         final LimiterData limiterData = LimiterData.load(context);
         final Calendar keepAfter = Calendar.getInstance();
-        keepAfter.add(Calendar.MINUTE, (int) -limiterConfiguration.periodUnit().toMinutes(limiterConfiguration.period()));
+        keepAfter.add(Calendar.MINUTE, (int) -limiterConfiguration.getPeriodUnit().toMinutes(limiterConfiguration.getPeriod()));
         if (ACRA.DEV_LOGGING) ACRA.log.d(LOG_TAG, "purging reports older than " + keepAfter.getTime().toString());
         limiterData.purgeOldData(keepAfter);
         limiterData.store(context);

@@ -19,7 +19,8 @@ plugins {
 
 dependencies {
     implementation("com.google.auto:auto-common:0.10")
-    implementation("com.squareup:javapoet:1.11.1")
+    implementation("com.squareup:kotlinpoet:1.7.1")
+    implementation(kotlin("reflect"))
     implementation("org.apache.commons:commons-text:1.6")
     implementation(project(":annotations"))
     implementation(project(":acra-javacore"))
