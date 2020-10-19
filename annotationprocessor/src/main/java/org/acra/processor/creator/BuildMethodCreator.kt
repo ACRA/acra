@@ -24,9 +24,7 @@ import org.acra.config.ACRAConfigurationException
 import org.acra.config.ClassValidator
 import org.acra.processor.util.Strings
 import org.acra.processor.util.Types
-import java.util.stream.Collectors
 import javax.lang.model.element.ExecutableElement
-import kotlin.jvm.Throws
 
 /**
  * @author F43nd1r
@@ -39,7 +37,7 @@ class BuildMethodCreator(override: ExecutableElement, private val config: ClassN
             .beginControlFlow("if (%L)", Strings.FIELD_ENABLED)
     private val anyNonDefault: MutableMap<String, CodeBlock> = mutableMapOf()
     private val statements: MutableList<CodeBlock> = mutableListOf()
-    
+
     fun addNotUnset(name: String) {
         methodBuilder.beginControlFlow("if (%L == null)", name)
                 .addStatement("throw %T(\"%L has to be set\")", ACRAConfigurationException::class.java, name)
@@ -67,7 +65,7 @@ class BuildMethodCreator(override: ExecutableElement, private val config: ClassN
     fun build(): FunSpec {
         if (anyNonDefault.isNotEmpty()) {
             methodBuilder.beginControlFlow("if (%L)", anyNonDefault.map { CodeBlock.of("%L == %L", it.key, it.value) }
-                    .reduceOrNull { c1: CodeBlock, c2: CodeBlock -> CodeBlock.builder().add(c1).add(" && ").add(c2).build() } ?: CodeBlock.of("true"))
+                    .reduce { c1: CodeBlock, c2: CodeBlock -> CodeBlock.builder().add(c1).add(" && ").add(c2).build() })
                     .addStatement("throw %T(\"One·of·%L·must·not·be·default\")", ACRAConfigurationException::class.java, anyNonDefault.keys.joinToString(",·"))
                     .endControlFlow()
         }
