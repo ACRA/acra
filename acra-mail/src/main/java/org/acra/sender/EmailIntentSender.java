@@ -166,7 +166,7 @@ public class EmailIntentSender implements ReportSender {
     @NonNull
     protected Intent buildResolveIntent(@NonNull String subject, @NonNull String body) {
         final Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.fromParts("mailto", mailConfig.mailTo(), null));
+        intent.setData(Uri.parse("mailto:"+ mailConfig.mailTo() + "?subject="+ Uri.encode(subject) + "&body="+ Uri.encode(body)));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         intent.putExtra(Intent.EXTRA_TEXT, body);
