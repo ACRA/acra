@@ -148,15 +148,6 @@ public @interface AcraCore {
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
     /**
-     * This property can be used to determine whether old (out of date) reports should be sent or not.
-     *
-     * @return if ACRA should delete any unsent reports on startup if the application has been updated since the last time the application was started.
-     * @deprecated use @AcraLimiter.deleteReportsOnAppUpdate() instead
-     */
-    @Deprecated
-    boolean deleteOldUnsentReportsOnApplicationStart() default true;
-
-    /**
      * Set this to true if you prefer displaying the native force close dialog after ACRA is done.
      * Recommended: Keep this set to false if using interactions with user input.
      *

@@ -29,6 +29,7 @@ import org.acra.config.LimiterData;
 import org.acra.plugins.HasConfigPlugin;
 import org.acra.prefs.SharedPreferencesFactory;
 import org.acra.util.PackageManagerWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +47,7 @@ public class LimiterStartupProcessor extends HasConfigPlugin implements StartupP
     }
 
     @Override
-    public void processReports(@NonNull Context context, @NonNull CoreConfiguration config, List<Report> reports) {
+    public void processReports(@NotNull Context context, @NotNull CoreConfiguration config, @NotNull List<Report> reports) {
         final LimiterConfiguration limiterConfiguration = ConfigUtils.getPluginConfiguration(config, LimiterConfiguration.class);
         if(limiterConfiguration.getDeleteReportsOnAppUpdate() || limiterConfiguration.getResetLimitsOnAppUpdate()) {
             final SharedPreferences prefs = new SharedPreferencesFactory(context, config).create();

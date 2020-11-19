@@ -37,9 +37,9 @@ inline fun <reified T : ConfigurationBuilder> CoreConfigurationBuilder.plugin(in
 }
 
 fun Throwable.sendWithAcra() {
-    ACRA.getErrorReporter().handleException(this)
+    ACRA.errorReporter.handleException(this)
 }
 
 fun Throwable.sendSilentlyWithAcra() {
-    ACRA.getErrorReporter().handleSilentException(this)
+    ACRA.errorReporter.handleSilentException(this)
 }

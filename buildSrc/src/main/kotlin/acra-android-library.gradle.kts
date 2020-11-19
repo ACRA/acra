@@ -71,6 +71,7 @@ dependencies {
     testCompileOnly("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
     "kapt"(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
 }
 
 tasks.register<Jar>("sourcesJar") {
