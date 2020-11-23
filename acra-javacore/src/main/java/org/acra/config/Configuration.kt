@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.acra.config;
-
-import androidx.annotation.NonNull;
+package org.acra.config
 
 /**
- * A {@link Configuration} builder
+ * A configuration object
  *
  * @author F43nd1r
  * @since 01.06.2017
  */
-
-public interface ConfigurationBuilder {
+interface Configuration {
     /**
-     * Builds the configuration
+     * checks if the corresponding plugin is enabled
      *
-     * @return the fully configured and immutable configuration
-     * @throws ACRAConfigurationException if the configuration is invalid
+     * @return if this is enabled
      */
-    @NonNull
-    Configuration build() throws ACRAConfigurationException;
+    fun enabled(): Boolean
 }

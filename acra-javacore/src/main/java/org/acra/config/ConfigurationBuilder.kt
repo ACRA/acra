@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.acra.config;
+package org.acra.config
 
 /**
- * A configuration object
+ * A [Configuration] builder
  *
  * @author F43nd1r
  * @since 01.06.2017
  */
-
-public interface Configuration {
+interface ConfigurationBuilder {
     /**
-     * checks if the corresponding plugin is enabled
+     * Builds the configuration
      *
-     * @return if this is enabled
+     * @return the fully configured and immutable configuration
+     * @throws ACRAConfigurationException if the configuration is invalid
      */
-    boolean enabled();
+    @Throws(ACRAConfigurationException::class)
+    fun build(): Configuration
 }

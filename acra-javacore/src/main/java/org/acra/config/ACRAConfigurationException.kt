@@ -13,22 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.config;
+package org.acra.config
 
 /**
  * A simple Exception used when required configuration items are missing.
- * 
+ *
  * @author Kevin Gaudin
  */
-public class ACRAConfigurationException extends Exception {
+class ACRAConfigurationException : Exception {
+    constructor(msg: String?) : super(msg)
+    constructor(detailMessage: String?, throwable: Throwable?) : super(detailMessage, throwable)
 
-    private static final long serialVersionUID = -7355339673505996110L;
-
-    public ACRAConfigurationException(String msg) {
-        super(msg);
-    }
-
-    public ACRAConfigurationException(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
+    companion object {
+        private const val serialVersionUID = -7355339673505996110L
     }
 }
