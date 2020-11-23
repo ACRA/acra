@@ -35,9 +35,6 @@ import org.acra.annotation.Instantiatable
 import org.acra.annotation.NonEmpty
 import org.acra.annotation.PreBuild
 import org.acra.annotation.Transform
-import org.acra.collections.ImmutableList
-import org.acra.collections.ImmutableMap
-import org.acra.collections.ImmutableSet
 import java.lang.Deprecated
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.ExecutableElement
@@ -52,12 +49,6 @@ import kotlin.String
  * @since 11.01.2018
  */
 object Types {
-    val IMMUTABLE_MAP: ClassName = ImmutableMap::class.asClassName()
-    val IMMUTABLE_SET: ClassName = ImmutableSet::class.asClassName()
-    val IMMUTABLE_LIST: ClassName = ImmutableList::class.asClassName()
-    val MAP: ClassName = MutableMap::class.asClassName()
-    val SET: ClassName = MutableSet::class.asClassName()
-    val LIST: ClassName = MutableList::class.asClassName()
     @JvmField
     val STRING: ClassName = ClassName("kotlin", "String")
     @JvmField

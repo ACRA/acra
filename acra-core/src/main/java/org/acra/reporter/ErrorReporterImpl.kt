@@ -87,7 +87,7 @@ class ErrorReporterImpl(private val context: Application, config: CoreConfigurat
      * java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang
      * .Thread, java.lang.Throwable)
      */
-    override fun uncaughtException(t: Thread?, e: Throwable) {
+    override fun uncaughtException(t: Thread, e: Throwable) {
         // If we're not enabled then just pass the Exception on to the defaultExceptionHandler.
         if (!reportExecutor.isEnabled) {
             reportExecutor.handReportToDefaultExceptionHandler(t, e)

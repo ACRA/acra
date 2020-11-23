@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright (c) 2020
  *
@@ -72,6 +74,13 @@ dependencies {
     "kapt"(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = listOf("-Xjvm-default=enable")
+    }
 }
 
 tasks.register<Jar>("sourcesJar") {
