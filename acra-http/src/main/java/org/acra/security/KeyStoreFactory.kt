@@ -13,24 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.acra.security;
+package org.acra.security
 
-import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.security.KeyStore;
+import android.content.Context
+import java.security.KeyStore
 
 /**
- * Default KeyStoreFactory. Does not provide any KeyStore
+ * The interface can be used to provide a KeyStore with certificates.
  *
  * @author F43nd1r
- * @since 4.9.0
+ * @since 4.8.3
  */
-public class NoKeyStoreFactory implements KeyStoreFactory {
-    @Nullable
-    @Override
-    public KeyStore create(@NonNull Context context) {
-        return null;
-    }
+interface KeyStoreFactory {
+    fun create(context: Context): KeyStore?
 }
