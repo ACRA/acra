@@ -16,7 +16,6 @@
 package org.acra.processor.util
 
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.TypeName
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeMirror
@@ -26,7 +25,7 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor8
  * @author F43nd1r
  * @since 12.01.2018
  */
-class ToCodeBlockVisitor(private val type: TypeName) : SimpleAnnotationValueVisitor8<CodeBlock, Unit?>() {
+class ToCodeBlockVisitor : SimpleAnnotationValueVisitor8<CodeBlock, Unit?>() {
     override fun defaultAction(o: Any, u: Unit?): CodeBlock {
         return CodeBlock.of("%L", o)
     }

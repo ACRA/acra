@@ -19,6 +19,7 @@ import com.google.auto.common.MoreElements
 import com.google.auto.service.AutoService
 import org.acra.annotation.Configuration
 import org.acra.processor.creator.ClassCreator
+import org.acra.processor.creator.ServiceResourceCreator
 import org.acra.processor.util.Types
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -36,6 +37,8 @@ import javax.tools.Diagnostic
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class AcraAnnotationProcessor : AbstractProcessor() {
+    private val serviceResourceCreator = ServiceResourceCreator()
+
     override fun getSupportedAnnotationTypes(): Set<String> {
         return Types.MARKER_ANNOTATIONS.map { it.reflectionName() }.toSet()
     }
@@ -44,11 +47,14 @@ class AcraAnnotationProcessor : AbstractProcessor() {
         try {
             for (e in roundEnv.getElementsAnnotatedWith(Configuration::class.java)) {
                 if (e.kind == ElementKind.ANNOTATION_TYPE) {
-                    ClassCreator(MoreElements.asType(e), e.getAnnotation(Configuration::class.java), processingEnv).createClasses()
+                    ClassCreator(MoreElements.asType(e), e.getAnnotation(Configuration::class.java), processingEnv, serviceResourceCreator).createClasses()
                 } else {
                     processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, String.format("%s is only supported on %s",
                             Configuration::class.java.name, ElementKind.ANNOTATION_TYPE.name), e)
                 }
+            }
+            if(roundEnv.processingOver()) {
+                serviceResourceCreator.generateResources(processingEnv)
             }
         } catch (e: Throwable) {
             e.printStackTrace()

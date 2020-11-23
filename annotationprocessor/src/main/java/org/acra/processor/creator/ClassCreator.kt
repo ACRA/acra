@@ -47,7 +47,8 @@ import javax.lang.model.type.MirroredTypeException
  * @author F43nd1r
  * @since 04.06.2017
  */
-class ClassCreator(private val baseAnnotation: TypeElement, private val configuration: Configuration, private val processingEnv: ProcessingEnvironment) {
+class ClassCreator(private val baseAnnotation: TypeElement, private val configuration: Configuration, private val processingEnv: ProcessingEnvironment,
+                   private val serviceResourceCreator: ServiceResourceCreator) {
     private val baseName = baseAnnotation.simpleName.toString().replace("Acra", "")
     private val configName: String = baseName + "Configuration"
     private val builderName: String = configName + "Builder"
@@ -84,7 +85,10 @@ class ClassCreator(private val baseAnnotation: TypeElement, private val configur
         elements.filterIsInstance<BuilderElement>().forEach { it.addToBuilder(classBuilder, builder, primaryConstructor) }
         classBuilder.primaryConstructor(constructor.addCode(primaryConstructor.build()).build())
         val build = BuildMethodCreator(Types.getOnlyMethod(processingEnv, ConfigurationBuilder::class.java.name), ClassName(Strings.PACKAGE, configName))
-        elements.stream().filter { obj: Element? -> ValidatedElement::class.java.isInstance(obj) }.map { obj: Element? -> ValidatedElement::class.java.cast(obj) }.forEach { element: ValidatedElement -> element.addToBuildMethod(build) }
+        elements.stream()
+                .filter { obj: Element? -> ValidatedElement::class.java.isInstance(obj) }
+                .map { obj: Element? -> ValidatedElement::class.java.cast(obj) }
+                .forEach { element: ValidatedElement -> element.addToBuildMethod(build) }
         classBuilder.addFunction(build.build())
         Strings.writeClass(processingEnv, classBuilder.build())
     }
@@ -108,11 +112,11 @@ class ClassCreator(private val baseAnnotation: TypeElement, private val configur
                 .addOriginatingElement(baseAnnotation)
                 .addModifiers(KModifier.PUBLIC)
                 .addSuperinterface(configurationBuilderFactory)
-                .addAnnotation(AnnotationSpec.builder(AutoService::class.java).addMember("value = [%T::class]", configurationBuilderFactory).build())
                 .addFunction(Types.overriding(Types.getOnlyMethod(processingEnv, Strings.CONFIGURATION_BUILDER_FACTORY))
                         .addStatement("return %T(%L)", ClassName(Strings.PACKAGE, builderName), Strings.PARAM_0)
                         .build())
                 .build())
+        serviceResourceCreator.addService(configurationBuilderFactory.canonicalName, "${Strings.PACKAGE}.$factoryName")
     }
 
     private fun createExtensions() {

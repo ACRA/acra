@@ -24,4 +24,6 @@ dependencies {
     implementation("org.apache.commons:commons-text:1.6")
     implementation(project(":annotations"))
     implementation(project(":acra-javacore"))
+    val autoServiceVersion: String by project
+    implementation("com.google.auto.service:auto-service:$autoServiceVersion")
 }

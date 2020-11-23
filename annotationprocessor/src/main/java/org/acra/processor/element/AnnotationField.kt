@@ -64,7 +64,7 @@ abstract class AnnotationField(override val name: String, override val type: Typ
 
     open class Normal(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) : AnnotationField(name, type, annotations, javadoc, markers, defaultValue) {
         public override fun addInitializer(constructor: CodeBlock.Builder) {
-            constructor.addStatement("%1L = %2L?.%1L ?: %3L", name, Strings.VAR_ANNOTATION, defaultValue?.accept(ToCodeBlockVisitor(type), null))
+            constructor.addStatement("%1L = %2L?.%1L ?: %3L", name, Strings.VAR_ANNOTATION, defaultValue?.accept(ToCodeBlockVisitor(), null))
         }
 
         override fun addToBuildMethod(method: BuildMethodCreator) {
@@ -78,14 +78,14 @@ abstract class AnnotationField(override val name: String, override val type: Typ
                 method.addInstantiatable(name)
             }
             if (hasMarker(Types.ANY_NON_DEFAULT)) {
-                method.addAnyNonDefault(name, defaultValue?.accept(ToCodeBlockVisitor(type), null) ?: CodeBlock.of("null"))
+                method.addAnyNonDefault(name, defaultValue?.accept(ToCodeBlockVisitor(), null) ?: CodeBlock.of("null"))
             }
         }
     }
 
     class Clazz(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) : Normal(name, type, annotations, markers, defaultValue, javadoc) {
-        public override fun addInitializer(constructor: CodeBlock.Builder) {
-            constructor.addStatement("%1L = %2L?.%1L?.java ?: %3L", name, Strings.VAR_ANNOTATION, defaultValue?.accept(ToCodeBlockVisitor(type), null))
+        override fun addInitializer(constructor: CodeBlock.Builder) {
+            constructor.addStatement("%1L = %2L?.%1L?.java ?: %3L", name, Strings.VAR_ANNOTATION, defaultValue?.accept(ToCodeBlockVisitor(), null))
         }
     }
 
@@ -95,7 +95,7 @@ abstract class AnnotationField(override val name: String, override val type: Typ
 
         public override fun addInitializer(constructor: CodeBlock.Builder) {
             if(hasDefault) {
-                constructor.addStatement("%L = (%L?.%L.takeIf·{ it != 0 } ?: %L)?.let·{ %L.getString(it) } ?: \"\"", name, Strings.VAR_ANNOTATION, originalName, defaultValue, Strings.FIELD_CONTEXT)
+                constructor.addStatement("%L = %L.getString(%L?.%L.takeIf·{ it != 0 } ?: %L)", name, Strings.FIELD_CONTEXT, Strings.VAR_ANNOTATION, originalName, defaultValue)
             } else {
                 constructor.addStatement("%L = %L?.%L.takeIf·{ it != 0 }?.let·{ %L.getString(it) } ?: \"\"", name, Strings.VAR_ANNOTATION, originalName, Strings.FIELD_CONTEXT)
             }
