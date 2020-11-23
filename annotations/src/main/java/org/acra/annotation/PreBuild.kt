@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.acra.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.acra.annotation
 
 /**
- * Any of the annotation methods annotated with this has to be different from the default value for the configuration to be valid
+ * This method should run before the configuration is built
  *
  * @author F43nd1r
  * @since 03.06.2017
  */
-
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.METHOD)
-public @interface AnyNonDefault {
-}
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+annotation class PreBuild

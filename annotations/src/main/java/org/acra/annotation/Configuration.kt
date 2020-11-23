@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.acra.annotation
 
-package org.acra.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import kotlin.reflect.KClass
 
 /**
  * The annotation annotated with this will be used as basis for Configurations and their Builders
@@ -27,10 +23,6 @@ import java.lang.annotation.Target;
  * @author F43nd1r
  * @since 17.03.2017
  */
-
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.ANNOTATION_TYPE)
-public @interface Configuration {
-    Class baseBuilderClass() default Object.class;
-    boolean isPlugin() default true;
-}
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.ANNOTATION_CLASS)
+annotation class Configuration(val baseBuilderClass: KClass<*> = Any::class, val isPlugin: Boolean = true)

@@ -21,9 +21,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.asTypeVariableName
@@ -35,14 +32,11 @@ import org.acra.annotation.Instantiatable
 import org.acra.annotation.NonEmpty
 import org.acra.annotation.PreBuild
 import org.acra.annotation.Transform
-import java.lang.Deprecated
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.util.ElementFilter
 import javax.tools.Diagnostic
-import kotlin.IllegalArgumentException
-import kotlin.String
 
 /**
  * @author F43nd1r
@@ -53,8 +47,6 @@ object Types {
     val STRING: ClassName = ClassName("kotlin", "String")
     @JvmField
     val STRING_RES = AnnotationSpec.builder(StringRes::class.java).build()
-    @JvmField
-    val DEPRECATED = AnnotationSpec.builder(kotlin.Deprecated::class.java).build()
     @JvmField
     val ANY_NON_DEFAULT: ClassName = AnyNonDefault::class.asClassName()
     val BUILDER_METHOD: ClassName = BuilderMethod::class.asClassName()
