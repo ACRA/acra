@@ -59,7 +59,7 @@ interface ReportingAdministrator : Plugin {
      * @param config  the current config
      */
     fun notifyReportDropped(context: Context, config: CoreConfiguration) {}
-    fun shouldFinishActivity(context: Context, config: CoreConfiguration, lastActivityManager: LastActivityManager?): Boolean {
+    fun shouldFinishActivity(context: Context, config: CoreConfiguration, lastActivityManager: LastActivityManager): Boolean {
         return true
     }
 
