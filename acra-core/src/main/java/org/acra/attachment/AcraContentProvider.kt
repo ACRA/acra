@@ -172,6 +172,7 @@ class AcraContentProvider : ContentProvider() {
          * @param file    the file
          * @return the uri
          */
+        @JvmStatic
         fun getUriForFile(context: Context, file: File): Uri {
             return getUriForFile(context, Directory.ROOT, file.path)
         }
@@ -184,6 +185,7 @@ class AcraContentProvider : ContentProvider() {
          * @param relativePath the file path
          * @return the uri
          */
+        @JvmStatic
         fun getUriForFile(context: Context, directory: Directory, relativePath: String): Uri {
             val builder = Uri.Builder()
                     .scheme(ContentResolver.SCHEME_CONTENT)

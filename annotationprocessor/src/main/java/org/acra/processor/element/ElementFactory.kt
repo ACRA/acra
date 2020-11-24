@@ -47,6 +47,12 @@ class ElementFactory(private val elements: Elements) {
                 elements.getDocComment(method))
     }
 
+    fun fromArrayAnnotationMethod(method: ExecutableElement): Element {
+        val annotations = getAnnotations(method)
+        return AnnotationField.Array(method.simpleName.toString(), method.returnType.asTypeName().javaToKotlinType(), annotations.left, annotations.right, method.defaultValue,
+                elements.getDocComment(method))
+    }
+
     fun fromStringResourceAnnotationMethod(method: ExecutableElement): Element {
         val annotations = getAnnotations(method)
         return AnnotationField.StringResource(method.simpleName.toString(), annotations.left, annotations.right,

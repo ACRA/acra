@@ -54,6 +54,7 @@ internal class ModelBuilder(private val baseAnnotation: TypeElement, private val
         for (method in ElementFilter.methodsIn(baseAnnotation.enclosedElements)) {
             elements.add(when {
                 MoreElements.isAnnotationPresent(method, StringRes::class.java) -> modelFactory.fromStringResourceAnnotationMethod(method)
+                method.returnType.toString().endsWith("[]") -> modelFactory.fromArrayAnnotationMethod(method)
                 method.returnType.toString().contains("Class") -> modelFactory.fromClassAnnotationMethod(method)
                 else -> modelFactory.fromAnnotationMethod(method)
             })

@@ -73,7 +73,7 @@ enum class StringFormat(val matchingHttpContentType: String) {
         }
 
         private fun toStringMap(map: Map<String, Any?>, joiner: String): Map<String, String> {
-            return map.mapValues { valueToString(joiner, it) }.toMap()
+            return map.mapValues { valueToString(joiner, it.value) }.toMap()
         }
 
         private fun valueToString(joiner: String, value: Any?): String {

@@ -30,9 +30,11 @@ object InstanceCreator {
      * @param <T>      the return type
      * @return a new instance of clazz or fallback
     </T> */
+    @JvmStatic
     fun <T> create(clazz: Class<out T>, fallback: () -> T): T = create(clazz) ?: fallback.invoke()
 
     @VisibleForTesting
+    @JvmStatic
     fun <T> create(clazz: Class<out T?>): T? {
         try {
             return clazz.newInstance()
@@ -51,5 +53,6 @@ object InstanceCreator {
      * @param <T>     the return type
      * @return a list of successfully created instances, does not contain null
     </T> */
+    @JvmStatic
     fun <T> create(classes: Collection<Class<out T>>): List<T> = classes.mapNotNull { create(it) }
 }

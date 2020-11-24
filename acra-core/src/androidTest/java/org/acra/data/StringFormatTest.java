@@ -20,11 +20,12 @@ package org.acra.data;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import junit.framework.Assert;
 import org.acra.ReportField;
-import org.acra.collections.ImmutableSet;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -55,16 +56,16 @@ public class StringFormatTest {
 
     public void testJson() throws Exception {
         Assert.assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
-                StringFormat.JSON.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "\n", " ", false));
+                StringFormat.JSON.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "\n", " ", false));
         assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
-                StringFormat.JSON.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "&", "\n", true));
+                StringFormat.JSON.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "&", "\n", true));
     }
 
     public void testKeyValue() throws Exception {
         assertEquals("DEVICE_ID=FAKE_ID\nBUILD_CONFIG=VERSION_CODE=-1 VERSION_NAME=Test",
-                StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "\n", " ", false));
+                StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "\n", " ", false));
         assertEquals("DEVICE_ID=FAKE_ID&BUILD_CONFIG=VERSION_CODE%3D-1%0AVERSION_NAME%3DTest",
-                StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "&", "\n", true));
+                StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "&", "\n", true));
     }
 
     @Test
@@ -76,6 +77,6 @@ public class StringFormatTest {
     @Test
     public void issue626() throws Exception {
         CrashReportData reportData = new CrashReportData();
-        assertEquals("DEVICE_ID=null", StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, new ImmutableSet<>(ReportField.DEVICE_ID), "\n", " ", true));
+        assertEquals("DEVICE_ID=null", StringFormat.KEY_VALUE_LIST.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID), "\n", " ", true));
     }
 }

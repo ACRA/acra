@@ -102,6 +102,7 @@ object ACRA {
      * the current instance of ErrorReporter.
      * not available if [ACRA.init] has not yet been called.
      */
+    @JvmStatic
     var errorReporter = StubCreator.createErrorReporterStub()
         private set
 
@@ -119,6 +120,7 @@ object ACRA {
      * @param checkReportsOnApplicationStart Whether to invoke ErrorReporter.checkReportsOnApplicationStart().
      */
     @JvmOverloads
+    @JvmStatic
     fun init(app: Application, builder: CoreConfigurationBuilder = CoreConfigurationBuilder(app), checkReportsOnApplicationStart: Boolean = true) {
         try {
             init(app, builder.build(), checkReportsOnApplicationStart)
@@ -141,6 +143,7 @@ object ACRA {
      * @throws IllegalStateException if it is called more than once.
      */
     @JvmOverloads
+    @JvmStatic
     fun init(app: Application, config: CoreConfiguration, checkReportsOnApplicationStart: Boolean = true) {
         val senderServiceProcess = isACRASenderServiceProcess()
         if (senderServiceProcess) {

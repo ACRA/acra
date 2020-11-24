@@ -74,7 +74,7 @@ class BaseCoreConfigurationBuilder internal constructor(private val app: Context
     }
 
     @Transform(methodName = "reportContent")
-    fun transformReportContent(reportFields: Array<ReportField>): List<ReportField> {
+    fun transformReportContent(reportFields: Array<out ReportField>): List<ReportField> {
         val reportContent: MutableList<ReportField> = ArrayList()
         if (reportFields.isNotEmpty()) {
             debug { "Using custom Report Fields" }

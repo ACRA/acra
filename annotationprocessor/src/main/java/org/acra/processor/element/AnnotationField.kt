@@ -21,9 +21,12 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.WildcardTypeName
 import org.acra.processor.creator.BuildMethodCreator
 import org.acra.processor.util.IsValidResourceVisitor
 import org.acra.processor.util.Strings
@@ -37,7 +40,8 @@ import javax.lang.model.element.AnnotationValue
  * @author F43nd1r
  * @since 12.01.2018
  */
-abstract class AnnotationField(override val name: String, override val type: TypeName, override val annotations: Collection<AnnotationSpec>, private val javadoc: String?, private val markers: Collection<ClassName>, val defaultValue: AnnotationValue?) : TransformedField.Transformable {
+abstract class AnnotationField(override val name: String, override val type: TypeName, override val annotations: Collection<AnnotationSpec>, private val javadoc: String?,
+                               private val markers: Collection<ClassName>, val defaultValue: AnnotationValue?) : TransformedField.Transformable {
     fun hasMarker(marker: ClassName): Boolean {
         return markers.contains(marker)
     }
@@ -62,7 +66,8 @@ abstract class AnnotationField(override val name: String, override val type: Typ
         }
     }
 
-    open class Normal(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) : AnnotationField(name, type, annotations, javadoc, markers, defaultValue) {
+    open class Normal(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) :
+            AnnotationField(name, type, annotations, javadoc, markers, defaultValue) {
         public override fun addInitializer(constructor: CodeBlock.Builder) {
             constructor.addStatement("%1L = %2L?.%1L ?: %3L", name, Strings.VAR_ANNOTATION, defaultValue?.accept(ToCodeBlockVisitor(), null))
         }
@@ -83,18 +88,33 @@ abstract class AnnotationField(override val name: String, override val type: Typ
         }
     }
 
-    class Clazz(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) : Normal(name, type, annotations, markers, defaultValue, javadoc) {
+    class Clazz(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) :
+            Normal(name, type, annotations, markers, defaultValue, javadoc) {
         override fun addInitializer(constructor: CodeBlock.Builder) {
             constructor.addStatement("%1L = %2L?.%1L?.java ?: %3L", name, Strings.VAR_ANNOTATION, defaultValue?.accept(ToCodeBlockVisitor(), null))
         }
     }
 
+    class Array(name: String, type: TypeName, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>, defaultValue: AnnotationValue?, javadoc: String) :
+            Normal(name, (type as ParameterizedTypeName).let { it.rawType.parameterizedBy(WildcardTypeName.producerOf(it.typeArguments.first())) }, annotations, markers,
+                    defaultValue, javadoc) {
+        private val originalType = type
+        override fun configureSetter(builder: FunSpec.Builder) {
+            super.configureSetter(builder)
+            val param = builder.parameters.first().toBuilder(type = (originalType as ParameterizedTypeName).typeArguments.first()).addModifiers(KModifier.VARARG).build()
+            builder.parameters.clear()
+            builder.addParameter(param)
+        }
+    }
+
     class StringResource(private val originalName: String, annotations: Collection<AnnotationSpec>, markers: Collection<ClassName>,
-                         defaultValue: AnnotationValue?, javadoc: String?) : AnnotationField(if (originalName.startsWith(Strings.PREFIX_RES)) WordUtils.uncapitalize(originalName.substring(Strings.PREFIX_RES.length)) else originalName, Types.STRING, annotations - Types.STRING_RES, javadoc, markers, defaultValue) {
+                         defaultValue: AnnotationValue?, javadoc: String?) :
+            AnnotationField(if (originalName.startsWith(Strings.PREFIX_RES)) WordUtils.uncapitalize(originalName.substring(Strings.PREFIX_RES.length)) else originalName,
+                    Types.STRING, annotations - Types.STRING_RES, javadoc, markers, defaultValue) {
         private val hasDefault: Boolean = defaultValue != null && defaultValue.accept(IsValidResourceVisitor(), null)
 
         public override fun addInitializer(constructor: CodeBlock.Builder) {
-            if(hasDefault) {
+            if (hasDefault) {
                 constructor.addStatement("%L = %L.getString(%L?.%L.takeIf·{ it != 0 } ?: %L)", name, Strings.FIELD_CONTEXT, Strings.VAR_ANNOTATION, originalName, defaultValue)
             } else {
                 constructor.addStatement("%L = %L?.%L.takeIf·{ it != 0 }?.let·{ %L.getString(it) } ?: \"\"", name, Strings.VAR_ANNOTATION, originalName, Strings.FIELD_CONTEXT)
