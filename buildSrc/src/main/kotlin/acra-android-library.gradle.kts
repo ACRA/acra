@@ -1,3 +1,7 @@
+import org.jetbrains.dokka.Platform
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.internal.KaptTask
+import org.jetbrains.kotlin.gradle.model.Kapt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /*
@@ -21,6 +25,7 @@ plugins {
 apply(plugin = "kotlin-android")
 apply(plugin = "kotlin-kapt")
 apply(plugin = "acra-base")
+apply(plugin = "org.jetbrains.dokka")
 
 android {
     val androidVersion: String by project
@@ -89,22 +94,23 @@ tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
-tasks.register<Javadoc>("javadoc") {
-    group = "documentation"
-    source = (android.sourceSets["main"].java.srcDirs.map { fileTree(it) }.reduce(FileTree::plus) +
-            files("$buildDir/generated/source/buildConfig/release") +
-            files("$buildDir/generated/ap_generated_sources/release/out")).filter { it.extension != "kt" }.asFileTree
-    classpath += files(*android.bootClasspath.toTypedArray())
-    android.libraryVariants.find { it.name == "release" }?.apply {
-        classpath += javaCompileProvider.get().classpath
+tasks.withType<KaptTask> {
+    useBuildCache = false
+}
+
+tasks.withType<DokkaTask> {
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+            sourceRoot(File(buildDir,"generated/source/kaptKotlin/release"))
+        }
     }
-    linksOffline("http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference")
     dependsOn("assembleRelease")
 }
 
 tasks.register<Jar>("javadocJar") {
     group = "documentation"
-    from(tasks["javadoc"])
+    from(tasks["dokkaJavadoc"])
     archiveClassifier.set("javadoc")
 }
 

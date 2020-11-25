@@ -48,6 +48,5 @@ class TransformedField(val transformName: String, override val type: TypeName, p
     override val annotations: Collection<com.squareup.kotlinpoet.AnnotationSpec>
         get() = transform.annotations
 
-    interface Transformable : ConfigElement, BuilderElement, ValidatedElement {
-    }
+    interface Transformable : ConfigElement, BuilderElement, ValidatedElement
 }

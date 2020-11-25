@@ -25,7 +25,7 @@ jobs:
           repository: 'ACRA/acra.github.com'
           path: 'web'
       - name: Generate Javadoc
-        run: ./gradlew joinedJavadoc --no-daemon
+        run: ./gradlew dokkaHtmlCollector --no-daemon
         working-directory: ./main
       - name: Extract version
         id: version
@@ -34,8 +34,8 @@ jobs:
       - name: Update Javadoc
         run: |
           mkdir ./web/javadoc/${{ steps.version.outputs.value }}
-          cp -a ./main/build/javadoc/. ./web/javadoc/${{ steps.version.outputs.value }}/
-          echo  "- [${{ steps.version.outputs.value }}](${{ steps.version.outputs.value }})" >> ./web/javadoc/index.md
+          cp -a ./main/build/dokka/htmlCollector/. ./web/javadoc/${{ steps.version.outputs.value }}/
+          echo  "- [${{ steps.version.outputs.value }}](${{ steps.version.outputs.value }}/acra)" >> ./web/javadoc/index.md
           ln -sfn "${{ steps.version.outputs.value }}/" ./web/javadoc/latest
       - name: Commit files
         run: |

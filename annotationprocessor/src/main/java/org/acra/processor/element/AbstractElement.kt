@@ -22,5 +22,4 @@ import com.squareup.kotlinpoet.TypeName
  * @author F43nd1r
  * @since 12.01.2018
  */
-open class AbstractElement(override val name: String, override val type: TypeName, override val annotations: Collection<AnnotationSpec>) : Element {
-}
+open class AbstractElement(override val name: String, override val type: TypeName, override val annotations: Collection<AnnotationSpec>) : Element

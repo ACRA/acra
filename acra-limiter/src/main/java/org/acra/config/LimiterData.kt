@@ -77,7 +77,7 @@ class LimiterData() {
             put(KEY_TIMESTAMP, crashReportData.getString(ReportField.USER_CRASH_DATE))
         }
 
-        internal constructor(copyFrom: JSONObject) : super(copyFrom, jsonArrayToList(copyFrom.names())) {}
+        internal constructor(copyFrom: JSONObject) : super(copyFrom, jsonArrayToList(copyFrom.names()))
 
         val stacktrace: String
             get() = optString(KEY_STACK_TRACE)

@@ -32,8 +32,7 @@ import javax.tools.Diagnostic
  */
 object Strings {
     const val PREFIX_RES = "res"
-    const val PREFIX_SETTER = "set"
-    const val PREFIX_GETTER = "get"
+    const val PREFIX_SETTER = "with"
     const val PARAM_0 = "arg0"
     const val VAR_ANNOTATION = "annotation"
     const val FIELD_DELEGATE = "delegate"
