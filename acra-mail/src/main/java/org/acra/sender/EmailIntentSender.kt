@@ -155,7 +155,7 @@ open class EmailIntentSender(private val config: CoreConfiguration) : ReportSend
      */
     protected fun buildResolveIntent(subject: String, body: String): Intent {
         val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.fromParts("mailto", mailConfig.mailTo, null)
+        intent.data = Uri.parse("mailto:${mailConfig.mailTo}?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}")
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
         intent.putExtra(Intent.EXTRA_TEXT, body)

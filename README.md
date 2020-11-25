@@ -46,8 +46,9 @@ For migrating from 4.x, please see our [Migration guide](http://github.com/ACRA/
 
 Backends
 ========
-[Acralyzer](https://github.com/ACRA/acralyzer) is the official backend for report storage and analysis. It runs on CouchDB, for which free hosting solutions exist. It is feature complete, but currently unmaintained. Anybody picking this project up is very welcome.
 
-[Acrarium](https://github.com/F43nd1r/Acrarium) is the recommended alternative, if you do not want to rely on an unmaintained project. Acrarium is in active development and has not reached stable phase yet.
+[Acrarium](https://github.com/F43nd1r/Acrarium) is the official backend for report storage and analysis. Acrarium is in active development and has recently reached stable release.
+
+[Acralyzer](https://github.com/ACRA/acralyzer) was the official backend before that. It runs on CouchDB, for which free hosting solutions exist. It is feature complete, but currently unmaintained. Anybody picking this project up is very welcome.
 
 [A lot of other solutions](https://github.com/ACRA/acra/wiki/Backends) have been provided by the community, just check which one you like most.
