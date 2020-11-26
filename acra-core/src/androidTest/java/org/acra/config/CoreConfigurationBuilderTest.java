@@ -34,8 +34,8 @@ public class CoreConfigurationBuilderTest {
 
     @Test
     public void enabled() {
-        assertTrue(new CoreConfigurationBuilder(new AnnotatedClass()).enabled());
-        assertFalse(new CoreConfigurationBuilder(new NonAnnotatedClass()).enabled());
+        assertTrue(new CoreConfigurationBuilder(new AnnotatedClass()).getEnabled());
+        assertFalse(new CoreConfigurationBuilder(new NonAnnotatedClass()).getEnabled());
     }
 
     @AcraCore

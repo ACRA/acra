@@ -15,7 +15,10 @@
  */
 plugins {
     `java-library`
+    kotlin("jvm")
+    id("kotlin-kapt")
     id("acra-base")
+    id("org.jetbrains.dokka")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -26,7 +29,7 @@ tasks.register<Jar>("sourcesJar") {
 
 tasks.register<Jar>("javadocJar") {
     group = "documentation"
-    from(tasks["javadoc"])
+    from(tasks["dokkaJavadoc"])
     archiveClassifier.set("javadoc")
 }
 

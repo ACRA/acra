@@ -20,6 +20,6 @@ repositories {
 
 dependencies {
     val autoServiceVersion: String by project
-    "annotationProcessor"("com.google.auto.service:auto-service:$autoServiceVersion")
+    "kapt"("com.google.auto.service:auto-service:$autoServiceVersion")
     "compileOnly"("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
 }

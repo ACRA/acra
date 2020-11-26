@@ -15,5 +15,7 @@
  */
 plugins {
     id("com.android.application")
-    id("acra-base")
 }
+apply(plugin = "kotlin-android")
+apply(plugin = "kotlin-kapt")
+apply(plugin = "acra-base")

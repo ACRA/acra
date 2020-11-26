@@ -33,6 +33,7 @@ import java.lang.annotation.Target;
  * @author F43nd1r
  * @since 01.06.2017
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -46,7 +47,7 @@ public @interface AcraMailSender {
      * @return email address to which to send reports.
      * @since 5.0.0
      */
-    @NonNull String mailTo();
+    @NonNull @AnyNonDefault String mailTo() default ACRAConstants.NULL_VALUE;
 
     /**
      * Sending the report as an attachment prevents issues with report size and the user from modifying it

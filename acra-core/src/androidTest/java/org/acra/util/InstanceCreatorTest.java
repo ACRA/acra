@@ -28,25 +28,19 @@ import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public class InstanceCreatorTest {
-    private InstanceCreator instanceCreator;
-
-    @Before
-    public void setUp() {
-        instanceCreator = new InstanceCreator();
-    }
 
     @Test
     public void create() {
-        assertNotNull(instanceCreator.create(ClassWithDefaultConstructor.class));
-        assertNotNull(instanceCreator.create(ClassWithExplicitNoArgsConstructor.class));
-        assertNull(instanceCreator.create(ClassWithPrivateConstructor.class));
-        assertNull(instanceCreator.create(ClassWithImplicitConstructorArg.class));
-        assertNull(instanceCreator.create(ClassWithExplicitConstructorArg.class));
+        assertNotNull(InstanceCreator.create(ClassWithDefaultConstructor.class));
+        assertNotNull(InstanceCreator.create(ClassWithExplicitNoArgsConstructor.class));
+        assertNull(InstanceCreator.create(ClassWithPrivateConstructor.class));
+        assertNull(InstanceCreator.create(ClassWithImplicitConstructorArg.class));
+        assertNull(InstanceCreator.create(ClassWithExplicitConstructorArg.class));
     }
 
     @Test
     public void create1() {
-        assertThat(instanceCreator.create(Arrays.asList(ClassWithDefaultConstructor.class, ClassWithExplicitConstructorArg.class)), hasSize(1));
+        assertThat(InstanceCreator.create(Arrays.asList(ClassWithDefaultConstructor.class, ClassWithExplicitConstructorArg.class)), hasSize(1));
     }
 
     public static class ClassWithDefaultConstructor {

@@ -24,7 +24,6 @@ include("acra-toast")
 include("acra-notification")
 include("acra-limiter")
 include("acra-advanced-scheduler")
-include("acra-core-ktx")
 
 pluginManagement {
     repositories {

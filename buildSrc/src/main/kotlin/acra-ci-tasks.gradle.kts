@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.android.build.gradle.LibraryPlugin
-import com.android.build.gradle.LibraryExtension
+plugins {
+    id("org.jetbrains.dokka")
+}
 
-tasks.register<Javadoc>("joinedJavadoc") {
-    group = "documentation"
-    setDestinationDir(file("$buildDir/javadoc"))
-    subprojects {
-        val tasks = tasks.withType<Javadoc>()
-        source += files(*tasks.map { it.source }.toTypedArray()).asFileTree
-        classpath += files(*tasks.map { it.classpath }.toTypedArray())
-        val path = project.path.let { if (!it.endsWith(Project.PATH_SEPARATOR)) it + Project.PATH_SEPARATOR else it }
-        dependsOn(*tasks.flatMap { task -> task.dependsOn.map { "$path$it"}  }.toTypedArray())
-        plugins.withType<LibraryPlugin> {
-            linksOffline("http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference")
-            android.libraryVariants.find { it.name == "release" }?.apply {
-                classpath += javaCompileProvider.get().classpath
-            }
-        }
-    }
+repositories {
+    jcenter()
 }
 
 tasks.register("printVersion") {
@@ -39,7 +26,3 @@ tasks.register("printVersion") {
         println(version)
     }
 }
-
-val Project.android: LibraryExtension get() = this.extensions.getByType(LibraryExtension::class.java)
-
-fun Javadoc.linksOffline(extDocUrl: String, packageListLoc: String) = (options as StandardJavadocDocletOptions).linksOffline(extDocUrl, packageListLoc)

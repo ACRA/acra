@@ -1,3 +1,9 @@
+import org.jetbrains.dokka.Platform
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.internal.KaptTask
+import org.jetbrains.kotlin.gradle.model.Kapt
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright (c) 2020
  *
@@ -15,19 +21,20 @@
  */
 plugins {
     id("com.android.library")
-    id("acra-base")
 }
+apply(plugin = "kotlin-android")
+apply(plugin = "kotlin-kapt")
+apply(plugin = "acra-base")
+apply(plugin = "org.jetbrains.dokka")
 
 android {
     val androidVersion: String by project
-    val buildToolsVersion: String by project
     val androidMinVersion: String by project
     compileSdkVersion(Integer.parseInt(androidVersion))
-    buildToolsVersion(buildToolsVersion)
     defaultConfig {
         minSdkVersion(androidMinVersion)
         targetSdkVersion(androidVersion)
-        versionNameSuffix = "$version"
+        buildConfigField("String", "VERSION_NAME", "\"$version\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -67,10 +74,18 @@ dependencies {
     val hamcrestVersion: String by project
     androidTestImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
     val autoServiceVersion: String by project
-    testAnnotationProcessor("com.google.auto.service:auto-service:$autoServiceVersion")
+    "kaptTest"("com.google.auto.service:auto-service:$autoServiceVersion")
     testCompileOnly("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
-    annotationProcessor(project(":annotationprocessor"))
+    "kapt"(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = listOf("-Xjvm-default=enable")
+    }
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -79,22 +94,23 @@ tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
-tasks.register<Javadoc>("javadoc") {
-    group = "documentation"
-    source = (android.sourceSets["main"].java.srcDirs.map { fileTree(it) }.reduce(FileTree::plus) +
-            files("$buildDir/generated/source/buildConfig/release") +
-            files("$buildDir/generated/ap_generated_sources/release/out")).filter { it.extension != "kt" }.asFileTree
-    classpath += files(*android.bootClasspath.toTypedArray())
-    android.libraryVariants.find { it.name == "release" }?.apply {
-        classpath += javaCompileProvider.get().classpath
+tasks.withType<KaptTask> {
+    useBuildCache = false
+}
+
+tasks.withType<DokkaTask> {
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+            sourceRoot(File(buildDir,"generated/source/kaptKotlin/release"))
+        }
     }
-    linksOffline("http://d.android.com/reference", "${android.sdkDirectory.path}/docs/reference")
     dependsOn("assembleRelease")
 }
 
 tasks.register<Jar>("javadocJar") {
     group = "documentation"
-    from(tasks["javadoc"])
+    from(tasks["dokkaJavadoc"])
     archiveClassifier.set("javadoc")
 }
 

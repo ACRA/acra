@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  * @author F43nd1r
  * @since 26.10.2017
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

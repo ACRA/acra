@@ -33,6 +33,11 @@ dependencies {
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion")
     val releasePluginVersion: String by project
     implementation("com.faendir.gradle:gradle-release:$releasePluginVersion")
+    val kotlinVersion: String by project
+    implementation(kotlin("gradle-plugin:$kotlinVersion"))
+    val dokkaVersion: String by project
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion")
+    implementation("org.jetbrains.dokka:dokka-core:$dokkaVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks

@@ -37,6 +37,7 @@ import java.lang.annotation.*;
  * @author F43nd1r
  * @since 01.06.2017
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -147,15 +148,6 @@ public @interface AcraCore {
     boolean deleteUnapprovedReportsOnApplicationStart() default true;
 
     /**
-     * This property can be used to determine whether old (out of date) reports should be sent or not.
-     *
-     * @return if ACRA should delete any unsent reports on startup if the application has been updated since the last time the application was started.
-     * @deprecated use @AcraLimiter.deleteReportsOnAppUpdate() instead
-     */
-    @Deprecated
-    boolean deleteOldUnsentReportsOnApplicationStart() default true;
-
-    /**
      * Set this to true if you prefer displaying the native force close dialog after ACRA is done.
      * Recommended: Keep this set to false if using interactions with user input.
      *
@@ -226,13 +218,6 @@ public @interface AcraCore {
      * @return BuildConfig class from which to read any BuildConfig attributes.
      */
     @NonNull Class<?> buildConfigClass() default Object.class;
-
-    /**
-     * @return {@link org.acra.sender.ReportSenderFactory}s with which to construct the {@link org.acra.sender.ReportSender}s that will send the crash reports.
-     * @deprecated register with plugin loading instead
-     */
-    @Deprecated
-    @Instantiatable @NonNull Class<? extends ReportSenderFactory>[] reportSenderFactoryClasses() default {};
 
     /**
      * To use in combination with {@link ReportField#APPLICATION_LOG} to set the path/name of your application log file.

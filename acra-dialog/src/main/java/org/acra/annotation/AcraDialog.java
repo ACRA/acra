@@ -33,6 +33,7 @@ import java.lang.annotation.*;
  * @author F43nd1r
  * @since 01.06.2017
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
