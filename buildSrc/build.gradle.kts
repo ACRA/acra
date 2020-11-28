@@ -38,6 +38,8 @@ dependencies {
     val dokkaVersion: String by project
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-core:$dokkaVersion")
+    val jgitverVersion: String by project
+    implementation("gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin:$jgitverVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks
