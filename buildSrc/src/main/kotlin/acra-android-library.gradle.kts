@@ -1,7 +1,5 @@
-import org.jetbrains.dokka.Platform
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.internal.KaptTask
-import org.jetbrains.kotlin.gradle.model.Kapt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /*
@@ -115,9 +113,7 @@ tasks.register<Jar>("javadocJar") {
 }
 
 afterEvaluate {
-    val assembleRelease = tasks["assembleRelease"]
-    rootProject.tasks["afterReleaseBuild"].dependsOn(assembleRelease)
-    tasks.findByName("publish")?.mustRunAfter(assembleRelease)
+    tasks.findByName("publish")?.mustRunAfter("assembleRelease")
 }
 
 fun Javadoc.linksOffline(extDocUrl: String, packageListLoc: String) = (options as StandardJavadocDocletOptions).linksOffline(extDocUrl, packageListLoc)
