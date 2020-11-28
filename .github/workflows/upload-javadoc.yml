@@ -24,6 +24,8 @@ jobs:
         with:
           repository: 'ACRA/acra.github.com'
           path: 'web'
+          persist-credentials: false
+          fetch-depth: 0
       - name: Generate Javadoc
         run: ./gradlew dokkaHtmlCollector --no-daemon
         working-directory: ./main
