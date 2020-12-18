@@ -33,7 +33,7 @@ jobs:
         working-directory: ./main
       - name: Extract version
         id: version
-        run: echo "::set-output name=value::$(./gradlew printVersion --no-daemon --quiet --console=plain)"
+        run: echo "::set-output name=value::$(./gradlew version --no-daemon --quiet --console=plain)"
         working-directory: ./main
       - name: Update Javadoc
         run: |
@@ -48,7 +48,7 @@ jobs:
             git commit -m "Add javadoc for version ${{ steps.version.outputs.value }}" -a
         working-directory: ./web
       - name: Push changes
-        uses: ad-m/github-push-action@0.6.0
+        uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           repository: 'ACRA/acra.github.com'

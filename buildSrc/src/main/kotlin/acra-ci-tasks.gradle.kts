@@ -20,9 +20,3 @@ plugins {
 repositories {
     jcenter()
 }
-
-tasks.register("printVersion") {
-    doLast {
-        println(version)
-    }
-}
