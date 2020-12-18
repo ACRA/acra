@@ -71,8 +71,9 @@ afterEvaluate {
 bintray {
     val bintrayUser: String? by project
     val bintrayPassword: String? by project
-    user = bintrayUser
-    key = bintrayPassword
+    user = bintrayUser ?: System.getenv("BINTRAY_USER")
+    key = bintrayPassword ?: System.getenv("BINTRAY_PASSWORD")
+    println("Bintray authentication is ${if(user != null && key != null) "present" else "missing"}")
     setPublications("maven")
     publish = true
     pkg.apply {

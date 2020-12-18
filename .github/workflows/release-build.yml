@@ -17,12 +17,8 @@ jobs:
           java-version: '1.8'
       - name: Checkout acra
         uses: actions/checkout@v2
-      - name: Create secret gradle.properties
-        env:
-          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
-        shell: bash
-        run: |
-          mkdir -p ~/.gradle/
-          echo ${GRADLE_PROPERTIES} > ~/.gradle/gradle.properties
       - name: Publish
-        run: ./gradlew publish --no-daemon -Dgradle.user.home=~/.gradle
+        run: ./gradlew publish --no-daemon
+        env:
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+          BINTRAY_PASSWORD: ${{ secrets.BINTRAY_PASSWORD }}
