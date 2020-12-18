@@ -93,8 +93,16 @@ open class HttpSender @JvmOverloads constructor(private val config: CoreConfigur
         try {
             val baseUrl = mFormUri.toString()
             debug { "Connect to $baseUrl" }
-            val login = if (mUsername != null) mUsername!! else (if (isNull(httpConfig.basicAuthLogin)) null else httpConfig.basicAuthLogin)!!
-            val password = if (mPassword != null) mPassword!! else (if (isNull(httpConfig.basicAuthPassword)) null else httpConfig.basicAuthPassword)!!
+            val login : String? = when {
+                mUsername != null -> mUsername
+                isNotNull(httpConfig.basicAuthLogin) -> httpConfig.basicAuthLogin
+                else -> null
+            }
+            val password : String? = when {
+                mPassword != null -> mPassword
+                isNotNull(httpConfig.basicAuthPassword) -> httpConfig.basicAuthPassword
+                else -> null
+            }
             val uris = InstanceCreator.create(config.attachmentUriProvider) { DefaultAttachmentProvider() }.getAttachments(context, config)
 
             // Generate report body depending on requested type
@@ -167,8 +175,8 @@ open class HttpSender @JvmOverloads constructor(private val config: CoreConfigur
         return format.toFormattedString(report!!, config.reportContent, "&", "\n", true)
     }
 
-    private fun isNull(aString: String?): Boolean {
-        return aString == null || aString.isEmpty() || ACRAConstants.NULL_VALUE == aString
+    private fun isNotNull(aString: String?): Boolean {
+        return aString != null && aString.isNotEmpty() && ACRAConstants.NULL_VALUE != aString
     }
 
     /**
