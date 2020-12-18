@@ -23,7 +23,6 @@ jobs:
         shell: bash
         run: |
           mkdir -p ~/.gradle/
-          echo "GRADLE_USER_HOME=$HOME/.gradle" >> $GITHUB_ENV
           echo ${GRADLE_PROPERTIES} > ~/.gradle/gradle.properties
       - name: Publish
-        run: ./gradlew publish --no-daemon
+        run: ./gradlew publish --no-daemon -Dgradle.user.home=~/.gradle
