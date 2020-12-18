@@ -17,6 +17,8 @@ jobs:
           java-version: '1.8'
       - name: Checkout acra
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
       - name: Publish
         run: ./gradlew publish --no-daemon
         env:
