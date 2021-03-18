@@ -125,7 +125,9 @@ class ClassCreator(private val baseAnnotation: TypeElement, private val configur
                 .addFunction(FunSpec.builder(WordUtils.uncapitalize(baseName))
                         .receiver(ClassName(Strings.PACKAGE, "CoreConfigurationBuilder"))
                         .addParameter(ParameterSpec("initializer", LambdaTypeName.get(builder, returnType = Unit::class.asTypeName())))
-                        .addStatement("this.getPluginConfigurationBuilder(%T::class.java).initializer()", builder)
+                        .addStatement("val builder = this.getPluginConfigurationBuilder(%T::class.java)", builder)
+                        .addStatement("builder.enabled = true")
+                        .addStatement("builder.initializer()")
                         .build())
                 .writeTo(processingEnv)
     }
