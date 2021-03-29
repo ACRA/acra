@@ -8,6 +8,7 @@
 |License|![license](https://img.shields.io/github/license/ACRA/acra.svg)|
 | Statistics|[![AppBrain stats](https://www.appbrain.com/stats/libraries/shield/acra.svg)](https://www.appbrain.com/stats/libraries/details/acra/acra)|
 |Donations|[![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)|
+|Maintainability|[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=ACRA_acra&branchName=master)](https://quality-gate.com/dashboard/branches/48#overview)
 
 **Please take 5 Minutes to fill out our [User survey](https://goo.gl/forms/nyt9qkCk1GptRGlw2)!**
 
