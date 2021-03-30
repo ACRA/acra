@@ -48,7 +48,7 @@ jobs:
             git commit -m "Add javadoc for version ${{ steps.version.outputs.value }}" -a
         working-directory: ./web
       - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           repository: 'ACRA/acra.github.com'
