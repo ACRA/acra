@@ -16,4 +16,18 @@
 plugins {
     `acra-release`
     `acra-ci-tasks`
+    id("io.github.gradle-nexus.publish-plugin")
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(project.findProperty("ossrhUser") as? String ?: System.getenv("OSSRH_USER"))
+            password.set(project.findProperty("ossrhPassword") as? String ?: System.getenv("OSSRH_PASSWORD"))
+        }
+    }
+}
+
+tasks.named("publish") {
+    dependsOn("publishToSonatype", "closeSonatypeStagingRepository")
 }

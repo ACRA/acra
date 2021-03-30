@@ -1,5 +1,4 @@
 plugins {
-    id("com.jfrog.bintray")
     id("fr.brouillard.oss.gradle.jgitver")
 }
 
@@ -13,7 +12,6 @@ tasks.register("build") {
 
 tasks.register("publish") {
     group = "publishing"
-    dependsOn(tasks["bintrayPublish"])
     subprojects {
         tasks.findByName("publish")?.let { dependsOn(it) }
     }

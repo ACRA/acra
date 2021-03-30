@@ -40,6 +40,8 @@ dependencies {
     implementation("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     val jgitverVersion: String by project
     implementation("gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin:$jgitverVersion")
+    val nexusPublishVersion: String by project
+    implementation("io.github.gradle-nexus:publish-plugin:$nexusPublishVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks
