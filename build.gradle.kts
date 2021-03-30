@@ -29,5 +29,8 @@ nexusPublishing {
 }
 
 tasks.named("publish") {
-    dependsOn("publishToSonatype", "closeSonatypeStagingRepository")
+    subprojects {
+        tasks.findByName("publishToSonatype")?.let { dependsOn(it) }
+    }
+    dependsOn("closeSonatypeStagingRepository")
 }
