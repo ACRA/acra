@@ -32,5 +32,5 @@ tasks.named("publish") {
     subprojects {
         tasks.findByName("publishToSonatype")?.let { dependsOn(it) }
     }
-    dependsOn("closeSonatypeStagingRepository")
+    dependsOn("closeAndReleaseSonatypeStagingRepository")
 }
