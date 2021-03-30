@@ -15,12 +15,14 @@
  */
 package org.acra.sender
 
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.RequiresApi
 import org.acra.ACRAConstants
 import org.acra.attachment.AcraContentProvider
 import org.acra.attachment.DefaultAttachmentProvider
@@ -50,29 +52,34 @@ open class EmailIntentSender(private val config: CoreConfiguration) : ReportSend
 
     @Throws(ReportSenderException::class)
     override fun send(context: Context, errorContent: CrashReportData) {
-        val pm = context.packageManager
         val subject = buildSubject(context)
-        val reportText: String
-        reportText = try {
+        val reportText: String = try {
             config.reportFormat.toFormattedString(errorContent, config.reportContent, "\n", "\n\t", false)
         } catch (e: Exception) {
             throw ReportSenderException("Failed to convert Report to text", e)
         }
         val bodyPrefix: String = mailConfig.body
-        val body = if (bodyPrefix.isNotEmpty()) """
-            |$bodyPrefix
-            |$reportText
-            """.trimMargin() else reportText
+        val body = if (bodyPrefix.isNotEmpty()) "$bodyPrefix\n$reportText" else reportText
         val attachments = ArrayList<Uri>()
         val contentAttached = fillAttachmentList(context, reportText, attachments)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            sendWithSelector(subject, body, attachments, context, contentAttached, bodyPrefix)
+        } else {
+            sendLegacy(subject, body, attachments, context, contentAttached, bodyPrefix)
+        }
+    }
+
+    private fun sendLegacy(subject: String, body: String, attachments: ArrayList<Uri>,
+                           context: Context, contentAttached: Boolean, bodyPrefix: String) {
+        val pm = context.packageManager
         //we have to resolve with sendto, because send is supported by non-email apps
-        val resolveIntent = buildResolveIntent(subject, body)
+        val resolveIntent = buildResolveIntent()
         val resolveActivity = resolveIntent.resolveActivity(pm)
         if (resolveActivity != null) {
             if (attachments.size == 0) {
                 //no attachments, send directly
-                context.startActivity(resolveIntent)
+                context.startActivity(buildFallbackIntent(subject, body))
             } else {
                 val attachmentIntent = buildAttachmentIntent(subject, if (contentAttached) bodyPrefix else body, attachments)
                 val initialIntents = buildInitialIntents(pm, resolveIntent, attachmentIntent)
@@ -93,12 +100,25 @@ open class EmailIntentSender(private val config: CoreConfiguration) : ReportSend
                     }
                     else -> {
                         warn { "No email client supporting attachments found. Attachments will be ignored" }
-                        context.startActivity(resolveIntent)
+                        context.startActivity(buildFallbackIntent(subject, body))
                     }
                 }
             }
         } else {
             throw ReportSenderException("No email client found")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+    private fun sendWithSelector(subject: String, body: String, attachments: ArrayList<Uri>,
+                                 context: Context, contentAttached: Boolean, bodyPrefix: String) {
+        val intent = buildAttachmentIntent(subject, if (contentAttached) bodyPrefix else body, attachments)
+        grantPermission(context, intent, null, attachments)
+        intent.selector = buildResolveIntent()
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            throw ReportSenderException("No email client found", e)
         }
     }
 
@@ -137,23 +157,27 @@ open class EmailIntentSender(private val config: CoreConfiguration) : ReportSend
      */
     protected fun buildAttachmentIntent(subject: String, body: String?, attachments: ArrayList<Uri>): Intent {
         val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>(mailConfig.mailTo))
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(mailConfig.mailTo))
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-        intent.type = "message/rfc822"
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments)
-        intent.putExtra(Intent.EXTRA_TEXT, body)
+        intent.putExtra(Intent.EXTRA_TEXT, arrayListOf(body))
         return intent
     }
 
     /**
-     * Builds an intent used to resolve email clients and to send reports without attachments or as fallback if no attachments are supported
+     * Builds an intent used to resolve email clients
      *
-     * @param subject the message subject
-     * @param body    the message body
      * @return email intent
      */
-    protected fun buildResolveIntent(subject: String, body: String): Intent {
+    protected fun buildResolveIntent(): Intent {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        return intent
+    }
+
+    protected fun buildFallbackIntent(subject: String, body: String): Intent {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:${mailConfig.mailTo}?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}")
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
