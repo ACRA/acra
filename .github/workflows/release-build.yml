@@ -22,6 +22,7 @@ jobs:
       - name: Publish
         run: ./gradlew publish --no-daemon
         env:
+          GITHUB_USER: github-action
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OSSRH_USER: ${{ secrets.OSSRH_USER }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
