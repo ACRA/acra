@@ -22,16 +22,8 @@ fun Modifier.toKModifier(): KModifier? {
         Modifier.PROTECTED -> KModifier.PROTECTED
         Modifier.PRIVATE -> KModifier.PRIVATE
         Modifier.ABSTRACT -> KModifier.ABSTRACT
-        Modifier.DEFAULT -> null
-        Modifier.STATIC -> null
         Modifier.FINAL -> KModifier.FINAL
-        Modifier.TRANSIENT -> null
-        Modifier.VOLATILE -> null
-        Modifier.SYNCHRONIZED -> null
-        Modifier.NATIVE -> null
-        Modifier.STRICTFP -> null
-        Modifier.SEALED -> KModifier.SEALED
-        Modifier.NON_SEALED -> null
+        else -> null
     }
 }
 
