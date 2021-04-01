@@ -30,5 +30,5 @@ import java.io.InputStream
  * @since 4.8.3
  */
 internal class ResourceKeyStoreFactory(certificateType: String, @RawRes private val rawRes: Int) : BaseKeyStoreFactory(certificateType) {
-    public override fun getInputStream(context: Context): InputStream? = context.resources.openRawResource(rawRes)
+    public override fun getInputStream(context: Context): InputStream = context.resources.openRawResource(rawRes)
 }

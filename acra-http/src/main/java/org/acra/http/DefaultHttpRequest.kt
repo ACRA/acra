@@ -16,7 +16,6 @@
 package org.acra.http
 
 import android.content.Context
-import org.acra.ACRAConstants
 import org.acra.config.CoreConfiguration
 import org.acra.sender.HttpSender
 import java.io.IOException

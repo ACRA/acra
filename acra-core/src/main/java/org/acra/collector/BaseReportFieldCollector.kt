@@ -40,7 +40,7 @@ abstract class BaseReportFieldCollector(private vararg val reportFields: ReportF
      * @param reportBuilder the current reportBuilder
      * @return if this field should be collected now
      */
-    open fun shouldCollect(context: Context, config: CoreConfiguration, collect: ReportField, reportBuilder: ReportBuilder): Boolean {
+    fun shouldCollect(context: Context, config: CoreConfiguration, collect: ReportField, reportBuilder: ReportBuilder): Boolean {
         return config.reportContent.contains(collect)
     }
 

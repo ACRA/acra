@@ -17,6 +17,7 @@ package org.acra.sender
 
 import android.content.Context
 import android.os.Bundle
+import org.acra.annotation.OpenAPI
 import org.acra.data.CrashReportData
 import org.acra.sender.ReportSenderException
 
@@ -25,6 +26,7 @@ import org.acra.sender.ReportSenderException
  *
  * @author Kevin Gaudin
  */
+@OpenAPI
 interface ReportSender {
     /**
      * Send crash report data.

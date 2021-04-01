@@ -19,7 +19,6 @@
 package org.acra.file
 
 import org.acra.data.CrashReportData
-import org.acra.util.StreamReader
 import org.json.JSONException
 import java.io.File
 import java.io.IOException

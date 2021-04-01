@@ -40,7 +40,7 @@ class LastActivityManager(application: Application) {
      * @return last created activity, if any
      */
     val lastActivity: Activity?
-        get() = activityStack.peek()
+        get() = if(activityStack.isEmpty()) null else activityStack.peek()
 
     /**
      * @return a list of activities in the current process

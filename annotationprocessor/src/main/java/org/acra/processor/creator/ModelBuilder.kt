@@ -18,7 +18,6 @@ package org.acra.processor.creator
 import androidx.annotation.StringRes
 import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import org.acra.annotation.BuilderMethod
 import org.acra.annotation.Configuration
@@ -32,7 +31,6 @@ import org.acra.processor.util.Types
 import java.util.*
 import javax.annotation.processing.Messager
 import javax.lang.model.element.AnnotationMirror
-import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter

@@ -113,7 +113,7 @@ class AcraContentProvider : ContentProvider() {
      * @param values ignored
      * @throws UnsupportedOperationException always
      */
-    override fun insert(uri: Uri, values: ContentValues?): Uri? = throw UnsupportedOperationException("No insert supported")
+    override fun insert(uri: Uri, values: ContentValues?): Uri = throw UnsupportedOperationException("No insert supported")
 
     /**
      * @param uri           ignored

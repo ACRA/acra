@@ -55,8 +55,7 @@ class ClassCreator(private val baseAnnotation: TypeElement, private val configur
     private val factoryName: String = builderName + "Factory"
 
     fun createClasses() {
-        val baseBuilder: TypeElement?
-        baseBuilder = try {
+        val baseBuilder: TypeElement? = try {
             processingEnv.elementUtils.getTypeElement(configuration.baseBuilderClass.qualifiedName)
         } catch (e: MirroredTypeException) {
             MoreTypes.asTypeElement(e.typeMirror)

@@ -34,7 +34,6 @@ import org.acra.data.CrashReportData
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 
 /**
  * Collects information about the connected display(s)

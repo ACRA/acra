@@ -1,4 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 import org.jetbrains.kotlin.gradle.internal.KaptTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -22,6 +23,7 @@ plugins {
 }
 apply(plugin = "kotlin-android")
 apply(plugin = "kotlin-kapt")
+apply(plugin = "kotlin-allopen")
 apply(plugin = "acra-base")
 apply(plugin = "org.jetbrains.dokka")
 
@@ -117,3 +119,7 @@ afterEvaluate {
 }
 
 fun Javadoc.linksOffline(extDocUrl: String, packageListLoc: String) = (options as StandardJavadocDocletOptions).linksOffline(extDocUrl, packageListLoc)
+
+extensions.getByType<AllOpenExtension>().apply {
+    annotation("org.acra.annotation.OpenAPI")
+}

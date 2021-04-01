@@ -27,7 +27,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import org.acra.processor.util.Strings
-import org.acra.processor.util.Types
 import java.util.stream.Collectors
 
 /**

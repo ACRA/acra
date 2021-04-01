@@ -33,7 +33,6 @@ import org.acra.prefs.SharedPreferencesFactory
 import org.acra.scheduler.SchedulerStarter
 import org.acra.scheduler.SenderScheduler
 import org.acra.startup.StartupProcessorExecutor
-import org.acra.util.InstanceCreator
 import org.acra.util.ProcessFinisher
 import java.util.*
 

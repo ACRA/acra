@@ -15,6 +15,7 @@
  */
 package org.acra.plugins
 
+import org.acra.annotation.OpenAPI
 import org.acra.config.CoreConfiguration
 
 /**
@@ -23,6 +24,7 @@ import org.acra.config.CoreConfiguration
  * @author F43nd1r
  * @since 18.04.2018
  */
+@OpenAPI
 interface Plugin {
     /**
      * controls if this instance is active

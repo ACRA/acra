@@ -21,7 +21,6 @@ import android.os.Environment
 import android.os.Process
 import android.os.StatFs
 import com.google.auto.service.AutoService
-import org.acra.ACRA
 import org.acra.ReportField
 import org.acra.builder.ReportBuilder
 import org.acra.config.CoreConfiguration

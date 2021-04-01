@@ -18,7 +18,6 @@ package org.acra.dialog
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.WorkerThread
-import org.acra.ACRA
 import org.acra.ReportField
 import org.acra.config.CoreConfiguration
 import org.acra.data.CrashReportData

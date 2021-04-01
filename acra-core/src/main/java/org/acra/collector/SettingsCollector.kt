@@ -21,7 +21,6 @@ import android.os.Build
 import android.provider.Settings
 import android.provider.Settings.Secure
 import com.google.auto.service.AutoService
-import org.acra.ACRA
 import org.acra.ReportField
 import org.acra.builder.ReportBuilder
 import org.acra.config.CoreConfiguration
@@ -31,6 +30,8 @@ import org.json.JSONObject
 import java.lang.Deprecated
 import java.lang.reflect.Field
 import kotlin.Boolean
+import kotlin.Exception
+import kotlin.IllegalArgumentException
 import kotlin.String
 import kotlin.Throws
 

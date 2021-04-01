@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020
+ * Copyright (c) 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `acra-java-library`
-}
 
-dependencies {
-    implementation("com.google.auto:auto-common:0.10")
-    implementation("com.squareup:kotlinpoet:1.7.1")
-    implementation(kotlin("reflect"))
-    implementation("org.apache.commons:commons-text:1.9")
-    implementation(project(":annotations"))
-    implementation(project(":acra-javacore"))
-    val autoServiceVersion: String by project
-    implementation("com.google.auto.service:auto-service:$autoServiceVersion")
-}
+package org.acra.annotation
+
+import java.lang.annotation.Inherited
+
+
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.CLASS)
+@Inherited
+annotation class OpenAPI

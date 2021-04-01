@@ -17,7 +17,6 @@ package org.acra.sender
 
 import android.content.Context
 import android.net.Uri
-import android.util.Pair
 import org.acra.ACRA
 import org.acra.ACRAConstants
 import org.acra.ReportField
@@ -31,6 +30,7 @@ import org.acra.http.BinaryHttpRequest
 import org.acra.http.DefaultHttpRequest
 import org.acra.http.MultipartHttpRequest
 import org.acra.log.debug
+import org.acra.sender.HttpSender.Method
 import org.acra.util.InstanceCreator
 import org.acra.util.UriUtils
 import java.io.FileNotFoundException
@@ -66,7 +66,7 @@ import java.net.URL
  * @author F43nd1r &amp; Various
  */
 @Suppress("unused")
-open class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration, method: Method?, type: StringFormat?, formUri: String? = null) : ReportSender {
+class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration, method: Method?, type: StringFormat?, formUri: String? = null) : ReportSender {
     private val httpConfig: HttpSenderConfiguration = getPluginConfiguration(config, HttpSenderConfiguration::class.java)
     private val mFormUri: Uri = Uri.parse(formUri ?: httpConfig.uri)
     private val mMethod: Method = method ?: httpConfig.httpMethod

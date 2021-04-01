@@ -15,7 +15,6 @@
  */
 package org.acra.dialog
 
-import android.R
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -221,7 +220,7 @@ open class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
      */
     protected fun loadPaddingFromTheme(): Int {
         val value = TypedValue()
-        return if (theme.resolveAttribute(R.attr.dialogPreferredPadding, value, true)) {
+        return if (theme.resolveAttribute(android.R.attr.dialogPreferredPadding, value, true)) {
             TypedValue.complexToDimensionPixelSize(value.data, resources.displayMetrics)
         } else 10 //attribute not set, fall back to a default value
     }

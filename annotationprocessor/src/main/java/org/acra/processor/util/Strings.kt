@@ -19,12 +19,10 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import org.apache.commons.text.WordUtils
-import java.io.File
 import java.io.IOException
 import java.text.DateFormat
 import java.util.*
 import javax.annotation.processing.ProcessingEnvironment
-import javax.tools.Diagnostic
 
 /**
  * @author F43nd1r

@@ -27,7 +27,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.reflect.InvocationTargetException
-import java.util.*
 
 /**
  * Collector retrieving key/value pairs from static fields and getters.

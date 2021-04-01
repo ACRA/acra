@@ -47,7 +47,7 @@ import java.util.*
  * defined with [org.acra.annotation.AcraMailSender.mailTo].
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
+class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     private val mailConfig: MailSenderConfiguration = getPluginConfiguration(config, MailSenderConfiguration::class.java)
 
     @Throws(ReportSenderException::class)

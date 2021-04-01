@@ -15,14 +15,12 @@
  */
 package org.acra.data
 
-import org.acra.ACRA
 import org.acra.ACRAConstants
 import org.acra.ReportField
 import org.acra.log.warn
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 
 /**
  * Stores a crash report data

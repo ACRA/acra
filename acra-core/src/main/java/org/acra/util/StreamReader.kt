@@ -15,8 +15,6 @@
  */
 package org.acra.util
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import org.acra.ACRAConstants
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
@@ -24,9 +22,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.Reader
-import java.io.StringWriter
 import kotlin.math.min
 
 /**

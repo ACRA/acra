@@ -30,6 +30,8 @@ fun Modifier.toKModifier(): KModifier? {
         Modifier.SYNCHRONIZED -> null
         Modifier.NATIVE -> null
         Modifier.STRICTFP -> null
+        Modifier.SEALED -> KModifier.SEALED
+        Modifier.NON_SEALED -> null
     }
 }
 

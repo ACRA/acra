@@ -46,10 +46,9 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             if (intent.action != null) {
                 when (intent.action) {
                     NotificationInteraction.INTENT_ACTION_SEND -> {
-                        val reportFileObject: Any? = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE)
+                        val reportFile: Any? = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE)
                         val configObject: Any? = intent.getSerializableExtra(LegacySenderService.EXTRA_ACRA_CONFIG)
-                        if (configObject is CoreConfiguration && reportFileObject is File) {
-                            val reportFile = reportFileObject
+                        if (configObject is CoreConfiguration && reportFile is File) {
                             //Grab user comment from notification intent
                             val remoteInput = RemoteInput.getResultsFromIntent(intent)
                             if (remoteInput != null) {
