@@ -19,7 +19,7 @@ package org.acra.annotation
 import java.lang.annotation.Inherited
 
 
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
 @Inherited
 annotation class OpenAPI
