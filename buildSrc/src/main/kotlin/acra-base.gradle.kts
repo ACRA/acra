@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 repositories {
-    jcenter()
+    mavenCentral()
     google()
 }
 
