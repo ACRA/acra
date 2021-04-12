@@ -29,10 +29,6 @@ repositories {
 dependencies {
     val androidBuildPluginVersion: String by project
     implementation("com.android.tools.build:gradle:$androidBuildPluginVersion")
-    val bintrayPluginVersion: String by project
-    implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion")
-    val releasePluginVersion: String by project
-    implementation("com.faendir.gradle:gradle-release:$releasePluginVersion")
     val kotlinVersion: String by project
     implementation(kotlin("gradle-plugin:$kotlinVersion"))
     implementation(kotlin("allopen:$kotlinVersion"))
