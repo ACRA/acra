@@ -113,9 +113,8 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     private fun sendWithSelector(subject: String, body: String, attachments: ArrayList<Uri>,
                                  context: Context, contentAttached: Boolean, bodyPrefix: String) {
         val intent = buildAttachmentIntent(subject, if (contentAttached) bodyPrefix else body, attachments)
-        grantPermission(context, intent, null, attachments)
         intent.selector = buildResolveIntent()
-        grantPermission(context, intent.selector!!, null, attachments)
+        grantPermission(context, intent, null, attachments)
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
@@ -209,10 +208,11 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     }
 
     private fun grantPermission(context: Context, intent: Intent, packageName: String?, attachments: List<Uri>) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (packageName == null) {
+            for (resolveInfo in context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)) {
+                grantPermission(context, intent, resolveInfo.activityInfo.packageName, attachments)
+            }
         } else {
-            //flags do not work on extras prior to lollipop, so we have to grant read permissions manually
             for (uri in attachments) {
                 context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
