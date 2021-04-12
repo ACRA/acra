@@ -41,18 +41,13 @@ jobs:
           cp -a ./main/build/dokka/htmlCollector/. ./web/javadoc/${{ steps.version.outputs.value }}/
           echo  "- [${{ steps.version.outputs.value }}](${{ steps.version.outputs.value }}/acra)" >> ./web/javadoc/index.md
           ln -sfn "${{ steps.version.outputs.value }}/" ./web/javadoc/latest
-      - name: Commit files
-        run: |
-          git config --local --unset-all "http.https://github.com/.extraheader"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add .
-          git commit -m "Add javadoc for version ${{ steps.version.outputs.value }}"
-        working-directory: ./web
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Commit and push changes
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          repository: 'ACRA/acra.github.com'
-          branch: 'master'
-          directory: ./web
+          personal_token: ${{ secrets.PUSH_TOKEN }}
+          external_repository: 'ACRA/acra.github.com'
+          publish_branch: 'master'
+          publish_dir: ./web
+          user_name: 'github-actions[bot]'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
+          full_commit_message: "Add javadoc for version ${{ steps.version.outputs.value }}"
