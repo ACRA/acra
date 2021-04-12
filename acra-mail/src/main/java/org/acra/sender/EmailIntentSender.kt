@@ -115,6 +115,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
         val intent = buildAttachmentIntent(subject, if (contentAttached) bodyPrefix else body, attachments)
         grantPermission(context, intent, null, attachments)
         intent.selector = buildResolveIntent()
+        grantPermission(context, intent.selector!!, null, attachments)
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {

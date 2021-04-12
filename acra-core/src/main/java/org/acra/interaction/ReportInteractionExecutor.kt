@@ -16,8 +16,8 @@
 package org.acra.interaction
 
 import android.content.Context
-import org.acra.ACRA
 import org.acra.config.CoreConfiguration
+import org.acra.log.debug
 import org.acra.plugins.loadEnabled
 import java.io.File
 import java.util.concurrent.ExecutionException
@@ -38,7 +38,7 @@ class ReportInteractionExecutor(private val context: Context, private val config
         val executorService = Executors.newCachedThreadPool()
         val futures: List<Future<Boolean>> = reportInteractions.map {
             executorService.submit<Boolean> {
-                if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Calling ReportInteraction of class " + it.javaClass.name)
+                debug { "Calling ReportInteraction of class ${it.javaClass.name}" }
                 it.performInteraction(context, config, reportFile)
             }
         }

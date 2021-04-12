@@ -15,7 +15,7 @@
  */
 package org.acra.config
 
-import org.acra.ACRA
+import org.acra.log.debug
 
 /**
  * Allows easy access to Plugin configurations from the main configuration
@@ -26,9 +26,9 @@ import org.acra.ACRA
 object ConfigUtils {
     @JvmStatic
     fun <T : Configuration> getPluginConfiguration(config: CoreConfiguration, c: Class<T>): T {
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Checking plugin Configurations : " + config.pluginConfigurations.toString() + " for class : " + c)
+        debug { "Checking plugin Configurations : ${config.pluginConfigurations} for class : $c" }
         for (configuration in config.pluginConfigurations) {
-            if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Checking plugin Configuration : $configuration against plugin class : $c")
+            debug { "Checking plugin Configuration : $configuration against plugin class : $c" }
             if (c.isAssignableFrom(configuration.javaClass)) {
                 @Suppress("UNCHECKED_CAST")
                 return configuration as T

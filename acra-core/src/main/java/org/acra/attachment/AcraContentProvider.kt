@@ -46,7 +46,7 @@ class AcraContentProvider : ContentProvider() {
     private var authority: String? = null
     override fun onCreate(): Boolean {
         authority = getAuthority(context!!)
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Registered content provider for authority $authority")
+        debug { "Registered content provider for authority $authority" }
         return true
     }
 
@@ -62,7 +62,7 @@ class AcraContentProvider : ContentProvider() {
      */
     override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         var proj = projection
-        if (ACRA.DEV_LOGGING) ACRA.log.d(ACRA.LOG_TAG, "Query: $uri")
+        debug { "Query: $uri" }
         val file = getFileForUri(uri) ?: return null
         if (proj == null) {
             proj = COLUMNS
