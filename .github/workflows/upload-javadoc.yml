@@ -18,6 +18,7 @@ jobs:
       - name: Checkout acra
         uses: actions/checkout@v2
         with:
+          ref: ${{ github.ref }}
           path: 'main'
           persist-credentials: false
           fetch-depth: 0
@@ -33,7 +34,7 @@ jobs:
         working-directory: ./main
       - name: Extract version
         id: version
-        run: echo "::set-output name=value::$(./gradlew version --no-daemon --quiet --console=plain)"
+        run: echo "::set-output name=value::$(git describe --abbrev=0 | sed -e "s/^acra-//")"
         working-directory: ./main
       - name: Update Javadoc
         run: |
@@ -41,13 +42,17 @@ jobs:
           cp -a ./main/build/dokka/htmlCollector/. ./web/javadoc/${{ steps.version.outputs.value }}/
           echo  "- [${{ steps.version.outputs.value }}](${{ steps.version.outputs.value }}/acra)" >> ./web/javadoc/index.md
           ln -sfn "${{ steps.version.outputs.value }}/" ./web/javadoc/latest
-      - name: Commit and push changes
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Commit files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Add javadoc for version ${{ steps.version.outputs.value }}"
+        working-directory: ./web
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          personal_token: ${{ secrets.PUSH_TOKEN }}
-          external_repository: 'ACRA/acra.github.com'
-          publish_branch: 'master'
-          publish_dir: ./web
-          user_name: 'github-actions[bot]'
-          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
-          full_commit_message: "Add javadoc for version ${{ steps.version.outputs.value }}"
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          repository: 'ACRA/acra.github.com'
+          branch: 'master'
+          directory: ./web
