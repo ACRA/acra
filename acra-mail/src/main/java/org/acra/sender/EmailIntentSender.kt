@@ -161,7 +161,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments)
-        intent.putExtra(Intent.EXTRA_TEXT, arrayListOf(body))
+        intent.putExtra(Intent.EXTRA_TEXT, body)
         return intent
     }
 
