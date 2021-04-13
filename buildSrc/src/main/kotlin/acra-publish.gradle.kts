@@ -34,9 +34,9 @@ afterEvaluate {
                     description.set("Publishes reports of Android application crashes to an end point.")
                     url.set("http://acra.ch")
                     scm {
-                        connection.set("scm:git:https://github.com/F43nd1r/acra.git")
-                        developerConnection.set("scm:git:git@github.com:F43nd1r/acra.git")
-                        url.set("https://github.com/F43nd1r/acra.git")
+                        connection.set("scm:git:https://github.com/ACRA/acra.git")
+                        developerConnection.set("scm:git:git@github.com:ACRA/acra.git")
+                        url.set("https://github.com/ACRA/acra.git")
                     }
                     licenses {
                         license {
