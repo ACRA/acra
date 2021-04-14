@@ -52,7 +52,7 @@ interface ErrorReporter {
      *
      * @param e The [Throwable] to be reported. If null the report will contain a new Exception("Report requested by developer").
      */
-    fun handleSilentException(e: Throwable)
+    fun handleSilentException(e: Throwable?)
 
     /**
      * Enable or disable this ErrorReporter. By default it is enabled.
@@ -67,14 +67,14 @@ interface ErrorReporter {
      * @param e              The [Throwable] to be reported. If null the report will contain a new Exception("Report requested by developer").
      * @param endApplication if you want the application to be ended after sending the report.
      */
-    fun handleException(e: Throwable, endApplication: Boolean)
+    fun handleException(e: Throwable?, endApplication: Boolean)
 
     /**
      * Send a normal report for the given exception.
      *
      * @param e The [Throwable] to be reported. If null the report will contain a new Exception("Report requested by developer").
      */
-    fun handleException(e: Throwable)
+    fun handleException(e: Throwable?)
 
     /**
      * Access point to manual report scheduling

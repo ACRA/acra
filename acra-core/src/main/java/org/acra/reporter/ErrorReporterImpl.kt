@@ -110,7 +110,7 @@ class ErrorReporterImpl(private val context: Application, config: CoreConfigurat
         }
     }
 
-    override fun handleSilentException(e: Throwable) {
+    override fun handleSilentException(e: Throwable?) {
         ReportBuilder()
                 .exception(e)
                 .customData(customData)
@@ -127,7 +127,7 @@ class ErrorReporterImpl(private val context: Application, config: CoreConfigurat
         }
     }
 
-    override fun handleException(e: Throwable, endApplication: Boolean) {
+    override fun handleException(e: Throwable?, endApplication: Boolean) {
         val builder = ReportBuilder()
         builder.exception(e)
                 .customData(customData)
@@ -137,7 +137,7 @@ class ErrorReporterImpl(private val context: Application, config: CoreConfigurat
         builder.build(reportExecutor)
     }
 
-    override fun handleException(e: Throwable) {
+    override fun handleException(e: Throwable?) {
         handleException(e, false)
     }
 
