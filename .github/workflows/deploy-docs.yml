@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '14'
       - name: Build docs
-        run: cd web && yarn run build
+        run: cd web && yarn install && yarn run build
       - name: Commit and push changes
         uses: peaceiris/actions-gh-pages@v3
         with:
