@@ -31,7 +31,6 @@ jobs:
               echo "Docs have been modified, run deployment"
               echo "::set-output name=run_job::true"
               break
-            else
             fi
           done < files.txt
   deploy:
