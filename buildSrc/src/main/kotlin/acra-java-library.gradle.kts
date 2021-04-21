@@ -18,7 +18,6 @@ plugins {
     kotlin("jvm")
     id("kotlin-kapt")
     id("acra-base")
-    id("org.jetbrains.dokka")
 }
 
 tasks.register<Jar>("sourcesJar") {

@@ -1,0 +1,203 @@
+---
+sidebar_position: 3
+---
+
+import {AndroidCode} from "@theme/Code";
+
+
+The following sections details the possible destinations for your crash reports: server backend, email, or any other destination you can imagine (if you implement the sender). And you can even send reports to multiple destinations.
+
+## Choosing a content type
+
+All official report senders support two types of report formats: `StringFormat.JSON` and `StringFormat.KEY_VALUE_LIST` (form-data-compliant for http). Choose whichever your backend requires / which you like best:
+
+<AndroidCode>
+
+```kotlin
+initAcra {
+    reportFormat = StringFormat.JSON
+}
+```
+
+```java
+coreConfigurationBuilder.withReportFormat(StringFormat.JSON)
+```
+
+</AndroidCode>
+
+## Sending reports via HTTP
+
+The most convenient way to send your report with no necessary user interaction is via HTTP.
+
+<AndroidCode>
+
+```kotlin
+httpSender {
+    //required. Https recommended
+    uri = "https://your.server.com/report"
+    //optional. Enables http basic auth
+    basicAuthLogin = "acra"
+    //required if above set
+    basicAuthPassword = "password"
+    // defaults to POST
+    httpMethod = HttpSender.Method.POST
+    //defaults to 5000ms
+    connectionTimeout = 5000
+    //defaults to 20000ms
+    socketTimeout = 20000
+    // defaults to false
+    dropReportsOnTimeout = false
+    //the following options allow you to configure a self signed certificate
+    keyStoreFactoryClass = MyKeyStoreFactory::class.java
+    certificatePath = "asset://mycert.cer"
+    resCertificate = R.raw.mycert
+    certificateType = "X.509"
+    //defaults to false. Recommended if your backend supports it
+    compress = false
+    //defaults to all
+    tlsProtocols = arrayOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1)
+}
+```
+
+```java
+getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
+    //required. Https recommended
+    .withUri("https://your.server.com/report")
+    //optional. Enables http basic auth
+    .withBasicAuthLogin("acra")
+    //required if above set
+    .withBasicAuthPassword("password")
+    // defaults to POST
+    .withHttpMethod(HttpSender.Method.POST)
+    //defaults to 5000ms
+    .withConnectionTimeout(5000)
+    //defaults to 20000ms
+    .withSocketTimeout(20000)
+    // defaults to false
+    .withDropReportsOnTimeout(false)
+    //the following options allow you to configure a self signed certificate
+    .withKeyStoreFactoryClass(MyKeyStoreFactory::class.java)
+    .withCertificatePath("asset://mycert.cer")
+    .withResCertificate(R.raw.mycert)
+    .withCertificateType("X.509")
+    //defaults to false. Recommended if your backend supports it
+    .withCompress(false)
+    //defaults to all
+    .withTlsProtocols(arrayOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1))
+```
+
+</AndroidCode>
+
+In `PUT` mode, ACRA adds the Report ID at the end of `uri` automatically.
+
+See also [Backends](Backends)
+
+## Sending reports by email
+
+For some applications, sending reports to a http based solution is not an option. The problem is that they require the `INTERNET` permission.
+
+For pure offline applications, users might even be frightened to grant this permission and can be suspicious about the
+real goal of the app or the developer.
+
+To get crash reports without granting `INTERNET` permission, you can use the mail sender:
+
+<AndroidCode>
+
+```kotlin
+mailSender {
+    //required
+    mailTo = "acra@yourserver.com"
+    //defaults to true
+    reportAsFile = true
+    //defaults to ACRA-report.stacktrace
+    reportFileName = "Crash.txt"
+    //defaults to "<applicationId> Crash Report"
+    subject = getString(R.string.mail_subject)
+    //defaults to empty
+    body = getString(R.string.mail_body)
+}
+```
+
+```java
+getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
+    //required
+    .withMailTo("acra@yourserver.com")
+    //defaults to true
+    .withReportAsFile(true)
+    //defaults to ACRA-report.stacktrace
+    .withReportFileName("Crash.txt")
+    //defaults to "<applicationId> Crash Report"
+    .withSubject(getString(R.string.mail_subject))
+    //defaults to empty
+    .withBody(getString(R.string.mail_body))
+```
+
+</AndroidCode>
+
+Emails are sent with an `ACTION_SEND_MULTIPLE` intent. This means that the following steps are required for the application user before any report is sent:
+* pick preferred email client (if no default app set)
+* review & actually send the email
+
+## Implementing your own sender
+
+You can implement your own `ReportSender` and configure ACRA to use that instead of or in addition to other senders.
+
+<AndroidCode>
+
+```kotlin
+class YourOwnSender : ReportSender {
+
+  override fun send(context: Context, report: CrashReportData) {
+    // Iterate over the CrashReportData instance and do whatever
+    // you need with each pair of ReportField key / String value
+  }
+}
+
+class YourOwnSenderfactory : ReportSenderFactory {
+
+    // requires a no arg constructor.
+
+    override fun create(context: Context, config: ACRAConfiguration) : ReportSender {
+        return YourOwnSender()
+    }
+
+    //optional implementation in case you want to disable your sender in certain cases
+    override fun enabled(coreConfig : CoreConfiguration) : Boolean {
+        return true
+    }
+}
+```
+
+```java
+public class YourOwnSender implements ReportSender {
+
+    @Override
+    public void send(Context context, CrashReportData report) throws ReportSenderException {
+        // Iterate over the CrashReportData instance and do whatever
+        // you need with each pair of ReportField key / String value
+    }
+}
+
+public class YourOwnSenderfactory implements ReportSenderFactory {
+
+    // requires a no arg constructor.
+
+    @Override
+    public ReportSender create(Context context, ACRAConfiguration config) {
+        return new YourOwnSender(someConfigPerhaps);
+    }
+
+    //optional implementation in case you want to disable your sender in certain cases
+    @Override
+    public boolean enabled(@NonNull CoreConfiguration coreConfig) {
+        return true;
+    }
+}
+```
+
+</AndroidCode>
+
+### Registering your sender
+
+See [Custom extensions](Custom-Extensions)
+

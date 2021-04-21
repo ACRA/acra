@@ -1,0 +1,18 @@
+---
+sidebar_position: 90
+title: Troubleshooting Guide
+---
+
+On this page you'll find some common issues and their solutions.
+
+## Instant Run
+
+We cannot guarantee ACRA will work with instant run enabled. Always try to reproduce an error with instant run disabled before reporting it. 
+
+## Legacy Multidex
+
+If you are using legacy multidex, ensure that `ACRA.init(...)` is called **after** `Multidex.install()`.
+
+## Application.onCreate()
+
+ACRA uses a service to send crash reports. This service runs in a **separate process** to ensure that reports can be sent even when your own VM is dying from an unhandled exception. This means that a new instance of your application will be started and `Application.onCreate()` will be called again. If you are performing once only tasks in `Application.onCreate()` then check the name of the current process and don't do them if the process name is `:acra`. You can use `ACRA.isACRASenderServiceProcess()` for this.

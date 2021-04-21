@@ -25,7 +25,6 @@ apply(plugin = "kotlin-android")
 apply(plugin = "kotlin-kapt")
 apply(plugin = "kotlin-allopen")
 apply(plugin = "acra-base")
-apply(plugin = "org.jetbrains.dokka")
 
 android {
     val androidVersion: String by project

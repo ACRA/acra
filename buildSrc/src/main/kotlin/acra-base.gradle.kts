@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 /*
  * Copyright (c) 2020
  *
@@ -13,15 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-repositories {
-    mavenCentral()
-    google()
-    //TODO: Remove when kotlinx.html is available in maven central
-    maven { setUrl("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
+plugins {
+    id("repositories")
+    id("org.jetbrains.dokka")
 }
 
 dependencies {
     val autoServiceVersion: String by project
     "kapt"("com.google.auto.service:auto-service:$autoServiceVersion")
     "compileOnly"("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
+}
+
+tasks.withType<DokkaTask> {
+    dokkaSourceSets.configureEach {
+        sourceRoot(buildDir.resolve("generated/source/kaptKotlin/release/"))
+        sourceRoots.forEach { println(it) }
+    }
 }

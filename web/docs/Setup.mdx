@@ -1,0 +1,267 @@
+---
+sidebar_position: 1
+---
+
+import {GradleCode, AndroidCode} from "@theme/Code";
+
+
+This Tutorial will show you how to set up ACRA and guide you through your initial configuration choices.
+
+## Prerequisites
+
+This guide assumes you are using `com.android.tools.build:gradle:4.0.0` or later.
+
+Acra requires java 8 (native, not RetroLambda or similar):
+
+<GradleCode>
+
+```kotlin title="build.gradle.kts"
+android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+```
+
+```groovy title="build.gradle"
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+```
+
+</GradleCode>
+
+## Dependencies
+
+Everything you find in this section belongs into the `dependencies` block:
+
+<GradleCode>
+
+```kotlin title="build.gradle.kts"
+dependencies {
+    //here
+}
+```
+
+```groovy title="build.gradle"
+dependencies {
+    //here
+}
+```
+
+</GradleCode>
+
+### Define ACRA Version
+Add the following snippet (with the [latest version](https://github.com/ACRA/acra/releases/latest))
+<GradleCode>
+
+```kotlin
+val acraVersion = "<latest version>"
+```
+
+```groovy
+def acraVersion = '<latest version>'
+```
+
+</GradleCode>
+
+### Choose sender
+* **Http:**
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-http:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-http:$acraVersion"
+```
+
+</GradleCode>
+
+* **Email:**
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-mail:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-mail:$acraVersion"
+```
+
+</GradleCode>
+
+* **Custom:**
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-core:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-core:$acraVersion"
+```
+
+</GradleCode>
+
+More info: [Report Destinations](report-destinations)
+
+### Choose interaction
+
+* **Dialog:**
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-dialog:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-dialog:$acraVersion"
+```
+
+</GradleCode>
+
+* **Notification:**
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-notification:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-notification:$acraVersion"
+```
+
+</GradleCode>
+
+* **Toast:**
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-toast:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-toast:$acraVersion"
+```
+
+</GradleCode>
+
+* **Silent:**
+
+Add nothing.
+
+More info: [Interactions](interactions)
+
+### Optional Plugins
+* **Limiter:** 
+
+Limits how many reports acra sends from one device
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-limiter:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-limiter:$acraVersion"
+```
+
+</GradleCode>
+
+* **Advanced Scheduler:** [since 5.2.0-rc1] 
+
+Controls when reports are sent (e.g. only on wifi) and can restart an application after a crash
+
+<GradleCode>
+
+```kotlin
+implementation("ch.acra:acra-advanced-scheduler:$acraVersion")
+```
+
+```groovy
+implementation "ch.acra:acra-advanced-scheduler:$acraVersion"
+```
+
+</GradleCode>
+
+## Configuration
+
+If you don't already have an `Application` class, create one. 
+
+**Creating an Application class**
+  * Create a new class in your package root.
+  * Give it a name like: `MyApplication` extending from `android.app.Application` (or another subclass of that)
+  * Update the `application` element in your `AndroidManifest.xml` to reference the new class.
+
+ACRA is configured inside your `Application` class:
+
+<AndroidCode>
+
+```kotlin
+class MyApplication : Application() {
+  override fun attachBaseContext(base:Context) {
+    super.attachBaseContext(base)
+
+    initAcra {
+        //core configuration:
+        buildConfigClass = BuildConfig::class.java
+        reportFormat = StringFormat.JSON
+        //each plugin you chose above can be configured in a block like this:
+        toast {
+            text = getString(R.string.acra_toast_text)
+            //opening this block automatically enables the plugin.
+        }
+    }
+  }
+}
+```
+
+```java    
+public class MyApplication extends Application {
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
+        //core configuration:
+        builder
+            .withBuildConfigClass(BuildConfig.class)
+            .withReportFormat(StringFormat.JSON);
+        //each plugin you chose above can be configured with its builder like this:
+        builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
+            .withResText(R.string.acra_toast_text)
+            //make sure to enable all plugins you want to use:
+            .withEnabled(true);
+        ACRA.init(this, builder);
+    }
+}
+```
+
+</AndroidCode>
+
+
+**Full configuration options documentation:**
+
+* [`Core`](pathname:///javadoc/latest/org/acra/config/CoreConfigurationBuilder.html)
+* [`HttpSender`](pathname:///javadoc/latest/org/acra/config/HttpSenderConfigurationBuilder.html)
+* [`MailSender`](pathname:///javadoc/latest/org/acra/config/MailSenderConfigurationBuilder.html)
+* [`Dialog`](pathname:///javadoc/latest/org/acra/config/DialogConfigurationBuilder.html)
+* [`Notification`](pathname:///javadoc/latest/org/acra/config/NotificationConfigurationBuilder.html)
+* [`Toast`](pathname:///javadoc/latest/org/acra/config/ToastConfigurationBuilder.html)
+* [`Limiter`](pathname:///javadoc/latest/org/acra/config/LimiterConfigurationBuilder.html)
+* [`Scheduler`](pathname:///javadoc/latest/org/acra/config/SchedulerConfigurationBuilder.html)
+
+See also: [Interactions](Interactions), [Senders](Senders)

@@ -1,0 +1,18 @@
+/* stylelint-disable docusaurus/copyright-header */
+
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainContent {
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 1.5em;
+}

@@ -1,0 +1,207 @@
+---
+sidebar_position: 2
+---
+
+import {AndroidCode} from "@theme/Code";
+import SideImage from "@theme/SideImage";
+
+The default behavior of ACRA is to send crash reports silently. From the application user point of view, the app closes, and that's all. Though, a report has been sent without the user being aware of it.
+
+Depending on the state of your application and your concern of your users data plan usage and private data handling, you might prefer notifying them that a crash report has been sent, or even ask them the authorization to send one... and why not ask them to describe what they were doing during the crash.
+The following section details those user interactions.
+
+
+## Silent
+
+Nothing shown, nothing to configure.
+
+import ToastImage from '@site/static/img/captures/toast.png'
+
+<SideImage src={ToastImage} alt="Toast Example">
+
+## Toast
+
+A Toast with your text is shown. No user interaction.
+
+<AndroidCode>
+
+```kotlin
+toast { 
+     //required
+    text = getString(R.string.toast_text)
+    //defaults to Toast.LENGTH_LONG
+    length = Toast.LENGTH_LONG 
+}
+```
+
+```java
+getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
+    //required
+    .withEnabled(true) 
+    //required
+    .withResText(R.string.toast_text) 
+    //defaults to Toast.LENGTH_LONG
+    .withLength(Toast.LENGTH_LONG) 
+```
+
+</AndroidCode>
+
+</SideImage>
+
+import DialogImage from '@site/static/img/captures/dialog.png'
+
+<SideImage src={DialogImage} alt="Dialog Example">
+
+## Dialog
+
+A widely customizeable dialog is shown. A report will only be sent if the user agrees.
+
+<AndroidCode>
+
+```kotlin
+dialog {
+    //required
+    text = getString(R.string.dialog_text)
+    //optional, enables the dialog title
+    title = getString(R.string.dialog_title)
+    //defaults to android.R.string.ok
+    positiveButtonText = getString(R.string.dialog_positive)
+    //defaults to android.R.string.cancel
+    negativeButtonText = getString(R.string.dialog_negative)
+    //optional, enables the comment input
+    commentPrompt = getString(R.string.dialog_comment)
+    //optional, enables the email input
+    emailPrompt = getString(R.string.dialog_email)
+    //defaults to android.R.drawable.ic_dialog_alert
+    resIcon = R.drawable.dialog_icon
+    //optional, defaults to @android:style/Theme.Dialog
+    resTheme = R.style.dialog_theme
+    //allows other customization
+    reportDialogClass = MyCustomDialog::class.java
+}
+```
+
+```java
+getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
+    //required
+    .withEnabled(true)
+    //required
+    .withResText(R.string.dialog_text)
+    //optional, enables the dialog title
+    .withResTitle(R.string.dialog_title)
+    //defaults to android.R.string.ok
+    .withResPositiveButtonText(R.string.dialog_positive)
+    //defaults to android.R.string.cancel
+    .withResNegativeButtonText(R.string.dialog_negative)
+    //optional, enables the comment input
+    .withResCommentPrompt(R.string.dialog_comment)
+    //optional, enables the email input
+    .withResEmailPrompt(R.string.dialog_email)
+    //defaults to android.R.drawable.ic_dialog_alert
+    .withResIcon(R.drawable.dialog_icon)
+    //optional, defaults to @android:style/Theme.Dialog
+    .withResTheme(R.style.dialog_theme)
+    //allows other customization
+    .withReportDialogClass(MyCustomDialog.class)
+```
+
+</AndroidCode>
+
+If you need more control than the configuration provides, you can set your own dialogactivity in `reportDialogClass`. Remember, activities have to be registered in the `AndroidManifest.xml`:
+```xml
+<activity
+    <!-- required -->
+    android:name="my.package.MyCustomDialog"
+    android:process=":acra"
+    <!-- recommended -->
+    android:excludeFromRecents="true"
+    android:finishOnTaskLaunch="true"
+    android:launchMode="singleInstance"/>
+```
+
+</SideImage>
+
+import NotificationImage from '@site/static/img/captures/notification.png'
+
+<SideImage src={NotificationImage} alt="Notification Example">
+
+## Notification
+
+A notification is shown. A report will only be sent if the user agrees.
+
+<AndroidCode>
+
+```kotlin
+notification {
+    //required
+    title = getString(R.string.notification_title)
+    //required
+    text = getString(R.string.notification_text)
+    //required
+    channelName = getString(R.string.notification_channel)
+    //optional channel description
+    channelDescription = getString(R.string.notification_channel_desc)
+    //defaults to NotificationManager.IMPORTANCE_HIGH
+    resChannelImportance = NotificationManager.IMPORTANCE_MAX
+    //optional, enables ticker text
+    tickerText = getString(R.string.notification_ticker)
+    //defaults to android.R.drawable.stat_sys_warning
+    resIcon = R.drawable.notification_icon
+    //defaults to android.R.string.ok
+    sendButtonText = getString(R.string.notification_send)
+    //defaults to android.R.drawable.ic_menu_send
+    resSendButtonIcon = R.drawable.notification_send
+    //defaults to android.R.string.cancel
+    discardButtonText = getString(R.string.notification_discard)
+    //defaults to android.R.drawable.ic_menu_delete
+    resDiscardButtonIcon = R.drawable.notification_discard
+    //optional, enables inline comment button
+    sendWithCommentButtonText = getString(R.string.notification_send_with_comment)
+    //required if above is set
+    resSendWithCommentButtonIcon = R.drawable.notification_send_with_comment
+    //optional inline comment hint
+    commentPrompt = getString(R.string.notification_comment)
+    //defaults to false
+    sendOnClick = false
+}
+```
+
+```java
+getPluginConfigurationBuilder(NotificationConfigurationBuilder.class)
+    //required
+    .withEnabled(true)
+    //required
+    .withResTitle(R.string.notification_title)
+    //required
+    .withResText(R.string.notification_text)
+    //required
+    .withResChannelName(R.string.notification_channel)
+    //optional channel description
+    .withResChannelDescription(R.string.notification_channel_desc)
+    //defaults to NotificationManager.IMPORTANCE_HIGH
+    .withResChannelImportance(NotificationManager.IMPORTANCE_MAX)
+    //optional, enables ticker text
+    .withResTickerText(R.string.notification_ticker)
+    //defaults to android.R.drawable.stat_sys_warning
+    .withResIcon(R.drawable.notification_icon)
+    //defaults to android.R.string.ok
+    .withResSendButtonText(R.string.notification_send)
+    //defaults to android.R.drawable.ic_menu_send
+    .withResSendButtonIcon(R.drawable.notification_send)
+    //defaults to android.R.string.cancel
+    .withResDiscardButtonText(R.string.notification_discard)
+    //defaults to android.R.drawable.ic_menu_delete
+    .withResDiscardButtonIcon(R.drawable.notification_discard)
+    //optional, enables inline comment button
+    .withResSendWithCommentButtonText(R.string.notification_send_with_comment)
+    //required if above is set
+    .withResSendWithCommentButtonIcon(R.drawable.notification_send_with_comment)
+    //optional inline comment hint
+    .withResCommentPrompt(R.string.notification_comment)
+    //defaults to false
+    .withSendOnClick(false)
+```
+
+</AndroidCode>
+
+</SideImage>

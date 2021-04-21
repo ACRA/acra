@@ -17,5 +17,4 @@ plugins {
     id("com.android.application")
 }
 apply(plugin = "kotlin-android")
-apply(plugin = "kotlin-kapt")
-apply(plugin = "acra-base")
+apply(plugin = "repositories")
