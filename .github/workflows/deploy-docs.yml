@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'web/**'
+      - '.github/workflows/deploy-docs.yml'
   workflow_run:
     workflows: ["upload-javadoc"]
     types:
@@ -20,7 +21,7 @@ jobs:
         with:
           node-version: '14'
       - name: Build docs
-        run: yarn run build
+        run: cd web && yarn run build
       - name: Commit and push changes
         uses: peaceiris/actions-gh-pages@v3
         with:
