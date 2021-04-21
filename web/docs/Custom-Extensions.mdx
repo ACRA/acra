@@ -1,0 +1,79 @@
+---
+sidebar_position: 60
+title: Custom Extensions
+---
+
+import {GradleCode, AndroidCode} from "@theme/Code";
+
+## Implementing an extension
+Create a class extending one of the supported interfaces. 
+
+It has to be `public` and have a zero-argument public constructor (as a result, it cannot be an inner class).
+
+Example:
+
+<AndroidCode>
+
+```kotlin
+MyAdmin : ReportingAdministrator {
+    init {
+        Log.d("MyAdmin", "MyAdmin was loaded")
+    }
+}
+```
+
+```java
+public MyAdmin implements ReportingAdministrator {
+    public MyAdmin() {
+        Log.d("MyAdmin", "MyAdmin was loaded");
+    }
+}
+```
+
+</AndroidCode>
+
+| Supported Extensions | Use Case |
+| --- | --- |
+| [`Collector`](https://www.acra.ch/javadoc/latest/org/acra/collector/Collector.html) | Collect additional custom data not covered by acra |
+| [`ApplicationStartupCollector`](https://www.acra.ch/javadoc/latest/org/acra/collector/ApplicationStartupCollector.html) | Collector which is also called at startup |
+| [`ReportInteraction`](https://www.acra.ch/javadoc/latest/org/acra/interaction/ReportInteraction.html) | Usually not needed, as the provided options (dialog, notification, toast) cover all reasonable choices |
+| [`ReportingAdministrator`](https://www.acra.ch/javadoc/latest/org/acra/config/ReportingAdministrator.html) | Control when reports are generated and when the application should be stopped |
+| [`ReportSenderFactory`](https://www.acra.ch/javadoc/latest/org/acra/sender/ReportSenderFactory.html) | Register custom report senders |
+| [`ConfigurationBuilderFactory`](https://www.acra.ch/javadoc/latest/org/acra/config/ConfigurationBuilderFactory.html) | Register custom configurations |
+| [`SenderSchedulerFactory`](https://www.acra.ch/javadoc/latest/org/acra/scheduler/SenderSchedulerFactory.html) | Register custom sender scheduler, e.g. to prevent report sending based on custom conditions |
+| [`StartupProcessor`](https://www.acra.ch/javadoc/latest/org/acra/startup/StartupProcessor.html)  | Do something ACRA related on app start |
+## Registering an extension
+Choose one of the following alternatives:
+### By annotation
+
+Add the following dependencies:
+<GradleCode>
+
+```kotlin title="build.gradle.kts"
+compileOnly("com.google.auto.service:auto-service-annotations:1.0")
+annotationProcessor("com.google.auto.service:auto-service:1.0")
+```
+
+```groovy title="build.gradle"
+compileOnly "com.google.auto.service:auto-service-annotations:1.0"
+annotationProcessor "com.google.auto.service:auto-service:1.0"
+```
+
+</GradleCode>
+
+Then annotate your extension with the following:
+
+<AndroidCode>
+
+```kotlin
+@AutoService(<ExtensionInterface>::class)
+```
+
+```java
+@AutoService(<ExtensionInterface>.class)
+```
+
+</AndroidCode>
+
+### By file
+See [ServiceLoader](https://developer.android.com/reference/java/util/ServiceLoader.html) for manual service registration
