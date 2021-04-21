@@ -1,0 +1,400 @@
+---
+sidebar_position: 50
+title: Advanced Usage
+---
+import {AndroidCode} from "@theme/Code";
+
+This is ACRA's Advanced Usage Guide. You need to [set up your project](Setup) before using all the features described here.
+
+## Customizing the Content of the Reports
+
+ACRA provides [lots of data about the device and the state of your application](pathname:///javadoc/latest/org/acra/ReportField). There are some options to let you add even more data to help debugging.
+
+### Adding your own custom variables or traces in crash reports ("Breadcrumbs")
+
+To help you track some specific issue, you can add custom data to reports.
+
+Simply use the following method when certain events happen in your code:
+
+<AndroidCode>
+
+```kotlin
+ACRA.errorReporter.putCustomData("myKey", "myValue")
+```
+
+```java
+ACRA.getErrorReporter().putCustomData("myKey", "myValue");
+```
+
+</AndroidCode>
+
+All your custom data (key/value pairs) will be added in the report column `CUSTOM` just before the crash (stack trace). Each key/value pair will be shown on one line. Note that each key is a `set` that can only be used once, without duplicates. So if you re-use the same `key` for a different `value`, then the old `value` will be deleted and replaced with the new `value`.
+
+If you want the report to show "Breadcrumbs" to indicate which events happened in time order, just before a crash, then you need to track events using unique keys. Here's an example:
+
+<AndroidCode>
+
+```kotlin
+fun trackBreadcrumb(event: String) {
+    ACRA.errorReporter.putCustomData("Event at ${System.currentTimeMillis()}", event)
+}
+
+override fun onCreate(savedInstanceState: Bundle) {
+    super.onCreate()
+    trackBreadcrumb("MyActivity.onCreate()")
+}
+```
+
+```java
+public static void trackBreadcrumb(String event) {
+    ACRA.getErrorReporter().putCustomData("Event at " + System.currentTimeMillis(), event);
+}
+
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate();
+    trackBreadcrumb("MyActivity.onCreate()");
+    ...
+}
+```
+
+</AndroidCode>
+
+
+You can also use `getCustomData("myVariable")` and `removeCustomData("myVariable")` to get/remove data from the custom data map.
+
+### Adding logcat, eventlog or radiolog extracts to reports
+
+ACRA includes a [logcat](https://developer.android.com/studio/command-line/logcat) extract by default.
+
+The behavior is to include the result of the following command:
+
+```shell
+adb logcat -t 200 -v time
+```
+
+This results to 200 lines of logcat with date, invocation time, priority/tag, and PID of the originating process.
+
+If this is not what you want, you can change this with your own command line using `logcatArguments` in your configuration. For example, if you prefer using:
+
+```shell
+adb logcat -t 100 -v long ActivityManager:I MyApp:D *:S
+```
+then add this to your config:
+
+<AndroidCode>
+
+```kotlin
+logcatArguments = arrayOf("-t", "100", "-v", "long", "ActivityManager:I", "MyApp:D", "*:S")
+```
+
+```java
+.withLogcatArguments("-t", "100", "-v", "long", "ActivityManager:I", "MyApp:D", "*:S")
+```
+
+</AndroidCode>
+
+As you can see, you just have to split your command line arguments to a String array on each white space.
+
+Note: you can find further information about how to use logcat [here](https://developer.android.com/studio/command-line/logcat), logcat (used in the backend by ACRA) will be able to filter by tag, that you will need to keep constant in your application.
+
+In addition to the `main` default buffer, ACRA can retrieve the 2 other alternative buffers `event` and `radio`. If these data are of any use for you, you have to activate their collection:
+* add `EVENTSLOG` and `RADIOLOG` fields to `reportContent`.
+
+:::note
+ System logs may contain private data logged by other applications like user email address, calendar events, contacts data...
+
+You should consider [adding a user preference item to let your user choose to include system logs or not](#enabledisable-system-logs).
+:::
+
+:::caution
+ Collecting long system logs might take quite some time and induce a latency right after your application crash. Include them only if you know how to analyze them and avoid collecting more than 100 lines.
+:::
+
+:::info
+ `READ_LOG` permission is not granted to third-party apps anymore since Android 4.1 (JellyBean). Starting with this version, logcat provides only traces from your own app, without requiring a permission. JellyBean logcat logs are retrieved by ACRA starting with version 4.3.0b2
+:::
+
+### Adding your own log file extracts to reports
+**Since 4.3.0b1**
+
+If you chose to log your debug traces to an independent file (using for example [android-logging-log4j](http://code.google.com/p/android-logging-log4j), [slf4j](http://www.slf4j.org/android/) or [logback-android](http://tony19.github.com/logback-android/)), ACRA can get the latest lines from this file and send them in your reports.
+
+Include the field `APPLICATION_LOG` in your `customReportContent` and spreadsheet template then configure it with:
+
+* `applicationLogFile = "applog.log"` to define the path/name of the log file
+* `applicationLogFileDir = Directory.FILES` to define the base path of the log file
+* `applicationLogFileLines = 150` to set the number of latest lines you want to be retrieved (default is 100).
+
+### Adding file attachments to reports
+***Since 4.10.0***
+
+You can attach arbitrary files to acra reports (if your backend supports it).
+
+Set one of the following:
+ * `attachmentUris = "content://your.app.acra/files/yourcustomfile.txt"`
+ * `attachmentUriProvider = YourAttachmentProvider.class`
+
+See [`attachmentUris`](pathname:///javadoc/latest/org/acra/annotation/AcraCore.html#attachmentUris--) for details on how to format your uri strings. Alternatively you can use your own `ContentProvider` with a respective uri.
+
+### Adding DropBoxManager events to your reports
+
+[DropBoxManager](https://developer.android.com/reference/android/os/DropBoxManager.html) has been introduced in android API level 8 (2.2 - FroYo). This is a new logging system focused on persisting long chunks of text or data for debugging purposes. There is a [Q&A on StackOverflow](http://stackoverflow.com/questions/4434192/dropboxmanager-use-cases) explaining the usage of this system.
+
+As it is a rarely used feature, you need to enable it by including the field `DROPBOX` in your `reportContent`.
+
+:::info
+ *`READ_LOG` permission is not granted to third-party apps anymore since Android 4.1 (JellyBean). Starting with this version, logcat provides only traces from your own app, without requiring a permission. JellyBean logcat logs are retrieved by ACRA starting with version 4.3.0b2*
+:::
+
+A list of DropBox tags has been built by searching for `DropBoxManager` usage in android source code. All these system tagged events can be retrieved if you set `includeDropBoxSystemTags` to `true`:
+* `system_app_anr`
+* `system_app_wtf`
+* `system_app_crash`
+* `system_server_anr`
+* `system_server_wtf`
+* `system_server_crash`
+* `BATTERY_DISCHARGE_INFO`
+* `SYSTEM_RECOVERY_LOG`
+* `SYSTEM_BOOT`
+* `SYSTEM_LAST_KMSG`
+* `APANIC_CONSOLE`
+* `APANIC_THREADS`
+* `SYSTEM_RESTART`
+* `SYSTEM_TOMBSTONE`
+* `data_app_strictmode`
+  
+You can add your own dropbox tags using `additionalDropBoxTags`, and set the max age in minutes for events to be retrieved using `dropboxCollectionMinutes`.
+
+:::caution
+Collecting DropBox events might take quite some time and induce a latency right after your application crash. Increase the `dropBoxCollectionMinutes` only if you know what you are doing.
+:::
+
+### Adding the Device Unique ID to your reports
+
+In some circumstances, tracking exactly which identified devices throw which report can be necessary. ACRA will include your users Device ID (IMEI for GSM and the MEID or ESN for CDMA phones) if you add the following permission to your application manifest:
+
+```xml
+<manifest ...>
+    ...
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+</manifest>
+```
+
+:::note
+This unique device ID is considered as private data as it could let you track users behaviors... You should consider [adding a user preference item to let your user choose to include this device id or not](#enabledisable-including-deviceid).
+:::
+
+### Choosing which fields to be included in reports
+
+You can change the default set of fields included in your reports using `reportContent = { array of ReportField }`. For example:
+
+<AndroidCode>
+
+```kotlin
+reportContent = arrayOf(APP_VERSION, ANDROID_VERSION, PHONE_MODEL, CUSTOM_DATA, STACK_TRACE, LOGCAT)
+```
+
+```java
+.withReportContent(APP_VERSION, ANDROID_VERSION, PHONE_MODEL, CUSTOM_DATA, STACK_TRACE, LOGCAT)
+```
+
+</AndroidCode>
+
+Limiting your reports to what you really want and really use can help avoiding performance issues when collecting reports data. Only fields which are set in reportContent are actually processed.
+
+
+### Adding custom SharedPreferences names
+
+The system [default SharedPreferences](https://developer.android.com/reference/android/preference/PreferenceManager.html#getDefaultSharedPreferences(android.content.Context)) for your application are  automatically collected in the `SHARED_PREFERENCES` field.
+
+If your app contains multiple `SharedPreferences` files, or if you are using a non-default name, you can add them by providing their names with `additionalSharedPreferences = arrayOf("my_own_prefs","a_second_prefs")
+
+:::note
+your shared preferences file name is set when you open your `SharedPreferences`:
+
+<AndroidCode>
+
+```kotlin
+context.getSharedPreferences("My file name to be used in acra", Context.MODE_PRIVATE)
+```
+
+```java
+context.getSharedPreferences("My file name to be used in acra", Context.MODE_PRIVATE);
+```
+
+</AndroidCode>
+
+:::
+
+
+### Exclude SharedPreferences keys
+**Since 4.3.0b1**
+
+If your `SharedPreferences` contain private data that you don't want to be transmitted in reports, you can define exclusion rules using [Regular Expressions](http://en.wikipedia.org/wiki/Regular_expression) provided in the `excludeMatchingSharedPreferencesKeys` configuration item.
+
+Every key matching any of these regular expressions will be excluded from reports.
+
+### Exclude Settings keys
+**Since 4.5.0**
+
+Similarly to SharedPreferences, you may want to exclude some keys from the various settings fields collected by ACRA.
+
+The configuration item to use is `excludeMatchingSettingsKeys`.
+
+## Letting your users control ACRA
+
+Some ACRA behaviors can be configured by your application users through the use of `SharedPreferences` items.
+
+You can store any ACRA `SharedPreferences` separately from your application `SharedPreferences`. To do so use the `sharedPreferencesName` configuration.
+
+### Enable/disable ACRA
+
+Add to your preferences xml file a CheckBoxPreference (checking it disables ACRA):
+```xml
+<CheckBoxPreference android:key="acra.disable"
+    android:title="@string/pref_disable_acra"
+    android:summaryOn="@string/pref_acra_disabled"
+    android:summaryOff="@string/pref_acra_enabled"
+    android:defaultValue="false"/>
+```
+
+Or if you prefer the opposite (checking it to enable ACRA):
+```xml
+<CheckBoxPreference android:key="acra.enable"
+    android:title="@string/pref_enable_acra"
+    android:summaryOn="@string/pref_acra_enabled"
+    android:summaryOff="@string/pref_acra_disabled"
+    android:defaultValue="true"/>
+```
+
+Of course you have to define the matching strings in your `strings.xml` files.
+
+### Enable/disable system logs
+
+Including logcat extracts in reports is a great tool for developers, but it can lead to privacy issues as some other applications might log private data like user account names, opened URLs, calendar events...
+
+Giving your users a way to control the inclusion of logcat data make them understand that you care about their privacy. This can be done with the inclusion of the following `CheckBoxPreference`:
+
+```xml
+ <CheckBoxPreference android:key="acra.syslog.enable"
+    android:summaryOn="@string/pref_acra_syslog_enabled"
+    android:summaryOff="@string/pref_acra_syslog_disabled"
+    android:title="@string/pref_acra_syslog"
+    android:defaultValue="true"/>
+```
+
+Of course you have to define the matching strings in your `strings.xml` files.
+
+### Enable/disable including DeviceID
+
+If you added the `READ_PHONE_STATE` permission to your application but want to let your user be able to disable the inclusion of their Device ID in crash reports, you can include the following `CheckBoxPreference`:
+
+```xml
+ <CheckBoxPreference android:key="acra.deviceid.enable"
+    android:title="@string/pref_acra_deviceid"
+    android:summaryOn="@string/pref_acra_deviceid_enabled"
+    android:summaryOff="@string/pref_acra_deviceid_disabled" 
+    android:defaultValue="true"/>
+```
+
+Of course you have to define the matching strings in your `strings.xml` files.
+
+### Set an email address to be added to reports
+
+Some users might be willing to help debugging your app. You can ask them to input an email address that will be included in every report to allow you contact them:
+
+```xml
+ <EditTextPreference android:key="acra.user.email"
+    android:title="@string/pref_acra_user_email"
+    android:summary="@string/pref_acra_user_email_summary"/>
+```
+
+### Enable/disable auto accept reports
+
+While in `NOTIFICATION` or `DIALOG` mode, you can allow your users to choose to auto-accept sending all reports. This is like letting them switch from `NOTIFICATION`/`DIALOG` mode to `SILENT` mode.
+
+```xml
+ <CheckBoxPreference android:key="acra.alwaysaccept"
+    android:title="@string/pref_acra_alwaysaccept"
+    android:summaryOn="@string/pref_acra_alwaysaccept_enabled"
+    android:summaryOff="@string/pref_acra_alwaysaccept_disabled"
+    android:defaultValue="false"/>
+```
+
+## Sending reports for caught exceptions or for unexpected application state without any exception
+
+As a good programmer, your code is full of try/catch statements, and sometimes an interesting (unexpected) exception might be caught in one of these.
+
+You could also want your application to send a report without any Exception thrown, just because you know that your application is in an unexpected state.
+
+Both of these needs can be covered by this:
+
+<AndroidCode>
+
+```kotlin
+caughtException.sendWithAcra()
+```
+
+```java
+ACRA.getErrorReporter().handleException(caughtException);
+```
+
+</AndroidCode>
+
+You can provide any caught or custom Exception, or even `null` if you don't have any to provide.
+
+If you need to add silent trace reports whatever interaction mode you configured for your application, you can also use:
+
+<AndroidCode>
+
+```kotlin
+caughtException.sendSilentlyWithAcra()
+```
+
+```java
+ACRA.getErrorReporter().handleSilentException(caughtException);
+```
+
+</AndroidCode>
+
+## Configuring a KeyStore
+<AndroidCode>
+
+```kotlin
+keystoreFactory = MyKeyStoreFactory::class.java
+```
+
+```java
+.withKeyStoreFactory(MyKeyStoreFactory.class)
+```
+
+</AndroidCode>
+
+<AndroidCode>
+
+```kotlin
+class MyKeyStoreFactory : BaseKeyStoreFactory() {// or KeyStoreFactory for more control
+}
+```
+
+```java
+public class MyKeyStoreFactory extends BaseKeyStoreFactory {// or KeyStoreFactory for more control
+}
+```
+
+</AndroidCode>
+
+Alternatively you can use the `certificatePath`, `resCertificate` and `certificateType` configuration options to use one of ACRAs default KeyStoreFactories.
+
+## Catching Application Not Responding errors (ANR)
+
+ACRA has no integrated system to monitor your app and send reports when it's not responding.
+
+There is an interesting approach provided by [Salomon Brys on Github](https://github.com/SalomonBrys/ANR-WatchDog). Its watchdog thread tries to execute a small code every 5 seconds and throws an exception if it failed. This exception will be reported by ACRA.
+
+## Catching Native Code errors
+
+ACRA does not catch errors occurring in native code.
+We currently don't know any stable solution to catch native errors with ACRA.
+
+
