@@ -16,24 +16,24 @@ jobs:
         with:
           fetch-depth: 2
       - name: Check if docs were modified
-      id: check_files
-      run: |
-        echo "::set-output name=run_job::false"
-        echo "=============== list modified files ==============="
-        git diff --name-only HEAD^ HEAD
+        id: check_files
+        run: |
+          echo "::set-output name=run_job::false"
+          echo "=============== list modified files ==============="
+          git diff --name-only HEAD^ HEAD
 
-        echo "========== check paths of modified files =========="
-        git diff --name-only HEAD^ HEAD > files.txt
-        while IFS= read -r file
-        do
-          echo $file
-          if [[ $file == web/* ]]; then
-            echo "Docs have been modified, run deployment"
-            echo "::set-output name=run_job::true"
-            break
-          else
-          fi
-        done < files.txt
+          echo "========== check paths of modified files =========="
+          git diff --name-only HEAD^ HEAD > files.txt
+          while IFS= read -r file
+          do
+            echo $file
+            if [[ $file == web/* ]]; then
+              echo "Docs have been modified, run deployment"
+              echo "::set-output name=run_job::true"
+              break
+            else
+            fi
+          done < files.txt
   deploy:
     runs-on: ubuntu-latest
     needs: check
