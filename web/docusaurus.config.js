@@ -28,7 +28,7 @@ module.exports = {
         },
         {to: 'pathname:///javadoc/latest', label: 'Dokka', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/ACRA/acra',
           label: 'GitHub',
           position: 'right',
         },
@@ -55,7 +55,7 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/ACRA/acra',
             },
           ],
         },
@@ -70,7 +70,7 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/acra/acra.github.com/edit/master/website/',
+          editUrl: 'https://github.com/acra/acra/edit/master/web/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
