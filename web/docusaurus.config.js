@@ -24,9 +24,9 @@ module.exports = {
           type: 'doc',
           docId: 'Setup',
           position: 'left',
-          label: 'Wiki',
+          label: 'Documentation',
         },
-        {to: 'pathname:///javadoc/latest', label: 'Documentation', position: 'left'},
+        {to: 'pathname:///javadoc/latest', label: 'Dokka', position: 'left'},
         {
           href: 'https://github.com/facebook/docusaurus',
           label: 'GitHub',
