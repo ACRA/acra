@@ -1,7 +1,7 @@
 name: deploy-docs
 
 on:
-  push
+  push:
   workflow-run:
     workflows: ["upload-javadoc"]
     types:
