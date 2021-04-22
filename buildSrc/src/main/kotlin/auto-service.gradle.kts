@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2020
+ * Copyright (c) 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id("org.jetbrains.dokka")
-}
+apply(plugin = "kotlin-kapt")
 
-repositories {
-    mavenCentral()
-    //TODO: Remove when kotlinx.html is available in maven central
-    maven { setUrl("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven") }
+dependencies {
+    val autoServiceVersion: String by project
+    "kapt"("com.google.auto.service:auto-service:$autoServiceVersion")
+    "compileOnly"("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
 }

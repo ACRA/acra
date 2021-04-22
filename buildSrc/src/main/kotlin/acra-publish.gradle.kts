@@ -13,18 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
+import com.android.build.gradle.LibraryExtension
+import gradle.kotlin.dsl.accessors._f9b7db6b229a578e2a74683274145336.sourceSets
+import org.jetbrains.dokka.gradle.DokkaTask
+
 
 plugins {
     `maven-publish`
     signing
+    id("org.jetbrains.dokka")
+}
+
+tasks.withType<DokkaTask> {
+    dokkaSourceSets.configureEach {
+        suppressGeneratedFiles.set(false)
+    }
+}
+
+tasks.register<Jar>("javadocJar") {
+    group = "documentation"
+    from(tasks["dokkaJavadoc"])
+    archiveClassifier.set("javadoc")
 }
 
 afterEvaluate {
+    tasks.register<Jar>("sourcesJar") {
+        group = "documentation"
+        from(project.extensions.findByType<LibraryExtension>()?.sourceSets?.get("main")?.java?.srcDirs ?: sourceSets["main"].allSource)
+        archiveClassifier.set("sources")
+    }
+
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                from(components.findByName("release") ?: components.findByName("java") ?: components.findByName("javaPlatform"))
+                from(components.findByName("release") ?: components.findByName("java"))
 
                 tasks.findByName("sourcesJar")?.let { artifact(it) }
                 tasks.findByName("javadocJar")?.let { artifact(it) }
@@ -32,7 +54,7 @@ afterEvaluate {
                 pom {
                     name.set("ACRA")
                     description.set("Publishes reports of Android application crashes to an end point.")
-                    url.set("http://acra.ch")
+                    url.set("https://acra.ch")
                     scm {
                         connection.set("scm:git:https://github.com/ACRA/acra.git")
                         developerConnection.set("scm:git:git@github.com:ACRA/acra.git")
@@ -41,7 +63,7 @@ afterEvaluate {
                     licenses {
                         license {
                             name.set("Apache-2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                             distribution.set("repo")
                         }
                     }

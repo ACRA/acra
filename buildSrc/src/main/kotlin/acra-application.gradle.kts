@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 plugins {
+    id("repositories")
     id("com.android.application")
+    kotlin("android")
 }
-apply(plugin = "kotlin-android")
-apply(plugin = "repositories")

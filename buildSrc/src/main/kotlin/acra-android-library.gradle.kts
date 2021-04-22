@@ -19,12 +19,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * limitations under the License.
  */
 plugins {
+    id("repositories")
     id("com.android.library")
+    kotlin("android")
+    id("kotlin-allopen")
+    id("auto-service")
 }
-apply(plugin = "kotlin-android")
-apply(plugin = "kotlin-kapt")
-apply(plugin = "kotlin-allopen")
-apply(plugin = "acra-base")
 
 android {
     val androidVersion: String by project
@@ -87,37 +87,22 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.register<Jar>("sourcesJar") {
-    group = "documentation"
-    from(android.sourceSets["main"].java.srcDirs)
-    archiveClassifier.set("sources")
-}
-
 tasks.withType<KaptTask> {
     useBuildCache = false
 }
 
-tasks.withType<DokkaTask> {
-    dokkaSourceSets {
-        named("main") {
-            noAndroidSdkLink.set(false)
-            sourceRoot(File(buildDir,"generated/source/kaptKotlin/release"))
-        }
-    }
-    dependsOn("assembleRelease")
-}
-
-tasks.register<Jar>("javadocJar") {
-    group = "documentation"
-    from(tasks["dokkaJavadoc"])
-    archiveClassifier.set("javadoc")
-}
-
 afterEvaluate {
+    tasks.withType<DokkaTask> {
+        dokkaSourceSets {
+            named("main") {
+                noAndroidSdkLink.set(false)
+                sourceRoot(File(buildDir,"generated/source/kaptKotlin/release"))
+            }
+        }
+        dependsOn("assembleRelease")
+    }
     tasks.findByName("publish")?.mustRunAfter("assembleRelease")
 }
-
-fun Javadoc.linksOffline(extDocUrl: String, packageListLoc: String) = (options as StandardJavadocDocletOptions).linksOffline(extDocUrl, packageListLoc)
 
 extensions.getByType<AllOpenExtension>().apply {
     annotation("org.acra.annotation.OpenAPI")

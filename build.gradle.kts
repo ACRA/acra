@@ -16,5 +16,4 @@
 
 plugins {
     `acra-release`
-    `acra-ci-tasks`
 }

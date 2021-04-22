@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 plugins {
+    id("repositories")
     `java-library`
     kotlin("jvm")
-    id("kotlin-kapt")
-    id("acra-base")
-}
-
-tasks.register<Jar>("sourcesJar") {
-    group = "documentation"
-    from(sourceSets["main"].allSource)
-    archiveClassifier.set("sources")
-}
-
-tasks.register<Jar>("javadocJar") {
-    group = "documentation"
-    from(tasks["dokkaJavadoc"])
-    archiveClassifier.set("javadoc")
+    id("auto-service")
 }
 
 java {

@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.repositories
-
 /*
  * Copyright (c) 2021
  *
@@ -15,6 +13,8 @@ import org.gradle.kotlin.dsl.repositories
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.gradle.kotlin.dsl.repositories
+
 repositories {
     mavenCentral()
     google()
