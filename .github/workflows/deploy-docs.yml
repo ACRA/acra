@@ -31,4 +31,4 @@ jobs:
           publish_dir: ./web/build/
           user_name: 'github-actions[bot]'
           user_email: '41898282+github-actions[bot]@users.noreply.github.com'
-          full_commit_message: "Update docs from ${{ github.ref }}"
+          full_commit_message: "Update docs from ${{ github.sha }}"
