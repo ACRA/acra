@@ -63,7 +63,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
         val attachments = ArrayList<Uri>()
         val contentAttached = fillAttachmentList(context, reportText, attachments)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             sendWithSelector(subject, body, attachments, context, contentAttached, bodyPrefix)
         } else {
             sendLegacy(subject, body, attachments, context, contentAttached, bodyPrefix)
