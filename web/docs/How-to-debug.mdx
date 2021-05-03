@@ -1,0 +1,31 @@
+---
+sidebar_position: 70
+title: How to Debug
+---
+import {AndroidCode} from "@theme/Code";
+
+This page describes how to capture logs for ACRA.
+
+## Gathering logs
+
+1. Enable dev logging by inserting this snippet before `ACRA.init`:
+
+<AndroidCode>
+
+```kotlin
+ACRA.DEV_LOGGING = true
+```
+
+```java
+ACRA.DEV_LOGGING = true;
+```
+
+</AndroidCode>
+
+2. Create a new logcat filter, with log tag parameter `ACRA`:
+
+import LogcatFilterImage from '@site/static/img/captures/logcat_filter.png'
+
+<img src={LogcatFilterImage} alt="logcat filter"/>
+
+3. If you want to report a bug or get help, stop your app and clear your logcat. Then start your app and do whatever you want to show, e.g. let it crash. Post all logs using the filter you created in 2.
