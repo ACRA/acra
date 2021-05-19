@@ -103,6 +103,7 @@ afterEvaluate {
     signing {
         val signingKey = project.findProperty("signingKey") as? String ?: System.getenv("SIGNING_KEY")
         val signingPassword = project.findProperty("signingPassword") as? String ?: System.getenv("SIGNING_PASSWORD")
+        this.isRequired = !signingKey.isNullOrBlank()
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications["maven"])
     }
