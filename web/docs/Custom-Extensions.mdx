@@ -51,12 +51,18 @@ Add the following dependencies:
 
 ```kotlin title="build.gradle.kts"
 compileOnly("com.google.auto.service:auto-service-annotations:1.0")
+//either for java sources:
 annotationProcessor("com.google.auto.service:auto-service:1.0")
+//or for kotlin sources (requires kapt gradle plugin):
+kapt("com.google.auto.service:auto-service:1.0")
 ```
 
 ```groovy title="build.gradle"
 compileOnly "com.google.auto.service:auto-service-annotations:1.0"
+//either for java sources:
 annotationProcessor "com.google.auto.service:auto-service:1.0"
+//or for kotlin sources (requires kapt gradle plugin):
+kapt "com.google.auto.service:auto-service:1.0"
 ```
 
 </GradleCode>
