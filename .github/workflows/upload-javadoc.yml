@@ -20,7 +20,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Generate Javadoc
-        run: ./gradlew dokkaHtmlCollector --no-daemon
+        run: ./gradlew assembleRelease dokkaHtmlCollector --no-daemon
       - name: Extract version
         id: version
         run: echo "::set-output name=value::$(git describe --abbrev=0 | sed -e "s/^acra-//")"

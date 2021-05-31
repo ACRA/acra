@@ -34,14 +34,14 @@ public MyAdmin implements ReportingAdministrator {
 
 | Supported Extensions | Use Case |
 | --- | --- |
-| [`Collector`](https://www.acra.ch/javadoc/latest/org/acra/collector/Collector.html) | Collect additional custom data not covered by acra |
-| [`ApplicationStartupCollector`](https://www.acra.ch/javadoc/latest/org/acra/collector/ApplicationStartupCollector.html) | Collector which is also called at startup |
-| [`ReportInteraction`](https://www.acra.ch/javadoc/latest/org/acra/interaction/ReportInteraction.html) | Usually not needed, as the provided options (dialog, notification, toast) cover all reasonable choices |
-| [`ReportingAdministrator`](https://www.acra.ch/javadoc/latest/org/acra/config/ReportingAdministrator.html) | Control when reports are generated and when the application should be stopped |
-| [`ReportSenderFactory`](https://www.acra.ch/javadoc/latest/org/acra/sender/ReportSenderFactory.html) | Register custom report senders |
-| [`ConfigurationBuilderFactory`](https://www.acra.ch/javadoc/latest/org/acra/config/ConfigurationBuilderFactory.html) | Register custom configurations |
-| [`SenderSchedulerFactory`](https://www.acra.ch/javadoc/latest/org/acra/scheduler/SenderSchedulerFactory.html) | Register custom sender scheduler, e.g. to prevent report sending based on custom conditions |
-| [`StartupProcessor`](https://www.acra.ch/javadoc/latest/org/acra/startup/StartupProcessor.html)  | Do something ACRA related on app start |
+| [`Collector`](pathname:///javadoc/latest/acra/org.acra.collector/-collector) | Collect additional custom data not covered by acra |
+| [`ApplicationStartupCollector`](pathname:///javadoc/latest/acra/org.acra.collector/-application-startup-collector) | Collector which is also called at startup |
+| [`ReportInteraction`](pathname:///javadoc/latest/acra/org.acra.interaction/-report-interaction) | Usually not needed, as the provided options (dialog, notification, toast) cover all reasonable choices |
+| [`ReportingAdministrator`](pathname:///javadoc/latest/acra/org.acra.config/-reporting-administrator) | Control when reports are generated and when the application should be stopped |
+| [`ReportSenderFactory`](pathname:///javadoc/latest/acra/org.acra.sender/-report-sender-factory) | Register custom report senders |
+| [`ConfigurationBuilderFactory`](pathname:///javadoc/latest/acra/org.acra.config/-configuration-builder-factory) | Register custom configurations |
+| [`SenderSchedulerFactory`](pathname:///javadoc/latest/acra/org.acra.scheduler/-sender-scheduler-factory) | Register custom sender scheduler, e.g. to prevent report sending based on custom conditions |
+| [`StartupProcessor`](pathname:///javadoc/latest/acra/org.acra.startup/-startup-processor)  | Do something ACRA related on app start |
 ## Registering an extension
 Choose one of the following alternatives:
 ### By annotation

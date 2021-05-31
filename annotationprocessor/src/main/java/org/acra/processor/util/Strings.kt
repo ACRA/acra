@@ -45,7 +45,7 @@ object Strings {
     }
 
     fun addClassKdoc(builder: TypeSpec.Builder, base: TypeName) {
-        builder.addKdoc("Class generated based on {@link %T} (%L)\n", base, DATE_FORMAT.format(Calendar.getInstance().time))
+        builder.addKdoc("Class generated based on [%T] (%L)\n", base, DATE_FORMAT.format(Calendar.getInstance().time))
     }
 
     /**

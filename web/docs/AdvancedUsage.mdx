@@ -8,7 +8,7 @@ This is ACRA's Advanced Usage Guide. You need to [set up your project](Setup) be
 
 ## Customizing the Content of the Reports
 
-ACRA provides [lots of data about the device and the state of your application](pathname:///javadoc/latest/org/acra/ReportField). There are some options to let you add even more data to help debugging.
+ACRA provides [lots of data about the device and the state of your application](pathname:///javadoc/latest/acra/org.acra/-report-field). There are some options to let you add even more data to help debugging.
 
 ### Adding your own custom variables or traces in crash reports ("Breadcrumbs")
 
@@ -134,7 +134,7 @@ Set one of the following:
  * `attachmentUris = "content://your.app.acra/files/yourcustomfile.txt"`
  * `attachmentUriProvider = YourAttachmentProvider.class`
 
-See [`attachmentUris`](pathname:///javadoc/latest/org/acra/annotation/AcraCore.html#attachmentUris--) for details on how to format your uri strings. Alternatively you can use your own `ContentProvider` with a respective uri.
+See [`attachmentUris`](pathname:///javadoc/latest/acra/org.acra.annotation/-acra-core/attachment-uris.html) for details on how to format your uri strings. Alternatively you can use your own `ContentProvider` with a respective uri.
 
 ### Adding DropBoxManager events to your reports
 
