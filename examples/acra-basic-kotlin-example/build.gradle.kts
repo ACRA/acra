@@ -16,6 +16,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    kotlin("kapt")
 }
 
 android {
@@ -33,12 +34,16 @@ android {
 }
 
 dependencies {
-    val acraVersion = "5.8.1-beta11"
+    val acraVersion = "5.8.2"
     implementation("ch.acra:acra-http:$acraVersion")
+
+    kapt("com.google.auto.service:auto-service:1.0")
+    compileOnly("com.google.auto.service:auto-service-annotations:1.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
