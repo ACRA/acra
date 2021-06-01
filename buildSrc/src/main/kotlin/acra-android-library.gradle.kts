@@ -59,7 +59,6 @@ tasks.withType<Test> {
 
 dependencies {
     androidTestImplementation(Libs.bundles["androidx-test"])
-    val autoServiceVersion: String by project
     "kaptTest"(Libs["autoService-processor"])
     testCompileOnly(Libs["autoService-annotations"])
     "kapt"(project(":annotationprocessor"))
@@ -69,7 +68,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-Xjvm-default=enable")
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 
