@@ -18,7 +18,7 @@ plugins {
 }
 
 dependencies {
-    implementation("com.google.auto:auto-common:0.10")
+    implementation("com.google.auto:auto-common:1.0")
     implementation("com.squareup:kotlinpoet:1.8.0")
     implementation(kotlin("reflect"))
     implementation("org.apache.commons:commons-text:1.9")
