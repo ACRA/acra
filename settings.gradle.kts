@@ -26,13 +26,7 @@ include("acra-limiter")
 include("acra-advanced-scheduler")
 includeBuild("examples")
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-    plugins {
-        val kotlinVersion: String by settings
-        kotlin("android") version kotlinVersion
-    }
-}
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 if(file("acratest").exists()) include("acratest")

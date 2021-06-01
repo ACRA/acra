@@ -25,5 +25,5 @@ android {
 }
 
 dependencies {
-    acraCore()
+    api(projects.acraCore)
 }

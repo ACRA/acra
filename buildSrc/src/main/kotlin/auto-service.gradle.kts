@@ -17,6 +17,6 @@ apply(plugin = "kotlin-kapt")
 
 dependencies {
     val autoServiceVersion: String by project
-    "kapt"("com.google.auto.service:auto-service:$autoServiceVersion")
-    "compileOnly"("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
+    "kapt"(Libs["autoService-processor"])
+    "compileOnly"(Libs["autoService-annotations"])
 }

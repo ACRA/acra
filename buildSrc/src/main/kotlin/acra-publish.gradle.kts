@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import com.android.build.gradle.LibraryExtension
-import gradle.kotlin.dsl.accessors._f9b7db6b229a578e2a74683274145336.sourceSets
 import org.jetbrains.dokka.gradle.DokkaTask
 
 
@@ -39,7 +38,10 @@ tasks.register<Jar>("javadocJar") {
 afterEvaluate {
     tasks.register<Jar>("sourcesJar") {
         group = "documentation"
-        from(project.extensions.findByType<LibraryExtension>()?.sourceSets?.get("main")?.java?.srcDirs ?: sourceSets["main"].allSource)
+        from(
+            project.extensions.findByType<LibraryExtension>()?.sourceSets?.get("main")?.java?.srcDirs
+                ?: project.extensions.getByType<SourceSetContainer>()["main"].allSource
+        )
         archiveClassifier.set("sources")
     }
 

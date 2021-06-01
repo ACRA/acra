@@ -19,7 +19,6 @@ plugins {
 }
 
 dependencies {
-    acraCore()
-    val androidxCoreVersion: String by project
-    implementation("androidx.core:core:$androidxCoreVersion")
+    api(projects.acraCore)
+    implementation(libs.androidx.core)
 }

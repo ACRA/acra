@@ -27,29 +27,17 @@ repositories {
 }
 
 dependencies {
-    val androidBuildPluginVersion: String by project
-    implementation("com.android.tools.build:gradle:$androidBuildPluginVersion")
-    val kotlinVersion: String by project
-    implementation(kotlin("gradle-plugin:$kotlinVersion"))
-    implementation(kotlin("allopen:$kotlinVersion"))
-    val dokkaVersion: String by project
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion")
-    implementation("org.jetbrains.dokka:dokka-core:$dokkaVersion")
-    val jgitverVersion: String by project
-    implementation("gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin:$jgitverVersion")
-    val nexusPublishVersion: String by project
-    implementation("io.github.gradle-nexus:publish-plugin:$nexusPublishVersion")
+    implementation(libs.android.build)
+    implementation(libs.kotlin.gradle)
+    implementation(libs.kotlin.allopen)
+    implementation(libs.dokka.gradle)
+    implementation(libs.dokka.core)
+    implementation(libs.jgitver)
+    implementation(libs.nexusPublish)
 }
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

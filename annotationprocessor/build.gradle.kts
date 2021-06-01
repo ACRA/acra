@@ -18,12 +18,11 @@ plugins {
 }
 
 dependencies {
-    implementation("com.google.auto:auto-common:1.0")
-    implementation("com.squareup:kotlinpoet:1.8.0")
-    implementation(kotlin("reflect"))
-    implementation("org.apache.commons:commons-text:1.9")
-    implementation(project(":annotations"))
-    implementation(project(":acra-javacore"))
-    val autoServiceVersion: String by project
-    implementation("com.google.auto.service:auto-service:$autoServiceVersion")
+    implementation(libs.autoCommon)
+    implementation(libs.kotlinPoet)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.commonsText)
+    implementation(projects.annotations)
+    implementation(projects.acraJavacore)
+    implementation(libs.autoService.processor)
 }

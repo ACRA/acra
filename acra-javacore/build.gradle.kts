@@ -19,6 +19,5 @@ plugins {
 }
 
 dependencies {
-    val androidxAnnotationVersion: String by project
-    api("androidx.annotation:annotation:$androidxAnnotationVersion")
+    api(libs.androidx.annotation)
 }

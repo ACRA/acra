@@ -25,5 +25,5 @@ android {
 }
 
 dependencies {
-    api(project(":acra-javacore"))
+    api(projects.acraJavacore)
 }

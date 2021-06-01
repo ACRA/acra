@@ -27,12 +27,12 @@ plugins {
 }
 
 android {
-    val androidVersion: String by project
-    val androidMinVersion: String by project
-    compileSdkVersion(Integer.parseInt(androidVersion))
+    val androidTarget: String by Libs.versions
+    val androidMin: String by Libs.versions
+    compileSdkVersion(Integer.parseInt(androidTarget))
     defaultConfig {
-        minSdkVersion(androidMinVersion)
-        targetSdkVersion(androidVersion)
+        minSdkVersion(androidMin)
+        targetSdkVersion(androidTarget)
         buildConfigField("String", "VERSION_NAME", "\"$version\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,26 +58,12 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    val androidXTestVersion: String by project
-    androidTestImplementation("androidx.test:core:$androidXTestVersion")
-    androidTestImplementation("androidx.test:runner:$androidXTestVersion") {
-        exclude(group = "org.hamcrest")
-    }
-    androidTestImplementation("androidx.test:rules:$androidXTestVersion") {
-        exclude(group = "org.hamcrest")
-    }
-    val androidXJunitVersion: String by project
-    androidTestImplementation("androidx.test.ext:junit:$androidXJunitVersion") {
-        exclude(group = "org.hamcrest")
-    }
-    val hamcrestVersion: String by project
-    androidTestImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
+    androidTestImplementation(Libs.bundles["androidx-test"])
     val autoServiceVersion: String by project
-    "kaptTest"("com.google.auto.service:auto-service:$autoServiceVersion")
-    testCompileOnly("com.google.auto.service:auto-service-annotations:$autoServiceVersion")
+    "kaptTest"(Libs["autoService-processor"])
+    testCompileOnly(Libs["autoService-annotations"])
     "kapt"(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
 }
 
 tasks.withType<KotlinCompile> {

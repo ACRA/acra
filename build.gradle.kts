@@ -15,5 +15,5 @@
  */
 
 plugins {
-    `acra-release`
+    id("acra-release")
 }
