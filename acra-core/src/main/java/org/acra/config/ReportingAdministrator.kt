@@ -36,7 +36,6 @@ interface ReportingAdministrator : Plugin {
      * @param reportBuilder the reportBuilder for the report about to be collected
      * @return if this report should be collected
      */
-    @JvmDefault
     fun shouldStartCollecting(context: Context, config: CoreConfiguration, reportBuilder: ReportBuilder): Boolean {
         return true
     }
@@ -49,7 +48,6 @@ interface ReportingAdministrator : Plugin {
      * @param crashReportData the collected report
      * @return if this report should be sent
      */
-    @JvmDefault
     fun shouldSendReport(context: Context, config: CoreConfiguration, crashReportData: CrashReportData): Boolean {
         return true
     }
@@ -60,10 +58,8 @@ interface ReportingAdministrator : Plugin {
      * @param context a context
      * @param config  the current config
      */
-    @JvmDefault
     fun notifyReportDropped(context: Context, config: CoreConfiguration) {}
 
-    @JvmDefault
     fun shouldFinishActivity(context: Context, config: CoreConfiguration, lastActivityManager: LastActivityManager): Boolean {
         return true
     }
@@ -77,7 +73,6 @@ interface ReportingAdministrator : Plugin {
      * @param crashReportData the collected report
      * @return if the application should be killed
      */
-    @JvmDefault
     fun shouldKillApplication(context: Context, config: CoreConfiguration, reportBuilder: ReportBuilder,
                               crashReportData: CrashReportData?): Boolean {
         return true

@@ -32,7 +32,6 @@ interface Plugin {
      * @param config the current config
      * @return if this instance should be called
      */
-    @JvmDefault
     fun enabled(config: CoreConfiguration): Boolean {
         return true
     }
