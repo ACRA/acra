@@ -17,7 +17,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v2.1.0
         with:
-           java-version: '1.8'
+          distribution: 'adopt'
+          java-version: '1.8'
       - name: Checkout ACRA
         uses: actions/checkout@v2
       - name: run tests on API ${{ matrix.android }}
