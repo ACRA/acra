@@ -2,6 +2,8 @@ name: deploy-docs
 
 on:
   push:
+    branches:
+      - master
     paths:
       - 'web/**'
       - '.github/workflows/deploy-docs.yml'
