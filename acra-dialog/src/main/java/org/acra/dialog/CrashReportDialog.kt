@@ -86,6 +86,9 @@ open class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
                 .setNegativeButton(dialogConfiguration.negativeButtonText, this)
         dialog = dialogBuilder.create()
         dialog.setCanceledOnTouchOutside(false)
+        dialog.setOnDismissListener {
+            finish()
+        }
         dialog.show()
     }
 
