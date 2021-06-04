@@ -15,14 +15,14 @@
  */
 package org.acra.plugins
 
-import org.acra.config.ConfigUtils
 import org.acra.config.Configuration
 import org.acra.config.CoreConfiguration
+import org.acra.config.findPluginConfiguration
 
 /**
  * @author F43nd1r
  * @since 18.04.18
  */
 abstract class HasConfigPlugin(private val configClass: Class<out Configuration>) : Plugin {
-    override fun enabled(config: CoreConfiguration): Boolean = ConfigUtils.getPluginConfiguration(config, configClass).enabled()
+    override fun enabled(config: CoreConfiguration): Boolean = config.findPluginConfiguration(configClass)?.enabled() ?: false
 }

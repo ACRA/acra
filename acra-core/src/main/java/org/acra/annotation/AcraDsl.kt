@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 the ACRA team
+ * Copyright (c) 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.acra.processor.element
 
-import com.squareup.kotlinpoet.asTypeName
-import org.acra.processor.creator.BuildMethodCreator
+package org.acra.annotation
 
-/**
- * @author F43nd1r
- * @since 11.01.2018
- */
-internal class PreBuildMethod(name: String) : AbstractElement(name, Unit::class.asTypeName(), emptyList()), ValidatedElement {
-    override fun addToBuildMethod(method: BuildMethodCreator) {
-        method.addDelegateCall(name)
-    }
-}
+import java.lang.annotation.Inherited
+
+@Inherited
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
+annotation class AcraDsl

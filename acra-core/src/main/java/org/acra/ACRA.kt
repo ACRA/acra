@@ -121,7 +121,7 @@ object ACRA {
      */
     @JvmOverloads
     @JvmStatic
-    fun init(app: Application, builder: CoreConfigurationBuilder = CoreConfigurationBuilder(app), checkReportsOnApplicationStart: Boolean = true) {
+    fun init(app: Application, builder: CoreConfigurationBuilder = CoreConfigurationBuilder(), checkReportsOnApplicationStart: Boolean = true) {
         try {
             init(app, builder.build(), checkReportsOnApplicationStart)
         } catch (e: ACRAConfigurationException) {

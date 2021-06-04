@@ -22,7 +22,6 @@ import android.os.Looper
 import android.widget.Toast
 import com.google.auto.service.AutoService
 import org.acra.builder.ReportBuilder
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.LimiterData.Companion.load
 import org.acra.config.LimiterData.ReportMetadata
 import org.acra.data.CrashReportData
@@ -45,7 +44,7 @@ import java.util.concurrent.Executors
 class LimitingReportAdministrator : HasConfigPlugin(LimiterConfiguration::class.java), ReportingAdministrator {
     override fun shouldStartCollecting(context: Context, config: CoreConfiguration, reportBuilder: ReportBuilder): Boolean {
         try {
-            val limiterConfiguration = getPluginConfiguration(config, LimiterConfiguration::class.java)
+            val limiterConfiguration = config.getPluginConfiguration<LimiterConfiguration>()
             val reportLocator = ReportLocator(context)
             if (reportLocator.approvedReports.size + reportLocator.unapprovedReports.size >= limiterConfiguration.failedReportLimit) {
                 debug { "Reached failedReportLimit, not collecting" }
@@ -64,7 +63,7 @@ class LimitingReportAdministrator : HasConfigPlugin(LimiterConfiguration::class.
 
     override fun shouldSendReport(context: Context, config: CoreConfiguration, crashReportData: CrashReportData): Boolean {
         try {
-            val limiterConfiguration = getPluginConfiguration(config, LimiterConfiguration::class.java)
+            val limiterConfiguration = config.getPluginConfiguration<LimiterConfiguration>()
             val limiterData = loadLimiterData(context, limiterConfiguration)
             var sameTrace = 0
             var sameClass = 0
@@ -96,8 +95,8 @@ class LimitingReportAdministrator : HasConfigPlugin(LimiterConfiguration::class.
     }
 
     override fun notifyReportDropped(context: Context, config: CoreConfiguration) {
-        val limiterConfiguration = getPluginConfiguration(config, LimiterConfiguration::class.java)
-        if (limiterConfiguration.ignoredCrashToast.isNotEmpty()) {
+        val limiterConfiguration = config.getPluginConfiguration<LimiterConfiguration>()
+        if (limiterConfiguration.ignoredCrashToast?.isNotEmpty() == true) {
             val future = Executors.newSingleThreadExecutor().submit {
                 Looper.prepare()
                 sendToast(context, limiterConfiguration.ignoredCrashToast, Toast.LENGTH_LONG)

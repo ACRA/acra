@@ -51,8 +51,8 @@ class SendingConductor(private val context: Context, private val config: CoreCon
                     reportsSentCount++
                 }
             }
-            val toast: String = if (reportsSentCount > 0) config.reportSendSuccessToast else config.reportSendFailureToast
-            if (anyNonSilent && toast.isNotEmpty()) {
+            val toast: String? = if (reportsSentCount > 0) config.reportSendSuccessToast else config.reportSendFailureToast
+            if (anyNonSilent && toast != null && toast.isNotEmpty()) {
                 debug { "About to show " + (if (reportsSentCount > 0) "success" else "failure") + " toast" }
                 Handler(Looper.getMainLooper()).post { sendToast(context, toast, Toast.LENGTH_LONG) }
             }

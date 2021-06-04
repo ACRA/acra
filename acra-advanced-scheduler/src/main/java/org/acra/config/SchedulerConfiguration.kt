@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018
+ * Copyright (c) 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,63 +14,58 @@
  * limitations under the License.
  */
 
-package org.acra.annotation;
+package org.acra.config
 
-import android.app.job.JobInfo;
-
-import java.lang.annotation.*;
+import android.app.job.JobInfo
+import com.faendir.kotlin.autodsl.AutoDsl
+import org.acra.annotation.AcraDsl
+import org.acra.ktx.plus
 
 /**
  * @author F43nd1r
  * @since 18.04.18
  */
-@Deprecated
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Inherited
-@Configuration
-public @interface AcraScheduler {
-    String EXTRA_APP_RESTARTED = "acra.restarted";
+@AutoDsl(dslMarker = AcraDsl::class)
+class SchedulerConfiguration(
+    /**
+     * enables this plugin
+     */
+    val enabled: Boolean = true,
     /**
      * Network constraint for report sending
-     *
-     * @return networkType required to allow report sending
      * @since 5.2.0
      */
-    int requiresNetworkType() default JobInfo.NETWORK_TYPE_NONE;
+    val requiresNetworkType: Int = JobInfo.NETWORK_TYPE_NONE,
 
     /**
      * Charging constraint for report sending
-     *
-     * @return if reports should only be sent while charging
      * @since 5.2.0
      */
-    boolean requiresCharging() default false;
+    val requiresCharging: Boolean = false,
 
     /**
      * Idle constraint for report sending
-     *
-     * @return if reports should only be sent while the device is idle
      * @since 5.2.0
      */
-    boolean requiresDeviceIdle() default false;
+    val requiresDeviceIdle: Boolean = false,
 
     /**
      * Battery constraint for report sending
-     *
-     * @return if reports should only be sent while battery isn't low
      * @since 5.2.0
      */
-    boolean requiresBatteryNotLow() default false;
+    val requiresBatteryNotLow: Boolean = false,
 
     /**
      * Restarts the last activity immediately after a crash.
-     * If an activity is restarted, the {@link org.acra.annotation.AcraScheduler#EXTRA_APP_RESTARTED} extra will contain a boolean true.
+     * If an activity is restarted, the [org.acra.scheduler.RestartingAdministrator.EXTRA_ACTIVITY_RESTART_AFTER_CRASH] extra will contain a boolean true.
      * Note that this might interact badly with the crash dialog.
-     *
-     * @return if acra should attempt to restart the app after a crash
      * @since 5.2.0
      */
-    boolean restartAfterCrash() default false;
+    val restartAfterCrash: Boolean = false,
+) : Configuration {
+    override fun enabled(): Boolean = enabled
+}
+
+fun CoreConfigurationBuilder.scheduler(initializer: SchedulerConfigurationBuilder.() -> Unit) {
+    pluginConfigurations += SchedulerConfigurationBuilder().apply(initializer).build()
 }

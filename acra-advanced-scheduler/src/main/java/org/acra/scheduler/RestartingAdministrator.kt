@@ -22,10 +22,10 @@ import android.content.Context
 import android.os.PersistableBundle
 import com.google.auto.service.AutoService
 import org.acra.builder.LastActivityManager
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.ReportingAdministrator
 import org.acra.config.SchedulerConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.log.debug
 import org.acra.log.info
 import org.acra.log.warn
@@ -39,7 +39,7 @@ import org.acra.plugins.HasConfigPlugin
 class RestartingAdministrator : HasConfigPlugin(SchedulerConfiguration::class.java), ReportingAdministrator {
     override fun shouldFinishActivity(context: Context, config: CoreConfiguration, lastActivityManager: LastActivityManager): Boolean {
         debug { "RestartingAdministrator entry" }
-        if (getPluginConfiguration(config, SchedulerConfiguration::class.java).restartAfterCrash) {
+        if (config.getPluginConfiguration<SchedulerConfiguration>().restartAfterCrash) {
             val activity = lastActivityManager.lastActivity
             if (activity != null) {
                 debug { "Try to schedule last activity (" + activity.javaClass.name + ") for restart" }

@@ -86,14 +86,7 @@ class ReflectionCollector : BaseReportFieldCollector(ReportField.BUILD, ReportFi
      */
     @Throws(ClassNotFoundException::class)
     private fun getBuildConfigClass(context: Context, config: CoreConfiguration): Class<*> {
-        val configuredBuildConfig: Class<*> = config.buildConfigClass
-        if (configuredBuildConfig != Any::class.java) {
-            // If set via annotations or programmatically then it will have a real value,
-            // otherwise it will be Object.class (default).
-            return configuredBuildConfig
-        }
-        val className = context.packageName + ".BuildConfig"
-        return Class.forName(className)
+        return config.buildConfigClass ?: Class.forName(context.packageName + ".BuildConfig")
     }
 
     companion object {

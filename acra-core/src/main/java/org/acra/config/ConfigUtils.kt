@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:JvmName("ConfigUtils")
+
 package org.acra.config
 
 import org.acra.log.debug
@@ -23,17 +25,23 @@ import org.acra.log.debug
  * @author F43nd1r
  * @since 01.06.2017
  */
-object ConfigUtils {
-    @JvmStatic
-    fun <T : Configuration> getPluginConfiguration(config: CoreConfiguration, c: Class<T>): T {
-        debug { "Checking plugin Configurations : ${config.pluginConfigurations} for class : $c" }
-        for (configuration in config.pluginConfigurations) {
-            debug { "Checking plugin Configuration : $configuration against plugin class : $c" }
-            if (c.isAssignableFrom(configuration.javaClass)) {
-                @Suppress("UNCHECKED_CAST")
-                return configuration as T
-            }
+
+inline fun <reified T : Configuration> CoreConfiguration.getPluginConfiguration() : T = getPluginConfiguration(T::class.java)
+
+fun <T : Configuration> CoreConfiguration.getPluginConfiguration(c: Class<T>): T {
+    return findPluginConfiguration(c) ?: throw IllegalArgumentException("${c.name} is no registered configuration")
+}
+
+inline fun <reified T : Configuration> CoreConfiguration.findPluginConfiguration() : T? = findPluginConfiguration(T::class.java)
+
+fun <T : Configuration> CoreConfiguration.findPluginConfiguration(c: Class<T>): T? {
+    debug { "Checking plugin Configurations : $pluginConfigurations for class : $c" }
+    for (configuration in pluginConfigurations) {
+        debug { "Checking plugin Configuration : $configuration against plugin class : $c" }
+        if (c.isAssignableFrom(configuration.javaClass)) {
+            @Suppress("UNCHECKED_CAST")
+            return configuration as T
         }
-        throw IllegalArgumentException("${c.name} is no registered configuration")
     }
+    return null
 }

@@ -21,9 +21,9 @@ import org.acra.ACRA
 import org.acra.ACRAConstants
 import org.acra.ReportField
 import org.acra.attachment.DefaultAttachmentProvider
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.HttpSenderConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.data.CrashReportData
 import org.acra.data.StringFormat
 import org.acra.http.BinaryHttpRequest
@@ -67,7 +67,7 @@ import java.net.URL
  */
 @Suppress("unused")
 class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration, method: Method?, type: StringFormat?, formUri: String? = null) : ReportSender {
-    private val httpConfig: HttpSenderConfiguration = getPluginConfiguration(config, HttpSenderConfiguration::class.java)
+    private val httpConfig: HttpSenderConfiguration = config.getPluginConfiguration()
     private val mFormUri: Uri = Uri.parse(formUri ?: httpConfig.uri)
     private val mMethod: Method = method ?: httpConfig.httpMethod
     private val mType: StringFormat = type ?: config.reportFormat

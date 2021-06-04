@@ -61,8 +61,8 @@ dependencies {
     androidTestImplementation(Libs.bundles["androidx-test"])
     "kaptTest"(Libs["autoService-processor"])
     testCompileOnly(Libs["autoService-annotations"])
-    "kapt"(project(":annotationprocessor"))
-    compileOnly(project(":annotations"))
+    "kapt"(Libs["autoDsl-processor"])
+    compileOnly(Libs["autoDsl-annotations"])
 }
 
 tasks.withType<KotlinCompile> {
