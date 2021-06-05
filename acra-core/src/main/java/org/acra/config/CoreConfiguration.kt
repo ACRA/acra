@@ -248,7 +248,7 @@ class CoreConfiguration(
     /**
      * Plugin configurations
      */
-    val pluginConfigurations: List<Configuration>,
+    val pluginConfigurations: List<Configuration> = emptyList(),
 ) : Serializable, Configuration {
     override fun enabled(): Boolean = true
 }
