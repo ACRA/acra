@@ -144,7 +144,7 @@ class HttpSenderConfiguration(
      * custom HTTP headers to be sent by the provided [org.acra.sender.HttpSender]
      * This should be used also by third party senders.
      */
-    val httpHeaders: Map<String, String>,
+    val httpHeaders: Map<String, String> = emptyMap(),
 ) : Configuration {
     override fun enabled(): Boolean = enabled
 }
