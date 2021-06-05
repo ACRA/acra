@@ -13,7 +13,7 @@ androidx-test = "1.3.0"
 androidx-junit = "1.1.2"
 jgitver = "0.10.0-rc03"
 nexusPublish = "1.0.0"
-autoDsl = "2.2.2"
+autoDsl = "2.2.3"
 
 [libraries]
 android-build = { module = "com.android.tools.build:gradle", version.ref = "android-build" }

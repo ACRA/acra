@@ -20,6 +20,7 @@ import android.app.Activity
 import androidx.annotation.DrawableRes
 import androidx.annotation.StyleRes
 import com.faendir.kotlin.autodsl.AutoDsl
+import com.faendir.kotlin.autodsl.AutoDslRequired
 import org.acra.annotation.AcraDsl
 import org.acra.dialog.CrashReportDialog
 import org.acra.ktx.plus
@@ -44,6 +45,7 @@ class DialogConfiguration(
      *
      * @since 5.0.0
      */
+    @AutoDslRequired("main")
     val reportDialogClass: Class<out Activity> = CrashReportDialog::class.java,
 
     /**
@@ -92,6 +94,7 @@ class DialogConfiguration(
      *
      * @since 5.0.0
      */
+    @AutoDslRequired("main")
     val text: String? = null,
 
     /**
