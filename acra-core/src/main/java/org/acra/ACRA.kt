@@ -188,6 +188,7 @@ object ACRA {
      * @return true if the current process is the process running the SenderService.
      * NB this assumes that your SenderService is configured to used the default ':acra' process.
      */
+    @JvmStatic
     fun isACRASenderServiceProcess(): Boolean {
         val processName = currentProcessName()
         debug { "ACRA processName='$processName'" }
