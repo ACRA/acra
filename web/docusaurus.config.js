@@ -6,6 +6,7 @@ module.exports = {
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+  trailingSlash: false,
   favicon: 'img/favicon.ico',
   organizationName: 'ACRA', // Usually your GitHub org/user name.
   projectName: 'acra', // Usually your repo name.
