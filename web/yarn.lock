@@ -1276,10 +1276,10 @@
     url-loader "^4.1.1"
     webpack "^5.40.0"
 
-"@docusaurus/module-type-aliases@^2.0.0-beta.2":
-  version "2.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@docusaurus/module-type-aliases/-/module-type-aliases-2.0.0-beta.2.tgz#06a1aa9acb3ce1b93b59459aae48e9b57d620570"
-  integrity sha512-mRAojZIx8ST+bL2O4i+QoVN9RQA93HT3Ki8/6buKsg3Nikat7wZIB27/9wpjHLb86xHR4TmumAYF5KlkPNeANg==
+"@docusaurus/module-type-aliases@^2.0.0-beta.3":
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@docusaurus/module-type-aliases/-/module-type-aliases-2.0.0-beta.3.tgz#6381df7d164708f2865c420dc3ab6e03def9ed7d"
+  integrity sha512-vciejziDBu39cyfmdvbpn865YlvugJMUOeD2m/7Kg4RLUPIZzQTWns0ZGIMc/iToiwebHwkoJtRsHaHzj8FpnA==
 
 "@docusaurus/plugin-content-blog@2.0.0-beta.3":
   version "2.0.0-beta.3"
