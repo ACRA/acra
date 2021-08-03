@@ -17,6 +17,7 @@ package org.acra.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.preference.PreferenceManager
 import org.acra.ACRA
 import org.acra.ACRAConstants
@@ -35,12 +36,22 @@ class SharedPreferencesFactory(private val context: Context, private val config:
     /**
      * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
      */
+    @Suppress("DEPRECATION")
     fun create(): SharedPreferences {
+
         return if (ACRAConstants.DEFAULT_STRING_VALUE != config.sharedPreferencesName) {
-            context.getSharedPreferences(config.sharedPreferencesName, Context.MODE_PRIVATE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.createDeviceProtectedStorageContext().getSharedPreferences(config.sharedPreferencesName, Context.MODE_PRIVATE)
+            } else {
+                context.getSharedPreferences(config.sharedPreferencesName, Context.MODE_PRIVATE)
+
+            }
         } else {
-            @Suppress("DEPRECATION")
-            PreferenceManager.getDefaultSharedPreferences(context)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                PreferenceManager.getDefaultSharedPreferences(context.createDeviceProtectedStorageContext())
+            } else {
+                PreferenceManager.getDefaultSharedPreferences(context)
+            }
         }
     }
 

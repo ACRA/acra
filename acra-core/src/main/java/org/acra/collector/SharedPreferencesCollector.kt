@@ -17,6 +17,7 @@ package org.acra.collector
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.preference.PreferenceManager
 import com.google.auto.service.AutoService
 import org.acra.ACRA
@@ -65,7 +66,12 @@ class SharedPreferencesCollector : BaseReportFieldCollector(ReportField.USER_EMA
 
         // Add in any additional SharedPreferences
         for (sharedPrefId in config.additionalSharedPreferences) {
-            sharedPrefs[sharedPrefId] = context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                sharedPrefs[sharedPrefId] = context.createDeviceProtectedStorageContext().getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE)
+            }else{
+                sharedPrefs[sharedPrefId] = context.getSharedPreferences(sharedPrefId, Context.MODE_PRIVATE)
+
+            }
         }
 
         // Iterate over all included preference files and add the preferences from each.
