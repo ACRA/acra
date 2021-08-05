@@ -47,6 +47,7 @@ class DeviceIdCollector : BaseReportFieldCollector(ReportField.DEVICE_ID) {
     @Throws(Exception::class)
     override fun collect(reportField: ReportField, context: Context, config: CoreConfiguration, reportBuilder: ReportBuilder, target: CrashReportData) {
         @Suppress("DEPRECATION")
-        target.put(ReportField.DEVICE_ID, getTelephonyManager(context).deviceId)
+        val deviceId = if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) getTelephonyManager(context).deviceId else null
+        target.put(ReportField.DEVICE_ID, deviceId)
     }
 }
