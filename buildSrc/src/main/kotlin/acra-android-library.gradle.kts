@@ -27,12 +27,10 @@ plugins {
 }
 
 android {
-    val androidTarget: String by Libs.versions
-    val androidMin: String by Libs.versions
-    compileSdkVersion(Integer.parseInt(androidTarget))
+    compileSdk = Integer.parseInt(libs.versions.android.target.get())
     defaultConfig {
-        minSdkVersion(androidMin)
-        targetSdkVersion(androidTarget)
+        minSdk = Integer.parseInt(libs.versions.android.min.get())
+        targetSdk = compileSdk
         buildConfigField("String", "VERSION_NAME", "\"$version\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,7 +39,7 @@ android {
             isMinifyEnabled = false
         }
     }
-    lintOptions {
+    lint {
         isAbortOnError = false
     }
     compileOptions {
@@ -58,9 +56,7 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    androidTestImplementation(Libs.bundles["androidx-test"])
-    "kaptTest"(Libs["autoService-processor"])
-    testCompileOnly(Libs["autoService-annotations"])
+    androidTestImplementation(libs.bundles.androidx.test)
     "kapt"(project(":annotationprocessor"))
     compileOnly(project(":annotations"))
 }

@@ -15,8 +15,11 @@
  */
 apply(plugin = "kotlin-kapt")
 
-dependencies {
-    val autoServiceVersion: String by project
-    "kapt"(Libs["autoService-processor"])
-    "compileOnly"(Libs["autoService-annotations"])
+if(canUseLibs()) {
+    dependencies {
+        "kapt"(libs.autoService.processor)
+        "compileOnly"(libs.autoService.annotations)
+        "kaptTest"(libs.autoService.processor)
+        "testCompileOnly"(libs.autoService.annotations)
+    }
 }
