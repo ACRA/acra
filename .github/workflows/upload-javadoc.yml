@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v2.3.0
         with:
           distribution: 'adopt'
-          java-version: '8'
+          java-version: '11'
       - name: Checkout acra
         uses: actions/checkout@v2
         with:
