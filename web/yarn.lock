@@ -1551,10 +1551,10 @@
     url-loader "^4.1.1"
     webpack "^5.40.0"
 
-"@docusaurus/module-type-aliases@^2.0.0-beta.7":
-  version "2.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/@docusaurus/module-type-aliases/-/module-type-aliases-2.0.0-beta.7.tgz#b2435fadb532b1785465feb9c37d86b039ae712c"
-  integrity sha512-KAd3JjzawbrYaQfhBww/eZoz5bOC54IEE3r4/fTWyV2aWBojwiuhFH+B0XaRR+pCW6E8J7w0Nz6VturS1ZF+sA==
+"@docusaurus/module-type-aliases@^2.0.0-beta.8":
+  version "2.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@docusaurus/module-type-aliases/-/module-type-aliases-2.0.0-beta.8.tgz#6bc9ae6ab895ca96dff9df1e1247695b9a4826ad"
+  integrity sha512-2hW+PMfY+4kMD0MCLuezb9Ytj4jz237PbnKc9d+Lgqvkyri154QQKtkmWha+QOBiGJ4832LIFijtoyb+T+XQSA==
   dependencies:
     "@types/react" "*"
     "@types/react-helmet" "*"
