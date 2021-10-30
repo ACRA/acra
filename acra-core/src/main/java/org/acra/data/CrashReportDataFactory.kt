@@ -24,6 +24,7 @@ import org.acra.config.CoreConfiguration
 import org.acra.log.debug
 import org.acra.log.warn
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
@@ -33,13 +34,14 @@ import java.util.concurrent.Executors
  * @since 4.3.0
  */
 class CrashReportDataFactory(private val context: Context, private val config: CoreConfiguration) {
-    private val collectors: List<Collector> = config.pluginLoader.loadEnabled(config, Collector::class.java).sortedBy {
-        try {
-            it.order
+    private val collectors: List<Collector> = config.pluginLoader.loadEnabled(config, Collector::class.java).sortedBy { it.safeOrder }
+
+    private val Collector.safeOrder
+        get() = try {
+            order
         } catch (t: Exception) {
             Collector.Order.NORMAL
         }
-    }
 
     /**
      * Collects crash data.
@@ -50,6 +52,15 @@ class CrashReportDataFactory(private val context: Context, private val config: C
     fun createCrashData(builder: ReportBuilder): CrashReportData {
         val executorService = if (config.parallel) Executors.newCachedThreadPool() else Executors.newSingleThreadExecutor()
         val crashReportData = CrashReportData()
+        collectors.groupBy { it.safeOrder }.toSortedMap().forEach { (order, collectors) ->
+            debug { "Starting collectors with priority ${order.name}" }
+            collect(collectors, executorService, builder, crashReportData)
+            debug { "Finished collectors with priority ${order.name}" }
+        }
+        return crashReportData
+    }
+
+    private fun collect(collectors: List<Collector>, executorService: ExecutorService, builder: ReportBuilder, crashReportData: CrashReportData) {
         val futures = collectors.map { collector ->
             executorService.submit {
                 //catch absolutely everything possible here so no collector obstructs the others
@@ -74,7 +85,6 @@ class CrashReportDataFactory(private val context: Context, private val config: C
                 }
             }
         }
-        return crashReportData
     }
 
     fun collectStartUp() {
