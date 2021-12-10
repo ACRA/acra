@@ -18,6 +18,7 @@ package org.acra.collector
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import com.google.auto.service.AutoService
 import org.acra.ACRA
