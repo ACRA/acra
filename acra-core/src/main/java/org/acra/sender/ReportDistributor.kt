@@ -45,7 +45,12 @@ import java.util.*
  * @author William Ferguson
  * @since 4.8.0
  */
-internal class ReportDistributor(private val context: Context, private val config: CoreConfiguration, private val reportSenders: List<ReportSender>, private val extras: Bundle) {
+internal class ReportDistributor(
+    private val context: Context,
+    private val config: CoreConfiguration,
+    private val reportSenders: List<ReportSender>,
+    private val extras: Bundle
+) {
     /**
      * Send report via all senders.
      *
@@ -104,13 +109,10 @@ internal class ReportDistributor(private val context: Context, private val confi
                 InstanceCreator.create(config.retryPolicyClass) { DefaultRetryPolicy() }.shouldRetrySend(reportSenders, failedSenders) -> throw ReportSenderException(
                         "Policy marked this task as incomplete. ACRA will try to send this report again.", failedSenders[0].exception)
                 else -> warn {
-                    val builder = StringBuilder("ReportSenders of classes [")
-                    for (failedSender in failedSenders) {
-                        builder.append(failedSender.sender.javaClass.name)
-                        builder.append(", ")
-                    }
-                    builder.append("] failed, but Policy marked this task as complete. ACRA will not send this report again.")
-                    builder.toString()
+                    "ReportSenders of classes [${failedSenders.joinToString { it.sender.javaClass.name }}] failed, " +
+                            "but Policy marked this task as complete. ACRA will not send this report again.\n" +
+                            "Suppressed:\n" +
+                            failedSenders.joinToString("\n") { it.exception.stackTraceToString() }
                 }
             }
         }
