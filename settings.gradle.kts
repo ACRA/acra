@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 include("acra-javacore")
-include("annotationprocessor")
-include("annotations")
 include("acra-http")
 include("acra-core")
 include("acra-mail")

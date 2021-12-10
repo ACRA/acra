@@ -15,6 +15,7 @@
  */
 package org.acra.interaction
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,9 +27,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import com.google.auto.service.AutoService
 import org.acra.ACRA
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.NotificationConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.notification.R
 import org.acra.plugins.HasConfigPlugin
 import org.acra.prefs.SharedPreferencesFactory
@@ -49,12 +50,13 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         }
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return true
         //can't post notifications
-        val notificationConfig = getPluginConfiguration(config, NotificationConfiguration::class.java)
+        val notificationConfig = config.getPluginConfiguration<NotificationConfiguration>()
         //We have to create a channel on Oreo+, because notifications without one aren't allowed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(CHANNEL, notificationConfig.channelName, notificationConfig.resChannelImportance)
+            @SuppressLint("WrongConstant")
+            val channel = NotificationChannel(CHANNEL, notificationConfig.channelName, notificationConfig.channelImportance)
             channel.setSound(null, null)
-            if (notificationConfig.channelDescription.isNotEmpty()) {
+            if (notificationConfig.channelDescription?.isNotEmpty() == true) {
                 channel.description = notificationConfig.channelDescription
             }
             notificationManager.createNotificationChannel(channel)
@@ -67,14 +69,14 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
                 .setSmallIcon(notificationConfig.resIcon)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
         //add ticker if set
-        if (notificationConfig.tickerText.isNotEmpty()) {
+        if (notificationConfig.tickerText?.isNotEmpty() == true) {
             notification.setTicker(notificationConfig.tickerText)
         }
         val sendIntent = getSendIntent(context, config, reportFile)
         val discardIntent = getDiscardIntent(context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationConfig.sendWithCommentButtonText.isNotEmpty()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationConfig.sendWithCommentButtonText?.isNotEmpty() == true) {
             val remoteInput = RemoteInput.Builder(KEY_COMMENT)
-            if (notificationConfig.commentPrompt.isNotEmpty()) {
+            if (notificationConfig.commentPrompt?.isNotEmpty() == true) {
                 remoteInput.setLabel(notificationConfig.commentPrompt)
             }
             notification.addAction(

@@ -16,12 +16,9 @@
 
 package org.acra.attachment;
 
-import android.app.Application;
 import android.net.Uri;
-
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import org.acra.config.CoreConfigurationBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +38,7 @@ public class DefaultAttachmentProviderTest {
     @Test
     public void getAttachments() throws Exception {
         Uri uri = Uri.parse("content://not-a-valid-content-uri");
-        List<Uri> result = new DefaultAttachmentProvider().getAttachments(ApplicationProvider.getApplicationContext(), new CoreConfigurationBuilder(new Application()).withAttachmentUris(uri.toString()).build());
+        List<Uri> result = new DefaultAttachmentProvider().getAttachments(ApplicationProvider.getApplicationContext(), new CoreConfigurationBuilder().withAttachmentUris(uri.toString()).build());
         assertThat(result, hasSize(1));
         assertEquals(uri, result.get(0));
     }

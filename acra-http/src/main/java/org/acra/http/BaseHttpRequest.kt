@@ -21,9 +21,9 @@ import android.util.Log
 import org.acra.ACRA
 import org.acra.ACRAConstants
 import org.acra.BuildConfig
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.HttpSenderConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.log.debug
 import org.acra.log.error
 import org.acra.log.info
@@ -51,7 +51,7 @@ import javax.net.ssl.TrustManagerFactory
 abstract class BaseHttpRequest<T>(private val config: CoreConfiguration, private val context: Context, private val method: HttpSender.Method,
                                   private val login: String?, private val password: String?, private val connectionTimeOut: Int, private val socketTimeOut: Int,
                                   private val headers: Map<String, String>?) : HttpRequest<T> {
-    private val senderConfiguration: HttpSenderConfiguration = getPluginConfiguration(config, HttpSenderConfiguration::class.java)
+    private val senderConfiguration: HttpSenderConfiguration = config.getPluginConfiguration()
 
     /**
      * Sends to a URL.
@@ -101,7 +101,7 @@ abstract class BaseHttpRequest<T>(private val config: CoreConfiguration, private
         tmf.init(keyStore)
         val sslContext = SSLContext.getInstance("TLS")
         sslContext.init(null, tmf.trustManagers, null)
-        connection.sslSocketFactory = ProtocolSocketFactoryWrapper(sslContext.socketFactory, senderConfiguration.tlsProtocols.asList())
+        connection.sslSocketFactory = ProtocolSocketFactoryWrapper(sslContext.socketFactory, senderConfiguration.tlsProtocols)
     }
 
     protected fun configureTimeouts(connection: HttpURLConnection, connectionTimeOut: Int, socketTimeOut: Int) {

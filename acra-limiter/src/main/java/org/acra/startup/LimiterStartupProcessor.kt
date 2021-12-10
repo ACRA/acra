@@ -18,10 +18,10 @@ package org.acra.startup
 import android.content.Context
 import com.google.auto.service.AutoService
 import org.acra.ACRA
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.LimiterConfiguration
 import org.acra.config.LimiterData
+import org.acra.config.getPluginConfiguration
 import org.acra.log.warn
 import org.acra.plugins.HasConfigPlugin
 import org.acra.prefs.SharedPreferencesFactory
@@ -35,7 +35,7 @@ import java.io.IOException
 @AutoService(StartupProcessor::class)
 class LimiterStartupProcessor : HasConfigPlugin(LimiterConfiguration::class.java), StartupProcessor {
     override fun processReports(context: Context, config: CoreConfiguration, reports: List<Report>) {
-        val limiterConfiguration = getPluginConfiguration(config, LimiterConfiguration::class.java)
+        val limiterConfiguration = config.getPluginConfiguration<LimiterConfiguration>()
         if (limiterConfiguration.deleteReportsOnAppUpdate || limiterConfiguration.resetLimitsOnAppUpdate) {
             val prefs = SharedPreferencesFactory(context, config).create()
             val lastVersionNr = prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0).toLong()

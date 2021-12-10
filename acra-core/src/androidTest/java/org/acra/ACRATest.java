@@ -44,7 +44,7 @@ public class ACRATest {
     @Test
     public void init() {
         Application application = ApplicationProvider.getApplicationContext();
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application).setPluginLoader(new SimplePluginLoader(StacktraceCollector.class, TestAdministrator.class));
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder().withPluginLoader(new SimplePluginLoader(StacktraceCollector.class, TestAdministrator.class));
         ACRA.init(application, builder);
         ACRA.getErrorReporter().handleException(new RuntimeException());
     }
@@ -52,7 +52,7 @@ public class ACRATest {
     @Test(expected = AssertionError.class)
     public void failing() {
         Application application = ApplicationProvider.getApplicationContext();
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(application).setPluginLoader(new SimplePluginLoader(FailingTestAdministrator.class));
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder().withPluginLoader(new SimplePluginLoader(FailingTestAdministrator.class));
         ACRA.init(application, builder);
         ACRA.getErrorReporter().handleException(new RuntimeException());
     }

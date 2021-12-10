@@ -17,9 +17,9 @@ package org.acra.security
 
 import android.content.Context
 import org.acra.ACRAConstants
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.HttpSenderConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.util.InstanceCreator
 import java.security.KeyStore
 
@@ -39,16 +39,16 @@ object KeyStoreHelper {
      * @return the keystore, or null if none provided / failure
      */
     fun getKeyStore(context: Context, config: CoreConfiguration): KeyStore? {
-        val senderConfiguration = getPluginConfiguration(config, HttpSenderConfiguration::class.java)
+        val senderConfiguration = config.getPluginConfiguration<HttpSenderConfiguration>()
         var keyStore = InstanceCreator.create(senderConfiguration.keyStoreFactoryClass) { NoKeyStoreFactory() }.create(context)
         if (keyStore == null) {
             //either users factory did not create a keystore, or the configuration is default {@link NoKeyStoreFactory}
-            val certificateRes: Int = senderConfiguration.resCertificate
-            val certificatePath: String = senderConfiguration.certificatePath
+            val certificateRes: Int? = senderConfiguration.resCertificate
+            val certificatePath: String? = senderConfiguration.certificatePath
             val certificateType: String = senderConfiguration.certificateType
-            if (certificateRes != ACRAConstants.DEFAULT_RES_VALUE) {
+            if (certificateRes != null) {
                 keyStore = ResourceKeyStoreFactory(certificateType, certificateRes).create(context)
-            } else if (certificatePath != ACRAConstants.DEFAULT_STRING_VALUE) {
+            } else if (certificatePath != null) {
                 keyStore = if (certificatePath.startsWith(ASSET_PREFIX)) {
                     AssetKeyStoreFactory(certificateType, certificatePath.substring(ASSET_PREFIX.length)).create(context)
                 } else {

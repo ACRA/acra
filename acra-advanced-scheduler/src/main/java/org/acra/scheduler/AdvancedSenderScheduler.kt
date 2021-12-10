@@ -19,9 +19,9 @@ import android.app.job.JobInfo
 import android.content.Context
 import android.os.Build
 import com.google.auto.service.AutoService
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.SchedulerConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.plugins.HasConfigPlugin
 
 /**
@@ -31,12 +31,13 @@ import org.acra.plugins.HasConfigPlugin
  * @since 18.04.18
  */
 class AdvancedSenderScheduler private constructor(context: Context, config: CoreConfiguration) : DefaultSenderScheduler(context, config) {
-    private val schedulerConfiguration: SchedulerConfiguration = getPluginConfiguration(config, SchedulerConfiguration::class.java)
+    private val schedulerConfiguration: SchedulerConfiguration = config.getPluginConfiguration()
     override fun configureJob(job: JobInfo.Builder) {
         job.setRequiredNetworkType(schedulerConfiguration.requiresNetworkType)
         job.setRequiresCharging(schedulerConfiguration.requiresCharging)
         job.setRequiresDeviceIdle(schedulerConfiguration.requiresDeviceIdle)
-        var constrained = schedulerConfiguration.requiresNetworkType != JobInfo.NETWORK_TYPE_NONE || schedulerConfiguration.requiresCharging || schedulerConfiguration.requiresDeviceIdle
+        var constrained =
+            schedulerConfiguration.requiresNetworkType != JobInfo.NETWORK_TYPE_NONE || schedulerConfiguration.requiresCharging || schedulerConfiguration.requiresDeviceIdle
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             job.setRequiresBatteryNotLow(schedulerConfiguration.requiresBatteryNotLow)
             constrained = constrained or schedulerConfiguration.requiresBatteryNotLow

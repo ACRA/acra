@@ -18,4 +18,6 @@ import org.gradle.kotlin.dsl.repositories
 repositories {
     mavenCentral()
     google()
+    maven { setUrl("https://jitpack.io") }
+    mavenLocal()
 }

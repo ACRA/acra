@@ -20,20 +20,12 @@ package org.acra.ktx
 import android.app.Application
 import org.acra.ACRA
 import org.acra.config.CoreConfigurationBuilder
-import org.acra.config.ConfigurationBuilder
-
-inline fun <reified T : ConfigurationBuilder> CoreConfigurationBuilder.getPluginConfigurationBuilder(): T {
-    return this.getPluginConfigurationBuilder(T::class.java)
-}
+import kotlin.collections.plus as superPlus
 
 fun Application.initAcra(initializer: CoreConfigurationBuilder.() -> Unit = { }) {
-    val builder = CoreConfigurationBuilder(this)
+    val builder = CoreConfigurationBuilder()
     builder.initializer()
     ACRA.init(this, builder)
-}
-
-inline fun <reified T : ConfigurationBuilder> CoreConfigurationBuilder.plugin(initializer: T.() -> Unit) {
-    this.getPluginConfigurationBuilder<T>().initializer()
 }
 
 fun Throwable.sendWithAcra() {
@@ -43,3 +35,5 @@ fun Throwable.sendWithAcra() {
 fun Throwable.sendSilentlyWithAcra() {
     ACRA.errorReporter.handleSilentException(this)
 }
+
+operator fun <T> List<T>?.plus(element: T) : List<T> = this?.superPlus(element) ?: listOf(element)

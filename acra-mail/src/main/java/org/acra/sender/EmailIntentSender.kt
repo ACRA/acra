@@ -26,12 +26,11 @@ import androidx.annotation.RequiresApi
 import org.acra.ACRAConstants
 import org.acra.attachment.AcraContentProvider
 import org.acra.attachment.DefaultAttachmentProvider
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.MailSenderConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.data.CrashReportData
 import org.acra.log.warn
-import org.acra.sender.ReportSenderException
 import org.acra.util.IOUtils.writeStringToFile
 import org.acra.util.InstanceCreator
 import java.io.File
@@ -48,7 +47,7 @@ import java.util.*
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
-    private val mailConfig: MailSenderConfiguration = getPluginConfiguration(config, MailSenderConfiguration::class.java)
+    private val mailConfig: MailSenderConfiguration = config.getPluginConfiguration()
 
     @Throws(ReportSenderException::class)
     override fun send(context: Context, errorContent: CrashReportData) {
@@ -58,8 +57,8 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
         } catch (e: Exception) {
             throw ReportSenderException("Failed to convert Report to text", e)
         }
-        val bodyPrefix: String = mailConfig.body
-        val body = if (bodyPrefix.isNotEmpty()) "$bodyPrefix\n$reportText" else reportText
+        val bodyPrefix: String? = mailConfig.body
+        val body = if (bodyPrefix?.isNotEmpty() == true) "$bodyPrefix\n$reportText" else reportText
         val attachments = ArrayList<Uri>()
         val contentAttached = fillAttachmentList(context, reportText, attachments)
 
@@ -70,8 +69,10 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
         }
     }
 
-    private fun sendLegacy(subject: String, body: String, attachments: ArrayList<Uri>,
-                           context: Context, contentAttached: Boolean, bodyPrefix: String) {
+    private fun sendLegacy(
+        subject: String, body: String, attachments: ArrayList<Uri>,
+        context: Context, contentAttached: Boolean, bodyPrefix: String?
+    ) {
         val pm = context.packageManager
         //we have to resolve with sendto, because send is supported by non-email apps
         val resolveIntent = buildResolveIntent()
@@ -110,8 +111,10 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     }
 
     @RequiresApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-    private fun sendWithSelector(subject: String, body: String, attachments: ArrayList<Uri>,
-                                 context: Context, contentAttached: Boolean, bodyPrefix: String) {
+    private fun sendWithSelector(
+        subject: String, body: String, attachments: ArrayList<Uri>,
+        context: Context, contentAttached: Boolean, bodyPrefix: String?
+    ) {
         val intent = buildAttachmentIntent(subject, if (contentAttached) bodyPrefix else body, attachments)
         intent.selector = buildResolveIntent()
         grantPermission(context, intent, null, attachments)
@@ -226,8 +229,8 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
      * @return the message subject
      */
     protected fun buildSubject(context: Context): String {
-        val subject: String = mailConfig.subject
-        return if (subject.isNotEmpty()) {
+        val subject: String? = mailConfig.subject
+        return if (subject?.isNotEmpty() == true) {
             subject
         } else context.packageName + " Crash Report"
     }

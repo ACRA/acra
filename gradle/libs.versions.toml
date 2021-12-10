@@ -16,12 +16,12 @@ nexusPublish = "1.1.0"
 autoCommon = "1.1.2"
 kotlinPoet = "1.9.0"
 commonsText = "1.9"
+autoDsl = "2.2.3"
 
 [libraries]
 android-build = { module = "com.android.tools.build:gradle", version.ref = "android-build" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-allopen = { module = "org.jetbrains.kotlin:kotlin-allopen", version.ref = "kotlin" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
 jgitver = { module = "gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin", version.ref = "jgitver" }
@@ -35,9 +35,8 @@ androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "andro
 hamcrest = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }
 autoService-processor = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-annotations = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
-autoCommon = { module = "com.google.auto:auto-common", version.ref = "autoCommon" }
-kotlinPoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinPoet" }
-commonsText = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
+autoDsl-processor = {module = "com.faendir.kotlin.autodsl:processor", version.ref = "autoDsl"}
+autoDsl-annotations = {module = "com.faendir.kotlin.autodsl:annotations", version.ref = "autoDsl"}
 
 [bundles]
 androidx-test = ["androidx-test-core", "androidx-test-runner", "androidx-test-rules", "androidx-test-junit", "hamcrest"]

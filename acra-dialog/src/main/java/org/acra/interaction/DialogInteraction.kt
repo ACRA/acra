@@ -19,9 +19,9 @@ import android.content.Context
 import android.content.Intent
 import com.google.auto.service.AutoService
 import org.acra.ACRA
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.DialogConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.log.debug
 import org.acra.plugins.HasConfigPlugin
 import org.acra.prefs.SharedPreferencesFactory
@@ -54,7 +54,7 @@ class DialogInteraction : HasConfigPlugin(DialogConfiguration::class.java), Repo
      */
     private fun createCrashReportDialogIntent(context: Context, config: CoreConfiguration, reportFile: File): Intent {
         debug {  "Creating DialogIntent for $reportFile" }
-        val dialogIntent = Intent(context, getPluginConfiguration(config, DialogConfiguration::class.java).reportDialogClass)
+        val dialogIntent = Intent(context, config.getPluginConfiguration<DialogConfiguration>().reportDialogClass)
         dialogIntent.putExtra(EXTRA_REPORT_FILE, reportFile)
         dialogIntent.putExtra(EXTRA_REPORT_CONFIG, config)
         return dialogIntent

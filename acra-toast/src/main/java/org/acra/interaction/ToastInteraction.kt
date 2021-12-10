@@ -21,9 +21,9 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import com.google.auto.service.AutoService
-import org.acra.config.ConfigUtils.getPluginConfiguration
 import org.acra.config.CoreConfiguration
 import org.acra.config.ToastConfiguration
+import org.acra.config.getPluginConfiguration
 import org.acra.plugins.HasConfigPlugin
 import org.acra.util.ToastSender.sendToast
 import java.io.File
@@ -36,7 +36,7 @@ import java.io.File
 class ToastInteraction : HasConfigPlugin(ToastConfiguration::class.java), ReportInteraction {
     override fun performInteraction(context: Context, config: CoreConfiguration, reportFile: File): Boolean {
         Looper.prepare()
-        val pluginConfig = getPluginConfiguration(config, ToastConfiguration::class.java)
+        val pluginConfig = config.getPluginConfiguration<ToastConfiguration>()
         sendToast(context, pluginConfig.text, pluginConfig.length)
         val looper = Looper.myLooper()
         if (looper != null) {
