@@ -1,0 +1,287 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ErrorReporterImpl</title>
+<link href="../../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" async="async"></script>  </head>
+  <body>
+    <div id="container">
+      <div id="leftColumn"><a href="../../../index.html">
+          <div id="logo"></div>
+        </a>
+        <div id="paneSearch"></div>
+        <div id="sideMenu"></div>
+      </div>
+      <div id="main">
+        <div id="leftToggler"><span class="icon-toggler"></span></div>
+<script type="text/javascript" src="../../../scripts/main.js"></script>        <div class="main-content" id="content" pageIds="acra::org.acra.reporter/ErrorReporterImpl///PointingToDeclaration//-535716451">
+          <div class="navigation-wrapper" id="navigation-wrapper">
+            <div class="breadcrumbs"><a href="../../../index.html">acra</a>/<a href="../index.html">org.acra.reporter</a>/<a href="index.html">ErrorReporterImpl</a></div>
+            <div class="pull-right d-flex">
+              <div class="filter-section" id="filter-section"><button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":acra-toast:dokkaHtml/release">androidJvm</button></div>
+              <div id="searchBar"></div>
+            </div>
+          </div>
+          <div class="cover ">
+            <h1 class="cover"><span>Error</span><wbr></wbr><span>Reporter</span><wbr></wbr><span>Impl</span></h1>
+            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">class <a href="index.html">ErrorReporterImpl</a>(context: <a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a>, config: <a href="../../org.acra.config/-core-configuration/index.html">CoreConfiguration</a>, enabled: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>, supportedAndroidVersion: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>, checkReportsOnApplicationStart: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>) : <a href="https://developer.android.com/reference/kotlin/java/lang/Thread.UncaughtExceptionHandler.html">Thread.UncaughtExceptionHandler</a>, <a href="https://developer.android.com/reference/kotlin/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a>, <a href="../../org.acra/-error-reporter/index.html">ErrorReporter</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The ErrorReporter is a Singleton object in charge of collecting crash context data and sending crash reports. It registers itself as the Application's Thread default <a href="https://developer.android.com/reference/kotlin/java/lang/Thread.UncaughtExceptionHandler.html">Thread.UncaughtExceptionHandler</a>.</p><p class="paragraph">When a crash occurs, it collects data of the crash context (device, system, stack trace...) and writes a report file in the application private directory, which may then be sent.</p></div></div>
+          </div>
+          <div class="tabbedcontent">
+            <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Parameters">Parameters</button></div>
+            <div class="tabs-section-body">
+              <h2 class="">Parameters</h2>
+              <div data-togglable="Parameters">
+                <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">context</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Context for the application in which ACRA is running.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">config</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">AcraConfig to use when reporting and sending errors.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">enabled</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">Whether this ErrorReporter should capture Exceptions and forward their reports.</p></div></div></div></div></div><div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">supportedAndroidVersion</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">the minimal supported version</p></div></div></div></div></div><div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">checkReportsOnApplicationStart</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">If reports should be checked on startup</p></div></div></div></div></div></div></div></div></div>
+              </div>
+              <h2 class="tabbedcontent">Constructors</h2>
+              <div class="table" data-togglable="Constructors"><a data-name="195801366%2FConstructors%2F-535716451" anchor-label="ErrorReporterImpl" id="195801366%2FConstructors%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue TabbedContent">
+                    <div class=""><span class="inline-flex"><a href="-error-reporter-impl.html">ErrorReporterImpl</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="195801366%2FConstructors%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">fun <a href="-error-reporter-impl.html">ErrorReporterImpl</a>(context: <a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a>, config: <a href="../../org.acra.config/-core-configuration/index.html">CoreConfiguration</a>, enabled: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>, supportedAndroidVersion: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>, checkReportsOnApplicationStart: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief ">Context for the application in which ACRA is running.</div></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h2 class="">Functions</h2>
+              <div class="table" data-togglable="Functions"><a data-name="886066838%2FFunctions%2F-535716451" anchor-label="clearCustomData" id="886066838%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="clear-custom-data.html">clearCustomData</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="886066838%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="clear-custom-data.html">clearCustomData</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="886066838%2FFunctions%2F-535716451" anchor-label="clearCustomData" id="886066838%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="886066838%2FFunctions%2F-535716451" anchor-label="clearCustomData" id="886066838%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Removes all key/value pairs from your reports custom data field.</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="-1747118857%2FFunctions%2F-535716451" anchor-label="getCustomData" id="-1747118857%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="get-custom-data.html">getCustomData</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1747118857%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="get-custom-data.html">getCustomData</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>?<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="-1747118857%2FFunctions%2F-535716451" anchor-label="getCustomData" id="-1747118857%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="-1747118857%2FFunctions%2F-535716451" anchor-label="getCustomData" id="-1747118857%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Gets the current value for a key in your reports custom data field.</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="325747846%2FFunctions%2F-535716451" anchor-label="handleException" id="325747846%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="handle-exception.html">handleException</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="325747846%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="handle-exception.html">handleException</a>(e: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a>?)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="2020550623%2FFunctions%2F-535716451" anchor-label="handleException" id="2020550623%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="2020550623%2FFunctions%2F-535716451" anchor-label="handleException" id="2020550623%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Send a normal report for the given exception.</div></div>
+<div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="handle-exception.html">handleException</a>(e: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a>?, endApplication: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="1407898053%2FFunctions%2F-535716451" anchor-label="handleException" id="1407898053%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="1407898053%2FFunctions%2F-535716451" anchor-label="handleException" id="1407898053%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Send a normal report for the given exception</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="-816582646%2FFunctions%2F-535716451" anchor-label="handleSilentException" id="-816582646%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="handle-silent-exception.html">handleSilentException</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-816582646%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="handle-silent-exception.html">handleSilentException</a>(e: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a>?)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="-816582646%2FFunctions%2F-535716451" anchor-label="handleSilentException" id="-816582646%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="-816582646%2FFunctions%2F-535716451" anchor-label="handleSilentException" id="-816582646%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Send a silent report for the given exception</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="-1604523100%2FFunctions%2F-535716451" anchor-label="onSharedPreferenceChanged" id="-1604523100%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="on-shared-preference-changed.html">onSharedPreferenceChanged</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1604523100%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="on-shared-preference-changed.html">onSharedPreferenceChanged</a>(sharedPreferences: <a href="https://developer.android.com/reference/kotlin/android/content/SharedPreferences.html">SharedPreferences</a>, key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>?)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+</div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="448688021%2FFunctions%2F-535716451" anchor-label="putCustomData" id="448688021%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="put-custom-data.html">putCustomData</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="448688021%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="put-custom-data.html">putCustomData</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>, value: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>?<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="448688021%2FFunctions%2F-535716451" anchor-label="putCustomData" id="448688021%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="448688021%2FFunctions%2F-535716451" anchor-label="putCustomData" id="448688021%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Use this method to provide the ErrorReporter with data of your running application.</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="1244875911%2FFunctions%2F-535716451" anchor-label="removeCustomData" id="1244875911%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="remove-custom-data.html">removeCustomData</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1244875911%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="remove-custom-data.html">removeCustomData</a>(key: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>): <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a>?<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="1244875911%2FFunctions%2F-535716451" anchor-label="removeCustomData" id="1244875911%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="1244875911%2FFunctions%2F-535716451" anchor-label="removeCustomData" id="1244875911%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Removes a key/value pair from your reports custom data field.</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="417379650%2FFunctions%2F-535716451" anchor-label="setEnabled" id="417379650%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="set-enabled.html">setEnabled</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="417379650%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="set-enabled.html">setEnabled</a>(enabled: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+<a data-name="417379650%2FFunctions%2F-535716451" anchor-label="setEnabled" id="417379650%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="brief "><a data-name="417379650%2FFunctions%2F-535716451" anchor-label="setEnabled" id="417379650%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Enable or disable this ErrorReporter.</div></div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="2025724294%2FFunctions%2F-535716451" anchor-label="uncaughtException" id="2025724294%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="uncaught-exception.html">uncaughtException</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2025724294%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">open override fun <a href="uncaught-exception.html">uncaughtException</a>(t: <a href="https://developer.android.com/reference/kotlin/java/lang/Thread.html">Thread</a>, e: <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+</div>
+</div>
+                    </div>
+                  </div>
+                </div>
+<a data-name="-776922208%2FFunctions%2F-535716451" anchor-label="unregister" id="-776922208%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="unregister.html">unregister</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-776922208%2FFunctions%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title"><div class="divergent-group" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
+
+  <div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace">fun <a href="unregister.html">unregister</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+</div>
+</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h2 class="">Properties</h2>
+              <div class="table" data-togglable="Properties"><a data-name="-1852466569%2FProperties%2F-535716451" anchor-label="reportScheduler" id="-1852466569%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+                <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+                  <div class="main-subrow keyValue ">
+                    <div class=""><span class="inline-flex"><a href="report-scheduler.html">reportScheduler</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1852466569%2FProperties%2F-535716451"></span>
+                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                        </span></span></div>
+                    <div>
+                      <div class="platform-tags ">
+                        <div class="platform-tag jvm-like">androidJvm</div>
+                      </div>
+                      <div class="title">
+                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="-1852466569%2FProperties%2F-535716451" anchor-label="reportScheduler" id="-1852466569%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace">open override val <a href="report-scheduler.html">reportScheduler</a>: <a href="../../org.acra.scheduler/-sender-scheduler/index.html">SenderScheduler</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-1852466569%2FProperties%2F-535716451" anchor-label="reportScheduler" id="-1852466569%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>Access point to manual report scheduling</div></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span class="go-to-top-icon"><a href="#content"></a></span><span>© 2021 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
+      </div>
+    </div>
+  </body>
+</html>
+
