@@ -41,8 +41,10 @@ import java.io.IOException
 class NotificationBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         try {
+            debug { "NotificationBroadcastReceiver called with $intent" }
             val notificationManager = getNotificationManager(context)
             notificationManager.cancel(NotificationInteraction.NOTIFICATION_ID)
+            debug { "notification intent action = ${intent.action}" }
             if (intent.action != null) {
                 when (intent.action) {
                     NotificationInteraction.INTENT_ACTION_SEND -> {

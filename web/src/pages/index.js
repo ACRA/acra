@@ -16,8 +16,8 @@ export default function Home() {
                     <p>Building quality Android apps and getting good reviews depends on your ability to know, understand and fix bugs when your users
                         experience them.</p>
                     <img src={logo} alt="ACRA Logo"/>
-                    <p>ACRA catches exceptions, retrieves <a href="https://github.com/ACRA/acra/wiki/ReportContent">lots of context data</a> and sends them to
-                        the <a href="https://github.com/ACRA/acra/wiki/ReportContent">backend of your choice</a>.</p>
+                    <p>ACRA catches exceptions, retrieves <a href="https://www.acra.ch/javadoc/latest/acra/org.acra/-report-field/">lots of context data</a> and sends them to
+                        the <a href="https://www.acra.ch/docs/Backends">backend of your choice</a>.</p>
                     <p>Best of all, it is <a href="https://en.wikipedia.org/wiki/Apache_License">FREE</a> and <a href="https://github.com/ACRA/acra">OPEN
                         SOURCE</a>.</p>
 

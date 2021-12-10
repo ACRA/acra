@@ -27,12 +27,10 @@ plugins {
 }
 
 android {
-    val androidTarget: String by Libs.versions
-    val androidMin: String by Libs.versions
-    compileSdkVersion(Integer.parseInt(androidTarget))
+    compileSdk = Integer.parseInt(libs.versions.android.target.get())
     defaultConfig {
-        minSdkVersion(androidMin)
-        targetSdkVersion(androidTarget)
+        minSdk = Integer.parseInt(libs.versions.android.min.get())
+        targetSdk = compileSdk
         buildConfigField("String", "VERSION_NAME", "\"$version\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,7 +39,7 @@ android {
             isMinifyEnabled = false
         }
     }
-    lintOptions {
+    lint {
         isAbortOnError = false
     }
     compileOptions {
@@ -58,17 +56,15 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    androidTestImplementation(Libs.bundles["androidx-test"])
-    "kaptTest"(Libs["autoService-processor"])
-    testCompileOnly(Libs["autoService-annotations"])
-    "kapt"(Libs["autoDsl-processor"])
-    compileOnly(Libs["autoDsl-annotations"])
+    androidTestImplementation(libs.bundles.androidx.test)
+    "kapt"(libs.autoDsl.processor)
+    compileOnly(libs.autoDsl.annotations)
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-Xjvm-default=all")
+        freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
 }
 

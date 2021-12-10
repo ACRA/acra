@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Setup Java
-        uses: actions/setup-java@v2.1.0
+        uses: actions/setup-java@v2.4.0
         with:
           distribution: 'adopt'
-          java-version: '8'
+          java-version: '11'
       - name: Checkout ACRA
         uses: actions/checkout@v2
       - name: run tests on API ${{ matrix.android }}

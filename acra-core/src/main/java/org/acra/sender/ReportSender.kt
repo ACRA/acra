@@ -38,6 +38,7 @@ interface ReportSender {
      * @param errorContent Stores key/value pairs for each report field.
      * @throws ReportSenderException If anything goes fatally wrong during the handling of crash data, you can (should) throw a [ReportSenderException] with a custom message.
      */
+    @JvmDefault
     @Throws(ReportSenderException::class)
     fun send(context: Context, errorContent: CrashReportData) {
     }
@@ -53,9 +54,11 @@ interface ReportSender {
      * @param extras       additional information set in a [org.acra.scheduler.DefaultSenderScheduler]
      * @throws ReportSenderException If anything goes fatally wrong during the handling of crash data, you can (should) throw a [ReportSenderException] with a custom message.
      */
+    @JvmDefault
     @Throws(ReportSenderException::class)
     fun send(context: Context, errorContent: CrashReportData, extras: Bundle) = send(context, errorContent)
 
+    @JvmDefault
     fun requiresForeground(): Boolean {
         return false
     }
