@@ -171,6 +171,7 @@ enum class ReportField {
     /**
      * Device unique ID (IMEI). Requires READ_PHONE_STATE permission.
      */
+    @Deprecated("DEVICE_ID will be null on Android Q and above")
     DEVICE_ID,
 
     /**
