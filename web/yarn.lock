@@ -1550,12 +1550,12 @@
     url-loader "^4.1.1"
     webpack "^5.61.0"
 
-"@docusaurus/module-type-aliases@^2.0.0-beta.13":
-  version "2.0.0-beta.13"
-  resolved "https://registry.yarnpkg.com/@docusaurus/module-type-aliases/-/module-type-aliases-2.0.0-beta.13.tgz#45e811739bec9b79dba07af040e574c9cd2cd04a"
-  integrity sha512-yYHWajhjx0IgMJkbPtoXQzC58em6emGFyl5w5b6OuFxG4qXHZQJp7dRaPQxUMCBvOcHrI9lIw9RYJssIwOcYAg==
+"@docusaurus/module-type-aliases@^2.0.0-beta.14":
+  version "2.0.0-beta.14"
+  resolved "https://registry.yarnpkg.com/@docusaurus/module-type-aliases/-/module-type-aliases-2.0.0-beta.14.tgz#8a11f9c4a408d8e8cc4cb59ba81a28ecc629256a"
+  integrity sha512-jlSwYoRVeNxvmjbVil35mRVSXZdOmEM95Sph7NxC6IE/ceT1a8s4tpzI2xUMsGgSfLBldqhkXe+WSOYqUL7x3w==
   dependencies:
-    "@docusaurus/types" "2.0.0-beta.13"
+    "@docusaurus/types" "2.0.0-beta.14"
     "@types/react" "*"
     "@types/react-helmet" "*"
     "@types/react-router-config" "*"
@@ -1751,10 +1751,10 @@
     fs-extra "^10.0.0"
     tslib "^2.3.1"
 
-"@docusaurus/types@2.0.0-beta.13":
-  version "2.0.0-beta.13"
-  resolved "https://registry.yarnpkg.com/@docusaurus/types/-/types-2.0.0-beta.13.tgz#1a837bdd13e9384bdbdb301dd0c31f9c97ea8197"
-  integrity sha512-4kGninMm3uEcvN/KXBAmc4nR83jPC8h7bPY2MsioSAjL8T0i2f7dUqmVQuIT3vJ69VQaY9HtWhJcTPPYeY3B/w==
+"@docusaurus/types@2.0.0-beta.14":
+  version "2.0.0-beta.14"
+  resolved "https://registry.yarnpkg.com/@docusaurus/types/-/types-2.0.0-beta.14.tgz#d9e1bae14a16ad96c51caaea3c5049eedbaed869"
+  integrity sha512-1mVrVI0crwZrnjJJeUJUfBrwKdPJVsvh3E0I4pRG9Bo9dfeT8j3bj/GgjaKX4VYRFkDfsVPEpMfrVWujiWr4qQ==
   dependencies:
     commander "^5.1.0"
     joi "^17.4.2"
