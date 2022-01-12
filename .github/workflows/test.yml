@@ -21,8 +21,38 @@ jobs:
           java-version: '11'
       - name: Checkout ACRA
         uses: actions/checkout@v2
+      - name: Gradle cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
+
+      - name: load AVD from cache for API ${{ matrix.android }}
+        uses: actions/cache@v2
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+
+      - name: create and cache AVD on API ${{ matrix.android }}
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
       - name: run tests on API ${{ matrix.android }}
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ matrix.android }}
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           script: ./gradlew connectedCheck --no-daemon

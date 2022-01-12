@@ -1,5 +1,5 @@
 [versions]
-android-target = "30"
+android-target = "31"
 android-min = "14"
 android-build = "7.0.4"
 autoService = "1.0.1"

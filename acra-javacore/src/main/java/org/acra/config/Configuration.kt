@@ -15,13 +15,15 @@
  */
 package org.acra.config
 
+import java.io.Serializable
+
 /**
  * A configuration object
  *
  * @author F43nd1r
  * @since 01.06.2017
  */
-interface Configuration {
+interface Configuration : Serializable {
     /**
      * checks if the corresponding plugin is enabled
      *
