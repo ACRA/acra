@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "dependencyDashboard": false,
+  "platform": "github",
   "extends": [
-    "config:base"
+    "group:monorepos",
+    "group:recommended",
+    "packages:react",
+    "workarounds:all"
   ]
 }
