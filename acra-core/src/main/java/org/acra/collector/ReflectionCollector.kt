@@ -42,7 +42,7 @@ class ReflectionCollector : BaseReportFieldCollector(ReportField.BUILD, ReportFi
         val result = JSONObject()
         when (reportField) {
             ReportField.BUILD -> {
-                collectConstants(Build::class.java, result)
+                collectConstants(Build::class.java, result, exclude = listOf("SERIAL"))
                 val version = JSONObject()
                 collectConstants(Build.VERSION::class.java, version)
                 result.put("VERSION", version)
@@ -96,9 +96,10 @@ class ReflectionCollector : BaseReportFieldCollector(ReportField.BUILD, ReportFi
          * @param someClass the class to be inspected.
          */
         @Throws(JSONException::class)
-        private fun collectConstants(someClass: Class<*>, container: JSONObject) {
+        private fun collectConstants(someClass: Class<*>, container: JSONObject, exclude: Collection<String> = emptyList()) {
             val fields = someClass.fields
             for (field in fields) {
+                if(field.name in exclude) continue
                 try {
                     val value = field[null]
                     if (value != null) {
