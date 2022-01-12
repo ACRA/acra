@@ -35,6 +35,6 @@ dependencies {
     val acraVersion = "5.8.2"
     implementation("ch.acra:acra-http:$acraVersion")
 
-    annotationProcessor("com.google.auto.service:auto-service:1.0")
+    annotationProcessor("com.google.auto.service:auto-service:1.0.1")
     compileOnly("com.google.auto.service:auto-service-annotations:1.0")
 }
