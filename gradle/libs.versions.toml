@@ -2,7 +2,7 @@
 android-target = "30"
 android-min = "14"
 android-build = "7.0.4"
-autoService = "1.0"
+autoService = "1.0.1"
 junit = "4.13.2"
 androidx-core = "1.6.0"
 androidx-annotation = "1.2.0"
