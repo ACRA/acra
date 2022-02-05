@@ -1,7 +1,7 @@
 [versions]
 android-target = "31"
 android-min = "14"
-android-build = "7.0.4"
+android-build = "7.1.1"
 autoService = "1.0.1"
 junit = "4.13.2"
 androidx-core = "1.7.0"
