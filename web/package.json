@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@docusaurus/core": "2.0.0-beta.15",
-    "@docusaurus/preset-classic": "2.0.0-beta.15",
+    "@docusaurus/preset-classic": "2.0.0-beta.16",
     "@mdx-js/react": "2.0.0",
     "clsx": "1.1.1",
     "react": "17.0.2",
