@@ -31,7 +31,7 @@ jobs:
           cp -a ./build/dokka/htmlCollector/. ./web/static/javadoc/${{ steps.version.outputs.value }}/
           ln -sfn "${{ steps.version.outputs.value }}/" ./web/static/javadoc/latest
       - name: Commit and push changes
-        uses: EndBug/add-and-commit@v8
+        uses: EndBug/add-and-commit@v9
         with:
           add: 'web/static/javadoc'
           message: "Add javadoc for version ${{ steps.version.outputs.value }}"
