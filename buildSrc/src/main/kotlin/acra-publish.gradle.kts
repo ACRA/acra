@@ -29,30 +29,11 @@ tasks.withType<DokkaTask> {
     }
 }
 
-tasks.register<Jar>("javadocJar") {
-    group = "documentation"
-    from(tasks["dokkaJavadoc"])
-    archiveClassifier.set("javadoc")
-}
-
 afterEvaluate {
-    tasks.register<Jar>("sourcesJar") {
-        group = "documentation"
-        from(
-            project.extensions.findByType<LibraryExtension>()?.sourceSets?.get("main")?.java?.srcDirs
-                ?: project.extensions.getByType<SourceSetContainer>()["main"].allSource
-        )
-        archiveClassifier.set("sources")
-    }
-
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                from(components.findByName("release") ?: components.findByName("java"))
-
-                tasks.findByName("sourcesJar")?.let { artifact(it) }
-                tasks.findByName("javadocJar")?.let { artifact(it) }
-
+                from(components.findByName("release"))
                 pom {
                     name.set("ACRA")
                     description.set("Publishes reports of Android application crashes to an end point.")

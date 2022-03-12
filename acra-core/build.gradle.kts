@@ -26,5 +26,5 @@ android {
 }
 
 dependencies {
-    api(projects.acraJavacore)
+    api(libs.androidx.annotation)
 }
