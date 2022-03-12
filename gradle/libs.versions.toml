@@ -16,7 +16,7 @@ nexusPublish = "1.1.0"
 autoCommon = "1.1.2"
 kotlinPoet = "1.9.0"
 commonsText = "1.9"
-autoDsl = "2.2.10"
+autoDsl = "2.2.11"
 
 [libraries]
 android-build = { module = "com.android.tools.build:gradle", version.ref = "android-build" }
