@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 plugins {
-    id("repositories")
-    id("org.jetbrains.dokka")
-    id("fr.brouillard.oss.gradle.jgitver")
-    id("io.github.gradle-nexus.publish-plugin")
+    org.jetbrains.dokka
+    fr.brouillard.oss.gradle.jgitver
+    io.github.`gradle-nexus`.`publish-plugin`
 }
 
 jgitver {

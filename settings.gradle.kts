@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include("acra-javacore")
-include("acra-http")
-include("acra-core")
-include("acra-mail")
-include("acra-dialog")
-include("acra-toast")
-include("acra-notification")
-include("acra-limiter")
-include("acra-advanced-scheduler")
-includeBuild("examples")
-
 enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-if(file("acratest").exists()) include("acratest")
+includeBuild("examples")
+rootDir.listFiles()?.forEach {
+    if(it.isDirectory && it.name.startsWith("acra") && it.list()?.contains("build.gradle.kts") == true) {
+        include(it.name)
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        google()
+        if (System.getenv("CI") != "true") {
+            mavenLocal()
+        }
+    }
+}

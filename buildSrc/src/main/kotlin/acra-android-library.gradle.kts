@@ -19,11 +19,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * limitations under the License.
  */
 plugins {
-    id("repositories")
-    id("com.android.library")
-    kotlin("android")
-    id("kotlin-allopen")
-    id("auto-service")
+    `android-library`
+    `kotlin-android`
+    `kotlin-allopen`
+    com.google.devtools.ksp
 }
 
 android {
@@ -64,8 +63,18 @@ tasks.withType<Test> {
 
 dependencies {
     androidTestImplementation(libs.bundles.androidx.test)
-    "kapt"(libs.autoDsl.processor)
+    ksp(libs.autoDsl.processor)
     compileOnly(libs.autoDsl.annotations)
+    ksp(libs.autoService.ksp)
+    compileOnly(libs.autoService.annotations)
+    kspTest(libs.autoService.ksp)
+    testCompileOnly(libs.autoService.annotations)
+}
+
+kotlin {
+    sourceSets.main {
+        kotlin.srcDir("build/generated/ksp/release/kotlin")
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -84,7 +93,6 @@ afterEvaluate {
         dokkaSourceSets {
             named("main") {
                 noAndroidSdkLink.set(false)
-                sourceRoot(File(buildDir,"generated/source/kaptKotlin/release"))
             }
         }
         dependsOn("assembleRelease")

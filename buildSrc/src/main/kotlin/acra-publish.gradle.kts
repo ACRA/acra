@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.android.build.gradle.LibraryExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 
 
 plugins {
     `maven-publish`
     signing
-    id("org.jetbrains.dokka")
+    org.jetbrains.dokka
 }
 
 tasks.withType<DokkaTask> {
