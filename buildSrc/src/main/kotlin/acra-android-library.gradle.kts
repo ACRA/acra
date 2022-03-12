@@ -66,9 +66,7 @@ dependencies {
     ksp(libs.autoDsl.processor)
     compileOnly(libs.autoDsl.annotations)
     ksp(libs.autoService.ksp)
-    compileOnly(libs.autoService.annotations)
-    kspTest(libs.autoService.ksp)
-    testCompileOnly(libs.autoService.annotations)
+    implementation(libs.autoService.annotations)
 }
 
 kotlin {
