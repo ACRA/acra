@@ -40,7 +40,7 @@ android {
         }
     }
     lint {
-        isAbortOnError = false
+        abortOnError = false
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -49,6 +49,13 @@ android {
     useLibrary("android.test.runner")
     useLibrary("android.test.base")
     useLibrary("android.test.mock")
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 tasks.withType<Test> {

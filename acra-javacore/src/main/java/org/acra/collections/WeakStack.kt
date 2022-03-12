@@ -51,8 +51,8 @@ class WeakStack<T> : AbstractCollection<T>() {
         return WeakIterator(contents.iterator())
     }
 
-    override fun add(t: T?): Boolean {
-        return contents.add(WeakReference(t))
+    override fun add(element: T?): Boolean {
+        return contents.add(WeakReference(element))
     }
 
     override fun remove(element: T): Boolean {

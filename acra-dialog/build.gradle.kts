@@ -18,6 +18,10 @@ plugins {
     `acra-publish`
 }
 
+android {
+    namespace = "org.acra.dialog"
+}
+
 dependencies {
     api(projects.acraCore)
 }

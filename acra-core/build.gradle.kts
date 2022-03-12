@@ -22,6 +22,7 @@ android {
     defaultConfig {
         consumerProguardFile("proguard.cfg")
     }
+    namespace = "org.acra"
 }
 
 dependencies {

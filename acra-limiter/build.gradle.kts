@@ -18,6 +18,10 @@ plugins {
     `acra-publish`
 }
 
+android {
+    namespace = "org.acra.limiter"
+}
+
 dependencies {
     api(projects.acraCore)
 }

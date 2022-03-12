@@ -173,7 +173,7 @@ class MediaCodecListCollector : BaseReportFieldCollector(ReportField.MEDIA_CODEC
                 val levelValue = codecProfileLevel.level
                 if (codecType == null) {
                     // Unknown codec
-                    profileLevels.put(profileValue + '-'.toInt() + levelValue)
+                    profileLevels.put(profileValue + '-'.code + levelValue)
                     break
                 }
                 when (codecType) {

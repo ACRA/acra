@@ -18,6 +18,10 @@ plugins {
     `acra-publish`
 }
 
+android {
+    namespace = "org.acra.mail"
+}
+
 dependencies {
     api(projects.acraCore)
 }

@@ -130,7 +130,7 @@ class ConfigurationCollector : BaseReportFieldCollector(ReportField.INITIAL_CONF
             FIELD_UIMODE -> activeFlags(valueArrays.getValue(Prefix.UI_MODE), f.getInt(conf))
             FIELD_SCREENLAYOUT -> activeFlags(valueArrays.getValue(Prefix.SCREENLAYOUT), f.getInt(conf))
             else -> {
-                val values = Prefix.values().firstOrNull { it.text == fieldName.toUpperCase(Locale.ROOT) + '_' }?.let { valueArrays.getValue(it) } ?: return f.getInt(
+                val values = Prefix.values().firstOrNull { it.text == fieldName.uppercase() + '_' }?.let { valueArrays.getValue(it) } ?: return f.getInt(
                         conf) // Unknown field, return the raw int as String
                 val value = values[f.getInt(conf)] ?: return f.getInt(conf) // Unknown value, return the raw int as String
                 value

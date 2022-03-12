@@ -22,6 +22,7 @@ android {
     defaultConfig {
         minSdkVersion(22)
     }
+    namespace = "org.acra.scheduler"
 }
 
 dependencies {

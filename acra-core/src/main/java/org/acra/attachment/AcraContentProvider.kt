@@ -27,7 +27,6 @@ import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
-import org.acra.ACRA
 import org.acra.file.Directory
 import org.acra.log.debug
 import java.io.File
@@ -90,7 +89,7 @@ class AcraContentProvider : ContentProvider() {
         }
         val segments = uri.pathSegments.toMutableList()
         if (segments.size < 2) return null
-        val dir: String = segments.removeAt(0).toUpperCase(Locale.ROOT)
+        val dir: String = segments.removeAt(0).uppercase()
         return try {
             val directory = Directory.valueOf(dir)
             directory.getFile(context!!, TextUtils.join(File.separator, segments))
@@ -190,7 +189,7 @@ class AcraContentProvider : ContentProvider() {
             val builder = Uri.Builder()
                     .scheme(ContentResolver.SCHEME_CONTENT)
                     .authority(getAuthority(context))
-                    .appendPath(directory.name.toLowerCase(Locale.ROOT))
+                    .appendPath(directory.name.lowercase())
             for (segment in relativePath.split(Pattern.quote(File.separator)).toTypedArray()) {
                 if (segment.isNotEmpty()) {
                     builder.appendPath(segment)
@@ -211,7 +210,7 @@ class AcraContentProvider : ContentProvider() {
             val fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
                     .toString())
             if (fileExtension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase(Locale.ROOT))
+                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.lowercase())
                 if (type == null && "json" == fileExtension) {
                     type = "application/json"
                 }

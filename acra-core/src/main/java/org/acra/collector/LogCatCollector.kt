@@ -94,6 +94,7 @@ class LogCatCollector : BaseReportFieldCollector(ReportField.LOGCAT, ReportField
             ReportField.LOGCAT -> bufferName = null
             ReportField.EVENTSLOG -> bufferName = "events"
             ReportField.RADIOLOG -> bufferName = "radio"
+            else -> throw IllegalArgumentException()
         }
         target.put(reportField, collectLogCat(config, bufferName))
     }

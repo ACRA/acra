@@ -41,6 +41,7 @@ class PackageManagerCollector : BaseReportFieldCollector(ReportField.APP_VERSION
             when (reportField) {
                 ReportField.APP_VERSION_NAME -> target.put(ReportField.APP_VERSION_NAME, info.versionName)
                 ReportField.APP_VERSION_CODE -> target.put(ReportField.APP_VERSION_CODE, info.versionCode)
+                else -> throw IllegalArgumentException()
             }
         }
     }
