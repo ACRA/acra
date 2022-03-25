@@ -56,7 +56,6 @@ class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
      * @return the AlertDialog displayed by this Activity
      */
     protected lateinit var dialog: AlertDialog
-        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
