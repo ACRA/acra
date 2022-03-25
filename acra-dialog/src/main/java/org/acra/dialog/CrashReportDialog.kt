@@ -30,6 +30,7 @@ import android.widget.TextView
 import androidx.annotation.CallSuper
 import org.acra.ACRA
 import org.acra.ACRAConstants
+import org.acra.annotation.OpenAPI
 import org.acra.config.DialogConfiguration
 import org.acra.config.getPluginConfiguration
 import org.acra.prefs.SharedPreferencesFactory
@@ -40,8 +41,9 @@ import org.acra.prefs.SharedPreferencesFactory
  *
  * @author F43nd1r &amp; Various
  */
+@OpenAPI
 @Suppress("MemberVisibilityCanBePrivate")
-open class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
+class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
     private lateinit var scrollable: LinearLayout
     private var userCommentView: EditText? = null
     private var userEmailView: EditText? = null
