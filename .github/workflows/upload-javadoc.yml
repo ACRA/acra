@@ -25,6 +25,10 @@ jobs:
       - name: Extract version
         id: version
         run: echo "::set-output name=value::$(git describe --abbrev=0 | sed -e "s/^acra-//")"
+      - name: Checkout master
+        uses: actions/checkout@v3
+        with:
+          ref: master
       - name: Update Javadoc
         run: |
           mkdir ./web/static/javadoc/${{ steps.version.outputs.value }}
