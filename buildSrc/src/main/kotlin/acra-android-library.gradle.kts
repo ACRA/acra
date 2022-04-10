@@ -23,6 +23,7 @@ plugins {
     `kotlin-android`
     `kotlin-allopen`
     com.google.devtools.ksp
+    idea
 }
 
 android {
@@ -69,12 +70,6 @@ dependencies {
     implementation(libs.autoService.annotations)
 }
 
-kotlin {
-    sourceSets.main {
-        kotlin.srcDir("build/generated/ksp/release/kotlin")
-    }
-}
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
@@ -100,4 +95,11 @@ afterEvaluate {
 
 extensions.getByType<AllOpenExtension>().apply {
     annotation("org.acra.annotation.OpenAPI")
+}
+
+idea {
+    module {
+        sourceDirs.plusAssign(file("build/generated/ksp/release/kotlin"))
+        generatedSourceDirs.plusAssign(file("build/generated/ksp/release/kotlin"))
+    }
 }
