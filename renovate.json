@@ -7,5 +7,17 @@
     "group:recommended",
     "packages:react",
     "workarounds:all"
+  ],
+  "rangeStrategy": "pin",
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
+    }
   ]
 }
