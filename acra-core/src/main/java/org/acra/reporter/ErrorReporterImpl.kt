@@ -61,7 +61,7 @@ class ErrorReporterImpl(private val context: Application, config: CoreConfigurat
     private val reportExecutor: ReportExecutor
     private val customData: MutableMap<String, String> = HashMap()
     private val schedulerStarter: SchedulerStarter
-    private val defaultExceptionHandler: Thread.UncaughtExceptionHandler
+    private val defaultExceptionHandler: Thread.UncaughtExceptionHandler?
 
     override fun putCustomData(key: String, value: String): String? {
         return customData.put(key, value)
@@ -159,7 +159,7 @@ class ErrorReporterImpl(private val context: Application, config: CoreConfigurat
     init {
         val crashReportDataFactory = CrashReportDataFactory(context, config)
         crashReportDataFactory.collectStartUp()
-        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()!!
+        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
         val lastActivityManager = LastActivityManager(context)
         val processFinisher = ProcessFinisher(context, config, lastActivityManager)
