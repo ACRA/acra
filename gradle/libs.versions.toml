@@ -12,7 +12,7 @@ jgitver = "0.10.0-rc03"
 ksp = "1.6.21-1.0.5"
 autoService = "1.0.1"
 autoServiceKsp = "1.0.0"
-autoDsl = "2.2.13"
+autoDsl = "2.2.14"
 
 junit = "4.13.2"
 hamcrest = "2.2"
