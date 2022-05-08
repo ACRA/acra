@@ -28,12 +28,14 @@ public class MyApplication extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
 
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
-        builder.withBuildConfigClass(BuildConfig.class)
-                .withReportFormat(StringFormat.JSON);
-        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
-                .withUri("https://yourserver.com/report")
-                .withEnabled(true);
-        ACRA.init(this, builder);
+        ACRA.init(this, new CoreConfigurationBuilder()
+                .withBuildConfigClass(BuildConfig.class)
+                .withReportFormat(StringFormat.JSON)
+                .withPluginConfigurations(
+                        new HttpSenderConfigurationBuilder()
+                                .withUri("https://yourserver.com/report")
+                                .build()
+                )
+        );
     }
 }

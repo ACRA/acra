@@ -235,17 +235,17 @@ public class MyApplication extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
 
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
-        //core configuration:
-        builder
-            .withBuildConfigClass(BuildConfig.class)
-            .withReportFormat(StringFormat.JSON);
-        //each plugin you chose above can be configured with its builder like this:
-        builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
-            .withResText(R.string.acra_toast_text)
-            //make sure to enable all plugins you want to use:
-            .withEnabled(true);
-        ACRA.init(this, builder);
+        ACRA.init(this, new CoreConfigurationBuilder(this)
+                //core configuration:
+                .withBuildConfigClass(BuildConfig.class)
+                .withReportFormat(StringFormat.JSON)
+                .withPluginConfigurations(
+                    //each plugin you chose above can be configured with its builder like this:
+                    new ToastConfigurationBuilder()
+                        .withResText(R.string.acra_toast_text)
+                        .build()
+                )
+            );
     }
 }
 ```

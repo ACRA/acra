@@ -35,13 +35,12 @@ toast {
 ```
 
 ```java
-getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
-    //required
-    .withEnabled(true) 
+new ToastConfigurationBuilder()
     //required
     .withResText(R.string.toast_text) 
     //defaults to Toast.LENGTH_LONG
-    .withLength(Toast.LENGTH_LONG) 
+    .withLength(Toast.LENGTH_LONG)
+    .build()
 ```
 
 </AndroidCode>
@@ -54,7 +53,7 @@ import DialogImage from '@site/static/img/captures/dialog.png'
 
 ## Dialog
 
-A widely customizeable dialog is shown. A report will only be sent if the user agrees.
+A widely customizable dialog is shown. A report will only be sent if the user agrees.
 
 <AndroidCode>
 
@@ -82,9 +81,7 @@ dialog {
 ```
 
 ```java
-getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
-    //required
-    .withEnabled(true)
+new DialogConfigurationBuilder()
     //required
     .withResText(R.string.dialog_text)
     //optional, enables the dialog title
@@ -103,11 +100,12 @@ getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
     .withResTheme(R.style.dialog_theme)
     //allows other customization
     .withReportDialogClass(MyCustomDialog.class)
+    .build()
 ```
 
 </AndroidCode>
 
-If you need more control than the configuration provides, you can set your own dialogactivity in `reportDialogClass`. Remember, activities have to be registered in the `AndroidManifest.xml`:
+If you need more control than the configuration provides, you can set your own dialog activity in `reportDialogClass`. Remember, activities have to be registered in the `AndroidManifest.xml`:
 ```xml
 <activity
     <!-- required -->
@@ -167,9 +165,7 @@ notification {
 ```
 
 ```java
-getPluginConfigurationBuilder(NotificationConfigurationBuilder.class)
-    //required
-    .withEnabled(true)
+new NotificationConfigurationBuilder()
     //required
     .withResTitle(R.string.notification_title)
     //required
@@ -200,6 +196,7 @@ getPluginConfigurationBuilder(NotificationConfigurationBuilder.class)
     .withResCommentPrompt(R.string.notification_comment)
     //defaults to false
     .withSendOnClick(false)
+    .build()
 ```
 
 </AndroidCode>

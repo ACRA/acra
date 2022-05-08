@@ -60,7 +60,7 @@ httpSender {
 ```
 
 ```java
-getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
+new HttpSenderConfigurationBuilder()
     //required. Https recommended
     .withUri("https://your.server.com/report")
     //optional. Enables http basic auth
@@ -84,6 +84,7 @@ getPluginConfigurationBuilder(HttpSenderConfigurationBuilder.class)
     .withCompress(false)
     //defaults to all
     .withTlsProtocols(arrayOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1))
+    .build()
 ```
 
 </AndroidCode>
@@ -119,7 +120,7 @@ mailSender {
 ```
 
 ```java
-getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
+new MailSenderConfigurationBuilder()
     //required
     .withMailTo("acra@yourserver.com")
     //defaults to true
@@ -130,6 +131,7 @@ getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
     .withSubject(getString(R.string.mail_subject))
     //defaults to empty
     .withBody(getString(R.string.mail_body))
+    .build()
 ```
 
 </AndroidCode>
