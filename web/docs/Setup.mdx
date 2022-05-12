@@ -235,7 +235,7 @@ public class MyApplication extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
 
-        ACRA.init(this, new CoreConfigurationBuilder(this)
+        ACRA.init(this, new CoreConfigurationBuilder()
                 //core configuration:
                 .withBuildConfigClass(BuildConfig.class)
                 .withReportFormat(StringFormat.JSON)
