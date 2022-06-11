@@ -59,6 +59,10 @@ class StacktraceCollector : BaseReportFieldCollector(ReportField.STACK_TRACE, Re
             return result.toString()
         }
     }
+        private fun getStackTraceCause(th: Throwable?): String {
+return th.cause
+        }
+    }
 
     private fun getStackTraceHash(th: Throwable?): String {
         val res = StringBuilder()
@@ -73,4 +77,5 @@ class StacktraceCollector : BaseReportFieldCollector(ReportField.STACK_TRACE, Re
         }
         return Integer.toHexString(res.toString().hashCode())
     }
+    
 }
