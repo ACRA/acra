@@ -85,8 +85,8 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             val bigView = getBigView(context, notificationConfig)
-            notification.addAction(notificationConfig.resSendButtonIcon, notificationConfig.sendButtonText, sendIntent)
-                    .addAction(notificationConfig.resDiscardButtonIcon, notificationConfig.discardButtonText, discardIntent)
+            notification.addAction(notificationConfig.resSendButtonIcon, notificationConfig.sendButtonText ?: context.getString(android.R.string.ok), sendIntent)
+                    .addAction(notificationConfig.resDiscardButtonIcon, notificationConfig.discardButtonText ?: context.getString(android.R.string.cancel), discardIntent)
                     .setCustomContentView(getSmallView(context, notificationConfig, sendIntent, discardIntent))
                     .setCustomBigContentView(bigView)
                     .setCustomHeadsUpContentView(bigView)
