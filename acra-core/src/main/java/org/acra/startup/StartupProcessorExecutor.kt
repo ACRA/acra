@@ -49,8 +49,9 @@ class StartupProcessorExecutor(private val context: Context, private val config:
                             report.delete -> if (!report.file.delete()) warn { "Could not delete report ${report.file}" }
                             report.approved -> send = true
                             report.approve && isAcraEnabled -> {
-                                    ReportInteractionExecutor(context, config).performInteractions(report.file)
-                                    schedulerStarter.scheduleReports(report.file, false)
+                                    if (ReportInteractionExecutor(context, config).performInteractions(report.file)){
+                                        schedulerStarter.scheduleReports(report.file, false)
+                                    }
                                 }
                             }
                         }
