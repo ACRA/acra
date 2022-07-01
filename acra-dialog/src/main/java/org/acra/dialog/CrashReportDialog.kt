@@ -23,6 +23,7 @@ import android.text.InputType
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -80,7 +81,7 @@ class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
      */
     protected fun buildAndShowDialog(savedInstanceState: Bundle?) {
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogConfiguration.title?.takeIf { it.isNotEmpty() }?.let { dialogBuilder.setTitle(title) }
+        dialogConfiguration.title?.takeIf { it.isNotEmpty() }?.let { dialogBuilder.setTitle(it) }
         dialogConfiguration.resIcon.takeIf { it != ACRAConstants.DEFAULT_RES_VALUE }?.let { dialogBuilder.setIcon(it) }
         dialogBuilder.setView(buildCustomView(savedInstanceState))
                 .setPositiveButton(dialogConfiguration.positiveButtonText ?: getString(android.R.string.ok), this)
