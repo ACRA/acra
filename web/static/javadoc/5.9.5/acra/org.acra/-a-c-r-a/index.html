@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ACRA</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+const savedDarkMode = storage ? JSON.parse(storage) : false
+if(savedDarkMode === true){
+    document.getElementsByTagName("html")[0].classList.add("theme-dark")
+}</script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>acra</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageIds="acra::org.acra/ACRA///PointingToDeclaration//-535716451">
+  <div class="breadcrumbs"><a href="../../../index.html">acra</a><span class="delimiter">/</span><a href="../index.html">org.acra</a><span class="delimiter">/</span><a href="index.html">ACRA</a></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>ACRA</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">ACRA</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">Use this class to initialize the crash reporting feature using .init as soon as possible in your <a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a> subclass <a href="https://developer.android.com/reference/kotlin/android/app/Application.html#oncreate">Application.onCreate</a> method. Configuration items must have been set by using org.acra.annotation.AcraCore above the declaration of your <a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a> subclass.</p><h4 class="">Author</h4><p class="paragraph">Kevin Gaudin</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section-body">
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-743775784%2FFunctions%2F-535716451" anchor-label="init" id="-743775784%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="init.html"><span><span>init</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-743775784%2FFunctions%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a></div><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation">JvmStatic</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="init.html"><span class="token function">init</span></a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;app<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;builder<span class="token operator">: </span><span data-unresolved-link="/&amp;lt;Error class: unknown class&amp;gt;///PointingToDeclaration/">&lt;Error class: unknown class&gt;</span><span class="token operator"> = </span>CoreConfigurationBuilder()<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;checkReportsOnApplicationStart<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Initialize ACRA for a given Application.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a></div><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation">JvmStatic</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="init.html"><span class="token function">init</span></a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;app<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;config<span class="token operator">: </span><a href="../../org.acra.config/-core-configuration/index.html">CoreConfiguration</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;checkReportsOnApplicationStart<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Initialize ACRA for a given Application. The call to this method should be placed as soon as possible in the <a href="https://developer.android.com/reference/kotlin/android/app/Application.html#attachbasecontext">Application.attachBaseContext</a> method.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1203911817%2FFunctions%2F-535716451" anchor-label="isACRASenderServiceProcess" id="1203911817%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="is-a-c-r-a-sender-service-process.html"><span>is</span><wbr></wbr><span>ACRASender</span><wbr></wbr><span>Service</span><wbr></wbr><span><span>Process</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1203911817%2FFunctions%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation">JvmStatic</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-a-c-r-a-sender-service-process.html"><span class="token function">isACRASenderServiceProcess</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Properties</h2>
+      <div class="table" data-togglable="Properties"><a data-name="-1566977166%2FProperties%2F-535716451" anchor-label="DEV_LOGGING" id="-1566977166%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-d-e-v_-l-o-g-g-i-n-g.html"><span><span>DEV_LOGGING</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1566977166%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="-1566977166%2FProperties%2F-535716451" anchor-label="DEV_LOGGING" id="-1566977166%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation">JvmField</span></a></div></div><span class="token keyword"></span><span class="token keyword">var </span><a href="-d-e-v_-l-o-g-g-i-n-g.html">DEV_LOGGING</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="670410078%2FProperties%2F-535716451" anchor-label="errorReporter" id="670410078%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="error-reporter.html"><span>error</span><wbr></wbr><span><span>Reporter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="670410078%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="670410078%2FProperties%2F-535716451" anchor-label="errorReporter" id="670410078%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation">JvmStatic</span></a></div></div><span class="token keyword"></span><span class="token keyword">var </span><a href="error-reporter.html">errorReporter</a><span class="token operator">: </span><a href="../-error-reporter/index.html">ErrorReporter</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="670410078%2FProperties%2F-535716451" anchor-label="errorReporter" id="670410078%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">the current instance of ErrorReporter. not available if <a href="init.html">ACRA.init</a> has not yet been called.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1291002716%2FProperties%2F-535716451" anchor-label="isInitialised" id="-1291002716%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="is-initialised.html"><span>is</span><wbr></wbr><span><span>Initialised</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1291002716%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="-1291002716%2FProperties%2F-535716451" anchor-label="isInitialised" id="-1291002716%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="is-initialised.html">isInitialised</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="232129027%2FProperties%2F-535716451" anchor-label="log" id="232129027%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="log.html"><span><span>log</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="232129027%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="232129027%2FProperties%2F-535716451" anchor-label="log" id="232129027%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation">JvmField</span></a></div></div><span class="token keyword"></span><span class="token keyword">var </span><a href="log.html">log</a><span class="token operator">: </span><a href="../../org.acra.log/-a-c-r-a-log/index.html">ACRALog</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1062044472%2FProperties%2F-535716451" anchor-label="LOG_TAG" id="-1062044472%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-l-o-g_-t-a-g.html"><span><span>LOG_TAG</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1062044472%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="-1062044472%2FProperties%2F-535716451" anchor-label="LOG_TAG" id="-1062044472%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation">JvmField</span></a></div></div><span class="token keyword"></span><span class="token keyword">val </span><a href="-l-o-g_-t-a-g.html">LOG_TAG</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="75580631%2FProperties%2F-535716451" anchor-label="PREF_ALWAYS_ACCEPT" id="75580631%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-a-l-w-a-y-s_-a-c-c-e-p-t.html"><span><span>PREF_ALWAYS_ACCEPT</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="75580631%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="75580631%2FProperties%2F-535716451" anchor-label="PREF_ALWAYS_ACCEPT" id="75580631%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-a-l-w-a-y-s_-a-c-c-e-p-t.html">PREF_ALWAYS_ACCEPT</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="75580631%2FProperties%2F-535716451" anchor-label="PREF_ALWAYS_ACCEPT" id="75580631%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">The key of the SharedPreference allowing the user to automatically accept sending reports.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2011978307%2FProperties%2F-535716451" anchor-label="PREF_DISABLE_ACRA" id="2011978307%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-d-i-s-a-b-l-e_-a-c-r-a.html"><span><span>PREF_DISABLE_ACRA</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2011978307%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="2011978307%2FProperties%2F-535716451" anchor-label="PREF_DISABLE_ACRA" id="2011978307%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-d-i-s-a-b-l-e_-a-c-r-a.html">PREF_DISABLE_ACRA</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="2011978307%2FProperties%2F-535716451" anchor-label="PREF_DISABLE_ACRA" id="2011978307%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">The key of the application default SharedPreference where you can put a 'true' Boolean value to disable ACRA.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="371691810%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_ACRA" id="371691810%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-e-n-a-b-l-e_-a-c-r-a.html"><span><span>PREF_ENABLE_ACRA</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="371691810%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="371691810%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_ACRA" id="371691810%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-e-n-a-b-l-e_-a-c-r-a.html">PREF_ENABLE_ACRA</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="371691810%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_ACRA" id="371691810%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">Alternatively, you can use this key if you prefer your users to have the checkbox ticked to enable crash reports. If both acra.disable and acra.enable are set, the value of acra.disable takes over the other.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="503737411%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_DEVICE_ID" id="503737411%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-e-n-a-b-l-e_-d-e-v-i-c-e_-i-d.html"><span><span>PREF_ENABLE_DEVICE_ID</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="503737411%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="503737411%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_DEVICE_ID" id="503737411%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-e-n-a-b-l-e_-d-e-v-i-c-e_-i-d.html">PREF_ENABLE_DEVICE_ID</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="503737411%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_DEVICE_ID" id="503737411%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">The key of the SharedPreference allowing the user to disable sending his device id. Device ID collection is also dependent of the READ_PHONE_STATE permission.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1652739080%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_SYSTEM_LOGS" id="1652739080%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-e-n-a-b-l-e_-s-y-s-t-e-m_-l-o-g-s.html"><span><span>PREF_ENABLE_SYSTEM_LOGS</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1652739080%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="1652739080%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_SYSTEM_LOGS" id="1652739080%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-e-n-a-b-l-e_-s-y-s-t-e-m_-l-o-g-s.html">PREF_ENABLE_SYSTEM_LOGS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1652739080%2FProperties%2F-535716451" anchor-label="PREF_ENABLE_SYSTEM_LOGS" id="1652739080%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">The key of the SharedPreference allowing the user to disable sending content of logcat/dropbox. System logs collection is also dependent of the READ_LOGS permission.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1007167771%2FProperties%2F-535716451" anchor-label="PREF_LAST_VERSION_NR" id="1007167771%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-l-a-s-t_-v-e-r-s-i-o-n_-n-r.html"><span><span>PREF_LAST_VERSION_NR</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1007167771%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="1007167771%2FProperties%2F-535716451" anchor-label="PREF_LAST_VERSION_NR" id="1007167771%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-l-a-s-t_-v-e-r-s-i-o-n_-n-r.html">PREF_LAST_VERSION_NR</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1007167771%2FProperties%2F-535716451" anchor-label="PREF_LAST_VERSION_NR" id="1007167771%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">The version number of the application the last time ACRA was started. This is used to determine whether unsent reports should be discarded because they are old and out of date.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2080207278%2FProperties%2F-535716451" anchor-label="PREF_USER_EMAIL_ADDRESS" id="2080207278%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-p-r-e-f_-u-s-e-r_-e-m-a-i-l_-a-d-d-r-e-s-s.html"><span><span>PREF_USER_EMAIL_ADDRESS</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2080207278%2FProperties%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><a data-name="2080207278%2FProperties%2F-535716451" anchor-label="PREF_USER_EMAIL_ADDRESS" id="2080207278%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-p-r-e-f_-u-s-e-r_-e-m-a-i-l_-a-d-d-r-e-s-s.html">PREF_USER_EMAIL_ADDRESS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="2080207278%2FProperties%2F-535716451" anchor-label="PREF_USER_EMAIL_ADDRESS" id="2080207278%2FProperties%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a><p class="paragraph">The key of the SharedPreference allowing the user to always include his email address.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
