@@ -242,7 +242,7 @@ public class MyApplication extends Application {
                 .withPluginConfigurations(
                     //each plugin you chose above can be configured with its builder like this:
                     new ToastConfigurationBuilder()
-                        .withResText(R.string.acra_toast_text)
+                        .withText(getString(R.string.acra_toast_text))
                         .build()
                 )
             );

@@ -37,7 +37,7 @@ toast {
 ```java
 new ToastConfigurationBuilder()
     //required
-    .withResText(R.string.toast_text) 
+    .withText(getString(R.string.toast_text))
     //defaults to Toast.LENGTH_LONG
     .withLength(Toast.LENGTH_LONG)
     .build()
@@ -83,17 +83,17 @@ dialog {
 ```java
 new DialogConfigurationBuilder()
     //required
-    .withResText(R.string.dialog_text)
+    .withText(getString(R.string.dialog_text))
     //optional, enables the dialog title
-    .withResTitle(R.string.dialog_title)
+    .withTitle(getString(R.string.dialog_title))
     //defaults to android.R.string.ok
-    .withResPositiveButtonText(R.string.dialog_positive)
+    .withPositiveButtonText(getString(R.string.dialog_positive))
     //defaults to android.R.string.cancel
-    .withResNegativeButtonText(R.string.dialog_negative)
+    .withNegativeButtonText(getString(R.string.dialog_negative))
     //optional, enables the comment input
-    .withResCommentPrompt(R.string.dialog_comment)
+    .withCommentPrompt(getString(R.string.dialog_comment))
     //optional, enables the email input
-    .withResEmailPrompt(R.string.dialog_email)
+    .withEmailPrompt(getString(R.string.dialog_email))
     //defaults to android.R.drawable.ic_dialog_alert
     .withResIcon(R.drawable.dialog_icon)
     //optional, defaults to @android:style/Theme.Dialog
@@ -167,33 +167,33 @@ notification {
 ```java
 new NotificationConfigurationBuilder()
     //required
-    .withResTitle(R.string.notification_title)
+    .withTitle(getString(R.string.notification_title))
     //required
-    .withResText(R.string.notification_text)
+    .withText(getString(R.string.notification_text))
     //required
-    .withResChannelName(R.string.notification_channel)
+    .withChannelName(getString(R.string.notification_channel))
     //optional channel description
-    .withResChannelDescription(R.string.notification_channel_desc)
+    .withChannelDescription(getString(R.string.notification_channel_desc))
     //defaults to NotificationManager.IMPORTANCE_HIGH
     .withResChannelImportance(NotificationManager.IMPORTANCE_MAX)
     //optional, enables ticker text
-    .withResTickerText(R.string.notification_ticker)
+    .withTickerText(getString(R.string.notification_ticker))
     //defaults to android.R.drawable.stat_sys_warning
     .withResIcon(R.drawable.notification_icon)
     //defaults to android.R.string.ok
-    .withResSendButtonText(R.string.notification_send)
+    .withSendButtonText(getString(R.string.notification_send))
     //defaults to android.R.drawable.ic_menu_send
     .withResSendButtonIcon(R.drawable.notification_send)
     //defaults to android.R.string.cancel
-    .withResDiscardButtonText(R.string.notification_discard)
+    .withDiscardButtonText(getString(R.string.notification_discard))
     //defaults to android.R.drawable.ic_menu_delete
     .withResDiscardButtonIcon(R.drawable.notification_discard)
     //optional, enables inline comment button
-    .withResSendWithCommentButtonText(R.string.notification_send_with_comment)
+    .withSendWithCommentButtonText(getString(R.string.notification_send_with_comment))
     //required if above is set
     .withResSendWithCommentButtonIcon(R.drawable.notification_send_with_comment)
     //optional inline comment hint
-    .withResCommentPrompt(R.string.notification_comment)
+    .withCommentPrompt(getString(R.string.notification_comment))
     //defaults to false
     .withSendOnClick(false)
     .build()
