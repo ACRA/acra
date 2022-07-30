@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    val acraVersion = "5.9.5"
+    val acraVersion = "5.9.6"
     implementation("ch.acra:acra-http:$acraVersion")
 
     kapt("com.google.auto.service:auto-service:1.0.1")
