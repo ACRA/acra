@@ -101,18 +101,24 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         return false
     }
 
+    private val pendingIntentFlags = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+    }
+
     private fun getSendIntent(context: Context, config: CoreConfiguration, reportFile: File): PendingIntent {
         val intent = Intent(context, NotificationBroadcastReceiver::class.java)
         intent.action = INTENT_ACTION_SEND
         intent.putExtra(LegacySenderService.EXTRA_ACRA_CONFIG, config)
         intent.putExtra(EXTRA_REPORT_FILE, reportFile)
-        return PendingIntent.getBroadcast(context, ACTION_SEND, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(context, ACTION_SEND, intent, pendingIntentFlags)
     }
 
     private fun getDiscardIntent(context: Context): PendingIntent {
         val intent = Intent(context, NotificationBroadcastReceiver::class.java)
         intent.action = INTENT_ACTION_DISCARD
-        return PendingIntent.getBroadcast(context, ACTION_DISCARD, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(context, ACTION_DISCARD, intent, pendingIntentFlags)
     }
 
     private fun getSmallView(context: Context, notificationConfig: NotificationConfiguration, sendIntent: PendingIntent, discardIntent: PendingIntent): RemoteViews {

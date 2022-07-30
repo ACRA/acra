@@ -18,6 +18,7 @@ package org.acra.interaction
 import android.content.Context
 import org.acra.config.CoreConfiguration
 import org.acra.log.debug
+import org.acra.log.warn
 import org.acra.plugins.loadEnabled
 import java.io.File
 import java.util.concurrent.ExecutionException
@@ -49,6 +50,7 @@ class ReportInteractionExecutor(private val context: Context, private val config
                     sendReports = sendReports and future.get()
                 } catch (ignored: InterruptedException) {
                 } catch (e: ExecutionException) {
+                    warn(e) { "Report interaction threw exception, will be ignored." }
                     //ReportInteraction crashed, so ignore it
                     break
                 }
