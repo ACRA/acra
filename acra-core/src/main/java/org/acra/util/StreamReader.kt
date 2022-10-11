@@ -52,11 +52,11 @@ class StreamReader(private val inputStream: InputStream, var limit: Int = NO_LIM
     fun read(): String {
         val text = if (timeout == INDEFINITE) readFully() else readWithTimeout()
         return filter?.let {
-            text.split("\\r?\\n").filter(it).run { if (limit == NO_LIMIT) this else takeLast(limit) }.joinToString("\n")
+            text.split(newline).filter(it).run { if (limit == NO_LIMIT) this else takeLast(limit) }.joinToString("\n")
         } ?: if (limit == NO_LIMIT) {
             text
         } else {
-            text.split("\\r?\\n").takeLast(limit).joinToString("\n")
+            text.split(newline).takeLast(limit).joinToString("\n")
         }
     }
 
@@ -91,5 +91,7 @@ class StreamReader(private val inputStream: InputStream, var limit: Int = NO_LIM
     companion object {
         private const val NO_LIMIT = -1
         private const val INDEFINITE = -1
+
+        private val newline = """\r?\n""".toRegex()
     }
 }
