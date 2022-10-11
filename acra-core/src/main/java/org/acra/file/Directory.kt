@@ -27,8 +27,8 @@ import java.io.File
 enum class Directory {
     /**
      * Legacy behaviour:
-     * If the string starts with a path separator, this behaves like [.ROOT].
-     * Otherwise it behaves like [.FILES].
+     * If the string starts with a path separator, this behaves like [ROOT].
+     * Otherwise it behaves like [FILES].
      */
     FILES_LEGACY {
         override fun getFile(context: Context, fileName: String): File {
@@ -47,6 +47,7 @@ enum class Directory {
 
     /**
      * Directory returned by [Context.getExternalFilesDir]
+     * Note: Additional permissions may be required.
      */
     EXTERNAL_FILES {
         override fun getFile(context: Context, fileName: String): File {
@@ -65,6 +66,7 @@ enum class Directory {
 
     /**
      * Directory returned by [Context.getExternalCacheDir]
+     * Note: Additional permissions may be required.
      */
     EXTERNAL_CACHE {
         override fun getFile(context: Context, fileName: String): File {
@@ -89,9 +91,9 @@ enum class Directory {
 
     /**
      * Directory returned by [Environment.getExternalStorageDirectory]
+     * Note: Additional permissions may be required.
      */
     EXTERNAL_STORAGE {
-        @Suppress("DEPRECATION")
         override fun getFile(context: Context, fileName: String): File {
             return File(Environment.getExternalStorageDirectory(), fileName)
         }
