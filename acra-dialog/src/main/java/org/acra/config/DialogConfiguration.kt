@@ -87,7 +87,7 @@ class DialogConfiguration(
      * @since 5.0.0
      */
     @DrawableRes
-    val resIcon: Int = android.R.drawable.ic_dialog_alert,
+    val resIcon: Int? = android.R.drawable.ic_dialog_alert,
 
     /**
      * text in the dialog

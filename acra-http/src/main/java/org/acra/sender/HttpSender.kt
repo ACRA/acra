@@ -18,7 +18,6 @@ package org.acra.sender
 import android.content.Context
 import android.net.Uri
 import org.acra.ACRA
-import org.acra.ACRAConstants
 import org.acra.ReportField
 import org.acra.attachment.DefaultAttachmentProvider
 import org.acra.config.CoreConfiguration
@@ -66,12 +65,13 @@ import java.net.URL
  * @author F43nd1r &amp; Various
  */
 @Suppress("unused")
-class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration, method: Method?, type: StringFormat?, formUri: String? = null) : ReportSender {
+class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration, method: Method?, type: StringFormat?, formUri: String? = null) :
+    ReportSender {
     private val httpConfig: HttpSenderConfiguration = config.getPluginConfiguration()
     private val mFormUri: Uri = Uri.parse(formUri ?: httpConfig.uri)
     private val mMethod: Method = method ?: httpConfig.httpMethod
     private val mType: StringFormat = type ?: config.reportFormat
-    private var mUsername: String?= null
+    private var mUsername: String? = null
     private var mPassword: String? = null
 
     /**
@@ -93,14 +93,14 @@ class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration
         try {
             val baseUrl = mFormUri.toString()
             debug { "Connect to $baseUrl" }
-            val login : String? = when {
+            val login: String? = when {
                 mUsername != null -> mUsername
-                isNotNull(httpConfig.basicAuthLogin) -> httpConfig.basicAuthLogin
+                !httpConfig.basicAuthLogin.isNullOrEmpty() -> httpConfig.basicAuthLogin
                 else -> null
             }
-            val password : String? = when {
+            val password: String? = when {
                 mPassword != null -> mPassword
-                isNotNull(httpConfig.basicAuthPassword) -> httpConfig.basicAuthPassword
+                !httpConfig.basicAuthPassword.isNullOrEmpty() -> httpConfig.basicAuthPassword
                 else -> null
             }
             val uris = InstanceCreator.create(config.attachmentUriProvider) { DefaultAttachmentProvider() }.getAttachments(context, config)
@@ -110,23 +110,28 @@ class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration
 
             // Adjust URL depending on method
             val reportUrl = mMethod.createURL(baseUrl, errorContent)
-            sendHttpRequests(config, context, mMethod, mType.matchingHttpContentType, login, password, httpConfig.connectionTimeout,
-                    httpConfig.socketTimeout, httpConfig.httpHeaders, reportAsString, reportUrl, uris)
+            sendHttpRequests(
+                config, context, mMethod, mType.matchingHttpContentType, login, password, httpConfig.connectionTimeout,
+                httpConfig.socketTimeout, httpConfig.httpHeaders, reportAsString, reportUrl, uris
+            )
         } catch (e: Exception) {
             throw ReportSenderException("Error while sending " + config.reportFormat.toString() + " report via Http " + mMethod.name, e)
         }
     }
 
     @Throws(IOException::class)
-    protected fun sendHttpRequests(configuration: CoreConfiguration, context: Context, method: Method, contentType: String,
-                                   login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
-                                   content: String, url: URL, attachments: List<Uri>) {
+    protected fun sendHttpRequests(
+        configuration: CoreConfiguration, context: Context, method: Method, contentType: String,
+        login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
+        content: String, url: URL, attachments: List<Uri>
+    ) {
         when (method) {
             Method.POST -> if (attachments.isEmpty()) {
                 sendWithoutAttachments(configuration, context, method, contentType, login, password, connectionTimeOut, socketTimeOut, headers, content, url)
             } else {
                 postMultipart(configuration, context, contentType, login, password, connectionTimeOut, socketTimeOut, headers, content, url, attachments)
             }
+
             Method.PUT -> {
                 sendWithoutAttachments(configuration, context, method, contentType, login, password, connectionTimeOut, socketTimeOut, headers, content, url)
                 for (uri in attachments) {
@@ -137,23 +142,29 @@ class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration
     }
 
     @Throws(IOException::class)
-    protected fun sendWithoutAttachments(configuration: CoreConfiguration, context: Context, method: Method, contentType: String,
-                                         login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
-                                         content: String, url: URL) {
+    protected fun sendWithoutAttachments(
+        configuration: CoreConfiguration, context: Context, method: Method, contentType: String,
+        login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
+        content: String, url: URL
+    ) {
         DefaultHttpRequest(configuration, context, method, contentType, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content)
     }
 
     @Throws(IOException::class)
-    protected fun postMultipart(configuration: CoreConfiguration, context: Context, contentType: String,
-                                login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
-                                content: String, url: URL, attachments: List<Uri>) {
+    protected fun postMultipart(
+        configuration: CoreConfiguration, context: Context, contentType: String,
+        login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
+        content: String, url: URL, attachments: List<Uri>
+    ) {
         MultipartHttpRequest(configuration, context, contentType, login, password, connectionTimeOut, socketTimeOut, headers).send(url, content to attachments)
     }
 
     @Throws(IOException::class)
-    protected fun putAttachment(configuration: CoreConfiguration, context: Context,
-                                login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
-                                url: URL, attachment: Uri) {
+    protected fun putAttachment(
+        configuration: CoreConfiguration, context: Context,
+        login: String?, password: String?, connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?,
+        url: URL, attachment: Uri
+    ) {
         try {
             val attachmentUrl = URL(url.toString() + "-" + UriUtils.getFileNameFromUri(context, attachment))
             BinaryHttpRequest(configuration, context, login, password, connectionTimeOut, socketTimeOut, headers).send(attachmentUrl, attachment)
@@ -173,10 +184,6 @@ class HttpSender @JvmOverloads constructor(private val config: CoreConfiguration
     @Throws(Exception::class)
     protected fun convertToString(report: CrashReportData?, format: StringFormat): String {
         return format.toFormattedString(report!!, config.reportContent, "&", "\n", true)
-    }
-
-    private fun isNotNull(aString: String?): Boolean {
-        return aString != null && aString.isNotEmpty() && ACRAConstants.NULL_VALUE != aString
     }
 
     /**

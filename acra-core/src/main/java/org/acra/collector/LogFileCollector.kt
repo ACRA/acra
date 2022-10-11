@@ -21,6 +21,7 @@ import org.acra.ReportField
 import org.acra.builder.ReportBuilder
 import org.acra.config.CoreConfiguration
 import org.acra.data.CrashReportData
+import org.acra.log.warn
 import org.acra.util.StreamReader
 import java.io.IOException
 
@@ -36,7 +37,13 @@ class LogFileCollector : BaseReportFieldCollector(ReportField.APPLICATION_LOG) {
 
     @Throws(IOException::class)
     override fun collect(reportField: ReportField, context: Context, config: CoreConfiguration, reportBuilder: ReportBuilder, target: CrashReportData) {
-        target.put(ReportField.APPLICATION_LOG, StreamReader(config.applicationLogFileDir.getFile(context, config.applicationLogFile))
-                .setLimit(config.applicationLogFileLines).read())
+        if (config.applicationLogFile != null) {
+            target.put(
+                ReportField.APPLICATION_LOG, StreamReader(config.applicationLogFileDir.getFile(context, config.applicationLogFile))
+                    .setLimit(config.applicationLogFileLines).read()
+            )
+        } else {
+            warn { "${ReportField.APPLICATION_LOG} was enabled but applicationLogFile was not set. No application log will be recorded." }
+        }
     }
 }

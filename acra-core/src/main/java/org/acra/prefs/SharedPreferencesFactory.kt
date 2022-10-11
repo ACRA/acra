@@ -36,7 +36,7 @@ class SharedPreferencesFactory(private val context: Context, private val config:
      * @return The Shared Preferences where ACRA will retrieve its user adjustable setting.
      */
     fun create(): SharedPreferences {
-        return if (ACRAConstants.DEFAULT_STRING_VALUE != config.sharedPreferencesName) {
+        return if (config.sharedPreferencesName != null) {
             context.getSharedPreferences(config.sharedPreferencesName, Context.MODE_PRIVATE)
         } else {
             @Suppress("DEPRECATION")

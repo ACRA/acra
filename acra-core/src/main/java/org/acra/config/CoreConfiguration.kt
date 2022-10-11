@@ -167,7 +167,7 @@ class CoreConfiguration(
     /**
      * To use in combination with [ReportField.APPLICATION_LOG] to set the path/name of your application log file.
      */
-    val applicationLogFile: String = ACRAConstants.DEFAULT_STRING_VALUE,
+    val applicationLogFile: String? = null,
 
     /**
      * To use in combination with [ReportField.APPLICATION_LOG] to set the number of latest lines of your application log file to be collected.

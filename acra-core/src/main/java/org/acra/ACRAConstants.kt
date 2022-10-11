@@ -43,16 +43,6 @@ object ACRAConstants {
      */
     const val MAX_SEND_REPORTS = 5
 
-    /**
-     * A special String value to allow the usage of a pseudo-null default value
-     * in annotation parameters.
-     */
-    const val NULL_VALUE = "ACRA-NULL-STRING"
-
-    const val DEFAULT_RES_VALUE = 0
-
-    const val DEFAULT_STRING_VALUE = ""
-
     const val DEFAULT_LOG_LINES = 100
 
     const val DEFAULT_BUFFER_SIZE_IN_BYTES = 8192

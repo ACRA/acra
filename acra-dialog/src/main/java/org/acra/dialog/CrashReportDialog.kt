@@ -66,7 +66,7 @@ class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
             scrollable.orientation = LinearLayout.VERTICAL
             sharedPreferencesFactory = SharedPreferencesFactory(applicationContext, helper.config)
             dialogConfiguration = helper.config.getPluginConfiguration()
-            dialogConfiguration.resTheme.takeIf { it != ACRAConstants.DEFAULT_RES_VALUE }?.let { setTheme(it) }
+            dialogConfiguration.resTheme?.let { setTheme(it) }
             padding = loadPaddingFromTheme()
             buildAndShowDialog(savedInstanceState)
         } catch (e: IllegalArgumentException) {
@@ -82,7 +82,7 @@ class CrashReportDialog : Activity(), DialogInterface.OnClickListener {
     protected fun buildAndShowDialog(savedInstanceState: Bundle?) {
         val dialogBuilder = AlertDialog.Builder(this)
         dialogConfiguration.title?.takeIf { it.isNotEmpty() }?.let { dialogBuilder.setTitle(it) }
-        dialogConfiguration.resIcon.takeIf { it != ACRAConstants.DEFAULT_RES_VALUE }?.let { dialogBuilder.setIcon(it) }
+        dialogConfiguration.resIcon?.let { dialogBuilder.setIcon(it) }
         dialogBuilder.setView(buildCustomView(savedInstanceState))
                 .setPositiveButton(dialogConfiguration.positiveButtonText ?: getString(android.R.string.ok), this)
                 .setNegativeButton(dialogConfiguration.negativeButtonText ?: getString(android.R.string.cancel), this)
