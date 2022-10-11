@@ -46,6 +46,7 @@ jobs:
         with:
           api-level: ${{ matrix.android }}
           arch: 'x86_64'
+          target: 'google_apis'
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
