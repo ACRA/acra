@@ -43,7 +43,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.android.version }}-${{ matrix.android.arch }}
+          key: emulator-${{ matrix.android.version }}-${{ matrix.android.arch }}
 
       - name: create and cache AVD for API ${{ matrix.android.version }}
         if: steps.avd-cache.outputs.cache-hit != 'true'
