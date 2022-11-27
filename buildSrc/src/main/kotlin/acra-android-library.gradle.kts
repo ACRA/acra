@@ -30,7 +30,6 @@ android {
     compileSdk = Integer.parseInt(libs.versions.android.target.get())
     defaultConfig {
         minSdk = Integer.parseInt(libs.versions.android.min.get())
-        targetSdk = compileSdk
         buildConfigField("String", "VERSION_NAME", "\"$version\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
