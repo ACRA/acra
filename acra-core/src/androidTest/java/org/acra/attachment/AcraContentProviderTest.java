@@ -16,16 +16,25 @@
 
 package org.acra.attachment;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.test.ProviderTestCase2;
-import android.webkit.MimeTypeMap;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.provider.ProviderTestRule;
+
 import org.acra.ACRA;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,8 +44,12 @@ import java.io.File;
  * @author F43nd1r
  * @since 04.12.2017
  */
+@Ignore
 @RunWith(AndroidJUnit4.class)
-public class AcraContentProviderTest extends ProviderTestCase2<AcraContentProvider> {
+public class AcraContentProviderTest {
+
+    @Rule
+    public ProviderTestRule rule = new ProviderTestRule.Builder(AcraContentProvider.class, "org.acra.test.acra").build();
     private static final String JSON_EXTENSION = "json";
     private static final String JSON_MIMETYPE = "application/json";
 
@@ -44,13 +57,13 @@ public class AcraContentProviderTest extends ProviderTestCase2<AcraContentProvid
     private File file;
 
     public AcraContentProviderTest() {
-        super(AcraContentProvider.class, ApplicationProvider.getApplicationContext().getPackageName() + ".acra");
+        InstrumentationRegistry.getInstrumentation()
     }
 
     @Before
     public void setUp() throws Exception {
         ACRA.DEV_LOGGING = true;
-        resolver = ApplicationProvider.getApplicationContext().getContentResolver();
+        resolver = rule.getResolver();
         file = File.createTempFile("test", "." + JSON_EXTENSION);
     }
 
