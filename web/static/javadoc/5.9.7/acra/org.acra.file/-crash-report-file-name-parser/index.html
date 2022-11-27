@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>CrashReportFileNameParser</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>acra</span>
+            </a>
+    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageIds="acra::org.acra.file/CrashReportFileNameParser///PointingToDeclaration//-535716451">
+  <div class="breadcrumbs"><a href="../../../index.html">acra</a><span class="delimiter">/</span><a href="../index.html">org.acra.file</a><span class="delimiter">/</span><span class="current">CrashReportFileNameParser</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Crash</span><wbr></wbr><span>Report</span><wbr></wbr><span>File</span><wbr></wbr><span>Name</span><wbr></wbr><span><span>Parser</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">CrashReportFileNameParser</a></div><p class="paragraph">Responsible for determining the state of a Crash Report based on its file name.</p><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">William Ferguson & F43nd1r</p></span><span class="kdoc-tag"><h4 class="">Since</h4><p class="paragraph">4.3.0</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section-body">
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="-938340982%2FConstructors%2F-535716451" anchor-label="CrashReportFileNameParser" id="-938340982%2FConstructors%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-crash-report-file-name-parser.html"><span>Crash</span><wbr></wbr><span>Report</span><wbr></wbr><span>File</span><wbr></wbr><span>Name</span><wbr></wbr><span><span>Parser</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-938340982%2FConstructors%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-crash-report-file-name-parser.html"><span class="token function">CrashReportFileNameParser</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="184092437%2FFunctions%2F-535716451" anchor-label="getTimestamp" id="184092437%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="get-timestamp.html"><span>get</span><wbr></wbr><span><span>Timestamp</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="184092437%2FFunctions%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-timestamp.html"><span class="token function">getTimestamp</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">reportFileName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Calendar.html">Calendar</a></div><div class="brief "><p class="paragraph">Gets the timestamp of a report from its name</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1725920630%2FFunctions%2F-535716451" anchor-label="isApproved" id="1725920630%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="is-approved.html"><span>is</span><wbr></wbr><span><span>Approved</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1725920630%2FFunctions%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-approved.html"><span class="token function"><strike>isApproved</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">reportFileName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Returns true if the report is considered as approved.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1774878060%2FFunctions%2F-535716451" anchor-label="isSilent" id="-1774878060%2FFunctions%2F-535716451" data-filterable-set=":acra-toast:dokkaHtml/release"></a>
+        <div class="table-row" data-filterable-current=":acra-toast:dokkaHtml/release" data-filterable-set=":acra-toast:dokkaHtml/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="is-silent.html"><span>is</span><wbr></wbr><span><span>Silent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1774878060%2FFunctions%2F-535716451"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-toast:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-silent.html"><span class="token function">isSilent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">reportFileName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Guess that a report is silent from its file name.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
