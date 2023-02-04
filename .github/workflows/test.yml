@@ -24,8 +24,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
         with:
-          distribution: 'adopt'
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '17'
       - name: Checkout ACRA
         uses: actions/checkout@v3
       - name: Gradle cache
