@@ -28,6 +28,9 @@ plugins {
 
 android {
     compileSdk = Integer.parseInt(libs.versions.android.target.get())
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         minSdk = Integer.parseInt(libs.versions.android.min.get())
         buildConfigField("String", "VERSION_NAME", "\"$version\"")
@@ -42,8 +45,8 @@ android {
         abortOnError = false
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     useLibrary("android.test.runner")
     useLibrary("android.test.base")
@@ -71,7 +74,7 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
 }
