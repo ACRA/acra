@@ -19,7 +19,7 @@ hamcrest = "2.2"
 androidx-test = "1.5.0"
 androidx-test-runner = "1.5.2"
 androidx-junit = "1.1.5"
-nexusPublish = "1.1.0"
+nexusPublish = "1.3.0"
 
 [libraries]
 android-build = { module = "com.android.tools.build:gradle", version.ref = "android-build" }
