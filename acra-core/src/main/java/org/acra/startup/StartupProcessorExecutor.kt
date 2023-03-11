@@ -35,7 +35,7 @@ class StartupProcessorExecutor(private val context: Context, private val config:
     private val fileNameParser: CrashReportFileNameParser = CrashReportFileNameParser()
 
     fun processReports(isAcraEnabled: Boolean) {
-        val now = Calendar.getInstance()
+        val now = Calendar.getInstance().apply { add(Calendar.MINUTE, -1) }
         //application is not ready in onAttachBaseContext, so delay this. also run it on a background thread because we're doing disk I/O
         Handler(context.mainLooper).post {
             Thread {
