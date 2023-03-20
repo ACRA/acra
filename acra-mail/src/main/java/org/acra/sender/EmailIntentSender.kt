@@ -188,7 +188,8 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
      * @return email intent
      */
     protected fun buildSingleAttachmentIntent(subject: String, body: String?, attachment: Uri): Intent {
-        val intent = Intent(Intent.ACTION_SEND)
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:")
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(mailConfig.mailTo))
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
