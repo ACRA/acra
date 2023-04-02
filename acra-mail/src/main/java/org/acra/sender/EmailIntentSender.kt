@@ -171,6 +171,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
      */
     protected fun buildAttachmentIntent(subject: String, body: String?, attachments: List<Uri>): Intent {
         val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
+        intent.type = "message/rfc822"
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(mailConfig.mailTo))
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
@@ -189,6 +190,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
      */
     protected fun buildSingleAttachmentIntent(subject: String, body: String?, attachment: Uri): Intent {
         val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "message/rfc822"
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(mailConfig.mailTo))
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
