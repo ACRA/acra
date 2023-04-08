@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "dependencyDashboard": false,
+  "dependencyDashboard": true,
   "platform": "github",
   "extends": [
     "group:monorepos",
@@ -18,6 +18,10 @@
       ],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "matchPackagePatterns": ["^org\\.jetbrains\\.kotlin", "^com\\.google\\.devtools\\.ksp"],
+      "groupName": "kotlin"
     }
   ]
 }
