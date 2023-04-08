@@ -60,14 +60,14 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
         }
         val (body, attachments) = getBodyAndAttachments(context, reportText)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT in Build.VERSION_CODES.M..Build.VERSION_CODES.S_V2) {
             sendWithSelector(subject, body, attachments, context)
         } else {
-            sendLegacy(subject, body, attachments, context)
+            resolveAndSend(subject, body, attachments, context)
         }
     }
 
-    private fun sendLegacy(subject: String, body: String, attachments: List<Uri>, context: Context) {
+    private fun resolveAndSend(subject: String, body: String, attachments: List<Uri>, context: Context) {
         val pm = context.packageManager
         //we have to resolve with sendto, because send is supported by non-email apps
         val resolveIntent = buildResolveIntent()
@@ -128,7 +128,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             try {
-                sendLegacy(subject, body, attachments, context)
+                resolveAndSend(subject, body, attachments, context)
             }catch (e2: ActivityNotFoundException) {
                 throw ReportSenderException("No email client found", e2).apply { addSuppressed(e) }
             }
