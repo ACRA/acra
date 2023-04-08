@@ -219,7 +219,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     }
 
     private fun buildInitialIntents(pm: PackageManager, resolveIntent: Intent, emailIntent: Intent): List<Intent> {
-        val resolveInfoList = pm.queryIntentActivities(resolveIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        val resolveInfoList = pm.queryDefaultActivities(resolveIntent)
         val initialIntents: MutableList<Intent> = ArrayList()
         for (info in resolveInfoList) {
             val packageSpecificIntent = Intent(emailIntent)
@@ -241,7 +241,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
 
     private fun grantPermission(context: Context, intent: Intent, packageName: String?, attachments: List<Uri>) {
         if (packageName == null) {
-            for (resolveInfo in context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)) {
+            for (resolveInfo in context.packageManager.queryDefaultActivities(intent)) {
                 grantPermission(context, intent, resolveInfo.activityInfo.packageName, attachments)
             }
         } else {
@@ -310,5 +310,11 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     companion object {
         const val DEFAULT_REPORT_FILENAME = "ACRA-report" + ACRAConstants.REPORTFILE_EXTENSION
     }
+}
 
+private fun PackageManager.queryDefaultActivities(intent: Intent) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()))
+} else {
+    @Suppress("DEPRECATION")
+    queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 }
