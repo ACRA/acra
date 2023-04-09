@@ -20,7 +20,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.1.0-alpha11")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20")
 
     }
 }
