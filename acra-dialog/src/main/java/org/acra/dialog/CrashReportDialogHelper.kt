@@ -28,6 +28,7 @@ import org.acra.log.debug
 import org.acra.log.error
 import org.acra.log.warn
 import org.acra.scheduler.SchedulerStarter
+import org.acra.util.kGetSerializableExtra
 import org.json.JSONException
 import java.io.File
 import java.io.IOException
@@ -59,9 +60,9 @@ class CrashReportDialogHelper(private val context: Context, intent: Intent) {
     val config: CoreConfiguration
 
     init {
-        val sConfig = intent.getSerializableExtra(DialogInteraction.EXTRA_REPORT_CONFIG)
-        val sReportFile = intent.getSerializableExtra(DialogInteraction.EXTRA_REPORT_FILE)
-        if (sConfig is CoreConfiguration && sReportFile is File) {
+        val sConfig = intent.kGetSerializableExtra<CoreConfiguration>(DialogInteraction.EXTRA_REPORT_CONFIG)
+        val sReportFile = intent.kGetSerializableExtra<File>(DialogInteraction.EXTRA_REPORT_FILE)
+        if (sConfig != null && sReportFile != null) {
             config = sConfig
             reportFile = sReportFile
         } else {
@@ -102,15 +103,15 @@ class CrashReportDialogHelper(private val context: Context, intent: Intent) {
     fun sendCrash(comment: String?, userEmail: String?) {
         Thread {
             try {
-                debug {  "Add user comment to $reportFile"}
+                debug { "Add user comment to $reportFile" }
                 val crashData = reportData
                 crashData.put(ReportField.USER_COMMENT, comment ?: "")
                 crashData.put(ReportField.USER_EMAIL, userEmail ?: "")
                 CrashReportPersister().store(crashData, reportFile)
             } catch (e: IOException) {
-                warn(e) {  "User comment not added: "}
+                warn(e) { "User comment not added: " }
             } catch (e: JSONException) {
-                warn(e) {  "User comment not added: "}
+                warn(e) { "User comment not added: " }
             }
 
             // Start the report sending task

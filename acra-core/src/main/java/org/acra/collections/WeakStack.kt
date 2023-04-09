@@ -38,7 +38,7 @@ class WeakStack<T> : AbstractCollection<T>() {
             return contents.size
         }
 
-    override fun contains(element: T): Boolean {
+    override fun contains(element: T?): Boolean {
         return element?.let {
             for (weakReference in contents) {
                 if (element == weakReference.get()) return@let true
@@ -55,7 +55,7 @@ class WeakStack<T> : AbstractCollection<T>() {
         return contents.add(WeakReference(element))
     }
 
-    override fun remove(element: T): Boolean {
+    override fun remove(element: T?): Boolean {
         if (element != null) {
             for (i in contents.indices) {
                 if (element == contents[i].get()) {

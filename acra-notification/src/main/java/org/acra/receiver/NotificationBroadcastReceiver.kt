@@ -30,6 +30,7 @@ import org.acra.log.warn
 import org.acra.scheduler.SchedulerStarter
 import org.acra.sender.LegacySenderService
 import org.acra.util.SystemServices.getNotificationManager
+import org.acra.util.kGetSerializableExtra
 import org.json.JSONException
 import java.io.File
 import java.io.IOException
@@ -48,9 +49,9 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             if (intent.action != null) {
                 when (intent.action) {
                     NotificationInteraction.INTENT_ACTION_SEND -> {
-                        val reportFile: Any? = intent.getSerializableExtra(NotificationInteraction.EXTRA_REPORT_FILE)
-                        val configObject: Any? = intent.getSerializableExtra(LegacySenderService.EXTRA_ACRA_CONFIG)
-                        if (configObject is CoreConfiguration && reportFile is File) {
+                        val reportFile = intent.kGetSerializableExtra<File>(NotificationInteraction.EXTRA_REPORT_FILE)
+                        val configObject = intent.kGetSerializableExtra<CoreConfiguration>(LegacySenderService.EXTRA_ACRA_CONFIG)
+                        if (configObject != null && reportFile != null) {
                             //Grab user comment from notification intent
                             val remoteInput = RemoteInput.getResultsFromIntent(intent)
                             if (remoteInput != null) {
@@ -72,6 +73,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
                             SchedulerStarter(context, configObject).scheduleReports(reportFile, false)
                         }
                     }
+
                     NotificationInteraction.INTENT_ACTION_DISCARD -> {
                         debug { "Discarding reports" }
                         BulkReportDeleter(context).deleteReports(false, 0)

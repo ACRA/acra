@@ -87,13 +87,17 @@ class LogCatCollector : BaseReportFieldCollector(ReportField.LOGCAT, ReportField
     }
 
     @Throws(IOException::class)
-    override fun collect(reportField: ReportField, context: Context, config: CoreConfiguration, reportBuilder: ReportBuilder, target: CrashReportData) {
-        var bufferName: String? = null
-        @Suppress("NON_EXHAUSTIVE_WHEN")
-        when (reportField) {
-            ReportField.LOGCAT -> bufferName = null
-            ReportField.EVENTSLOG -> bufferName = "events"
-            ReportField.RADIOLOG -> bufferName = "radio"
+    override fun collect(
+        reportField: ReportField,
+        context: Context,
+        config: CoreConfiguration,
+        reportBuilder: ReportBuilder,
+        target: CrashReportData
+    ) {
+        val bufferName: String? = when (reportField) {
+            ReportField.LOGCAT -> null
+            ReportField.EVENTSLOG -> "events"
+            ReportField.RADIOLOG -> "radio"
             else -> throw IllegalArgumentException()
         }
         target.put(reportField, collectLogCat(config, bufferName))
