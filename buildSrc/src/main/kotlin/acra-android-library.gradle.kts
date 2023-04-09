@@ -1,3 +1,4 @@
+import com.google.devtools.ksp.gradle.KspTaskJvm
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 import org.jetbrains.kotlin.gradle.internal.KaptTask
@@ -45,8 +46,11 @@ android {
         abortOnError = false
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlin {
+        jvmToolchain(11)
     }
     useLibrary("android.test.runner")
     useLibrary("android.test.base")
@@ -74,7 +78,6 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "17"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
 }
