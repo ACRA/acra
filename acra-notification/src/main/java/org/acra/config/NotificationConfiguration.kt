@@ -16,10 +16,9 @@
 
 package org.acra.config
 
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import com.faendir.kotlin.autodsl.AutoDsl
-import org.acra.ACRAConstants
 import org.acra.annotation.AcraDsl
 import org.acra.ktx.plus
 
@@ -170,6 +169,15 @@ class NotificationConfiguration(
      * @since 5.0.0
      */
     val sendOnClick: Boolean = false,
+
+    /**
+     * set notification color
+     *
+     * @see androidx.core.app.NotificationCompat.Builder.setColor
+     * @since 5.9.8
+     */
+    @ColorInt
+    val color: Int? = null,
 ) : Configuration {
     override fun enabled(): Boolean = enabled
 }

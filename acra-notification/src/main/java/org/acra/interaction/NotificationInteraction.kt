@@ -63,34 +63,33 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         }
         //configure base notification
         val notification = NotificationCompat.Builder(context, CHANNEL)
-                .setWhen(System.currentTimeMillis())
-                .setContentTitle(notificationConfig.title)
-                .setContentText(notificationConfig.text)
-                .setSmallIcon(notificationConfig.resIcon)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setWhen(System.currentTimeMillis())
+            .setContentTitle(notificationConfig.title)
+            .setContentText(notificationConfig.text)
+            .setSmallIcon(notificationConfig.resIcon)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
         //add ticker if set
-        if (notificationConfig.tickerText?.isNotEmpty() == true) {
-            notification.setTicker(notificationConfig.tickerText)
-        }
+        notificationConfig.tickerText?.takeIf { it.isNotBlank() }?.let { notification.setTicker(it) }
+        //add color if set
+        notificationConfig.color?.let { notification.color = it }
         val sendIntent = getSendIntent(context, config, reportFile)
         val discardIntent = getDiscardIntent(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationConfig.sendWithCommentButtonText?.isNotEmpty() == true) {
             val remoteInput = RemoteInput.Builder(KEY_COMMENT)
-            if (notificationConfig.commentPrompt?.isNotEmpty() == true) {
-                remoteInput.setLabel(notificationConfig.commentPrompt)
-            }
+            notificationConfig.commentPrompt?.takeIf { it.isNotBlank() }?.let { remoteInput.setLabel(it) }
             notification.addAction(
-                    NotificationCompat.Action.Builder(notificationConfig.resSendWithCommentButtonIcon, notificationConfig.sendWithCommentButtonText, sendIntent)
-                            .addRemoteInput(remoteInput.build()).build())
+                NotificationCompat.Action.Builder(notificationConfig.resSendWithCommentButtonIcon, notificationConfig.sendWithCommentButtonText, sendIntent)
+                    .addRemoteInput(remoteInput.build()).build()
+            )
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             val bigView = getBigView(context, notificationConfig)
             notification.addAction(notificationConfig.resSendButtonIcon, notificationConfig.sendButtonText ?: context.getString(android.R.string.ok), sendIntent)
-                    .addAction(notificationConfig.resDiscardButtonIcon, notificationConfig.discardButtonText ?: context.getString(android.R.string.cancel), discardIntent)
-                    .setCustomContentView(getSmallView(context, notificationConfig, sendIntent, discardIntent))
-                    .setCustomBigContentView(bigView)
-                    .setCustomHeadsUpContentView(bigView)
-                    .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                .addAction(notificationConfig.resDiscardButtonIcon, notificationConfig.discardButtonText ?: context.getString(android.R.string.cancel), discardIntent)
+                .setCustomContentView(getSmallView(context, notificationConfig, sendIntent, discardIntent))
+                .setCustomBigContentView(bigView)
+                .setCustomHeadsUpContentView(bigView)
+                .setStyle(NotificationCompat.DecoratedCustomViewStyle())
         }
         //On old devices we have no notification buttons, so we have to set the intent to the only possible interaction: click
         if (notificationConfig.sendOnClick || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
@@ -101,7 +100,7 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         return false
     }
 
-    private val pendingIntentFlags = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    private val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     } else {
         PendingIntent.FLAG_UPDATE_CURRENT
