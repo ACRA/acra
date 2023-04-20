@@ -19,6 +19,7 @@ jobs:
           - { version: '21', arch: "x86_64" }
           - { version: '26', arch: "x86_64" }
           - { version: '33', arch: "x86_64" }
+    max-parallel: 2
 
     steps:
       - name: Setup Java
