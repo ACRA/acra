@@ -74,7 +74,7 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         notificationConfig.color?.let { notification.color = it }
         val sendIntent = getSendIntent(context, config, reportFile)
         val discardIntent = getDiscardIntent(context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationConfig.sendWithCommentButtonText?.isNotEmpty() == true) {
+        if (Build.VERSION.SDK_INT in Build.VERSION_CODES.N..Build.VERSION_CODES.P && notificationConfig.sendWithCommentButtonText?.isNotEmpty() == true) {
             val remoteInput = RemoteInput.Builder(KEY_COMMENT)
             notificationConfig.commentPrompt?.takeIf { it.isNotBlank() }?.let { remoteInput.setLabel(it) }
             notification.addAction(

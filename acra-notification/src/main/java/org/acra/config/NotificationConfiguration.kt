@@ -137,29 +137,32 @@ class NotificationConfiguration(
 
     /**
      * in-line comment button text.
-     * No effect on pre-nougat devices.
+     * Only available on API 24 - 28.
      *
      * @see androidx.core.app.NotificationCompat.Builder.addAction
      * @since 5.0.0
+     * @deprecated not available on API 29+
      */
     val sendWithCommentButtonText: String? = null,
 
     /**
      * in-line comment button icon.
-     * No effect on pre-nougat devices.
+     * Only available on API 24 - 28.
      *
      * @see androidx.core.app.NotificationCompat.Builder.addAction
      * @since 5.0.0
+     * @deprecated not available on API 29+
      */
     @DrawableRes
     val resSendWithCommentButtonIcon: Int = android.R.drawable.ic_menu_send,
 
     /**
      * in-line comment prompt label.
-     * No effect on pre-nougat devices.
+     * Only available on API 24 - 28.
      *
      * @see androidx.core.app.RemoteInput.Builder.setLabel
      * @since 5.0.0
+     * @deprecated not available on API 29+
      */
     val commentPrompt: String? = null,
 
