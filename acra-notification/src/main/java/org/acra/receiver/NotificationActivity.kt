@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.acra.receiver
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
+import android.app.Activity
 
-/**
- * @author F43nd1r
- * @since 15.09.2017
- */
-class NotificationBroadcastReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        handleNotificationIntent(context, intent)
+class NotificationActivity : Activity() {
+    override fun onStart() {
+        super.onStart()
+        handleNotificationIntent(this, intent)
+        finish()
     }
 }

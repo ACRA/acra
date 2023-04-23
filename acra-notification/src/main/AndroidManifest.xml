@@ -19,8 +19,16 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application>
         <receiver
-            android:name="org.acra.receiver.NotificationBroadcastReceiver"
-            android:exported="false"
-            android:process=":acra"/>
+                android:name="org.acra.receiver.NotificationBroadcastReceiver"
+                android:exported="false"
+                android:process=":acra" />
+        <activity
+                android:name="org.acra.receiver.NotificationActivity"
+                android:exported="false"
+                android:process=":acra"
+                android:noHistory="true"
+                android:excludeFromRecents="true"
+                android:enabled="@bool/acra_enable_notification_activity"
+                />
     </application>
 </manifest>

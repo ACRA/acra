@@ -24,7 +24,7 @@ class SendingConductor(private val context: Context, private val config: CoreCon
     fun sendReports(foreground: Boolean, extras: Bundle) {
         debug { "About to start sending reports from SenderService" }
         try {
-            val senderInstances = getSenderInstances(foreground).toMutableList()
+            val senderInstances = ReportSender.loadSenders(context, config).filter { it.requiresForeground() == foreground }.toMutableList()
             if (senderInstances.isEmpty()) {
                 debug { "No ReportSenders configured - adding NullSender" }
                 senderInstances.add(NullSender())
@@ -52,7 +52,7 @@ class SendingConductor(private val context: Context, private val config: CoreCon
                 }
             }
             val toast: String? = if (reportsSentCount > 0) config.reportSendSuccessToast else config.reportSendFailureToast
-            if (anyNonSilent && toast != null && toast.isNotEmpty()) {
+            if (anyNonSilent && !toast.isNullOrEmpty()) {
                 debug { "About to show " + (if (reportsSentCount > 0) "success" else "failure") + " toast" }
                 Handler(Looper.getMainLooper()).post { sendToast(context, toast, Toast.LENGTH_LONG) }
             }
@@ -61,12 +61,4 @@ class SendingConductor(private val context: Context, private val config: CoreCon
         }
         debug { "Finished sending reports from SenderService" }
     }
-
-    fun getSenderInstances(foreground: Boolean): List<ReportSender> {
-        debug { "Using PluginLoader to find ReportSender factories" }
-        val factories: List<ReportSenderFactory> = config.pluginLoader.loadEnabled(config)
-        debug { "reportSenderFactories : $factories" }
-        return factories.map { it.create(context, config).also { debug { "Adding reportSender : $it" } } }.filter { foreground == it.requiresForeground() }
-    }
-
 }

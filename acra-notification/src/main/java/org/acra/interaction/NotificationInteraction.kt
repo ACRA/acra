@@ -33,8 +33,10 @@ import org.acra.config.getPluginConfiguration
 import org.acra.notification.R
 import org.acra.plugins.HasConfigPlugin
 import org.acra.prefs.SharedPreferencesFactory
+import org.acra.receiver.NotificationActivity
 import org.acra.receiver.NotificationBroadcastReceiver
-import org.acra.sender.LegacySenderService
+import org.acra.sender.LegacySenderService.Companion.EXTRA_ACRA_CONFIG
+import org.acra.sender.ReportSender
 import java.io.File
 
 /**
@@ -107,11 +109,21 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
     }
 
     private fun getSendIntent(context: Context, config: CoreConfiguration, reportFile: File): PendingIntent {
-        val intent = Intent(context, NotificationBroadcastReceiver::class.java)
-        intent.action = INTENT_ACTION_SEND
-        intent.putExtra(LegacySenderService.EXTRA_ACRA_CONFIG, config)
-        intent.putExtra(EXTRA_REPORT_FILE, reportFile)
-        return PendingIntent.getBroadcast(context, ACTION_SEND, intent, pendingIntentFlags)
+        val needsForeground = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ReportSender.hasForegroundSenders(context, config)
+        return if (needsForeground) {
+            val intent = Intent(context, NotificationActivity::class.java)
+            intent.action = INTENT_ACTION_SEND
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra(EXTRA_ACRA_CONFIG, config)
+            intent.putExtra(EXTRA_REPORT_FILE, reportFile)
+            PendingIntent.getActivity(context, ACTION_SEND, intent, pendingIntentFlags)
+        } else {
+            val intent = Intent(context, NotificationBroadcastReceiver::class.java)
+            intent.action = INTENT_ACTION_SEND
+            intent.putExtra(EXTRA_ACRA_CONFIG, config)
+            intent.putExtra(EXTRA_REPORT_FILE, reportFile)
+            PendingIntent.getBroadcast(context, ACTION_SEND, intent, pendingIntentFlags)
+        }
     }
 
     private fun getDiscardIntent(context: Context): PendingIntent {

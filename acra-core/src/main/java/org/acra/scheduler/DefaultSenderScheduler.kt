@@ -26,6 +26,7 @@ import androidx.annotation.RequiresApi
 import org.acra.config.CoreConfiguration
 import org.acra.sender.JobSenderService
 import org.acra.sender.LegacySenderService
+import org.acra.sender.ReportSender
 import org.acra.sender.SendingConductor
 import org.acra.util.IOUtils
 import org.acra.util.toPersistableBundle
@@ -43,8 +44,7 @@ open class DefaultSenderScheduler(private val context: Context, private val conf
         extras.putString(LegacySenderService.EXTRA_ACRA_CONFIG, IOUtils.serialize(config))
         extras.putBoolean(LegacySenderService.EXTRA_ONLY_SEND_SILENT_REPORTS, onlySendSilentReports)
         configureExtras(extras)
-        val conductor = SendingConductor(context, config)
-        if (conductor.getSenderInstances(false).isNotEmpty()) {
+        if (ReportSender.hasBackgroundSenders(context, config)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 val scheduler = (context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler)
                 val builder = JobInfo.Builder(0, ComponentName(context, JobSenderService::class.java)).setExtras(extras.toPersistableBundle())
@@ -57,8 +57,8 @@ open class DefaultSenderScheduler(private val context: Context, private val conf
                 context.startService(intent)
             }
         }
-        if (conductor.getSenderInstances(true).isNotEmpty()) {
-            conductor.sendReports(true, extras)
+        if (ReportSender.hasForegroundSenders(context, config)) {
+            SendingConductor(context, config).sendReports(true, extras)
         }
     }
 

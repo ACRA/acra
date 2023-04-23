@@ -18,8 +18,10 @@ package org.acra.sender
 import android.content.Context
 import android.os.Bundle
 import org.acra.annotation.OpenAPI
+import org.acra.config.CoreConfiguration
 import org.acra.data.CrashReportData
-import org.acra.sender.ReportSenderException
+import org.acra.log.debug
+import org.acra.plugins.loadEnabled
 
 /**
  * A simple interface for defining various crash report senders.
@@ -61,5 +63,18 @@ interface ReportSender {
     @JvmDefault
     fun requiresForeground(): Boolean {
         return false
+    }
+
+    companion object {
+        fun loadSenders(context: Context, config: CoreConfiguration): List<ReportSender> {
+            debug { "Using PluginLoader to find ReportSender factories" }
+            val factories: List<ReportSenderFactory> = config.pluginLoader.loadEnabled(config)
+            debug { "reportSenderFactories : $factories" }
+            return factories.map { it.create(context, config).also { debug { "Adding reportSender : $it" } } }
+        }
+
+        fun hasForegroundSenders(context: Context, config: CoreConfiguration) = loadSenders(context, config).any { it.requiresForeground() }
+
+        fun hasBackgroundSenders(context: Context, config: CoreConfiguration) = loadSenders(context, config).any { !it.requiresForeground() }
     }
 }
