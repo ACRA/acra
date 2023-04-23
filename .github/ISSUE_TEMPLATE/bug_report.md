@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Required reading**
-https://github.com/ACRA/acra/wiki/How-to-debug-ACRA
+http://www.acra.ch/docs/How-to-debug
 
 **Describe the bug**
 A clear and concise description of what the bug is.
