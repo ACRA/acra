@@ -59,12 +59,14 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       - name: run tests on API ${{ matrix.android.version }}
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: Wandalen/wretry.action@master
         with:
-          api-level: ${{ matrix.android.version }}
-          arch: ${{ matrix.android.arch }}
-          target: 'google_apis'
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          script: ./gradlew connectedCheck --no-daemon
+          action: reactivecircus/android-emulator-runner@v2
+          with: |
+            api-level: ${{ matrix.android.version }}
+            arch: ${{ matrix.android.arch }}
+            target: 'google_apis'
+            force-avd-creation: false
+            emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+            disable-animations: true
+            script: ./gradlew connectedCheck --no-daemon
