@@ -65,7 +65,7 @@ jobs:
           with: |
             api-level: ${{ matrix.android.version }}
             arch: ${{ matrix.android.arch }}
-            target: 'google_apis'
+            target: google_apis
             force-avd-creation: false
             emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
             disable-animations: true
