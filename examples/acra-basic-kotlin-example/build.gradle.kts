@@ -21,11 +21,11 @@ plugins {
 
 android {
     namespace = "org.acra.example"
-    compileSdkVersion(33)
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "org.acra.example"
-        minSdkVersion(16)
+        minSdk = 16
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
