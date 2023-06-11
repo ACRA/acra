@@ -54,7 +54,7 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
     override fun send(context: Context, errorContent: CrashReportData) {
         val subject = buildSubject(context)
         val reportText: String = try {
-            config.reportFormat.toFormattedString(errorContent, config.reportContent, "\n", "\n\t", false)
+            config.reportFormat.toFormattedString(errorContent, config.reportContent, "\n", "\n  ", false)
         } catch (e: Exception) {
             throw ReportSenderException("Failed to convert Report to text", e)
         }

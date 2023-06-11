@@ -18,7 +18,6 @@ package org.acra.data;
 
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import junit.framework.Assert;
 import org.acra.ReportField;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -55,7 +54,7 @@ public class StringFormatTest {
 
 
     public void testJson() throws Exception {
-        Assert.assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
+        assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
                 StringFormat.JSON.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "\n", " ", false));
         assertEquals("{\"DEVICE_ID\":\"FAKE_ID\",\"BUILD_CONFIG\":{\"VERSION_CODE\":-1,\"VERSION_NAME\":\"Test\"}}",
                 StringFormat.JSON.toFormattedString(reportData, Arrays.asList(ReportField.DEVICE_ID, ReportField.BUILD_CONFIG), "&", "\n", true));
