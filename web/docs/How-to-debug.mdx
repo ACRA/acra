@@ -22,10 +22,10 @@ ACRA.DEV_LOGGING = true;
 
 </AndroidCode>
 
-2. Create a new logcat filter, with log tag parameter `ACRA`:
+2. If you want to report a bug or get help, stop your app and clear your logcat. Then start your app and do whatever you want to show, e.g. let it crash.
+
+Post all logs **filtered for `tag:ACRA`**, not those of your application, those logs would not contain all relevant info!
 
 import LogcatFilterImage from '@site/static/img/captures/logcat_filter.png'
 
 <img src={LogcatFilterImage} alt="logcat filter"/>
-
-3. If you want to report a bug or get help, stop your app and clear your logcat. Then start your app and do whatever you want to show, e.g. let it crash. Post all logs using the filter you created in 2.
