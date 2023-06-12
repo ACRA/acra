@@ -37,7 +37,7 @@ dependencies {
     val acraVersion = "5.9.7"
     implementation("ch.acra:acra-http:$acraVersion")
 
-    kapt("com.google.auto.service:auto-service:1.1.0")
+    kapt("com.google.auto.service:auto-service:1.1.1")
     compileOnly("com.google.auto.service:auto-service-annotations:1.1.0")
 }
 
