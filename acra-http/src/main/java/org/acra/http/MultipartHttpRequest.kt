@@ -47,6 +47,7 @@ class MultipartHttpRequest(config: CoreConfiguration, private val context: Conte
                 .format(CONTENT_TYPE, contentType)
                 .append(NEW_LINE)
                 .append(content.first)
+                .append(NEW_LINE)
         for (uri in content.second) {
             try {
                 val name = UriUtils.getFileNameFromUri(context, uri)
@@ -56,6 +57,7 @@ class MultipartHttpRequest(config: CoreConfiguration, private val context: Conte
                         .append(NEW_LINE)
                         .flush()
                 UriUtils.copyFromUri(context, outputStream, uri)
+                writer.append(NEW_LINE)
             } catch (e: FileNotFoundException) {
                 warn(e) { "Not sending attachment" }
             }
@@ -67,8 +69,8 @@ class MultipartHttpRequest(config: CoreConfiguration, private val context: Conte
         private const val BOUNDARY = "%&ACRA_REPORT_DIVIDER&%"
         private const val BOUNDARY_FIX = "--"
         private const val NEW_LINE = "\r\n"
-        private const val SECTION_START = NEW_LINE + BOUNDARY_FIX + BOUNDARY + NEW_LINE
-        private const val MESSAGE_END = NEW_LINE + BOUNDARY_FIX + BOUNDARY + BOUNDARY_FIX + NEW_LINE
+        private const val SECTION_START = BOUNDARY_FIX + BOUNDARY + NEW_LINE
+        private const val MESSAGE_END = BOUNDARY_FIX + BOUNDARY + BOUNDARY_FIX + NEW_LINE
         private const val CONTENT_DISPOSITION = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"$NEW_LINE"
         private const val CONTENT_TYPE = "Content-Type: %s$NEW_LINE"
     }

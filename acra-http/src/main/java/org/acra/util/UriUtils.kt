@@ -32,15 +32,25 @@ import java.io.OutputStream
 object UriUtils {
     @Throws(IOException::class)
     fun copyFromUri(context: Context, outputStream: OutputStream, uri: Uri) {
-        context.contentResolver.openInputStream(uri)?.copyTo(outputStream, bufferSize = ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES) ?: throw FileNotFoundException(
-                "Could not open $uri")
+        context.contentResolver.openInputStream(uri)?.use {
+            it.copyTo(outputStream, bufferSize = ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
+        } ?: throw FileNotFoundException("Could not open $uri")
     }
 
     @Throws(FileNotFoundException::class)
     fun getFileNameFromUri(context: Context, uri: Uri): String {
-        context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+        val cursor = context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+        if (cursor != null) {
+            @Suppress("ConvertTryFinallyToUseCall") // cursor is not Closeable until API 16
+            try {
+                if (cursor.moveToFirst()) {
+                    val columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (columnIndex != -1) {
+                        return cursor.getString(columnIndex)
+                    }
+                }
+            } finally {
+                cursor.close()
             }
         }
         throw FileNotFoundException("Could not resolve filename of $uri")
