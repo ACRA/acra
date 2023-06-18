@@ -36,5 +36,5 @@ dependencies {
     implementation("ch.acra:acra-http:$acraVersion")
 
     annotationProcessor("com.google.auto.service:auto-service:1.1.1")
-    compileOnly("com.google.auto.service:auto-service-annotations:1.1.0")
+    compileOnly("com.google.auto.service:auto-service-annotations:1.1.1")
 }
