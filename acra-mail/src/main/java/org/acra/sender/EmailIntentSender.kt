@@ -226,6 +226,11 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
             packageSpecificIntent.setPackage(info.activityInfo.packageName)
             if (packageSpecificIntent.resolveActivity(pm) != null) {
                 initialIntents.add(packageSpecificIntent)
+                continue
+            }
+            packageSpecificIntent.setClassName(info.activityInfo.packageName, info.activityInfo.name)
+            if(packageSpecificIntent.resolveActivity(pm) != null) {
+                initialIntents.add(packageSpecificIntent)
             }
         }
         return initialIntents
