@@ -32,9 +32,11 @@ jobs:
           clean: false
       - name: Update Javadoc
         run: |
-          mkdir ./web/static/javadoc/${{ steps.version.outputs.value }}
-          cp -a ./build/dokka/htmlCollector/. ./web/static/javadoc/${{ steps.version.outputs.value }}/
-          ln -sfn "${{ steps.version.outputs.value }}/" ./web/static/javadoc/latest
+          export VERSION=${{ steps.version.outputs.value }}
+          diff -qr ./build/dokka/htmlCollector/ ./web/static/javadoc/latest/ \
+            && ln -sfn "$(readlink ./web/static/javadoc/latest)" ./web/static/javadoc/$VERSION \
+            || (mkdir ./web/static/javadoc/$VERSION && cp -a ./build/dokka/htmlCollector/. ./web/static/javadoc/$VERSION/)
+          ln -sfn "$VERSION/" ./web/static/javadoc/latest
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
