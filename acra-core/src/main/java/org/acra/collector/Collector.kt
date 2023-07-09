@@ -41,7 +41,6 @@ interface Collector : Plugin {
     /**
      * @return when this collector should be called compared to other collectors
      */
-    @JvmDefault
     val order: Order
         get() = Order.NORMAL
 
