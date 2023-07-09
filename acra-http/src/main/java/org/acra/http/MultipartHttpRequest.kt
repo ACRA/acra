@@ -34,28 +34,32 @@ import java.io.PrintWriter
  * @author F43nd1r
  * @since 11.03.2017
  */
-class MultipartHttpRequest(config: CoreConfiguration, private val context: Context, private val contentType: String, login: String?, password: String?,
-                           connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?) :
-        BaseHttpRequest<Pair<String, List<Uri>>>(config, context, HttpSender.Method.POST, login, password, connectionTimeOut, socketTimeOut, headers) {
+class MultipartHttpRequest(
+    config: CoreConfiguration, private val context: Context, private val contentType: String, login: String?, password: String?,
+    connectionTimeOut: Int, socketTimeOut: Int, headers: Map<String, String>?
+) :
+    BaseHttpRequest<Pair<String, List<Uri>>>(config, context, HttpSender.Method.POST, login, password, connectionTimeOut, socketTimeOut, headers) {
     override fun getContentType(context: Context, t: Pair<String, List<Uri>>): String = "multipart/form-data; boundary=$BOUNDARY"
 
     @Throws(IOException::class)
     override fun write(outputStream: OutputStream, content: Pair<String, List<Uri>>) {
         val writer = PrintWriter(OutputStreamWriter(outputStream, ACRAConstants.UTF8))
         writer.append(SECTION_START)
-                .format(CONTENT_DISPOSITION, "ACRA_REPORT", "")
-                .format(CONTENT_TYPE, contentType)
-                .append(NEW_LINE)
-                .append(content.first)
-                .append(NEW_LINE)
+            .format(CONTENT_DISPOSITION, "ACRA_REPORT")
+            .append(NEW_LINE)
+            .format(CONTENT_TYPE, contentType)
+            .append(NEW_LINE)
+            .append(content.first)
+            .append(NEW_LINE)
         for (uri in content.second) {
             try {
                 val name = UriUtils.getFileNameFromUri(context, uri)
                 writer.append(SECTION_START)
-                        .format(CONTENT_DISPOSITION, "ACRA_ATTACHMENT", name)
-                        .format(CONTENT_TYPE, UriUtils.getMimeType(context, uri))
-                        .append(NEW_LINE)
-                        .flush()
+                    .format(CONTENT_DISPOSITION_WITH_FILE_NAME, "ACRA_ATTACHMENT", name)
+                    .append(NEW_LINE)
+                    .format(CONTENT_TYPE, UriUtils.getMimeType(context, uri))
+                    .append(NEW_LINE)
+                    .flush()
                 UriUtils.copyFromUri(context, outputStream, uri)
                 writer.append(NEW_LINE)
             } catch (e: FileNotFoundException) {
@@ -71,7 +75,8 @@ class MultipartHttpRequest(config: CoreConfiguration, private val context: Conte
         private const val NEW_LINE = "\r\n"
         private const val SECTION_START = BOUNDARY_FIX + BOUNDARY + NEW_LINE
         private const val MESSAGE_END = BOUNDARY_FIX + BOUNDARY + BOUNDARY_FIX + NEW_LINE
-        private const val CONTENT_DISPOSITION = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"$NEW_LINE"
+        private const val CONTENT_DISPOSITION = "Content-Disposition: form-data; name=\"%s\""
+        private const val CONTENT_DISPOSITION_WITH_FILE_NAME = "$CONTENT_DISPOSITION; filename=\"%s\""
         private const val CONTENT_TYPE = "Content-Type: %s$NEW_LINE"
     }
 }
