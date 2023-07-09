@@ -15,6 +15,7 @@
  */
 package org.acra.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Process
@@ -62,16 +63,15 @@ class ProcessFinisher(private val context: Context, private val config: CoreConf
         lastActivityManager.clearLastActivities()
     }
 
-    @Suppress("DEPRECATION")
     private fun stopServices() {
         if (config.stopServicesOnCrash) {
             try {
                 val activityManager = getActivityManager(context)
+                @Suppress("DEPRECATION") // this only returns the apps own services on newer android versions which is exactly what we want
                 val runningServices = activityManager.getRunningServices(Int.MAX_VALUE)
                 val pid = Process.myPid()
                 for (serviceInfo in runningServices) {
-                    if (serviceInfo.pid == pid && LegacySenderService::class.java.name != serviceInfo.service.className
-                            && JobSenderService::class.java.name != serviceInfo.service.className) {
+                    if (serviceInfo.pid == pid && !serviceInfo.service.className.startsWith("org.acra")) {
                         try {
                             val intent = Intent()
                             intent.component = serviceInfo.service

@@ -68,3 +68,11 @@ class PackageManagerWrapper(private val context: Context) {
         }
     }
 }
+
+val PackageInfo.versionCodeLong
+    get() = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+        longVersionCode
+    } else {
+        @Suppress("DEPRECATION")
+        versionCode.toLong()
+    }

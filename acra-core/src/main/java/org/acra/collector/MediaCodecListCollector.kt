@@ -72,7 +72,8 @@ class MediaCodecListCollector : BaseReportFieldCollector(ReportField.MEDIA_CODEC
             // Retrieve list of possible Color Format
             for (f in codecCapabilitiesClass.fields) {
                 if (Modifier.isStatic(f.modifiers) && Modifier.isFinal(f.modifiers)
-                        && f.name.startsWith(COLOR_FORMAT_PREFIX)) {
+                    && f.name.startsWith(COLOR_FORMAT_PREFIX)
+                ) {
                     mColorFormatValues.put(f.getInt(null), f.name)
                 }
             }
@@ -108,20 +109,15 @@ class MediaCodecListCollector : BaseReportFieldCollector(ReportField.MEDIA_CODEC
      *
      * @return The media codecs information
      */
-    @Suppress("DEPRECATION")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Throws(JSONException::class)
     private fun collectMediaCodecList(): JSONObject {
         prepare()
-        val infos: Array<MediaCodecInfo?>
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            val codecCount = MediaCodecList.getCodecCount()
-            infos = arrayOfNulls(codecCount)
-            for (codecIdx in 0 until codecCount) {
-                infos[codecIdx] = MediaCodecList.getCodecInfoAt(codecIdx)
-            }
+        val infos: Array<MediaCodecInfo?> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
         } else {
-            infos = MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
+            @Suppress("DEPRECATION")
+            (0 until MediaCodecList.getCodecCount()).map { MediaCodecList.getCodecInfoAt(it) }.toTypedArray()
         }
         val result = JSONObject()
         for (i in infos.indices) {
@@ -129,7 +125,7 @@ class MediaCodecListCollector : BaseReportFieldCollector(ReportField.MEDIA_CODEC
             val codec = JSONObject()
             val supportedTypes = codecInfo!!.supportedTypes
             codec.put("name", codecInfo.name)
-                    .put("isEncoder", codecInfo.isEncoder)
+                .put("isEncoder", codecInfo.isEncoder)
             val supportedTypesJson = JSONObject()
             for (type in supportedTypes) {
                 supportedTypesJson.put(type, collectCapabilitiesForType(codecInfo, type))

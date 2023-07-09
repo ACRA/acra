@@ -49,18 +49,18 @@ class SharedPreferencesCollector : BaseReportFieldCollector(ReportField.USER_EMA
      * Collects all key/value pairs in SharedPreferences.
      * The application default SharedPreferences are always
      * collected, and the developer can provide additional SharedPreferences
-     * names in the [org.acra.annotation.AcraCore.additionalSharedPreferences]
+     * names in the [org.acra.config.CoreConfiguration.additionalSharedPreferences]
      * configuration item.
      *
      * @return the collected key/value pairs.
      */
-    @Suppress("DEPRECATION")
     @Throws(JSONException::class)
     private fun collect(context: Context, config: CoreConfiguration): JSONObject {
         val result = JSONObject()
 
         // Include the default SharedPreferences
         val sharedPrefs: MutableMap<String, SharedPreferences> = TreeMap()
+        @Suppress("DEPRECATION")
         sharedPrefs["default"] = PreferenceManager.getDefaultSharedPreferences(context)
 
         // Add in any additional SharedPreferences

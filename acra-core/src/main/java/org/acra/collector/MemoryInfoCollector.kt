@@ -64,7 +64,7 @@ class MemoryInfoCollector : BaseReportFieldCollector(ReportField.DUMPSYS_MEMINFO
             val process = Runtime.getRuntime().exec(commandLine.toTypedArray())
             StreamReader(process.inputStream).read()
         } catch (e: IOException) {
-            error(e) { "MemoryInfoCollector.meminfo could not retrieve data"}
+            error(e) { "MemoryInfoCollector.meminfo could not retrieve data" }
             null
         }
     }
@@ -75,21 +75,16 @@ class MemoryInfoCollector : BaseReportFieldCollector(ReportField.DUMPSYS_MEMINFO
      *
      * @return Number of bytes available.
      */
-    @Suppress("DEPRECATION")
     private fun getAvailableInternalMemorySize(): Long {
-            val path = Environment.getDataDirectory()
-            val stat = StatFs(path.path)
-            val blockSize: Long
-            val availableBlocks: Long
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                blockSize = stat.blockSizeLong
-                availableBlocks = stat.availableBlocksLong
-            } else {
-                blockSize = stat.blockSize.toLong()
-                availableBlocks = stat.availableBlocks.toLong()
-            }
-            return availableBlocks * blockSize
+        val path = Environment.getDataDirectory()
+        val stat = StatFs(path.path)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            stat.blockSizeLong * stat.availableBlocksLong
+        } else {
+            @Suppress("DEPRECATION")
+            stat.blockSize.toLong() * stat.availableBlocks.toLong()
         }
+    }
 
     /**
      * Calculates the total memory of the device. This is based on an inspection of the filesystem, which in android devices is stored in RAM.
@@ -98,17 +93,13 @@ class MemoryInfoCollector : BaseReportFieldCollector(ReportField.DUMPSYS_MEMINFO
      */
     @Suppress("DEPRECATION")
     private fun getTotalInternalMemorySize(): Long {
-            val path = Environment.getDataDirectory()
-            val stat = StatFs(path.path)
-            val blockSize: Long
-            val totalBlocks: Long
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                blockSize = stat.blockSizeLong
-                totalBlocks = stat.blockCountLong
-            } else {
-                blockSize = stat.blockSize.toLong()
-                totalBlocks = stat.blockCount.toLong()
-            }
-            return totalBlocks * blockSize
+        val path = Environment.getDataDirectory()
+        val stat = StatFs(path.path)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            stat.blockSizeLong * stat.blockCountLong
+        } else {
+            @Suppress("DEPRECATION")
+            stat.blockSize.toLong() * stat.blockCount.toLong()
         }
+    }
 }

@@ -320,6 +320,5 @@ class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {
 private fun PackageManager.queryDefaultActivities(intent: Intent) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
     queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()))
 } else {
-    @Suppress("DEPRECATION")
     queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 }

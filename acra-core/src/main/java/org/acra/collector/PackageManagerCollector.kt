@@ -22,9 +22,10 @@ import org.acra.builder.ReportBuilder
 import org.acra.config.CoreConfiguration
 import org.acra.data.CrashReportData
 import org.acra.util.PackageManagerWrapper
+import org.acra.util.versionCodeLong
 
 /**
- * Collects [PackageInfo] values
+ * Collects [android.content.pm.PackageInfo] values
  *
  * @author F43nd1r
  * @since 4.9.1
@@ -37,10 +38,9 @@ class PackageManagerCollector : BaseReportFieldCollector(ReportField.APP_VERSION
         if (info == null) {
             throw CollectorException("Failed to get package info")
         } else {
-            @Suppress("NON_EXHAUSTIVE_WHEN", "DEPRECATION")
             when (reportField) {
                 ReportField.APP_VERSION_NAME -> target.put(ReportField.APP_VERSION_NAME, info.versionName)
-                ReportField.APP_VERSION_CODE -> target.put(ReportField.APP_VERSION_CODE, info.versionCode)
+                ReportField.APP_VERSION_CODE -> target.put(ReportField.APP_VERSION_CODE, info.versionCodeLong)
                 else -> throw IllegalArgumentException()
             }
         }
