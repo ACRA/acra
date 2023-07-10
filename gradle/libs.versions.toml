@@ -11,7 +11,7 @@ dokka = "1.8.20"
 jgitver = "0.10.0-rc03"
 ksp = "1.9.0-1.0.11"
 autoService = "1.1.1"
-autoServiceKsp = "1.0.0"
+autoServiceKsp = "1.1.0"
 autoDsl = "2.2.18"
 
 junit = "4.13.2"
