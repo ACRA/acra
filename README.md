@@ -6,7 +6,6 @@
 |Android Versions|![minVersion](https://img.shields.io/badge/dynamic/json?label=Android%20Min%20Version&query=version&url=https%3A%2F%2Ffaendir.com%2Fandroid%2Facra.php%3Fversion%3Dandroid-min) ![targetVersion](https://img.shields.io/badge/dynamic/json?label=Android%20Target%20Version&query=version&url=https%3A%2F%2Ffaendir.com%2Fandroid%2Facra.php%3Fversion%3Dandroid-target)|
 |License|![license](https://img.shields.io/github/license/ACRA/acra.svg)|
 | Statistics|[![AppBrain stats](https://www.appbrain.com/stats/libraries/shield/acra.svg)](https://www.appbrain.com/stats/libraries/details/acra/acra)|
-|Donations|[![Flattr this project](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=kevingaudin&url=http://acra.ch&title=ACRA%20-%20Application%20Crash%20Reports%20for%20Android&language=&tags=opensource%2Candroid&category=software&description=ACRA%20%28Application%20Crash%20Reports%20for%20Android%29%20is%20an%20open%20source%20android%20library%20for%20developers%2C%20enabling%20their%20apps%20to%20send%20detailed%20reports%20when%20they%20crash.)|
 
 What is ACRA ?
 ==============
