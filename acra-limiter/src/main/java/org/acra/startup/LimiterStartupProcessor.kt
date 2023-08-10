@@ -39,7 +39,11 @@ class LimiterStartupProcessor : HasConfigPlugin(LimiterConfiguration::class.java
         val limiterConfiguration = config.getPluginConfiguration<LimiterConfiguration>()
         if (limiterConfiguration.deleteReportsOnAppUpdate || limiterConfiguration.resetLimitsOnAppUpdate) {
             val prefs = SharedPreferencesFactory(context, config).create()
-            val lastVersionNr = prefs.getLong(ACRA.PREF_LAST_VERSION_NR, 0)
+            val lastVersionNr = try {
+                prefs.getLong(ACRA.PREF_LAST_VERSION_NR, 0)
+            } catch (e: ClassCastException) {
+                prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0).toLong()
+            }
             val appVersion = getAppVersion(context)
             if (appVersion > lastVersionNr) {
                 if (limiterConfiguration.deleteReportsOnAppUpdate) {
