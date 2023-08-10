@@ -134,6 +134,7 @@ abstract class BaseHttpRequest<T>(private val config: CoreConfiguration, private
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         connection.requestMethod = method.name
         connection.doOutput = true
+        connection.setChunkedStreamingMode(ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
 
         // Disable ConnectionPooling because otherwise OkHttp ConnectionPool will try to start a Thread on #connect
         System.setProperty("http.keepAlive", "false")
