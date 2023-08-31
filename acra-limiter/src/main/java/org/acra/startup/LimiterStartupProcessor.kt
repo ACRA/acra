@@ -43,6 +43,8 @@ class LimiterStartupProcessor : HasConfigPlugin(LimiterConfiguration::class.java
                 prefs.getLong(ACRA.PREF_LAST_VERSION_NR, 0)
             } catch (e: ClassCastException) {
                 prefs.getInt(ACRA.PREF_LAST_VERSION_NR, 0).toLong()
+            } catch (e: Exception) {
+                0
             }
             val appVersion = getAppVersion(context)
             if (appVersion > lastVersionNr) {
