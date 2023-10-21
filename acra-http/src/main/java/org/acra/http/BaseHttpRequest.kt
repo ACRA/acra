@@ -48,9 +48,11 @@ import javax.net.ssl.TrustManagerFactory
  * @since 03.03.2017
  */
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseHttpRequest<T>(private val config: CoreConfiguration, private val context: Context, private val method: HttpSender.Method,
-                                  private val login: String?, private val password: String?, private val connectionTimeOut: Int, private val socketTimeOut: Int,
-                                  private val headers: Map<String, String>?) : HttpRequest<T> {
+abstract class BaseHttpRequest<T>(
+    private val config: CoreConfiguration, private val context: Context, private val method: HttpSender.Method,
+    private val login: String?, private val password: String?, private val connectionTimeOut: Int, private val socketTimeOut: Int,
+    private val headers: Map<String, String>?
+) : HttpRequest<T> {
     private val senderConfiguration: HttpSenderConfiguration = config.getPluginConfiguration()
 
     /**
@@ -134,7 +136,9 @@ abstract class BaseHttpRequest<T>(private val config: CoreConfiguration, private
         // write output - see http://developer.android.com/reference/java/net/HttpURLConnection.html
         connection.requestMethod = method.name
         connection.doOutput = true
-        connection.setChunkedStreamingMode(ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
+        if (senderConfiguration.chunked) {
+            connection.setChunkedStreamingMode(ACRAConstants.DEFAULT_BUFFER_SIZE_IN_BYTES)
+        }
 
         // Disable ConnectionPooling because otherwise OkHttp ConnectionPool will try to start a Thread on #connect
         System.setProperty("http.keepAlive", "false")
@@ -151,19 +155,19 @@ abstract class BaseHttpRequest<T>(private val config: CoreConfiguration, private
 
     @Throws(IOException::class)
     protected fun handleResponse(responseCode: Int, responseMessage: String) {
-        debug {  "Request response : $responseCode : $responseMessage" }
+        debug { "Request response : $responseCode : $responseMessage" }
         if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
             // All is good
-            info {  "Request received by server" }
+            info { "Request received by server" }
         } else if (responseCode == HttpURLConnection.HTTP_CLIENT_TIMEOUT || responseCode >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
             //timeout or server error. Repeat the request later.
-            warn {  "Could not send ACRA Post responseCode=$responseCode message=$responseMessage" }
+            warn { "Could not send ACRA Post responseCode=$responseCode message=$responseMessage" }
             throw IOException("Host returned error code $responseCode")
         } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
             // Client error. The request must not be repeated. Discard it.
-            warn {  "$responseCode: Client error - request will be discarded" }
+            warn { "$responseCode: Client error - request will be discarded" }
         } else {
-            warn {  "Could not send ACRA Post - request will be discarded. responseCode=$responseCode message=$responseMessage" }
+            warn { "Could not send ACRA Post - request will be discarded. responseCode=$responseCode message=$responseMessage" }
         }
     }
 

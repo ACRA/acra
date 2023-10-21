@@ -128,6 +128,14 @@ class HttpSenderConfiguration(
     val compress: Boolean = false,
 
     /**
+     * if the request should be sent in chunks.
+     * Set to true when using cronet.
+     *
+     * @since 5.11.3
+     */
+    val chunked: Boolean = false,
+
+    /**
      * TLS versions supported by the server.
      *
      * This array has to contain at least one option supported on all android versions this runs on!
