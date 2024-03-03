@@ -115,6 +115,8 @@ internal class ReportDistributor(
                             failedSenders.joinToString("\n") { it.exception.stackTraceToString() }
                 }
             }
+        } else {
+            info { "Not sending report because dev mode was detected and sendReportsInDevMode was false" }
         }
     }
 
