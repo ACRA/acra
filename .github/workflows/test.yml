@@ -14,12 +14,10 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        android: 
-          - { version: '16', arch: "x86" }
-          - { version: '19', arch: "x86" }
+        android:
           - { version: '21', arch: "x86_64" }
           - { version: '26', arch: "x86_64" }
-          - { version: '33', arch: "x86_64" }
+          - { version: '34', arch: "x86_64" }
 
     steps:
       - name: Setup Java
