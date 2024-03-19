@@ -35,7 +35,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.1.1",
     "@tsconfig/docusaurus": "2.0.2",
-    "@types/react": "18.2.66",
+    "@types/react": "18.2.67",
     "@types/react-helmet": "6.1.11",
     "@types/react-router-dom": "5.3.3",
     "typescript": "5.4.2"
