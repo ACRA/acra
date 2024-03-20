@@ -57,7 +57,7 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       - name: run tests on API ${{ matrix.android.version }}
-        uses: Wandalen/wretry.action@v1.4.10
+        uses: Wandalen/wretry.action@v2.0.0
         with:
           action: reactivecircus/android-emulator-runner@v2
           with: |
