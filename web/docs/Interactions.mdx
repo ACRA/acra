@@ -145,7 +145,7 @@ notification {
     //optional channel description
     channelDescription = getString(R.string.notification_channel_desc)
     //defaults to NotificationManager.IMPORTANCE_HIGH
-    resChannelImportance = NotificationManager.IMPORTANCE_MAX
+    channelImportance = NotificationManager.IMPORTANCE_MAX
     //optional, enables ticker text
     tickerText = getString(R.string.notification_ticker)
     //defaults to android.R.drawable.stat_sys_warning
@@ -180,7 +180,7 @@ new NotificationConfigurationBuilder()
     //optional channel description
     .withChannelDescription(getString(R.string.notification_channel_desc))
     //defaults to NotificationManager.IMPORTANCE_HIGH
-    .withResChannelImportance(NotificationManager.IMPORTANCE_MAX)
+    .withChannelImportance(NotificationManager.IMPORTANCE_MAX)
     //optional, enables ticker text
     .withTickerText(getString(R.string.notification_ticker))
     //defaults to android.R.drawable.stat_sys_warning
