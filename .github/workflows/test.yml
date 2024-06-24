@@ -9,10 +9,8 @@ on:
 
 jobs:
   test:
-
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
       matrix:
         android:
           - { version: '21', arch: "x86_64" }
@@ -20,22 +18,25 @@ jobs:
           - { version: '34', arch: "x86_64" }
 
     steps:
+      - name: Checkout ACRA
+        uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v4.2.1
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Checkout ACRA
-        uses: actions/checkout@v4
-      - name: Gradle cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
 
-      - name: load AVD from cache for API ${{ matrix.android.version }}
+      - name: Setup KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: "Load AVD from cache. API/Arch ${{ matrix.android.version }}-${{ matrix.android.arch }}"
         uses: actions/cache@v4
         id: avd-cache
         with:
@@ -44,7 +45,7 @@ jobs:
             ~/.android/adb*
           key: emulator-${{ matrix.android.version }}-${{ matrix.android.arch }}
 
-      - name: create and cache AVD for API ${{ matrix.android.version }}
+      - name: "Create AVD and generate snapshot for caching. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -56,15 +57,13 @@ jobs:
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
-      - name: run tests on API ${{ matrix.android.version }}
-        uses: Wandalen/wretry.action@v3.4.0
+      - name: "Run tests. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          action: reactivecircus/android-emulator-runner@v2
-          with: |
-            api-level: ${{ matrix.android.version }}
-            arch: ${{ matrix.android.arch }}
-            target: google_apis
-            force-avd-creation: false
-            emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-            disable-animations: true
-            script: ./gradlew uninstallAll connectedCheck --no-daemon
+          api-level: ${{ matrix.android.version }}
+          arch: ${{ matrix.android.arch }}
+          target: google_apis
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew uninstallAll connectedCheck --no-daemon
