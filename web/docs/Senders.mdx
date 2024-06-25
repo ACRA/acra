@@ -142,7 +142,7 @@ Emails are sent with an `ACTION_SEND_MULTIPLE` intent. This means that the follo
 
 ## Implementing your own sender
 
-You can implement your own `ReportSender` and configure ACRA to use that instead of or in addition to other senders.
+You can implement your own `ReportSender` and configure ACRA to use that instead of or in addition to other senders. If `YourCustomSender.send()` throws a `ReportSenderException`, ACRA will retry to send the report later.
 
 <AndroidCode>
 
