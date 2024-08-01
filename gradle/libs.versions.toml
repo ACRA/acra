@@ -15,7 +15,7 @@ autoServiceKsp = "1.2.0"
 autoDsl = "2.3.1"
 
 junit = "4.13.2"
-hamcrest = "2.2"
+hamcrest = "3.0"
 androidx-test = "1.5.0"
 androidx-test-runner = "1.5.2"
 androidx-junit = "1.1.5"
