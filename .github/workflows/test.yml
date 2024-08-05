@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v4.2.1
+        uses: actions/setup-java@v4.2.2
         with:
           distribution: 'temurin'
           java-version: '17'
