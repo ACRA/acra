@@ -144,7 +144,8 @@ Emails are sent with an `ACTION_SEND_MULTIPLE` intent. This means that the follo
 
 You can implement your own `ReportSender` and configure ACRA to use that instead of or in addition to other senders.
 
-:::Tip
+:::tip
+
 Throwing a `ReportSenderException` from `YourCustomSender.send()` notifies ACRA of a failed delivery, and might trigger a retry (see [RetryPolicy](https://www.acra.ch/javadoc/latest/acra/org.acra.config/-core-configuration/retry-policy-class.html)).
 
 <AndroidCode>
