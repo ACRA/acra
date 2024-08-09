@@ -148,6 +148,8 @@ You can implement your own `ReportSender` and configure ACRA to use that instead
 
 Throwing a `ReportSenderException` from `YourCustomSender.send()` notifies ACRA of a failed delivery, and might trigger a retry (see [RetryPolicy](https://www.acra.ch/javadoc/latest/acra/org.acra.config/-core-configuration/retry-policy-class.html)).
 
+:::
+
 <AndroidCode>
 
 ```kotlin
