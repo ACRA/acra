@@ -38,7 +38,7 @@ tasks.register("publish") {
 
 tasks.register<Delete>("clean") {
     group = "build"
-    delete = setOf(buildDir)
+    delete = setOf(layout.buildDirectory)
 }
 
 nexusPublishing {
