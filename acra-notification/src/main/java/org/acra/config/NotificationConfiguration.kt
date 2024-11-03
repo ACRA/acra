@@ -19,6 +19,7 @@ package org.acra.config
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.faendir.kotlin.autodsl.AutoDsl
+import com.faendir.kotlin.autodsl.AutoDslRequired
 import org.acra.annotation.AcraDsl
 import org.acra.ktx.plus
 
@@ -104,13 +105,26 @@ class NotificationConfiguration(
     val resDiscardButtonIcon: Int = android.R.drawable.ic_menu_delete,
 
     /**
+     * Existing notification channel id.
+     * You have to ensure a notification channel with this id exists (See [android.app.NotificationManager.createNotificationChannel]).
+     * If null, ACRA will create a notification channel for you with the provided [channelName], [channelDescription] and [channelImportance].
+     * To learn about notification channels, visit the [notification guide](https://developer.android.com/guide/topics/ui/notifiers/notifications.html#ManageChannels)
+     *
+     * @see android.app.NotificationChannel
+     * @since 5.12.0
+     */
+    @AutoDslRequired("channel")
+    val channelId: String? = null,
+
+    /**
      * notification channel name.
      * To learn about notification channels, visit the [notification guide](https://developer.android.com/guide/topics/ui/notifiers/notifications.html#ManageChannels)
      *
      * @see android.app.NotificationChannel
      * @since 5.0.0
      */
-    val channelName: String,
+    @AutoDslRequired("channel")
+    val channelName: String? = null,
 
     /**
      * notification channel description

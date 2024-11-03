@@ -54,7 +54,7 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
         //can't post notifications
         val notificationConfig = config.getPluginConfiguration<NotificationConfiguration>()
         //We have to create a channel on Oreo+, because notifications without one aren't allowed
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationConfig.channelId == null) {
             @SuppressLint("WrongConstant")
             val channel = NotificationChannel(CHANNEL, notificationConfig.channelName, notificationConfig.channelImportance)
             channel.setSound(null, null)
@@ -64,7 +64,7 @@ class NotificationInteraction : HasConfigPlugin(NotificationConfiguration::class
             notificationManager.createNotificationChannel(channel)
         }
         //configure base notification
-        val notification = NotificationCompat.Builder(context, CHANNEL)
+        val notification = NotificationCompat.Builder(context, notificationConfig.channelId ?: CHANNEL)
             .setWhen(System.currentTimeMillis())
             .setContentTitle(notificationConfig.title)
             .setContentText(notificationConfig.text)
