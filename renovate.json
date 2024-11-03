@@ -19,8 +19,11 @@
       "automergeType": "branch"
     },
     {
-      "matchPackagePatterns": ["^org\\.jetbrains\\.kotlin", "^com\\.google\\.devtools\\.ksp"],
-      "groupName": "kotlin"
+      "groupName": "kotlin",
+      "matchPackageNames": [
+        "/^org\\.jetbrains\\.kotlin/",
+        "/^com\\.google\\.devtools\\.ksp/"
+      ]
     }
   ]
 }
