@@ -36,26 +36,26 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: "Load AVD from cache. API/Arch ${{ matrix.android.version }}-${{ matrix.android.arch }}"
-        uses: actions/cache@v4
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: emulator-${{ matrix.android.version }}-${{ matrix.android.arch }}
-
-      - name: "Create AVD and generate snapshot for caching. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.android.version }}
-          arch: ${{ matrix.android.arch }}
-          target: 'google_apis'
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
+#      - name: "Load AVD from cache. API/Arch ${{ matrix.android.version }}-${{ matrix.android.arch }}"
+#        uses: actions/cache@v4
+#        id: avd-cache
+#        with:
+#          path: |
+#            ~/.android/avd/*
+#            ~/.android/adb*
+#          key: emulator-${{ matrix.android.version }}-${{ matrix.android.arch }}
+#
+#      - name: "Create AVD and generate snapshot for caching. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
+#        if: steps.avd-cache.outputs.cache-hit != 'true'
+#        uses: reactivecircus/android-emulator-runner@v2
+#        with:
+#          api-level: ${{ matrix.android.version }}
+#          arch: ${{ matrix.android.arch }}
+#          target: 'google_apis'
+#          force-avd-creation: false
+#          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+#          disable-animations: false
+#          script: echo "Generated AVD snapshot for caching."
 
       - name: "Run tests. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
         uses: reactivecircus/android-emulator-runner@v2
