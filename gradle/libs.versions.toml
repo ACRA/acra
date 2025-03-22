@@ -17,7 +17,7 @@ autoDsl = "2.4.0"
 junit = "4.13.2"
 hamcrest = "3.0"
 androidx-test = "1.5.0"
-androidx-test-runner = "1.5.2"
+androidx-test-runner = "1.6.2"
 androidx-junit = "1.2.1"
 nexusPublish = "2.0.0"
 
