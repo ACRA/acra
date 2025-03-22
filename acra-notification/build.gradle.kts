@@ -19,6 +19,9 @@ plugins {
 }
 
 android {
+    defaultConfig {
+        minSdk = 21
+    }
     namespace = "org.acra.notification"
 }
 
