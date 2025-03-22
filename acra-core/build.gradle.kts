@@ -27,4 +27,5 @@ android {
 
 dependencies {
     api(libs.androidx.annotation)
+    androidTestImplementation(libs.bundles.androidx.test)
 }

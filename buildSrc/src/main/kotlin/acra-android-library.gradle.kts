@@ -69,7 +69,6 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    androidTestImplementation(libs.bundles.androidx.test)
     ksp(libs.autoDsl.processor)
     compileOnly(libs.autoDsl.annotations)
     ksp(libs.autoService.ksp)

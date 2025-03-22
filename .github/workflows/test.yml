@@ -64,6 +64,6 @@ jobs:
           arch: ${{ matrix.android.arch }}
           target: google_apis
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
           disable-animations: true
           script: ./gradlew uninstallAll connectedCheck --no-daemon
