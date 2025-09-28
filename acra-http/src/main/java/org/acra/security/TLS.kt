@@ -15,6 +15,11 @@
  */
 package org.acra.security
 
-enum class TLS(val id: String) {
-    V1("TLSv1"), V1_1("TLSv1.1"), V1_2("TLSv1.2"), V1_3("TLSv1.3");
+import android.os.Build
+
+enum class TLS(val id: String, val minSdk: Int) {
+    V1("TLSv1", Build.VERSION_CODES.BASE),
+    V1_1("TLSv1.1", Build.VERSION_CODES.JELLY_BEAN),
+    V1_2("TLSv1.2", Build.VERSION_CODES.JELLY_BEAN),
+    V1_3("TLSv1.3", Build.VERSION_CODES.Q);
 }

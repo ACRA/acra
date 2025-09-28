@@ -24,34 +24,16 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
 class ProtocolSocketFactoryWrapper(private val delegate: SSLSocketFactory, protocols: List<TLS>) : SSLSocketFactory() {
-    private val protocols: List<String>
-
-    init {
-        val list = protocols.toMutableList()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            list.remove(TLS.V1_3)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                list.remove(TLS.V1_2)
-                list.remove(TLS.V1_1)
-            }
-        }
-        this.protocols = list.map { it.id }
-    }
+    private val protocols: List<String> = protocols.filter { Build.VERSION.SDK_INT >= it.minSdk }.map { it.id }
 
     private fun setProtocols(socket: Socket): Socket {
-        if (socket is SSLSocket && isTLSServerEnabled(socket)) {
-            socket.enabledProtocols = protocols.toTypedArray()
-        }
-        return socket
-    }
-
-    private fun isTLSServerEnabled(sslSocket: SSLSocket): Boolean {
-        for (protocol in sslSocket.supportedProtocols) {
-            if (protocols.contains(protocol)) {
-                return true
+        if (socket is SSLSocket) {
+            val wantedProtocols = protocols intersect socket.supportedProtocols.toSet()
+            if (wantedProtocols.isNotEmpty()) {
+                socket.enabledProtocols = wantedProtocols.toTypedArray()
             }
         }
-        return false
+        return socket
     }
 
     override fun getDefaultCipherSuites(): Array<String> = delegate.defaultCipherSuites
