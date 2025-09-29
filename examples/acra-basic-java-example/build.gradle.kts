@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    val acraVersion = "5.12.0"
+    val acraVersion = "5.13.1"
     implementation("ch.acra:acra-http:$acraVersion")
 
     annotationProcessor("com.google.auto.service:auto-service:1.1.1")
