@@ -3398,10 +3398,10 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
-"@tsconfig/docusaurus@2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@tsconfig/docusaurus/-/docusaurus-2.0.4.tgz#adb1ee2b572d895bd44ba34b3e74b969342dafd9"
-  integrity sha512-QEu3tpCrqHHcDJYKrv/cu9G8o3XggkpKw374rzcYqfVA2lIMsOpGrt4TcZEGyzjrFpovVt8MuWuDJyR/QeETbg==
+"@tsconfig/docusaurus@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@tsconfig/docusaurus/-/docusaurus-2.0.5.tgz#cf11f7677ae6f00d4ce8fe3efc02d7d07828537b"
+  integrity sha512-jnB+M0fF7SgzorapQrlSxH1iDQ6rC0Wl5VMJdus0KVsFlqH/H0wAUOqdS08LiT9Kk3XLf0Jrj/huAxAmIIaMfw==
 
 "@types/acorn@^4.0.0":
   version "4.0.6"
