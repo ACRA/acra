@@ -39,7 +39,7 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-
 androidx-test-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "androidx-junit" }
 hamcrest = { module = "org.hamcrest:hamcrest-core", version.ref = "hamcrest" }
 autoService-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "autoServiceKsp" }
-autoService-annotations = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
+autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
 autoDsl-processor = {module = "com.faendir.kotlin.autodsl:processor", version.ref = "autoDsl"}
 autoDsl-annotations = {module = "com.faendir.kotlin.autodsl:annotations", version.ref = "autoDsl"}
 
