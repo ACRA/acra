@@ -1,5 +1,3 @@
-import com.google.devtools.ksp.gradle.KspTaskJvm
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 import org.jetbrains.kotlin.gradle.internal.KaptTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -82,14 +80,6 @@ tasks.withType<KaptTask> {
 }
 
 afterEvaluate {
-    tasks.withType<DokkaTask> {
-        dokkaSourceSets {
-            named("main") {
-                noAndroidSdkLink.set(false)
-            }
-        }
-        dependsOn("assembleRelease")
-    }
     tasks.findByName("publish")?.mustRunAfter("assembleRelease")
 }
 

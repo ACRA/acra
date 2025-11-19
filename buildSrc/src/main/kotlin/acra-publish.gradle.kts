@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.jetbrains.dokka.gradle.DokkaTask
 
 
 plugins {
@@ -22,9 +21,9 @@ plugins {
     org.jetbrains.dokka
 }
 
-tasks.withType<DokkaTask> {
+dokka {
     dokkaSourceSets.configureEach {
-        suppressGeneratedFiles.set(false)
+        suppressGeneratedFiles = false
     }
 }
 
