@@ -11,29 +11,7 @@ This Tutorial will show you how to set up ACRA and guide you through your initia
 
 This guide assumes you are using `com.android.tools.build:gradle:4.0.0` or later.
 
-Acra requires java 8 (native, not RetroLambda or similar):
-
-<GradleCode>
-
-```kotlin title="build.gradle.kts"
-android {
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-}
-```
-
-```groovy title="build.gradle"
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
-```
-
-</GradleCode>
+Acra requires at least java 11. This can be configured in various ways, our examples use toolchains for [Java](https://github.com/ACRA/acra/blob/master/examples/acra-basic-java-example/build.gradle.kts#L33) and [Kotlin](https://github.com/ACRA/acra/blob/master/examples/acra-basic-java-example/build.gradle.kts#L35).
 
 ## Dependencies
 

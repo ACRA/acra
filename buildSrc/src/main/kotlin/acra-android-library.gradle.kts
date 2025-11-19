@@ -43,9 +43,6 @@ android {
     lint {
         abortOnError = false
     }
-    kotlin {
-        jvmToolchain(11)
-    }
     useLibrary("android.test.runner")
     useLibrary("android.test.base")
     useLibrary("android.test.mock")
@@ -56,6 +53,10 @@ android {
             withJavadocJar()
         }
     }
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 tasks.withType<Test> {
