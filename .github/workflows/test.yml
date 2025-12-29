@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout ACRA
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v5.1.0
