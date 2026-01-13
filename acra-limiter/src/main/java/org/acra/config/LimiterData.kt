@@ -65,7 +65,7 @@ class LimiterData() {
         internal constructor(crashReportData: CrashReportData) {
             val stacktrace = crashReportData.getString(ReportField.STACK_TRACE)
             put(KEY_STACK_TRACE, stacktrace)
-            val index = stacktrace!!.indexOf('\n')
+            val index = stacktrace.indexOf('\n')
             val firstLine = if (index == -1) stacktrace else stacktrace.substring(0, index)
             val index2 = firstLine.indexOf(':')
             val className = if (index2 == -1) firstLine else firstLine.substring(0, index2)

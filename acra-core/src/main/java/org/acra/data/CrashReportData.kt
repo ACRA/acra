@@ -149,7 +149,7 @@ class CrashReportData {
     private fun putNA(key: String) {
         try {
             content.put(key, ACRAConstants.NOT_AVAILABLE)
-        } catch (ignored: JSONException) {
+        } catch (_: JSONException) {
         }
     }
 
@@ -157,9 +157,9 @@ class CrashReportData {
      * Returns the property with the specified key.
      *
      * @param key the key of the property to find.
-     * @return the keyd property value, or `null` if it can't be found.
+     * @return the keyed property value, or an empty string if it can't be found.
      */
-    fun getString(key: ReportField): String? {
+    fun getString(key: ReportField): String {
         return content.optString(key.toString())
     }
 
@@ -187,6 +187,6 @@ class CrashReportData {
     }
 
     fun toMap(): Map<String, Any?> {
-        return content.keys().asSequence().map { it to get(it) }.toMap()
+        return content.keys().asSequence().associateWith { get(it) }
     }
 }

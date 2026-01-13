@@ -203,7 +203,7 @@ class ReportExecutor(private val context: Context, private val config: CoreConfi
     private fun getReportFileName(crashData: CrashReportData): File {
         val timestamp = crashData.getString(ReportField.USER_CRASH_DATE)
         val isSilent = crashData.getString(ReportField.IS_SILENT)
-        val fileName = timestamp + (if (isSilent != null && java.lang.Boolean.parseBoolean(isSilent)) ACRAConstants.SILENT_SUFFIX else "") + ACRAConstants.REPORTFILE_EXTENSION
+        val fileName = timestamp + (if (java.lang.Boolean.parseBoolean(isSilent)) ACRAConstants.SILENT_SUFFIX else "") + ACRAConstants.REPORTFILE_EXTENSION
         val reportLocator = ReportLocator(context)
         return File(reportLocator.unapprovedFolder, fileName)
     }
