@@ -88,4 +88,126 @@ Then annotate your extension with the following:
 </AndroidCode>
 
 ### By file
-See [ServiceLoader](https://developer.android.com/reference/java/util/ServiceLoader.html) for manual service registration
+
+If you prefer not to use the `@AutoService` annotation or if you need more control over the registration process, you can manually register your extension using Java's `ServiceLoader` mechanism.
+
+#### How it works
+
+The `ServiceLoader` uses text files in the `META-INF/services/` directory to discover implementations at runtime. Each file is named after the fully qualified name of the service interface and contains the fully qualified names of implementing classes.
+
+#### Step-by-step guide
+
+1. **Create the META-INF/services directory**
+
+   In your Android project, create the following directory structure in your module's source set:
+   - For main source set: `src/main/resources/META-INF/services/`
+   - For debug/release variants: `src/<variant>/resources/META-INF/services/`
+
+2. **Create the service file**
+
+   Inside the `META-INF/services/` directory, create a file named after the fully qualified interface name. For example:
+   - For `ReportSenderFactory`: `org.acra.sender.ReportSenderFactory`
+   - For `Collector`: `org.acra.collector.Collector`
+   - For `ReportingAdministrator`: `org.acra.config.ReportingAdministrator`
+
+3. **Add your implementation class**
+
+   In the service file, add the fully qualified name of your implementation class. If you have multiple implementations, add each on a separate line.
+
+   Example file `src/main/resources/META-INF/services/org.acra.sender.ReportSenderFactory`:
+   ```
+   com.example.myapp.MySenderFactory
+   com.example.myapp.AnotherSenderFactory
+   ```
+
+4. **Ensure your implementation is valid**
+
+   - The class must be `public`
+   - The class must have a public zero-argument constructor
+   - The class must implement the service interface
+
+#### Complete example
+
+Let's say you have a custom `ReportSenderFactory` implementation in package `com.example.myapp`:
+
+<AndroidCode>
+
+```kotlin
+package com.example.myapp
+
+import android.content.Context
+import org.acra.config.CoreConfiguration
+import org.acra.data.CrashReportData
+import org.acra.sender.ReportSender
+import org.acra.sender.ReportSenderFactory
+
+class MySender : ReportSender {
+    override fun send(context: Context, errorContent: CrashReportData) {
+        // Your implementation
+    }
+}
+
+class MySenderFactory : ReportSenderFactory {
+    // Must have a no-arg constructor (implicit in Kotlin)
+    
+    override fun create(context: Context, config: CoreConfiguration): ReportSender {
+        return MySender()
+    }
+}
+```
+
+```java
+package com.example.myapp;
+
+import android.content.Context;
+import org.acra.config.CoreConfiguration;
+import org.acra.data.CrashReportData;
+import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderFactory;
+
+public class MySender implements ReportSender {
+    @Override
+    public void send(Context context, CrashReportData errorContent) {
+        // Your implementation
+    }
+}
+
+public class MySenderFactory implements ReportSenderFactory {
+    // Must have a public no-arg constructor
+    public MySenderFactory() {
+    }
+    
+    @Override
+    public ReportSender create(Context context, CoreConfiguration config) {
+        return new MySender();
+    }
+}
+```
+
+</AndroidCode>
+
+Create the file `src/main/resources/META-INF/services/org.acra.sender.ReportSenderFactory` with this content:
+```
+com.example.myapp.MySenderFactory
+```
+
+#### Troubleshooting
+
+If your custom extension is not being loaded:
+
+1. **Verify file location**: Ensure the service file is in `src/main/resources/META-INF/services/` and not in `src/main/assets/` or other directories.
+
+2. **Check file name**: The file name must exactly match the fully qualified interface name (e.g., `org.acra.sender.ReportSenderFactory`).
+
+3. **Verify class name**: The content must contain the fully qualified class name of your implementation (e.g., `com.example.myapp.MySenderFactory`).
+
+4. **Check packaging**: After building, verify that the service file is included in your APK under `META-INF/services/`.
+
+5. **ProGuard/R8**: If using code minification, ensure your implementation class is not stripped. Add a ProGuard rule if necessary:
+   ```
+   -keep class com.example.myapp.MySenderFactory { *; }
+   ```
+
+6. **Enable debug logging**: Set `ACRA.DEV_LOGGING = true` before initializing ACRA to see which factories are being loaded.
+
+For more details, see the official [ServiceLoader documentation](https://developer.android.com/reference/java/util/ServiceLoader.html).
