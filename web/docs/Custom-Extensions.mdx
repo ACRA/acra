@@ -88,4 +88,13 @@ Then annotate your extension with the following:
 </AndroidCode>
 
 ### By file
-See [ServiceLoader](https://developer.android.com/reference/java/util/ServiceLoader.html) for manual service registration
+
+To manually register your extension, create a text file in `src/main/resources/META-INF/services/` named after the fully qualified interface name (e.g., `org.acra.sender.ReportSenderFactory`) containing the fully qualified name of your implementation class:
+
+```
+com.example.myapp.MySenderFactory
+```
+
+Your implementation must be `public` and have a public zero-argument constructor.
+
+See [ServiceLoader](https://developer.android.com/reference/java/util/ServiceLoader.html) for more details.
