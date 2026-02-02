@@ -55,7 +55,7 @@ httpSender {
     //defaults to false. Recommended if your backend supports it
     compress = false
     //defaults to all
-    tlsProtocols = arrayOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1)
+    tlsProtocols = listOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1)
 }
 ```
 
@@ -83,7 +83,7 @@ new HttpSenderConfigurationBuilder()
     //defaults to false. Recommended if your backend supports it
     .withCompress(false)
     //defaults to all
-    .withTlsProtocols(arrayOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1))
+    .withTlsProtocols(listOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1))
     .build()
 ```
 
