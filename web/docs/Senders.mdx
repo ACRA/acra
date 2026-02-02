@@ -83,7 +83,7 @@ new HttpSenderConfigurationBuilder()
     //defaults to false. Recommended if your backend supports it
     .withCompress(false)
     //defaults to all
-    .withTlsProtocols(listOf(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1))
+    .withTlsProtocols(Arrays.asList(TLS.V1_3, TLS.V1_2, TLS.V1_1, TLS.V1))
     .build()
 ```
 
