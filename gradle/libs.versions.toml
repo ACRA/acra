@@ -1,7 +1,7 @@
 [versions]
 android-target = "36"
 android-min = "14"
-android-build = "8.13.2"
+android-build = "9.0.1"
 
 androidx-core = "1.17.0"
 androidx-annotation = "1.9.1"
