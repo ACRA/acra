@@ -15,8 +15,7 @@
  */
 plugins {
     id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -40,7 +39,7 @@ dependencies {
     val acraVersion = "5.13.1"
     implementation("ch.acra:acra-http:$acraVersion")
 
-    kapt("com.google.auto.service:auto-service:1.1.1")
+    ksp("dev.zacsweers.autoservice:auto-service-ksp:1.2.0")
     compileOnly("com.google.auto.service:auto-service-annotations:1.1.1")
 }
 
