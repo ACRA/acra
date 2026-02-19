@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 plugins {
     `android-library`
-    `kotlin-android`
     `kotlin-allopen`
     com.google.devtools.ksp
     idea
