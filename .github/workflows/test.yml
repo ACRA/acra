@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout ACRA
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.3
 
       - name: Setup Java
         uses: actions/setup-java@v5.2.0
@@ -34,7 +34,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.1.0
 
 #      - name: "Load AVD from cache. API/Arch ${{ matrix.android.version }}-${{ matrix.android.arch }}"
 #        uses: actions/cache@v4
@@ -58,7 +58,7 @@ jobs:
 #          script: echo "Generated AVD snapshot for caching."
 
       - name: "Run tests. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v2.37.0
         with:
           api-level: ${{ matrix.android.version }}
           arch: ${{ matrix.android.arch }}
