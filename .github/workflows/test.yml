@@ -58,7 +58,7 @@ jobs:
 #          script: echo "Generated AVD snapshot for caching."
 
       - name: "Run tests. API/Arch: ${{ matrix.android.version }}-${{ matrix.android.arch }}"
-        uses: reactivecircus/android-emulator-runner@v2.37.0
+        uses: reactivecircus/android-emulator-runner@v2.38.0
         with:
           api-level: ${{ matrix.android.version }}
           arch: ${{ matrix.android.arch }}
