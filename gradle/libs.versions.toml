@@ -1,5 +1,5 @@
 [versions]
-android-target = "36"
+android-target = "37"
 android-min = "14"
 android-build = "9.4.0"
 
