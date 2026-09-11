@@ -3,7 +3,7 @@ android-target = "37"
 android-min = "14"
 android-build = "9.4.0"
 
-androidx-core = "1.18.0"
+androidx-core = "1.19.0"
 androidx-annotation = "1.10.0"
 
 kotlin = "2.4.20"
