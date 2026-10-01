@@ -11,19 +11,13 @@
   "packageRules": [
     {
       "matchUpdateTypes": [
+        "minor",
         "patch",
         "pin",
         "digest"
       ],
       "automerge": true,
       "automergeType": "branch"
-    },
-    {
-      "groupName": "kotlin",
-      "matchPackageNames": [
-        "/^org\\.jetbrains\\.kotlin/",
-        "/^com\\.google\\.devtools\\.ksp/"
-      ]
     }
   ]
 }
