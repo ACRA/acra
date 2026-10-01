@@ -23,6 +23,12 @@ jgitver {
     regexVersionTag = "acra-([0-9]+(?:\\.[0-9]+){0,2}(?:-[a-zA-Z0-9\\-_]+)?)"
 }
 
+rootProject.subprojects.forEach { subproject ->
+    subproject.pluginManager.withPlugin("org.jetbrains.dokka") {
+        dependencies.add("dokka", dependencies.project(mapOf("path" to subproject.path)))
+    }
+}
+
 tasks.register("publish") {
     group = "publishing"
     subprojects {
