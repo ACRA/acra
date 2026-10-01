@@ -160,7 +160,9 @@ class CoreConfiguration(
 
     /**
      * The default value will be a BuildConfig class residing in the same package as the Application class.
-     * You only have to set this option if your BuildConfig class is obfuscated.
+     * You only have to set this option if your BuildConfig class name is obfuscated.
+     *
+     * ACRA reads its static fields through reflection. You may need to retain those explicitly in your R8 rules.
      */
     val buildConfigClass: Class<*>? = null,
 
