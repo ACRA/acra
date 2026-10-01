@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":acra-notification/release":[],":acra-advanced-scheduler/release":[],":acra-toast/release":[],":acra-dialog/release":[],":acra-limiter/release":[],":acra-core/release":[],":acra-http/release":[],":acra-mail/release":[]}'

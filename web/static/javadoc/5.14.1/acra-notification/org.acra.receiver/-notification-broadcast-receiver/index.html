@@ -1,0 +1,404 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>NotificationBroadcastReceiver</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    acra
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">5.14.1
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":acra-notification/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":acra-notification/release" data-filter=":acra-notification/release">
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    acra
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="acra-notification::org.acra.receiver/NotificationBroadcastReceiver///PointingToDeclaration//1854500995">
+  <div class="breadcrumbs"><a href="../../index.html">acra-notification</a><span class="delimiter">/</span><a href="../index.html">org.acra.receiver</a><span class="delimiter">/</span><span class="current">NotificationBroadcastReceiver</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Notification</span><wbr><span>Broadcast</span><wbr><span><span>Receiver</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">NotificationBroadcastReceiver</a> : <a href="https://developer.android.com/reference/kotlin/android/content/BroadcastReceiver.html">BroadcastReceiver</a></div><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">F43nd1r</p></span><span class="kdoc-tag"><h4 class="">Since</h4><p class="paragraph">15.09.2017</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="1775619247%2FConstructors%2F1854500995" anchor-label="NotificationBroadcastReceiver" id="1775619247%2FConstructors%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-notification-broadcast-receiver.html"><span>Notification</span><wbr><span>Broadcast</span><wbr><span><span>Receiver</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1775619247%2FConstructors%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-1578158536%2FProperties%2F1854500995" anchor-label="abortBroadcast" id="-1578158536%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1578158536%2FProperties%2F1854500995"><span>abort</span><wbr><span><span>Broadcast</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578158536%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html#-1578158536%2FProperties%2F1854500995">abortBroadcast</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1044733854%2FProperties%2F1854500995" anchor-label="debugUnregister" id="-1044733854%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1044733854%2FProperties%2F1854500995"><span>debug</span><wbr><span><span>Unregister</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1044733854%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#-1044733854%2FProperties%2F1854500995">debugUnregister</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-448034677%2FProperties%2F1854500995" anchor-label="isInitialStickyBroadcast" id="-448034677%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-448034677%2FProperties%2F1854500995"><span>is</span><wbr><span>Initial</span><wbr><span>Sticky</span><wbr><span><span>Broadcast</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-448034677%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html#-448034677%2FProperties%2F1854500995">isInitialStickyBroadcast</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1250697259%2FProperties%2F1854500995" anchor-label="isOrderedBroadcast" id="1250697259%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1250697259%2FProperties%2F1854500995"><span>is</span><wbr><span>Ordered</span><wbr><span><span>Broadcast</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1250697259%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html#1250697259%2FProperties%2F1854500995">isOrderedBroadcast</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="480044575%2FProperties%2F1854500995" anchor-label="resultCode" id="480044575%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#480044575%2FProperties%2F1854500995"><span>result</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="480044575%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#480044575%2FProperties%2F1854500995">resultCode</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1473633534%2FProperties%2F1854500995" anchor-label="resultData" id="-1473633534%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1473633534%2FProperties%2F1854500995"><span>result</span><wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1473633534%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#-1473633534%2FProperties%2F1854500995">resultData</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1310986861%2FProperties%2F1854500995" anchor-label="sentFromPackage" id="1310986861%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1310986861%2FProperties%2F1854500995"><span>sent</span><wbr><span>From</span><wbr><span><span>Package</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1310986861%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#1310986861%2FProperties%2F1854500995">sentFromPackage</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1333834589%2FProperties%2F1854500995" anchor-label="sentFromUid" id="-1333834589%2FProperties%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1333834589%2FProperties%2F1854500995"><span>sent</span><wbr><span>From</span><wbr><span><span>Uid</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1333834589%2FProperties%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-1333834589%2FProperties%2F1854500995">sentFromUid</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-1578158536%2FFunctions%2F1854500995" anchor-label="abortBroadcast" id="-1578158536%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1578158536%2FFunctions%2F1854500995"><span>abort</span><wbr><span><span>Broadcast</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578158536%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#-1578158536%2FFunctions%2F1854500995"><span class="token function">abortBroadcast</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-547655405%2FFunctions%2F1854500995" anchor-label="clearAbortBroadcast" id="-547655405%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-547655405%2FFunctions%2F1854500995"><span>clear</span><wbr><span>Abort</span><wbr><span><span>Broadcast</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-547655405%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#-547655405%2FFunctions%2F1854500995"><span class="token function">clearAbortBroadcast</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1243983328%2FFunctions%2F1854500995" anchor-label="getResultExtras" id="1243983328%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1243983328%2FFunctions%2F1854500995"><span>get</span><wbr><span>Result</span><wbr><span><span>Extras</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1243983328%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#1243983328%2FFunctions%2F1854500995"><span class="token function">getResultExtras</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">makeMap<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="478464125%2FFunctions%2F1854500995" anchor-label="goAsync" id="478464125%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#478464125%2FFunctions%2F1854500995"><span>go</span><wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="478464125%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#478464125%2FFunctions%2F1854500995"><span class="token function">goAsync</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/BroadcastReceiver.PendingResult.html">BroadcastReceiver.PendingResult</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1504510136%2FFunctions%2F1854500995" anchor-label="onReceive" id="1504510136%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-receive.html"><span>on</span><wbr><span><span>Receive</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1504510136%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="on-receive.html"><span class="token function">onReceive</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">intent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1162131393%2FFunctions%2F1854500995" anchor-label="peekService" id="-1162131393%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1162131393%2FFunctions%2F1854500995"><span>peek</span><wbr><span><span>Service</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1162131393%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1162131393%2FFunctions%2F1854500995"><span class="token function">peekService</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">myContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">service<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/IBinder.html">IBinder</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="48379132%2FFunctions%2F1854500995" anchor-label="setOrderedHint" id="48379132%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#48379132%2FFunctions%2F1854500995"><span>set</span><wbr><span>Ordered</span><wbr><span><span>Hint</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="48379132%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#48379132%2FFunctions%2F1854500995"><span class="token function">setOrderedHint</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isOrdered<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="455010187%2FFunctions%2F1854500995" anchor-label="setResult" id="455010187%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#455010187%2FFunctions%2F1854500995"><span>set</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="455010187%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#455010187%2FFunctions%2F1854500995"><span class="token function">setResult</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">code<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">extras<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1065610694%2FFunctions%2F1854500995" anchor-label="setResultExtras" id="1065610694%2FFunctions%2F1854500995" data-filterable-set=":acra-notification/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-notification/release" data-filterable-set=":acra-notification/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1065610694%2FFunctions%2F1854500995"><span>set</span><wbr><span>Result</span><wbr><span><span>Extras</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1065610694%2FFunctions%2F1854500995"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-notification/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#1065610694%2FFunctions%2F1854500995"><span class="token function">setResultExtras</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">extras<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
