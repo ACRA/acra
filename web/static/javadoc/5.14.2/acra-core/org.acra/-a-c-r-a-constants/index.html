@@ -1,0 +1,291 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ACRAConstants</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    acra
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">5.14.2
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":acra-core/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":acra-core/release" data-filter=":acra-core/release">
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    acra
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="acra-core::org.acra/ACRAConstants///PointingToDeclaration//1703629903">
+  <div class="breadcrumbs"><a href="../../index.html">acra-core</a><span class="delimiter">/</span><a href="../index.html">org.acra</a><span class="delimiter">/</span><span class="current">ACRAConstants</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>ACRAConstants</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">ACRAConstants</a></div><p class="paragraph">Responsible for collating those constants shared among the ACRA components.</p><span class="kdoc-tag"><h4 class="">Author</h4><p class="paragraph">William Ferguson</p></span><span class="kdoc-tag"><h4 class="">Since</h4><p class="paragraph">4.3.0</p></span></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-706656663%2FProperties%2F1703629903" anchor-label="APPROVED_SUFFIX" id="-706656663%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-a-p-p-r-o-v-e-d_-s-u-f-f-i-x.html"><span>APPROVED_</span><wbr><span>SUFFIX</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-706656663%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-a-p-p-r-o-v-e-d_-s-u-f-f-i-x.html">APPROVED_SUFFIX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Suffix to be added to report files when they have been approved by the user in NOTIFICATION mode</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-905091958%2FProperties%2F1703629903" anchor-label="DATE_TIME_FORMAT_STRING" id="-905091958%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-d-a-t-e_-t-i-m-e_-f-o-r-m-a-t_-s-t-r-i-n-g.html"><span>DATE_</span><wbr><span>TIME_</span><wbr><span>FORMAT_</span><wbr><span>STRING</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-905091958%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-d-a-t-e_-t-i-m-e_-f-o-r-m-a-t_-s-t-r-i-n-g.html">DATE_TIME_FORMAT_STRING</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1930813334%2FProperties%2F1703629903" anchor-label="DEFAULT_BUFFER_SIZE_IN_BYTES" id="-1930813334%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-d-e-f-a-u-l-t_-b-u-f-f-e-r_-s-i-z-e_-i-n_-b-y-t-e-s.html"><span>DEFAULT_</span><wbr><span>BUFFER_</span><wbr><span>SIZE_</span><wbr><span>IN_</span><wbr><span>BYTES</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1930813334%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-b-u-f-f-e-r_-s-i-z-e_-i-n_-b-y-t-e-s.html">DEFAULT_BUFFER_SIZE_IN_BYTES</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">8192</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1232995432%2FProperties%2F1703629903" anchor-label="DEFAULT_CERTIFICATE_TYPE" id="-1232995432%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-d-e-f-a-u-l-t_-c-e-r-t-i-f-i-c-a-t-e_-t-y-p-e.html"><span>DEFAULT_</span><wbr><span>CERTIFICATE_</span><wbr><span>TYPE</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1232995432%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-c-e-r-t-i-f-i-c-a-t-e_-t-y-p-e.html">DEFAULT_CERTIFICATE_TYPE</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="815133244%2FProperties%2F1703629903" anchor-label="DEFAULT_LOG_LINES" id="815133244%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-d-e-f-a-u-l-t_-l-o-g_-l-i-n-e-s.html"><span>DEFAULT_</span><wbr><span>LOG_</span><wbr><span>LINES</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="815133244%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-l-o-g_-l-i-n-e-s.html">DEFAULT_LOG_LINES</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">100</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2084426084%2FProperties%2F1703629903" anchor-label="DEFAULT_REPORT_FIELDS" id="-2084426084%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-d-e-f-a-u-l-t_-r-e-p-o-r-t_-f-i-e-l-d-s.html"><span>DEFAULT_</span><wbr><span>REPORT_</span><wbr><span>FIELDS</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2084426084%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation builtin">JvmField</span></a></div></div><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-r-e-p-o-r-t_-f-i-e-l-d-s.html">DEFAULT_REPORT_FIELDS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-report-field/index.html">ReportField</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Default list of <a href="../-report-field/index.html">ReportField</a>s to be sent in reports. You can set your own list with <a href="../../org.acra.config/-core-configuration/report-content.html">org.acra.config.CoreConfiguration.reportContent</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="677651541%2FProperties%2F1703629903" anchor-label="MAX_SEND_REPORTS" id="677651541%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-m-a-x_-s-e-n-d_-r-e-p-o-r-t-s.html"><span>MAX_</span><wbr><span>SEND_</span><wbr><span>REPORTS</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="677651541%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-m-a-x_-s-e-n-d_-r-e-p-o-r-t-s.html">MAX_SEND_REPORTS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">5</span></div><div class="brief "><p class="paragraph">This is the maximum number of previously stored reports that we send in one batch to avoid overloading the network.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2120521189%2FProperties%2F1703629903" anchor-label="NOT_AVAILABLE" id="2120521189%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-n-o-t_-a-v-a-i-l-a-b-l-e.html"><span>NOT_</span><wbr><span>AVAILABLE</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2120521189%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-n-o-t_-a-v-a-i-l-a-b-l-e.html">NOT_AVAILABLE</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1185203416%2FProperties%2F1703629903" anchor-label="REPORTFILE_EXTENSION" id="-1185203416%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-r-e-p-o-r-t-f-i-l-e_-e-x-t-e-n-s-i-o-n.html"><span>REPORTFILE_</span><wbr><span>EXTENSION</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1185203416%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-r-e-p-o-r-t-f-i-l-e_-e-x-t-e-n-s-i-o-n.html">REPORTFILE_EXTENSION</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-808069817%2FProperties%2F1703629903" anchor-label="SILENT_SUFFIX" id="-808069817%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-s-i-l-e-n-t_-s-u-f-f-i-x.html"><span>SILENT_</span><wbr><span>SUFFIX</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-808069817%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-field/index.html"><span class="token annotation builtin">JvmField</span></a></div></div><span class="token keyword">val </span><a href="-s-i-l-e-n-t_-s-u-f-f-i-x.html">SILENT_SUFFIX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">This key is used to store the silent state of a report sent by handleSilentException().</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1875037191%2FProperties%2F1703629903" anchor-label="UTF8" id="1875037191%2FProperties%2F1703629903" data-filterable-set=":acra-core/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":acra-core/release" data-filterable-set=":acra-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-u-t-f8.html"><span><span>UTF8</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1875037191%2FProperties%2F1703629903"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":acra-core/release"><div class="symbol monospace"><span class="token keyword">const </span><span class="token keyword">val </span><a href="-u-t-f8.html">UTF8</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
