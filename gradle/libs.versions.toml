@@ -4,7 +4,7 @@ android-min = "14"
 android-build = "9.4.1"
 
 androidx-core = "1.19.1"
-androidx-annotation = "1.10.0"
+androidx-annotation = "1.11.0"
 
 kotlin = "2.4.20"
 dokka = "2.2.0"
