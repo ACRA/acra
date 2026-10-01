@@ -67,14 +67,6 @@ afterEvaluate {
         }
         repositories {
             mavenLocal()
-            maven {
-                name = "GithubPackages"
-                url = uri("https://maven.pkg.github.com/ACRA/acra")
-                credentials {
-                    username = project.findProperty("githubUser") as? String ?: System.getenv("GITHUB_USER")
-                    password = project.findProperty("githubPackageKey") as? String ?: System.getenv("GITHUB_TOKEN")
-                }
-            }
         }
     }
 
