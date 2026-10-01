@@ -43,8 +43,8 @@ import kotlin.collections.ArrayList
  *
  *
  * The user will be asked to chose his preferred email client if no default is set. Included report fields can be defined using
- * [org.acra.annotation.AcraCore.reportContent]. Crash receiving mailbox has to be
- * defined with [org.acra.annotation.AcraMailSender.mailTo].
+ * [org.acra.config.CoreConfiguration.reportContent]. Crash receiving mailbox has to be
+ * defined with [org.acra.config.MailSenderConfiguration.mailTo].
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class EmailIntentSender(private val config: CoreConfiguration) : ReportSender {

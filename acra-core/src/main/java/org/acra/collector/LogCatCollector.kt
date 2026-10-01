@@ -44,11 +44,11 @@ class LogCatCollector : BaseReportFieldCollector(ReportField.LOGCAT, ReportField
         get() = Collector.Order.FIRST
 
     /**
-     * Executes the logcat command with arguments taken from [org.acra.annotation.AcraCore.logcatArguments]
+     * Executes the logcat command with arguments taken from [org.acra.config.CoreConfiguration.logcatArguments]
      *
      * @param bufferName The name of the buffer to be read: "main" (default), "radio" or "events".
      * @return A string containing the latest lines of the output.
-     * Default is 100 lines, use "-t", "300" in [org.acra.annotation.AcraCore.logcatArguments] if you want 300 lines.
+     * Default is 100 lines, use "-t", "300" in [org.acra.config.CoreConfiguration.logcatArguments] if you want 300 lines.
      * You should be aware that increasing this value causes a longer report generation time and a bigger footprint on the device data plan consumption.
      */
     @Throws(IOException::class)

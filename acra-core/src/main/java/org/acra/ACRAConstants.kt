@@ -50,7 +50,7 @@ object ACRAConstants {
     /**
      * Default list of [ReportField]s to be sent in reports. You can set
      * your own list with
-     * [org.acra.annotation.AcraCore.reportContent].
+     * [org.acra.config.CoreConfiguration.reportContent].
      */
     @JvmField
     val DEFAULT_REPORT_FIELDS = listOf(ReportField.REPORT_ID, ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME, ReportField.PACKAGE_NAME, ReportField.FILE_PATH,

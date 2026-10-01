@@ -71,7 +71,7 @@ class ReportExecutor(private val context: Context, private val config: CoreConfi
     }
 
     /**
-     * Try to create a report. Also starts [LegacySenderService]
+     * Try to create a report and schedule it for sending.
      *
      * @param reportBuilder The report builder used to assemble the report
      */

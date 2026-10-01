@@ -31,7 +31,7 @@ class CrashReportFileNameParser {
      * Guess that a report is silent from its file name.
      *
      * @param reportFileName Name of the report to check whether it should be sent silently.
-     * @return True if the report has been declared explicitly silent using [ErrorReporter.handleSilentException].
+     * @return True if the report has been declared explicitly silent using [org.acra.ErrorReporter.handleSilentException].
      */
     fun isSilent(reportFileName: String): Boolean = reportFileName.contains(ACRAConstants.SILENT_SUFFIX)
 

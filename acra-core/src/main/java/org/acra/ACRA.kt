@@ -32,11 +32,10 @@ import org.acra.util.StubCreator
 import java.io.IOException
 
 /**
- * Use this class to initialize the crash reporting feature using
- * [.init] as soon as possible in your [Application]
- * subclass [Application.onCreate] method. Configuration items must have
- * been set by using [org.acra.annotation.AcraCore] above the declaration of your
- * [Application] subclass.
+ * Use this class to initialize crash reporting by calling [init] as soon as possible in your
+ * [Application.attachBaseContext] method. Configure ACRA with a
+ * [org.acra.config.CoreConfigurationBuilder] or [org.acra.config.CoreConfiguration] passed to
+ * [init].
  *
  * @author Kevin Gaudin
  */

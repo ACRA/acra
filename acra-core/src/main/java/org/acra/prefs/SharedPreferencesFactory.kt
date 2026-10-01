@@ -27,7 +27,7 @@ import org.acra.config.CoreConfiguration
  *
  *
  * Retrieves the [SharedPreferences] instance where user adjustable settings for ACRA are stored.
- * Default are the Application default SharedPreferences, but you can provide another SharedPreferences name with [org.acra.annotation.AcraCore.sharedPreferencesName].
+ * Default are the Application default SharedPreferences, but you can provide another SharedPreferences name with [org.acra.config.CoreConfiguration.sharedPreferencesName].
  *
  */
 class SharedPreferencesFactory(private val context: Context, private val config: CoreConfiguration) {

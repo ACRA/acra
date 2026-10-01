@@ -24,8 +24,8 @@ import org.acra.log.debug
 import org.acra.util.IOUtils
 
 /**
- * Plain service sending reports. has to run in the :acra process.
- * Only used when no JobScheduler is available.
+ * Service implementation that sends reports in the `:acra` process on devices without
+ * [android.app.job.JobScheduler] support.
  *
  * @author Lukas
  */

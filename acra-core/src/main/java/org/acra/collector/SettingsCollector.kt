@@ -36,7 +36,7 @@ import kotlin.String
 import kotlin.Throws
 
 /**
- * collects data from [System], [Global] and [Secure] Settings classes.
+ * collects data from [android.provider.Settings.System], [android.provider.Settings.Global] and [android.provider.Settings.Secure] Settings classes.
  *
  * @author Kevin Gaudin &amp; F43nd1r
  */

@@ -36,7 +36,7 @@ import java.util.regex.Pattern
 
 /**
  * Provides access to attachments for senders
- * For uri schema, see [AcraCore.attachmentUris]
+ * For uri schema, see [org.acra.config.CoreConfiguration.attachmentUris]
  *
  * @author F43nd1r
  * @since 13.03.2017

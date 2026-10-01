@@ -24,8 +24,8 @@ import org.acra.plugins.Plugin
  * Implementations must have a no argument constructor.
  *
  *
- * Each configured ReportSenderFactory is created within the [LegacySenderService]
- * and is used to construct and configure a single [ReportSender].
+ * Each configured ReportSenderFactory is created by [SendingConductor] and is used to construct
+ * and configure a single [ReportSender].
  *
  *
  * Created by William on 4-JAN-2016.
