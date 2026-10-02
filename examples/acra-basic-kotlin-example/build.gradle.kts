@@ -36,7 +36,7 @@ kotlin {
 }
 
 dependencies {
-    val acraVersion = "5.13.1"
+    val acraVersion = "5.14.2"
     implementation("ch.acra:acra-http:$acraVersion")
 
     ksp("dev.zacsweers.autoservice:auto-service-ksp:1.2.0")
