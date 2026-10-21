@@ -3,7 +3,7 @@
 |---|---|
 |Build|[ ![test](https://github.com/ACRA/acra/workflows/test/badge.svg?branch=master) ](https://github.com/ACRA/acra/actions?query=workflow%3Atest)|
 |Maven Central|[![Maven Central](https://img.shields.io/maven-central/v/ch.acra/acra-core.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22ch.acra%22)|
-|Android Versions|![minVersion](https://img.shields.io/badge/dynamic/json?label=Android%20Min%20Version&query=version&url=https%3A%2F%2Ffaendir.com%2Fandroid%2Facra.php%3Fversion%3Dandroid-min) ![targetVersion](https://img.shields.io/badge/dynamic/json?label=Android%20Target%20Version&query=version&url=https%3A%2F%2Ffaendir.com%2Fandroid%2Facra.php%3Fversion%3Dandroid-target)|
+|Android Versions|![minVersion](https://img.shields.io/badge/dynamic/json?label=Android%20Min%20Version&query=version&url=https%3A%2F%2Fwww.acra.ch%2Fandroid-min.json) ![targetVersion](https://img.shields.io/badge/dynamic/json?label=Android%20Target%20Version&query=version&url=https%3A%2F%2Fwww.acra.ch%2Fandroid-target.json)|
 |License|![license](https://img.shields.io/github/license/ACRA/acra.svg)|
 | Statistics|[![AppBrain stats](https://www.appbrain.com/stats/libraries/shield/acra.svg)](https://www.appbrain.com/stats/libraries/details/acra/acra)|
 

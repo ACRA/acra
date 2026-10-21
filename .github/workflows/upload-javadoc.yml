@@ -37,10 +37,18 @@ jobs:
             && ln -sfn "$(readlink ./web/static/javadoc/latest)" ./web/static/javadoc/$VERSION \
             || (mkdir ./web/static/javadoc/$VERSION && cp -a ./build/dokka/html/. ./web/static/javadoc/$VERSION/)
           ln -sfn "$VERSION/" ./web/static/javadoc/latest
+      - name: Update Android version badge data
+        run: |
+          android_min=$(sed -nE 's/^android-min[[:space:]]*=[[:space:]]*"([^"]+)".*$/\1/p' gradle/libs.versions.toml)
+          android_target=$(sed -nE 's/^android-target[[:space:]]*=[[:space:]]*"([^"]+)".*$/\1/p' gradle/libs.versions.toml)
+          test -n "$android_min"
+          test -n "$android_target"
+          printf '{"version":"%s"}\n' "$android_min" > web/static/android-min.json
+          printf '{"version":"%s"}\n' "$android_target" > web/static/android-target.json
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v11.1.1
         with:
-          add: 'web/static/javadoc'
+          add: 'web/static/javadoc web/static/android-min.json web/static/android-target.json'
           message: "Add javadoc for version ${{ steps.version.outputs.value }}"
           github_token: ${{ secrets.PUSH_TOKEN }}
           branch: 'master'
