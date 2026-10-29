@@ -21,7 +21,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v7.1.0
         with:
-          node-version: '24.22.1'
+          node-version: '24.22.2'
       - name: Build docs
         run: cd web && yarn install && yarn run build
       - name: Commit and push changes
