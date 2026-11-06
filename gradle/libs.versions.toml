@@ -7,7 +7,7 @@ androidx-core = "1.19.1"
 androidx-annotation = "1.11.0"
 
 kotlin = "2.4.21"
-dokka = "2.2.0"
+dokka = "2.3.0"
 jgitver = "0.10.0-rc03"
 ksp = "2.3.13"
 autoService = "1.1.1"
