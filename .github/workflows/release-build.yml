@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v6.2.0
         with:
           distribution: 'temurin'
-          java-version: '17.0.21+9'
+          java-version: '25.0.5+8.0.LTS'
       - name: Checkout acra
         uses: actions/checkout@v7.0.1
         with:
