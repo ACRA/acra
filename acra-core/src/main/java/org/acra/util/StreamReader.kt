@@ -77,6 +77,11 @@ class StreamReader(private val inputStream: InputStream, var limit: Int = NO_LIM
         }
     }
 
+    /**
+     * Reads everything currently buffered, waiting for more data until [until].
+     *
+     * @return the number of bytes read, or -1 if nothing could be read before the stream ended or [until] was reached.
+     */
     @Throws(IOException::class)
     private fun InputStream.readUntil(buffer: ByteArray, until: Long): Int {
         var bufferOffset = 0
@@ -85,7 +90,7 @@ class StreamReader(private val inputStream: InputStream, var limit: Int = NO_LIM
             if (readResult == -1) break
             bufferOffset += readResult
         }
-        return bufferOffset
+        return if (bufferOffset == 0) -1 else bufferOffset
     }
 
     companion object {
